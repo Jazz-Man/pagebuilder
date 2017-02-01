@@ -2,7 +2,7 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.31';
+window.et_builder_version = '3.0.29';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -9787,7 +9787,6 @@ window.et_builder_version = '3.0.31';
 				var current_view = ET_PageBuilder_Layout.getView( cid_or_element.model.get( 'cid' ) ),
 					parent_view = typeof current_view.model.get( 'parent' ) !== 'undefined' ? ET_PageBuilder_Layout.getView( current_view.model.get( 'parent' ) ) : '',
 					$global_children = current_view.$el.find( '.et_pb_global' ),
-					is_global = current_view.$el.is( '.et_pb_global' ),
 					has_global = $global_children.length ? 'has_global' : 'no_globals';
 
 				modal_attributes.is_global = typeof current_view.model.get( 'et_pb_global_module' ) !== 'undefined' && '' !== current_view.model.get( 'et_pb_global_module' ) ? 'global' : 'regular';
@@ -10163,7 +10162,7 @@ window.et_builder_version = '3.0.31';
 							selected_tabs                = '',
 							selected_cats                = '',
 							new_cat                      = $prompt_modal.find( '#et_pb_new_cat_name' ).val(),
-							ignore_global                = is_global || ( typeof has_global !== 'undefined' && 'has_global' === has_global && 'global' === layout_scope ) ? 'ignore_global' : 'include_global',
+							ignore_global                = typeof has_global !== 'undefined' && 'has_global' === has_global && 'global' === layout_scope ? 'ignore_global' : 'include_global',
 							ignore_saved_tabs            = 'ignore_global' === ignore_global ? 'ignore_global_tabs' : '',
 							$modal_settings_container    = $( '.et_pb_modal_settings_container' ),
 							$modal_overlay               = $( '.et_pb_modal_overlay' );

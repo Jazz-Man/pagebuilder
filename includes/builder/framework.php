@@ -24,10 +24,6 @@ if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! is_customize_preview() ) {
 		'et_fb_retrieve_builder_data'
 	);
 
-	if ( class_exists( 'Easy_Digital_Downloads') ) {
-		$builder_load_actions[] = 'edd_load_gateway';
-	}
-
 	$force_builder_load = isset( $_POST['et_load_builder_modules'] ) && '1' === $_POST['et_load_builder_modules'];
 
 	if ( ! $force_builder_load && ( ! isset( $_REQUEST['action'] ) || ! in_array( $_REQUEST['action'], $builder_load_actions ) ) ) {

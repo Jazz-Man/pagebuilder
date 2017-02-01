@@ -2620,9 +2620,6 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -3115,7 +3112,6 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_button",
-						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
 					),
 				),
 			),
@@ -3799,9 +3795,6 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -5321,9 +5314,6 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -5736,7 +5726,6 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_pricing {$this->main_css_element} .et_pb_button",
-						'plugin_main' => ".et_pb_pricing {$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
 					),
 				),
 			),
@@ -6004,9 +5993,6 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_promo_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -6273,7 +6259,6 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => $this->main_css_element,
-						'plugin_main' => "{$this->main_css_element}.et_pb_module",
 					),
 				),
 			),
@@ -6760,9 +6745,6 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_newsletter_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -7260,9 +7242,6 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_newsletter_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -10206,12 +10185,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'form_field'   => array(
 					'label'    => esc_html__( 'Form Field', 'et_builder' ),
 					'css'      => array(
-						'main' => array(
-							"{$this->main_css_element} .input",
-							"{$this->main_css_element} .input::-webkit-input-placeholder",
-							"{$this->main_css_element} .input::-moz-placeholder",
-							"{$this->main_css_element} .input:-ms-input-placeholder",
-						),
+						'main' => "{$this->main_css_element} .input",
 					),
 				),
 			),
@@ -10227,9 +10201,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element}.et_pb_module .et_pb_button",
-					),
 				),
 			),
 		);
@@ -10634,9 +10605,9 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'field_title'     => array( esc_html__( 'New Field', 'et_builder' ) ),
+			'field_title'     => array( 'Input' ),
 			'field_type'      => array( 'input' ),
-			'field_id'        => array( '' ),
+			'field_id'        => array( 'input' ),
 			'fullwidth_field' => array( 'off' ),
 			'required_mark'   => array( 'on' ),
 		);
@@ -10649,12 +10620,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'form_field'   => array(
 					'label'    => esc_html__( 'Field', 'et_builder' ),
 					'css'      => array(
-						'main' => array(
-							"{$this->main_css_element}",
-							"{$this->main_css_element}::-webkit-input-placeholder",
-							"{$this->main_css_element}::-moz-placeholder",
-							"{$this->main_css_element}:-ms-input-placeholder",
-						),
+						'main' => "{$this->main_css_element}",
 					),
 				),
 			),
@@ -12658,6 +12624,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 					}
 				}
 			}
+
+			wp_reset_query();
 		} else {
 			if ( et_is_builder_plugin_active() ) {
 				include( ET_BUILDER_PLUGIN_DIR . 'includes/no-results.php' );
@@ -12665,8 +12633,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 				get_template_part( 'includes/no-results', 'index' );
 			}
 		}
-
-		wp_reset_query();
 
 		$posts = ob_get_contents();
 
@@ -12964,7 +12930,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 		 * Hence customize WooCommerce' product query via modify_woocommerce_shortcode_products_query method
 		 * @see http://docs.woothemes.com/document/woocommerce-shortcodes/#section-5
 		 */
-		$modify_woocommerce_query = 'best_selling' !== $type && in_array( $orderby, array( 'menu_order', 'price', 'price-desc', 'rating', 'popularity' ) );
+		$modify_woocommerce_query = in_array( $orderby, array( 'menu_order', 'price', 'price-desc', 'rating', 'popularity' ) );
 
 		if ( $modify_woocommerce_query ) {
 			add_filter( 'woocommerce_shortcode_products_query', array( $this, 'modify_woocommerce_shortcode_products_query' ), 10, 2 );
@@ -15042,9 +15008,6 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element}.et_pb_comments_module .et_pb_button",
-					),
 				),
 			),
 		);
@@ -16945,9 +16908,6 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
-					),
 				),
 			),
 		);
@@ -19048,9 +19008,6 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
-					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
-					),
 				),
 			),
 		);

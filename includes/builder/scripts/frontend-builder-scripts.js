@@ -1938,7 +1938,7 @@
 
 					var visible_grid_items = $the_portfolio_visible_items.length,
 						posts_number = $the_portfolio.data('posts-number'),
-						pages = 0 === posts_number ? 1 : Math.ceil( visible_grid_items / posts_number );
+						pages = Math.ceil( visible_grid_items / posts_number );
 
 					set_filterable_grid_pages( $the_portfolio, pages );
 
@@ -3131,16 +3131,7 @@
 
 				// Entering video's bottom viewport
 				$video_background_wrapper.waypoint({
-					offset: function() {
-						var video_height = this.element.clientHeight,
-							toggle_offset = Math.ceil( window.innerHeight / 2);
-
-						if ( video_height > toggle_offset ) {
-							toggle_offset = video_height;
-						}
-
-						return toggle_offset * (-1);
-					},
+					offset: '-50%',
 					handler : function( direction ) {
 						if ( $this_video_background.is(':visible') && direction === 'up' ) {
 							this_video_player.play();

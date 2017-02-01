@@ -28,26 +28,15 @@ function et_fb_enqueue_main_assets() {
 		), $ver );
 	}
 
-	// Load Divi Builder style.css file with hardcore CSS resets and Full Open Sans font if the Divi Builder plugin is active
+	// Load Divi Builder style.css file with hardcore CSS resets if the Divi Builder plugin is active
 	if ( et_is_builder_plugin_active() ) {
 		wp_enqueue_style( 'et-builder-divi-builder-styles', "{$assets}/css/divi-builder-style.css", array(), $ver );
-		et_fb_enqueue_open_sans();
 	}
 
 	wp_enqueue_style( 'et-frontend-builder-failure-modal', "{$assets}/css/failure_modal.css", array(), $ver );
 	wp_enqueue_style( 'et-frontend-builder-notification-modal', "{$root}/styles/notification_popup_styles.css", array(), $ver );
 }
 add_action( 'wp_enqueue_scripts', 'et_fb_enqueue_main_assets' );
-
-function et_fb_enqueue_open_sans() {
-	$protocol = is_ssl() ? 'https' : 'http';
-	$query_args = array(
-		'family' => 'Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
-		'subset' => 'latin,latin-ext',
-	);
-
-	wp_enqueue_style( 'et-fb-fonts', esc_url_raw( add_query_arg( $query_args, "$protocol://fonts.googleapis.com/css" ) ), array(), null );
-}
 
 function et_fb_enqueue_google_maps_dependency( $dependencies ) {
 

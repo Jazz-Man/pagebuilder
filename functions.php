@@ -8049,7 +8049,7 @@ function et_password_form() {
 			<form action="%3$s" method="post">
 				<p><label for="%4$s">%5$s: </label><input name="post_password" id="%4$s" type="password" size="20" maxlength="20" /></p>
 				<p><button type="submit" class="et_submit_button et_pb_button">%6$s</button></p>
-			</form>
+			</form
 		</div>',
 		esc_html__( 'Password Protected', 'Divi' ),
 		esc_html__( 'To view this protected post, enter the password below', 'Divi' ),
