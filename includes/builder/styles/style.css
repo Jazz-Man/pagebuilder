@@ -35,7 +35,7 @@
 .svg #et_pb_layout .et-pb-app-view-ab-settings-button .icon:before,
 .svg #et_pb_layout .et-pb-app-view-ab-stats-button .icon:before { position: absolute; top: 0; right: 0; bottom: 0; left: 0; content: ''; }
 
-#et_pb_layout .handlediv { width: 66px; height: 68px; }
+#et_pb_layout .handlediv { width: 66px; height: 68px; margin: 0 !important; }
 #et_pb_layout .handlediv .toggle-indicator:before, #et_pb_layout .handlediv:before { color: #fff; padding: 18px 0px; width: 50px; margin-top: 0; }
 #et_pb_layout .handlediv .toggle-indicator:before { content: '3'; font-family: 'ETmodules'; font-size: 32px; font-weight: 600; padding-right: 10px; }
 .closed#et_pb_layout .handlediv .toggle-indicator:before { content: '2'; }
@@ -45,7 +45,7 @@
 
 .rtl #et_pb_layout .hndle:before { left: auto; right: 30px; content: '>'; }
 
-#et_pb_layout_controls { overflow: hidden; text-align: right; top: 0; right: 0; margin: 0; background-color: #7e3bd0; position:relative; z-index:101; }
+#et_pb_layout_controls { overflow: hidden; text-align: right; top: 0; right: 0; margin: 0; background-color: #7e3bd0; position:relative; z-index:101; width: 100%; }
 #et_pb_layout_controls .et-pb-layout-buttons { box-sizing: border-box; color: #fff; margin: 0; float: left; border-radius: 0; text-align: center; background-color: #7e3bd0; padding: 20px; font-weight: 400; }
 #et_pb_layout_controls .et-pb-layout-buttons.disabled { opacity: .3; }
 #et_pb_layout_controls .et-pb-layout-buttons.et-pb-layout-buttons-history,
@@ -1832,6 +1832,11 @@ span.et_pb_disable_on_options { position: absolute; right: -100%; }
 	float: none;
 }
 
+.et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list.yes_no_button {
+	padding-bottom: 40px;
+	padding-top: 10px;
+}
+
 .et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list:first-of-type {
 	padding-top: 40px;
 }
@@ -1848,6 +1853,18 @@ span.et_pb_disable_on_options { position: absolute; right: -100%; }
 	display: block;
 	-webkit-animation: et_pb_slide_left .3s ease-in-out;
 	animation: et_pb_slide_left .3s ease-in-out;
+}
+
+.et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list.yes_no_button label {
+	clear: none;
+	display: initial;
+	float: left;
+	margin: 0;
+	line-height: 39px;
+}
+
+.et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_field_list.yes_no_button label .et_pb_prompt_field {
+	overflow: auto;
 }
 
 .et_pb_modal_overlay.et_pb_builder_settings .et_pb_prompt_buttons {

@@ -2599,6 +2599,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 					'label'    => esc_html__( 'Header', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title",
+						'plugin_main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title, {$this->main_css_element} .et_pb_slide_description .et_pb_slide_title a",
 						'font_size_tablet' => "{$this->main_css_element} .et_pb_slides .et_pb_slide_description .et_pb_slide_title",
 						'font_size_phone'  => "{$this->main_css_element} .et_pb_slides .et_pb_slide_description .et_pb_slide_title",
 						'important' => array( 'size', 'font-size' ),
@@ -2620,6 +2621,9 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -3081,6 +3085,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'label'    => esc_html__( 'Header', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title",
+						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title, .et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title a",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -3112,6 +3117,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_button",
+						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
 					),
 				),
 			),
@@ -3795,6 +3801,9 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -4390,7 +4399,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 					if ( et_pb_is_pagebuilder_used( get_the_ID() ) ) {
 						$more = 1;
 
-						$builder_post_content = apply_filters( 'the_content', $post_content );
+						$builder_post_content = et_is_builder_plugin_active() ? do_shortcode( $post_content ) : apply_filters( 'the_content', $post_content );
 
 						// Overwrite default content, in case the content is protected
 						$query->posts[ $post_index ]->post_content = $builder_post_content;
@@ -4398,11 +4407,11 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 						$more = null;
 
 						// Overwrite default content, in case the content is protected
-						$query->posts[ $post_index ]->post_content = apply_filters( 'the_content', get_the_content( '' ) );
+						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? do_shortcode( get_the_content( '' ) ) : apply_filters( 'the_content', get_the_content( '' ) );
 					}
 				} else {
 					if ( has_excerpt() && 'off' !== $args['use_manual_excerpt'] ) {
-						$query->posts[ $post_index ]->post_content = apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
+						$query->posts[ $post_index ]->post_content =  et_is_builder_plugin_active() ? do_shortcode( et_strip_shortcodes( get_the_excerpt(), true ) ) : apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
 					} else {
 						$query->posts[ $post_index ]->post_content = strip_shortcodes( truncate_post( intval( $args['excerpt_length'] ), false, '', true ) );
 					}
@@ -5314,6 +5323,9 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -5726,6 +5738,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_pricing {$this->main_css_element} .et_pb_button",
+						'plugin_main' => ".et_pb_pricing {$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
 					),
 				),
 			),
@@ -5993,6 +6006,9 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_promo_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -6259,6 +6275,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => $this->main_css_element,
+						'plugin_main' => "{$this->main_css_element}.et_pb_module",
 					),
 				),
 			),
@@ -6745,6 +6762,9 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_newsletter_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -6998,8 +7018,9 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% .et_pb_newsletter_form p input.input:focus',
 				'declaration' => sprintf(
-					'background-color: %1$s;',
-					esc_html( $focus_background_color )
+					'background-color: %1$s%2$s;',
+					esc_html( $focus_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -7028,8 +7049,9 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% input[type="text"], %%order_class%% textarea',
 				'declaration' => sprintf(
-					'background-color: %1$s;',
-					esc_html( $form_field_background_color )
+					'background-color: %1$s%2$s;',
+					esc_html( $form_field_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -7242,6 +7264,9 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_newsletter_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -7430,8 +7455,9 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% .et_pb_newsletter_form p input:focus',
 				'declaration' => sprintf(
-					'background-color: %1$s;',
-					esc_html( $focus_background_color )
+					'background-color: %1$s%2$s;',
+					esc_html( $focus_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -7476,8 +7502,9 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% input[type="text"], %%order_class%% textarea, %%order_class%% .input',
 				'declaration' => sprintf(
-					'background-color: %1$s;',
-					esc_html( $form_field_background_color )
+					'background-color: %1$s%2$s;',
+					esc_html( $form_field_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -9942,7 +9969,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		$this->custom_css_options = array(
 			'open_toggle' => array(
 				'label'    => esc_html__( 'Open Toggle', 'et_builder' ),
-				'selector' => '.et_pb_toggle_open',
+				'selector' => '.et_pb_toggle.et_pb_toggle_open',
 				'no_space_before_selector' => true,
 			),
 			'toggle_title' => array(
@@ -10064,7 +10091,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 
 		if ( '' !== $open_toggle_background_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_toggle_open',
+				'selector'    => '%%order_class%%.et_pb_toggle.et_pb_toggle_open',
 				'declaration' => sprintf(
 					'background-color: %1$s;',
 					esc_html( $open_toggle_background_color )
@@ -10074,7 +10101,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 
 		if ( '' !== $closed_toggle_background_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_toggle_close',
+				'selector'    => '%%order_class%%.et_pb_toggle.et_pb_toggle_close',
 				'declaration' => sprintf(
 					'background-color: %1$s;',
 					esc_html( $closed_toggle_background_color )
@@ -10185,7 +10212,13 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'form_field'   => array(
 					'label'    => esc_html__( 'Form Field', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} .input",
+						'main' => array(
+							"{$this->main_css_element} .input",
+							"{$this->main_css_element} .input::-webkit-input-placeholder",
+							"{$this->main_css_element} .input::-moz-placeholder",
+							"{$this->main_css_element} .input:-ms-input-placeholder",
+						),
+						'important' => 'plugin_only',
 					),
 				),
 			),
@@ -10201,6 +10234,9 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element}.et_pb_module .et_pb_button",
+					),
 				),
 			),
 		);
@@ -10380,8 +10416,9 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% .input',
 				'declaration' => sprintf(
-					'background-color: %1$s;',
-					esc_html( $form_background_color )
+					'background-color: %1$s%2$s;',
+					esc_html( $form_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -10605,9 +10642,9 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'field_title'     => array( 'Input' ),
+			'field_title'     => array( esc_html__( 'New Field', 'et_builder' ) ),
 			'field_type'      => array( 'input' ),
-			'field_id'        => array( 'input' ),
+			'field_id'        => array( '' ),
 			'fullwidth_field' => array( 'off' ),
 			'required_mark'   => array( 'on' ),
 		);
@@ -10620,7 +10657,13 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'form_field'   => array(
 					'label'    => esc_html__( 'Field', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element}",
+						'main' => array(
+							"{$this->main_css_element}",
+							"{$this->main_css_element}::-webkit-input-placeholder",
+							"{$this->main_css_element}::-moz-placeholder",
+							"{$this->main_css_element}:-ms-input-placeholder",
+						),
+						'important' => 'plugin_only',
 					),
 				),
 			),
@@ -12077,13 +12120,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 			} else {
 				$query_args['offset'] = intval( $args['offset_number'] );
 			}
-
-			/**
-			 * If no category selected and it is ajax request, the offset starts from zero instead of one. Adjust accordingly.
-			 */
-			if ( ! isset( $query_args['cat'] ) && defined( 'DOING_AJAX' ) ) {
-				$query_args['offset'] = intval( $query_args['offset'] ) + 1;
-			}
 		}
 
 		if ( $is_single ) {
@@ -12624,8 +12660,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 					}
 				}
 			}
-
-			wp_reset_query();
 		} else {
 			if ( et_is_builder_plugin_active() ) {
 				include( ET_BUILDER_PLUGIN_DIR . 'includes/no-results.php' );
@@ -12633,6 +12667,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 				get_template_part( 'includes/no-results', 'index' );
 			}
 		}
+
+		wp_reset_query();
 
 		$posts = ob_get_contents();
 
@@ -12700,6 +12736,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .woocommerce ul.products li.product h3, {$this->main_css_element} .woocommerce ul.products li.product h1, {$this->main_css_element} .woocommerce ul.products li.product h2, {$this->main_css_element} .woocommerce ul.products li.product h4, {$this->main_css_element} .woocommerce ul.products li.product h5, {$this->main_css_element} .woocommerce ul.products li.product h6",
+						'important' => 'plugin_only',
 					),
 				),
 				'price' => array(
@@ -12930,7 +12967,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 		 * Hence customize WooCommerce' product query via modify_woocommerce_shortcode_products_query method
 		 * @see http://docs.woothemes.com/document/woocommerce-shortcodes/#section-5
 		 */
-		$modify_woocommerce_query = in_array( $orderby, array( 'menu_order', 'price', 'price-desc', 'rating', 'popularity' ) );
+		$modify_woocommerce_query = 'best_selling' !== $type && in_array( $orderby, array( 'menu_order', 'price', 'price-desc', 'rating', 'popularity' ) );
 
 		if ( $modify_woocommerce_query ) {
 			add_filter( 'woocommerce_shortcode_products_query', array( $this, 'modify_woocommerce_shortcode_products_query' ), 10, 2 );
@@ -14813,8 +14850,9 @@ class ET_Builder_Module_Search extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% input.et_pb_s',
 				'declaration' => sprintf(
-					'background: %1$s;',
-					esc_html( $field_bg )
+					'background: %1$s%2$s;',
+					esc_html( $field_bg ),
+					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );
 		}
@@ -15008,6 +15046,9 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element}.et_pb_comments_module .et_pb_button",
+					),
 				),
 			),
 		);
@@ -15158,10 +15199,18 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 	 * @return string of comment section markup
 	 */
 	static function get_comments() {
+		global $et_pb_comments_print;
+
+		// Globally flag that comment module is being printed
+		$et_pb_comments_print = true;
+
 		ob_start();
 		comments_template( '', true );
 		$comments_content = ob_get_contents();
 		ob_end_clean();
+
+		// Globally flag that comment module has been printed
+		$et_pb_comments_print = false;
 
 		return $comments_content;
 	}
@@ -16393,6 +16442,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 					'label'    => esc_html__( 'Menu', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} ul li a",
+						'plugin_main' => "{$this->main_css_element} ul li a, {$this->main_css_element} ul li",
 					),
 					'line_height' => array(
 						'default' => '1em',
@@ -16437,9 +16487,10 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'background_color'  => array( '#ffffff', 'only_default_setting' ),
-			'background_layout' => array( 'light' ),
-			'text_orientation'  => array( 'left' ),
+			'background_color'        => array( '#ffffff', 'only_default_setting' ),
+			'background_layout'       => array( 'light' ),
+			'text_orientation'        => array( 'left' ),
+			'dropdown_menu_animation' => array( 'fade' ),
 		);
 	}
 
@@ -16889,6 +16940,7 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 					'label'    => esc_html__( 'Header', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title",
+						'plugin_main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title, {$this->main_css_element} .et_pb_slide_description .et_pb_slide_title a",
 						'important' => array(
 							'color',
 							'size',
@@ -16908,6 +16960,9 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -19008,6 +19063,9 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 			'button' => array(
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
+					'css' => array(
+						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
+					),
 				),
 			),
 		);
@@ -19139,7 +19197,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 					// page builder doesn't support more tag, so display the_content() in case of post made with page builder
 					if ( et_pb_is_pagebuilder_used( get_the_ID() ) ) {
 
-						$builder_post_content = apply_filters( 'the_content', $post_content );
+						$builder_post_content = et_is_builder_plugin_active() ? do_shortcode( $post_content ) : apply_filters( 'the_content', $post_content );
 
 						// Overwrite default content, in case the content is protected
 						$query->posts[ $post_index ]->post_content = $builder_post_content;
@@ -19147,11 +19205,11 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 						$more = null;
 
 						// Overwrite default content, in case the content is protected
-						$query->posts[ $post_index ]->post_content = apply_filters( 'the_content', get_the_content('') );
+						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? do_shortcode( get_the_content('') ) : apply_filters( 'the_content', get_the_content('') );
 					}
 				} else {
 					if ( has_excerpt() && 'off' !== $args['use_manual_excerpt'] ) {
-						$query->posts[ $post_index ]->post_content = apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
+						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? do_shortcode( et_strip_shortcodes( get_the_excerpt(), true ) ) : apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
 					} else {
 						$query->posts[ $post_index ]->post_content = strip_shortcodes( truncate_post( intval( $args['excerpt_length'] ), false, '', true ) );
 					}

@@ -310,7 +310,7 @@
 			$fullscreen_only_options              = $( '#customize-control-et_divi-fullscreen_nav_font_size, #customize-control-et_divi-fullscreen_nav_top_font_size' ),
 			$vertical_orientation                 = $( '#customize-control-et_divi-vertical_nav_orientation' ),
 			$menu_height                          = $( '#customize-control-et_divi-menu_height' ),
-			$menu_margin_top                        = $( '#customize-control-et_divi-menu_margin_top' );
+			$menu_margin_top                      = $( '#customize-control-et_divi-menu_margin_top' );
 
 		if ( $vertical_nav_input.is( ':checked') ) {
 			$nav_fullwidth_control.hide();
@@ -446,8 +446,21 @@
 				change: function() {
 					var et_color_picker_value = picker.wpColorPicker('color');
 
-					if ( '' !== et_color_picker_value ) {
-						control.setting.set( et_color_picker_value );
+					if ( '' === et_color_picker_value || 'string' !== typeof et_color_picker_value ) {
+						return;
+					}
+
+					try {
+						control.setting.set( et_color_picker_value.toLowerCase() );
+					} catch( err ) {
+						// Value is not a properly formatted color, let's see if we can fix it.
+
+						if ( /^[\da-z]{3}([\da-z]{3})?$/i.test(et_color_picker_value) ) {
+							// Value looks like a hex color but is missing hash character.
+							et_color_picker_value = '#' + et_color_picker_value.toLowerCase();
+
+							control.setting.set( et_color_picker_value );
+						}
 					}
 				},
 				clear: function() {

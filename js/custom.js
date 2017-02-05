@@ -57,30 +57,15 @@
 		} );
 
 		// Dropdown menu adjustment for touch screen
-		$et_top_menu.find('.menu-item-has-children > a').on( 'touchstart', function(){
-			et_parent_menu_longpress_start = new Date().getTime();
-		} ).on( 'touchend', function(){
-			var et_parent_menu_longpress_end = new Date().getTime();
-			if ( et_parent_menu_longpress_end  >= et_parent_menu_longpress_start + et_parent_menu_longpress_limit ) {
-				et_parent_menu_click = true;
+		$et_top_menu.find( '.menu-item-has-children > a' ).on( 'touchend', function(){
+			var $et_parent_menu = $( this ).parent( 'li' );
+			// open submenu on 1st tap
+			// open link on second tap
+			if ( $et_parent_menu.hasClass( 'et-hover' ) ) {
+				window.location = $( this ).attr( 'href' );
 			} else {
-				et_parent_menu_click = false;
-
-				// Close sub-menu if toggled
-				var $et_parent_menu = $(this).parent('li');
-				if ( $et_parent_menu.hasClass( 'et-hover') ) {
-					$et_parent_menu.trigger( 'mouseleave' );
-				} else {
-					$et_parent_menu.trigger( 'mouseenter' );
-				}
+				$et_parent_menu.trigger( 'mouseenter' );
 			}
-			et_parent_menu_longpress_start = 0;
-		} ).click(function() {
-			if ( et_parent_menu_click ) {
-				return true;
-			}
-
-			return false;
 		} );
 
 		$et_top_menu.find( 'li.mega-menu' ).each(function(){
@@ -97,14 +82,15 @@
 			var $logo_container = $( '#main-header > .container > .logo_container' ),
 				$logo_container_splitted = $('.centered-inline-logo-wrap > .logo_container'),
 				et_top_navigation_li_size = $et_top_navigation.children('nav').children('ul').children('li').size(),
-				et_top_navigation_li_break_index = Math.round( et_top_navigation_li_size / 2 ) - 1;
+				et_top_navigation_li_break_index = Math.round( et_top_navigation_li_size / 2 ) - 1,
+				window_width = $et_window.prop('outerWidth') || $et_window.width();
 
-			if ( $et_window.width() > 980 && $logo_container.length ) {
+			if ( window_width > 980 && $logo_container.length ) {
 				$('<li class="centered-inline-logo-wrap"></li>').insertAfter($et_top_navigation.find('nav > ul >li:nth('+et_top_navigation_li_break_index+')') );
 				$logo_container.appendTo( $et_top_navigation.find('.centered-inline-logo-wrap') );
 			}
 
-			if ( $et_window.width() <= 980 && $logo_container_splitted.length ) {
+			if ( window_width <= 980 && $logo_container_splitted.length ) {
 				$logo_container_splitted.prependTo('#main-header > .container');
 				$('#main-header .centered-inline-logo-wrap').remove();
 			}

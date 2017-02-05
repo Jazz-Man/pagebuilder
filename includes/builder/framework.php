@@ -24,6 +24,10 @@ if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! is_customize_preview() ) {
 		'et_fb_retrieve_builder_data'
 	);
 
+	if ( class_exists( 'Easy_Digital_Downloads') ) {
+		$builder_load_actions[] = 'edd_load_gateway';
+	}
+
 	$force_builder_load = isset( $_POST['et_load_builder_modules'] ) && '1' === $_POST['et_load_builder_modules'];
 
 	if ( ! $force_builder_load && ( ! isset( $_REQUEST['action'] ) || ! in_array( $_REQUEST['action'], $builder_load_actions ) ) ) {
@@ -142,6 +146,11 @@ add_action( 'wp_enqueue_scripts', 'et_builder_load_modules_styles', 11 );
  * @return bool
  */
 function et_is_ignore_waypoints() {
+	// WPBakery Visual Composer plugin conflicts with waypoints
+	if ( class_exists( 'Vc_Manager' ) ) {
+		return true;
+	}
+
 	// always return false if not in divi plugin
 	if ( ! et_is_builder_plugin_active() ) {
 		return false;
@@ -280,5 +289,50 @@ function et_pb_enqueue_google_maps_script() {
 	);
 }
 endif;
+
+/**
+ * Add pseudo-action via the_content to hook filter/action at the end of main content
+ * @param string  content string
+ * @return string content string
+ */
+function et_pb_content_main_query( $content ) {
+	global $post, $et_pb_comments_print;
+
+	// Perform filter on main query + if builder is used only
+	if ( is_main_query() && et_pb_is_pagebuilder_used( get_the_ID() ) ) {
+		add_filter( 'comment_class', 'et_pb_add_non_builder_comment_class', 10, 5 );
+
+		// Actual front-end only adjustment. has_shortcode() can't use passed $content since
+		// Its shortcode has been parsed
+		if ( false === $et_pb_comments_print && ! et_fb_is_enabled() && has_shortcode( $post->post_content, 'et_pb_comments' ) ) {
+			add_filter( 'get_comments_number', '__return_zero' );
+			add_filter( 'comments_open', '__return_false' );
+			add_filter( 'comments_array', '__return_empty_array' );
+		}
+	}
+
+	return $content;
+}
+add_filter( 'the_content', 'et_pb_content_main_query', 1500 );
+
+/**
+ * Added special class name for comment items that are placed outside builder
+ *
+ * See {@see 'comment_class'}.
+ *
+ * @param  array       $classes    classname
+ * @param  string      $comment    comma separated list of additional classes
+ * @param  int         $comment_ID comment ID
+ * @param  WP_Comment  $comment    comment object
+ * @param  int|WP_Post $post_id    post ID or WP_Post object
+ *
+ * @return array modified classname
+ */
+function et_pb_add_non_builder_comment_class( $classes, $class, $comment_ID, $comment, $post_id ) {
+
+	$classes[] = 'et-pb-non-builder-comment';
+
+	return $classes;
+}
 
 et_builder_load_framework();

@@ -395,16 +395,18 @@ class ET_Builder_Element {
 			$global_content = et_pb_load_global_module( $this->shortcode_atts['global_module'] );
 
 			if ( '' !== $global_content ) {
-				$global_atts = shortcode_parse_atts( $global_content );
+				if ( false !== strpos( $this->shortcode_atts['saved_tabs'], 'general' ) || 'all' === $this->shortcode_atts['saved_tabs'] ) {
+					$global_shortcode_content = et_pb_extract_shortcode_content( $global_content, $function_name );
+				}
+
+				// cleanup the shortcode string to avoid the attributes messing with content
+				$global_content_processed = false !== $global_shortcode_content ? str_replace( $global_shortcode_content, '', $global_content ) : $global_content;
+				$global_atts = shortcode_parse_atts( $global_content_processed );
 
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) ) {
 						$this->shortcode_atts[$single_attr] = $global_atts[$single_attr];
 					}
-				}
-
-				if ( false !== strpos( $this->shortcode_atts['saved_tabs'], 'general' ) || 'all' === $this->shortcode_atts['saved_tabs'] ) {
-					$global_shortcode_content = et_pb_extract_shortcode_content( $global_content, $function_name );
 				}
 			}
 		}
@@ -2836,6 +2838,11 @@ class ET_Builder_Element {
 			$is_placeholder = isset( $option_settings['css']['placeholder'] );
 
 			$use_global_important = $is_important_set && 'all' === $option_settings['css']['important'];
+
+			if ( ! $use_global_important && $is_important_set && 'plugin_only' === $option_settings['css']['important'] && et_is_builder_plugin_active() ) {
+				$use_global_important = true;
+			}
+
 			if ( $is_important_set && is_array( $option_settings['css']['important'] ) ) {
 				$important_options = $option_settings['css']['important'];
 			}
@@ -3336,12 +3343,21 @@ class ET_Builder_Element {
 			if ( 'on' === $button_custom ) {
 				$button_text_size = '' === $button_text_size || 'px' === $button_text_size ? '20px' : $button_text_size;
 				$button_text_size = '' !== $button_text_size && false === strpos( $button_text_size, 'px' ) ? $button_text_size . 'px' : $button_text_size;
+				$button_border_radius_processed = '' !== $button_border_radius && 'px' !== $button_border_radius ? et_builder_process_range_value( $button_border_radius ) : '';
+				$button_border_radius_hover_processed = '' !== $button_border_radius_hover && 'px' !== $button_border_radius_hover ? et_builder_process_range_value( $button_border_radius_hover ) : '';
 
 				$css_element = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element . ' .et_pb_button';
+
+				if ( et_is_builder_plugin_active() && ! empty( $option_settings['css']['plugin_main'] ) ) {
+					$css_element = $option_settings['css']['plugin_main'];
+				}
+
 				$css_element_processed = et_is_builder_plugin_active() ? $css_element : 'body #page-container ' . $css_element;
 
-				if ( '' !== $button_bg_color && et_is_builder_plugin_active() ) {
-					$button_bg_color .= ' !important';
+				if ( et_is_builder_plugin_active() ) {
+					$button_bg_color .= '' !== $button_bg_color ? ' !important' : '';
+					$button_border_radius_processed .= '' !== $button_border_radius_processed ? ' !important' : '';
+					$button_border_radius_hover_processed .= '' !== $button_border_radius_hover_processed ? ' !important' : '';
 				}
 
 				$main_element_styles_padding_important = 'no' === et_builder_option( 'all_buttons_icon' ) && 'off' !== $button_use_icon;
@@ -3360,7 +3376,7 @@ class ET_Builder_Element {
 					'' !== $button_bg_color ? sprintf( 'background:%1$s;', $button_bg_color ) : '',
 					'' !== $button_border_width && 'px' !== $button_border_width ? sprintf( 'border-width:%1$s !important;', et_builder_process_range_value( $button_border_width ) ) : '',
 					'' !== $button_border_color ? sprintf( 'border-color:%1$s;', $button_border_color ) : '',
-					'' !== $button_border_radius && 'px' !== $button_border_radius ? sprintf( 'border-radius:%1$s;', et_builder_process_range_value( $button_border_radius ) ) : '',
+					'' !== $button_border_radius_processed ? sprintf( 'border-radius:%1$s;', $button_border_radius_processed ) : '',
 					'' !== $button_letter_spacing && 'px' !== $button_letter_spacing ? sprintf( 'letter-spacing:%1$s;', et_builder_process_range_value( $button_letter_spacing ) ) : '',
 					'' !== $button_text_size && 'px' !== $button_text_size ? sprintf( 'font-size:%1$s;', et_builder_process_range_value( $button_text_size ) ) : '',
 					'' !== $button_font ? et_builder_set_element_font( $button_font, true ) : '',
@@ -3388,7 +3404,7 @@ class ET_Builder_Element {
 					'' !== $button_text_color_hover ? sprintf( 'color:%1$s !important;', $button_text_color_hover ) : '',
 					'' !== $button_bg_color_hover ? sprintf( 'background:%1$s !important;', $button_bg_color_hover ) : '',
 					'' !== $button_border_color_hover ? sprintf( 'border-color:%1$s !important;', $button_border_color_hover ) : '',
-					'' !== $button_border_radius_hover ? sprintf( 'border-radius:%1$s;', et_builder_process_range_value( $button_border_radius_hover ) ) : '',
+					'' !== $button_border_radius_hover_processed ? sprintf( 'border-radius:%1$s;', $button_border_radius_hover_processed ) : '',
 					'' !== $button_letter_spacing_hover ? sprintf( 'letter-spacing:%1$s;', $button_letter_spacing_hover ) : '',
 					'off' === $button_on_hover ?
 						''
@@ -3459,6 +3475,13 @@ class ET_Builder_Element {
 							'selector'    => $css_element_processed . ':after',
 							'declaration' => 'display: none;',
 						) );
+
+						if ( et_is_builder_plugin_active() ) {
+							self::set_style( $function_name, array(
+								'selector'    => '.et_pb_row ' . $css_element_processed . ':hover',
+								'declaration' => 'padding-right: 1em; padding-left: 2em;',
+							) );
+						}
 
 						self::set_style( $function_name, array(
 							'selector'    => $css_element_processed . ':before',

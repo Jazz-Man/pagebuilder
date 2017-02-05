@@ -414,6 +414,37 @@
 						$next_slide.find('video')[0].player.play();
 					}
 
+					var $active_slide_video = $active_slide.find('.et_pb_video_box iframe');
+
+					if ( $active_slide_video.length ) {
+						var active_slide_video_src = $active_slide_video.attr('src');
+
+						// Removes the "autoplay=1" parameter when switching slides
+						// by covering three possible cases:
+
+						// "?autoplay=1" at the end of the URL
+						active_slide_video_src = active_slide_video_src.replace(/\?autoplay=1$/, '');
+
+						// "?autoplay=1" followed by another parameter
+						active_slide_video_src = active_slide_video_src.replace(/\?autoplay=1&(amp;)?/, '?');
+
+						// "&autoplay=1" anywhere in the URL
+						active_slide_video_src = active_slide_video_src.replace(/&(amp;)?autoplay=1/, '');
+
+						// Delays the URL update so that the cross-fade animation's smoothness is not affected
+						setTimeout(function() {
+							$active_slide_video.attr({
+								'src': active_slide_video_src
+							});
+						}, settings.fade_speed);
+
+						// Restores video overlay
+						$active_slide_video.parents('.et_pb_video_box').next('.et_pb_video_overlay').css({
+							'display' : 'block',
+							'opacity' : 1
+						});
+					}
+
 					$et_slider.trigger( 'simple_slider_before_move_to', { direction : direction, next_slide : $next_slide });
 
 					$et_slide.each( function(){
@@ -1273,7 +1304,7 @@
 						},
 						mainClass: 'mfp-fade',
 						zoom: {
-							enabled: true,
+							enabled: ! et_pb_custom.is_builder_plugin_used,
 							duration: 500,
 							opener: function(element) {
 								return element.find('img');
@@ -1296,7 +1327,7 @@
 						removalDelay: 500,
 						mainClass: 'mfp-fade',
 						zoom: {
-							enabled: true,
+							enabled: ! et_pb_custom.is_builder_plugin_used,
 							duration: 500,
 							opener: function(element) {
 								return element.find('img');
@@ -1938,7 +1969,7 @@
 
 					var visible_grid_items = $the_portfolio_visible_items.length,
 						posts_number = $the_portfolio.data('posts-number'),
-						pages = Math.ceil( visible_grid_items / posts_number );
+						pages = 0 === posts_number ? 1 : Math.ceil( visible_grid_items / posts_number );
 
 					set_filterable_grid_pages( $the_portfolio, pages );
 
@@ -2955,7 +2986,7 @@
 						}
 					} );
 
-					$slide_container.css( 'min-height', max_height + image_margin );
+					$slide_container.css( 'height', max_height + image_margin );
 
 					// remove temp class after getting the slider height
 					$slide.removeClass( 'et_pb_temp_slide' );
@@ -3131,7 +3162,16 @@
 
 				// Entering video's bottom viewport
 				$video_background_wrapper.waypoint({
-					offset: '-50%',
+					offset: function() {
+						var video_height = this.element.clientHeight,
+							toggle_offset = Math.ceil( window.innerHeight / 2);
+
+						if ( video_height > toggle_offset ) {
+							toggle_offset = video_height;
+						}
+
+						return toggle_offset * (-1);
+					},
 					handler : function( direction ) {
 						if ( $this_video_background.is(':visible') && direction === 'up' ) {
 							this_video_player.play();
@@ -3393,7 +3433,15 @@
 			}
 
 			function et_pb_get_subject_id() {
-				var subject_id_raw = $( '.et_pb_ab_subject' ).attr( 'class' ).split( 'et_pb_ab_subject_id-' )[1],
+				var $subject = $( '.et_pb_ab_subject' );
+
+				// In case no subject found
+				if ( $subject.length <= 0 ) {
+					return false;
+				}
+
+				var subject_classname = $subject.attr( 'class' ),
+					subject_id_raw = subject_classname.split( 'et_pb_ab_subject_id-' )[1],
 					subject_id_clean = subject_id_raw.split( ' ' )[0],
 					subject_id_separated = subject_id_clean.split( '_' ),
 					subject_id = subject_id_separated[1];

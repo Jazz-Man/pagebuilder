@@ -1,3 +1,97 @@
+version 3.0.32 ( updated 2-3-2017 )
+- Improved slider height consistency between various browsers.
+- Removed unwanted spacing below the person module avatar that occurred in certain situations. 
+- Custom line height adjustments made to the person module will no longer affect UI elements in the Visual Builder.
+- Adjustments made to the "focus text color" option for login modules will now render correctly in the Visual Builder.
+- Improved background size and positioning for backgrounds images used in the post slider module.
+- The image upload button for the blurb module will now appear correctly in the latest version of IE.
+- Fixed typo in the Divi WooCommerce styles that limited tables to a max width of 100px instead of 100%.
+- The Import/Export button in the Divi Library will now appear correctly in IE.
+- Added missing icon for the Fullwidth Portfolio module in the Visual Builder.
+- Fixed a bug that prevented videos in video slider modules from being automatically paused when switching between slides when video overlays were enabled for the module.
+- Fixed a bug that caused the default button icon for the login module to not be applied correct in certain situations.
+- When the "add new row" popup is initiated in the Visual Builder, and the popup appears outside the browser's viewport, the browser will now automatically scroll so that the popup is viewable.
+- Fixed a bug that caused some icons to appear incorrectly in the Visual Builder when applying particular custom icons to various modules.
+- Improved the way that settings modals in the Visual Builder adapt to changing viewport sizes to ensure that modals are never opened outside the viewport. 
+- Improved the priority for toggle background color options to ensure that custom colors set for opened and closed states will override the general background color of the module.
+- Improved the appearance of the login module when viewed on a tablet device while inside of a 1/2 column.
+- Custom default comment avatars applied in the WordPress Dashboard will now be correctly reflected in the Divi comments form.
+- Removed the duplicate envelope icon that appears during icon selection for custom button styles.
+- Added missing default value to the fullwidth menu module that caused the default animation style to not be applied correctly.
+- When using the Copy Styles feature, custom CSS and CSS classes will also be copied along with the rest of the module's design settings.
+- Fixed a bug that caused the album title and author name to be hidden when either of the two fields were undefined in the Visual Builder.
+- When a comment module is added to a post that has comments enabled, the default theme's comment form will be disabled more reliably. It will also be removed instantly will editing inside the Visual Builder.
+- Improved the rendering of specialty sections in the Visual Builder, removing unwanted min-height values that were mistakenly applied to responsive preview modes.
+- Improved the appearance of Divi Builder dropdown menus in Firefox.
+- Clicking a link inside of a fullwidth menu module while on a mobile device will no longer mistakenly trigger the opening the main menu int the Divi header.
+- Fixed a bug that caused active Divi Builder split tests to cause errors in the Visual Builder.
+- Removed background parallax options in the post slider module when featured images have been disabled for the module.
+- Clicking outside of the Visual Builder, such as into the header or footer area, will now disable active right click menus. 
+- Video slides that are cloned in the Visual Builder will now be rendered on the fly in the Visual Builder.
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/styles/notification_popup_styles.css
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/main-modules.php
+	* /core/functions.php
+	* /epanel/custom_functions.php
+	* style.css
+
+version 3.0.31 ( updated 1-27-2017  )
+- Fixed the misalignment of some settings toggles inside of the Divi Builder page settings modal.
+- Fixed the mis-categorization of some settings that occurred after having performed Right Click > Copy Styles on a module.
+- Contact form input field color adjustments will now be correctly applied to HTML placeholder text.
+- Applied logic to saved customizer values to help prevent the event of a mismatch when dealing with malformed color values.
+- Fixed a bug that made it impossible to close the settings modal of the gallery module after having switched the gallery format from grid mode to slider mode.
+- When enabling background colors for the post title module, the default color will start with full opacity to avoid confusion when initially selecting a color.
+- Custom border radius will now be correctly applied to all individual form fields in the contact form module.
+- Custom icons will now be applied correctly when adjusting the custom button styles of the login module.
+- Fixed visual delay when deleting contact form field titles in the Visual Builder.
+- Added a closing bracket that was missing in the custom login form page template, which caused HTML validation issues.
+- Fixed a bug that caused certain settings in the contact form module to be inherited from the previous contact form that was added to the page when adding multiple contact forms to the same page. 
+- Fixed a bug that caused the "move" cursor to appear when hovering over divs inside of a block of text that was currently being edited in the Inline Editor.
+- Improved the way that the video module generates thumbnail images automatically from YouTube videos.
+- Improved the logic for detecting the need for pagination in the portfolio module, preventing "next" and "previous" links from appearing when there are no portfolio items on the next or previous pages. 
+- Fixed a JS error that occurred when opening the history modal in the Visual Builder.
+- Improved the way that the comments modules works while interacted with inside the Visual Builder.
+- Letter spacing adjustments will now be applied correctly to the percent sign inside of circle counter modules.
+- Improved the rendering of parallax background images in the Visual Builder.
+- Fixed a bug that caused rendering errors in the Visual Builder when the portfolio module was set to show "0" posts.
+- Arrow color adjustments made to the video slider modules will now render correctly in the Visual Builder.
+	* includes/builder/styles/style.css
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/main-modules.php
+	* includes/builder/functions.php
+	* js/theme-customizer-controls.js
+	* functions.php
+	
+version 3.0.30 ( updated 1-24-2017 )
+- Improved the way that the Divi mobile menu works on mobile devices. 
+- New pins added to the map module in the Visual Builder will now appear correctly.
+- Improved the rendering of multiple shortcodes inside of single text module in the Visual Builder.
+- Fixed a bug where global modules attributes were not parsed correctly when they contained specific types of content. 
+- When switching between child and parent module items, the user will now be placed back in the General tab within the settings modal.
+- Fixed a bug that allowed incompatible row types to appear in the Add From Library tab when adding new rows inside of newly-created specialty sections in the Visual Builder.
+- Fixed a bug that mistakenly correlated non-global library items with global library items when a non-global item was saved to the library from a global section, row or module on the same page.
+- The "Best Sellers" sorting option will now work as intended in the WooCommerce shop module.
+- Fixed a bug that resulted in a missing 404 error when multiple blog modules were placed on a single page and the user navigated to an empty page in the index feed.
+- Fixed a bug that caused undefined css classes to appear for module sub items in the Visual Builder settings modal.
+- Fixed a visual anomaly that caused the website logo to disappear when sizing down the browser window between the widths of 980-1000px and when the header mode was set to centered inline logo.
+- Improved logic for detecting when to automatically pause a background video as it leaves the browser viewport.
+- Fixed a bug that caused shortcode content to be saved as HTML after the inline editor in the Visual Builder was activated two consecutive times without modify the content of the module that contained the shortcode.
+- Fixed an error that occurred when modifying slider header text sizes in the Visual Builder when a custom slider header text size had already been configured in the Module Customizer.
+	* js/custom.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/main-modules.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+
 version 3.0.29 ( updated 1-18-2017 )
 - Fixed a conflict with WooCommerce and PHP7 that made all products inaccessible in the WordPress Dashboard.
 - Fixed some subtle alignment issues with the range slider controls in the Visual Builder.
