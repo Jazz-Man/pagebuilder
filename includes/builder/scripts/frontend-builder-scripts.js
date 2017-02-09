@@ -246,7 +246,7 @@
 					// Removing DOM that was added by slider
 					$et_slider.find('.et-pb-slider-arrows, .et-pb-controllers').remove();
 					$et_slider.siblings('.et_pb_carousel').remove();
-				}
+				};
 
 				function et_stop_video( active_slide ) {
 					var $et_video, et_video_src;
@@ -267,27 +267,32 @@
 					}
 				}
 
+				$et_slider.et_fix_slider_content_images = et_fix_slider_content_images;
+
 				function et_fix_slider_content_images() {
-					var $this_slider           = $et_slider,
-						$slide_image_container = $this_slider.find( '.et-pb-active-slide .et_pb_slide_image' );
-						$slide_video_container = $this_slider.find( '.et-pb-active-slide .et_pb_slide_video' );
-						$slide                 = $slide_image_container.closest( '.et_pb_slide' ),
-						$slider                = $slide.closest( '.et_pb_slider' ),
-						slide_height           = $slider.innerHeight(),
-						image_height           = parseInt( slide_height * 0.8 ),
-						$top_header 		   = $('#top-header'),
-						$main_header		   = $('#main-header'),
-						$et_transparent_nav    = $( '.et_transparent_nav' );
+					var $this_slider                 = $et_slider,
+						$slide_image_container       = $this_slider.find( '.et-pb-active-slide .et_pb_slide_image' ),
+						$slide_video_container       = $this_slider.find( '.et-pb-active-slide .et_pb_slide_video' ),
+						$slide                       = $slide_image_container.closest( '.et_pb_slide' ),
+						$slider                      = $slide.closest( '.et_pb_slider' ),
+						slide_height                 = parseFloat( $slider.innerHeight() ),
+						image_height                 = parseFloat( slide_height * 0.8 ),
+						slide_image_container_height = parseFloat( $slide_image_container.height() ),
+						slide_video_container_height = parseFloat( $slide_video_container.height() );
 
-					$slide_image_container.find( 'img' ).css( 'maxHeight', image_height + 'px' );
+					if ( ! isNaN( image_height ) ) {
+						$slide_image_container.find( 'img' ).css( 'maxHeight', image_height + 'px' );
 
-					if ( $slide.hasClass( 'et_pb_media_alignment_center' ) ) {
-						$slide_image_container.css( 'marginTop', '-' + parseInt( $slide_image_container.height() / 2 ) + 'px' );
+						slide_image_container_height = parseInt( $slide_image_container.height() )
 					}
 
-					$slide_video_container.css( 'marginTop', '-' + parseInt( $slide_video_container.height() / 2 ) + 'px' );
+					if ( ! isNaN( slide_image_container_height ) && $slide.hasClass( 'et_pb_media_alignment_center' ) ) {
+						$slide_image_container.css( 'marginTop', '-' + ( slide_image_container_height / 2 ) + 'px' );
+					}
 
-					$slide_image_container.find( 'img' ).addClass( 'active' );
+					if ( ! isNaN( slide_video_container_height ) ) {
+						$slide_video_container.css( 'marginTop', '-' + ( slide_video_container_height / 2 ) + 'px' );
+					}
 				}
 
 				function et_get_bg_layout_color( $slide ) {
@@ -362,15 +367,15 @@
 				}
 
 				if ( window.et_load_event_fired ) {
-					et_fix_slider_content_images();
+					et_fix_slider_height( $et_slider );
 				} else {
-					$et_window.load( function() {
-						et_fix_slider_content_images();
+					$et_window.on( 'load', function() {
+						et_fix_slider_height( $et_slider );
 					} );
 				}
 
-				$et_window.resize( function() {
-					et_fix_slider_content_images();
+				$et_window.on( 'resize', function() {
+					et_fix_slider_height( $et_slider );
 				} );
 
 				$et_slider.et_slider_move_to = function ( direction ) {
@@ -1922,8 +1927,6 @@
 							return $(this).data('page') === to_page;
 						}).show();
 
-						window.et_pb_set_responsive_grid( $the_portfolio.find( '.et_pb_portfolio_items' ), '.et_pb_portfolio_item' );
-
 						setTimeout(function(){
 							set_filterable_portfolio_hash( $the_portfolio );
 						}, 500 );
@@ -2074,8 +2077,6 @@
 					$the_gallery_items.filter(function() {
 						return $(this).data('page') != 1;
 					}).hide();
-
-					window.et_pb_set_responsive_grid( $the_gallery_items_container, '.et_pb_gallery_item' );
 				}
 
 				window.set_gallery_grid_pages = function( $the_gallery, pages ) {
@@ -2858,7 +2859,7 @@
 
 					$image.css( 'display', 'none' );
 				} );
-			}
+			};
 
 			$( '.et_pb_post .et_pb_video_overlay, .et_pb_video .et_pb_video_overlay, .et_pb_video_wrap .et_pb_video_overlay' ).click( function() {
 				var $this = $(this);
@@ -2904,7 +2905,7 @@
 						}, 0 );
 					}
 				} );
-			}
+			};
 
 			window.et_pb_center_video = function( $video ) {
 				$element = typeof $video !== 'undefined' ? $video : $( '.et_pb_section_video_bg .mejs-video' );
@@ -2930,40 +2931,45 @@
 							}
 						}
 					} );
-			}
+			};
 
 			window.et_fix_slider_height = function( $slider ) {
-				var $this_slider = typeof $slider !== 'undefined' ? $slider : $et_pb_slider;
-				if ( ! $this_slider.length ) return;
+				var $this_slider = $slider || $et_pb_slider;
+
+				if ( ! $this_slider || ! $this_slider.length ) {
+					return;
+				}
 
 				$this_slider.each( function() {
 					var $slide_section = $(this).parent( '.et_pb_section' ),
-						$slide = $(this).find( '.et_pb_slide' ),
-						$slide_container = $slide.find( '.et_pb_container' ),
+						$slides = $(this).find( '.et_pb_slide' ),
+						$slide_containers = $slides.find( '.et_pb_container' ),
 						max_height = 0,
 						image_margin = 0,
 						need_image_margin_top = $(this).hasClass( 'et_pb_post_slider_image_top' ),
 						need_image_margin_bottom = $(this).hasClass( 'et_pb_post_slider_image_bottom' );
 
-					// If this is appears at the first section benath transparent nav, skip it
+					// If this is appears at the first section beneath transparent nav, skip it
 					// leave it to et_fix_page_container_position()
 					if ( $slide_section.is( '.et_pb_section_first' ) ){
 						return true;
 					}
 
-					$slide_container.css( 'min-height', 0 );
+					$slide_containers.css( 'height', 0 );
 
 					// make slides visible to calculate the height correctly
-					$slide.addClass( 'et_pb_temp_slide' );
+					$slides.addClass( 'et_pb_temp_slide' );
 
-					$slide.each( function() {
-						var $this_el = $(this),
-							height = $this_el.innerHeight(),
-							$slide_image = $this_el.find( '.et_pb_slide_image' ),
-							autoTopPadding = typeof $this_el.data( 'adjustedHeight' ) !== 'undefined' ? parseFloat( $this_el.data( 'adjustedHeight' ) ) : 0;
+					$(this).data('et_pb_simple_slider').et_fix_slider_content_images();
 
-							// reduce the height by autopadding value if slider height was adjusted. This is required in VB.
-							height = autoTopPadding < height && 0 !== autoTopPadding ? ( height - autoTopPadding ) : height;
+					$slides.each( function() {
+						var height = parseFloat( $(this).innerHeight() ),
+							$slide_image = $(this).find( '.et_pb_slide_image' ),
+							adjustedHeight = parseFloat( $(this).data( 'adjustedHeight' ) ),
+							autoTopPadding = isNaN( adjustedHeight ) ? 0 : adjustedHeight;
+
+						// reduce the height by autopadding value if slider height was adjusted. This is required in VB.
+						height = ( autoTopPadding && autoTopPadding < height ) ? ( height - autoTopPadding ) : height;
 
 						if ( need_image_margin_top || need_image_margin_bottom ) {
 							if ( $slide_image.length ) {
@@ -2972,13 +2978,13 @@
 								image_margin += 10;
 							} else {
 								// add class to slides without image to adjust their height accordingly
-								$this_el.find( '.et_pb_container' ).addClass( 'et_pb_no_image' );
+								$(this).find( '.et_pb_container' ).addClass( 'et_pb_no_image' );
 							}
 						}
 
 						// mark the slides without content
-						if ( 0 === Math.abs( parseInt( $this_el.find( '.et_pb_slide_description' ).height() ) ) ) {
-							$this_el.find( '.et_pb_container' ).addClass( 'et_pb_empty_slide' );
+						if ( 0 === Math.abs( parseInt( $(this).find( '.et_pb_slide_description' ).height() ) ) ) {
+							$(this).find( '.et_pb_container' ).addClass( 'et_pb_empty_slide' );
 						}
 
 						if ( max_height < height ) {
@@ -2986,12 +2992,25 @@
 						}
 					} );
 
-					$slide_container.css( 'height', max_height + image_margin );
+					if ( ( max_height + image_margin ) < 1 ) {
+						// No slides have any content. It's probably being used with background images only.
+						// Reset the height so that it falls back to the default padding for the content.
+						$slide_containers.css( 'height', '' );
+
+					} else {
+						$slide_containers.css( 'height', max_height + image_margin );
+					}
 
 					// remove temp class after getting the slider height
-					$slide.removeClass( 'et_pb_temp_slide' );
+					$slides.removeClass( 'et_pb_temp_slide' );
+
+					// Show the active slide's image (if exists)
+					$slides.filter('.et-pb-active-slide')
+						.find( '.et_pb_slide_image' )
+						.children( 'img' )
+						.addClass( 'active' );
 				} );
-			}
+			};
 
 			/**
 			 * Add conditional class to prevent unwanted dropdown nav
@@ -3907,6 +3926,9 @@
 					input_padding = $search.hasClass( 'et_pb_text_align_right' ) ? 'paddingLeft' : 'paddingRight',
 					disabled_button = $search.hasClass( 'et_pb_hide_search_button' );
 
+				// set the relative button position to get its height correctly
+				$button.css( { 'position' : 'relative' } );
+
 				if ( $button.innerHeight() > $input_field.innerHeight() ) {
 					$input_field.height( $button.innerHeight() );
 				}
@@ -3914,6 +3936,9 @@
 				if ( ! disabled_button ) {
 					$input_field.css( input_padding, $button.innerWidth() + 10 );
 				}
+
+				// reset the button position back to default
+				$button.css( { 'position' : '' } );
 			}
 
 			/**

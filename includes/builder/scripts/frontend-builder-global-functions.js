@@ -167,8 +167,8 @@
 	window.et_pb_set_responsive_grid = function( $grid_items, $single_item_selector ) {
 		setTimeout( function() {
 			var container_width = $grid_items.innerWidth(),
-				item_width = $grid_items.find( $single_item_selector + ':visible' ).outerWidth( true ),
-				last_item_margin = item_width - $grid_items.find( $single_item_selector + ':visible' ).outerWidth(),
+				item_width = $grid_items.find( $single_item_selector ).outerWidth( true ),
+				last_item_margin = item_width - $grid_items.find( $single_item_selector ).outerWidth(),
 				columns_count = Math.round( ( container_width + last_item_margin ) / item_width ),
 				counter = 1,
 				first_in_row = 1;
@@ -177,7 +177,7 @@
 			$grid_items.find( $single_item_selector ).each( function() {
 				var $this_el = $( this );
 
-				if ( ! $this_el.hasClass( 'inactive' ) && $this_el.is( ':visible' ) ) {
+				if ( ! $this_el.hasClass( 'inactive' ) ) {
 					if ( first_in_row === counter ) {
 						$this_el.addClass( 'first_in_row' );
 					}

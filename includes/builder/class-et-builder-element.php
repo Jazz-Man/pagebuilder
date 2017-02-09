@@ -2845,6 +2845,10 @@ class ET_Builder_Element {
 
 			if ( $is_important_set && is_array( $option_settings['css']['important'] ) ) {
 				$important_options = $option_settings['css']['important'];
+
+				if ( et_is_builder_plugin_active() && in_array( 'plugin_all', $option_settings['css']['important'] ) ) {
+					$use_global_important = true;
+				}
 			}
 
 			foreach ( $slugs as $font_option_slug ) {

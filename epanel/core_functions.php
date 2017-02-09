@@ -530,9 +530,9 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 		<script type="text/template" id="epanel-yes-no-button-template">
 		<div class="et_pb_yes_no_button_wrapper">
 			<div class="et_pb_yes_no_button"><!-- .et_pb_on_state || .et_pb_off_state -->
-				<span class="et_pb_value_text et_pb_on_value"><?php esc_html_e( 'Enable', $themename ); ?></span>
+				<span class="et_pb_value_text et_pb_on_value"><?php esc_html_e( 'Enabled', $themename ); ?></span>
 				<span class="et_pb_button_slider"></span>
-				<span class="et_pb_value_text et_pb_off_value"><?php esc_html_e( 'Disable', $themename ); ?></span>
+				<span class="et_pb_value_text et_pb_off_value"><?php esc_html_e( 'Disabled', $themename ); ?></span>
 			</div>
 		</div>
 		</script>

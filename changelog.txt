@@ -1,3 +1,33 @@
+version 3.0.34 ( updated 2-8-2017 )
+- Added Portrait Orientation mode to the gallery module. Old image thumbnails will need to be regenerated before using this option.
+- Changed the words "Enable" and "Disable" to "Enabled" and "Disabled" in the Divi Theme Options to reduce confusion.
+- Improved the method used for scaling up the search module button text when customized in the Divi Builder design settings. 
+- Exporting layouts in the Visual Builder will no longer trigger the browser warning meant for leaving the page.
+- Empty fullwidth sliders will now have a minimum height that allows for background images to be seen.
+- Localized the text within the search module so that it can be easily translated.
+- Fixed pluralization issues for the WooCommerce item count in the Divi header in some languages.
+- The (+) button in the Visual Builder will no longer be overlapped by featured tables in the pricing table module.
+- Fixed issue where contact form captcha text was overflowing the form field, cutting off some of the text.
+- Improved the rendering of self-hosted video slider videos in the Visual Builder.
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/main-modules.php
+	* post_thumbnails_divi.php
+	* style.css
+
+version 3.0.33 ( updated 2-6-2017 )
+- Fixed a bug that caused icons to change after upgrading to Divi 3.0.32. This change fixes the problem using the only known method, which is to revert the original change. The unfortunately result of this is that anyone who already upgraded to 3.0.32 and fixed their changed icons will have to fix them back once they upgrade to 3.0.33. We apologize for the trouble and suggest using post revisions to quickly restore.
+- Fixed issue where Theme Customizer gutter widths overwrote custom row gutter widths, causing some rows to break down to irregular column structures.
+- Custom colors set for featured pricing tables will now more reliably overwrite custom base colors for the module. 
+- Improved slider rendering times and accuracy in the Visual Builder.
+- Custom body font will now be aplied to the read more link in the blog module. 
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/functions.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* style.css
+
 version 3.0.32 ( updated 2-3-2017 )
 - Improved slider height consistency between various browsers.
 - Removed unwanted spacing below the person module avatar that occurred in certain situations. 
