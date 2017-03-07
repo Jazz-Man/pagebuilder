@@ -1796,9 +1796,10 @@
 				$time_slider.removeAttr( 'style' );
 
 				var $count_timer = $this_player.find( 'div.mejs-currenttime-container' ),
+					$count_timer_width_container = $this_player.find( '.mejs-duration-container' ).length ? $this_player.find( '.mejs-duration-container' ) : $this_player.find( '.mejs-currenttime-container' ),
 					player_width = $this_player.width(),
 					controls_play_width = $this_player.find( '.mejs-play' ).outerWidth(),
-					time_width = $this_player.find( '.mejs-currenttime-container' ).outerWidth(),
+					time_width = $count_timer_width_container.outerWidth(),
 					volume_icon_width = $this_player.find( '.mejs-volume-button' ).outerWidth(),
 					volume_bar_width = $this_player.find( '.mejs-horizontal-volume-slider' ).outerWidth(),
 					new_time_rail_width;
@@ -2385,6 +2386,8 @@
 
 						return false;
 					} );
+
+					window.et_pb_set_tabs_height();
 				}
 				window.et_pb_tabs_init( $et_pb_tabs );
 			}
@@ -2960,7 +2963,9 @@
 					// make slides visible to calculate the height correctly
 					$slides.addClass( 'et_pb_temp_slide' );
 
-					$(this).data('et_pb_simple_slider').et_fix_slider_content_images();
+					if ( typeof $(this).data('et_pb_simple_slider') === 'object' ) {
+						$(this).data('et_pb_simple_slider').et_fix_slider_content_images();
+					}
 
 					$slides.each( function() {
 						var height = parseFloat( $(this).innerHeight() ),
@@ -3231,7 +3236,7 @@
 							$this_counter.waypoint({
 								offset: '65%',
 								handler: function() {
-									if ( $this_counter.data( 'PieChartHasLoaded' ) ) {
+									if ( $this_counter.data( 'PieChartHasLoaded' ) || typeof $this_counter.data('easyPieChart') === 'undefined' ) {
 										return;
 									}
 
@@ -3245,7 +3250,7 @@
 							$this_counter.waypoint({
 								offset: 'bottom-in-view',
 								handler: function() {
-									if ( $this_counter.data( 'PieChartHasLoaded' ) ) {
+									if ( $this_counter.data( 'PieChartHasLoaded' ) || typeof $this_counter.data('easyPieChart') === 'undefined' ) {
 										return;
 									}
 

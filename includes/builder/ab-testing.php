@@ -456,6 +456,11 @@ function et_pb_ab_get_stats_data_duration() {
 function et_pb_ab_get_subjects( $post_id, $type = 'array', $prefix = false ) {
 	$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects', true );
 
+	// Get autosave/draft subjects if post hasn't been published
+	if ( ! $subjects_data && et_fb_enabled() && 'publish' !== get_post_status() ) {
+		$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects_draft', true );
+	}
+
 	// If user wants string
 	if ( 'string' === $type ) {
 		return $subjects_data;
@@ -649,7 +654,13 @@ function et_pb_ab_get_modules_have_conversions() {
 function et_is_ab_testing_active() {
 	$post_id = apply_filters( 'et_is_ab_testing_active_post_id', get_the_ID() );
 
-	return 'on' === get_post_meta( $post_id, '_et_pb_use_ab_testing', true ) ? true : false;
+	$split_test_status = 'on' === get_post_meta( $post_id, '_et_pb_use_ab_testing', true );
+
+	if ( ! $split_test_status && et_fb_enabled() && 'publish' !== get_post_status() ) {
+		$split_test_status = 'on' === get_post_meta( $post_id, '_et_pb_use_ab_testing_draft', true );
+	}
+
+	return $split_test_status;
 }
 
 /**
