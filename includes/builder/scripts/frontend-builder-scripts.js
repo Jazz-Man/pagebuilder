@@ -2540,6 +2540,12 @@
 
 			if ( $et_pb_number_counter.length || is_frontend_builder ) {
 				window.et_pb_reinit_number_counters = function( $et_pb_number_counter ) {
+
+					function et_format_number( number_value ) {
+						var separator = $et_pb_number_counter.data('number-separator');
+						return number_value.toString().replace( /\B(?=(\d{3})+(?!\d))/g, separator );
+					}
+
 					if ( $.fn.fitText ) {
 						$et_pb_number_counter.find( '.percent p' ).fitText( 0.3 );
 					}
@@ -2560,10 +2566,10 @@
 							},
 							onStep: function(from, to, percent) {
 								if ( percent != to )
-									$(this.el).find('.percent-value').text( Math.round( parseInt( percent ) ) );
+									$(this.el).find('.percent-value').text( et_format_number( Math.round( parseInt( percent ) ) ) );
 							},
 							onStop: function(from, to) {
-								$(this.el).find('.percent-value').text( $(this.el).data('number-value') );
+								$(this.el).find('.percent-value').text( et_format_number( $(this.el).data('number-value') ) );
 							}
 						});
 					});

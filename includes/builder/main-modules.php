@@ -30,10 +30,14 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			'max_width_last_edited',
 		);
 
+		$animation_option_name = sprintf( '%1$s-animation', $this->slug );
+		$global_animation_direction = ET_Global_Settings::get_value( $animation_option_name );
+		$default_animation = $global_animation_direction && '' !== $global_animation_direction ? $global_animation_direction : 'left';
+
 		$this->fields_defaults = array(
 			'show_in_lightbox'        => array( 'off' ),
 			'url_new_window'          => array( 'off' ),
-			'animation'               => array( 'left' ),
+			'animation'               => array( $default_animation ),
 			'sticky'                  => array( 'off' ),
 			'align'                   => array( 'left' ),
 			'force_fullwidth'         => array( 'off' ),
@@ -2208,48 +2212,46 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			$title = "<h4>{$title}</h4>";
 		}
 
-		if ( '' !== trim( $image ) || '' !== $font_icon ) {
-			if ( 'off' === $use_icon ) {
-				$image = sprintf(
-					'<img src="%1$s" alt="%2$s" class="et-waypoint%3$s" />',
-					esc_url( $image ),
-					esc_attr( $alt ),
-					esc_attr( " et_pb_animation_{$animation}" )
-				);
-			} else {
-				$icon_style = sprintf( 'color: %1$s;', esc_attr( $icon_color ) );
+		if ( 'off' === $use_icon ) {
+			$image = ( '' !== trim( $image ) ) ? sprintf(
+				'<img src="%1$s" alt="%2$s" class="et-waypoint%3$s" />',
+				esc_url( $image ),
+				esc_attr( $alt ),
+				esc_attr( " et_pb_animation_{$animation}" )
+			) : '';
+		} else {
+			$icon_style = sprintf( 'color: %1$s;', esc_attr( $icon_color ) );
 
-				if ( 'on' === $use_circle ) {
-					$icon_style .= sprintf( ' background-color: %1$s;', esc_attr( $circle_color ) );
+			if ( 'on' === $use_circle ) {
+				$icon_style .= sprintf( ' background-color: %1$s;', esc_attr( $circle_color ) );
 
-					if ( 'on' === $use_circle_border ) {
-						$icon_style .= sprintf( ' border-color: %1$s;', esc_attr( $circle_border_color ) );
-					}
+				if ( 'on' === $use_circle_border ) {
+					$icon_style .= sprintf( ' border-color: %1$s;', esc_attr( $circle_border_color ) );
 				}
-
-				$image = sprintf(
-					'<span class="et-pb-icon et-waypoint%2$s%3$s%4$s" style="%5$s">%1$s</span>',
-					esc_attr( et_pb_process_font_icon( $font_icon ) ),
-					esc_attr( " et_pb_animation_{$animation}" ),
-					( 'on' === $use_circle ? ' et-pb-icon-circle' : '' ),
-					( 'on' === $use_circle && 'on' === $use_circle_border ? ' et-pb-icon-circle-border' : '' ),
-					$icon_style
-				);
 			}
 
-			$image = sprintf(
-				'<div class="et_pb_main_blurb_image">%1$s</div>',
-				( '' !== $url
-					? sprintf(
-						'<a href="%1$s"%3$s>%2$s</a>',
-						esc_url( $url ),
-						$image,
-						( 'on' === $url_new_window ? ' target="_blank"' : '' )
-					)
-					: $image
-				)
-			);
+			$image = ( '' !== $font_icon ) ? sprintf(
+				'<span class="et-pb-icon et-waypoint%2$s%3$s%4$s" style="%5$s">%1$s</span>',
+				esc_attr( et_pb_process_font_icon( $font_icon ) ),
+				esc_attr( " et_pb_animation_{$animation}" ),
+				( 'on' === $use_circle ? ' et-pb-icon-circle' : '' ),
+				( 'on' === $use_circle && 'on' === $use_circle_border ? ' et-pb-icon-circle-border' : '' ),
+				$icon_style
+			) : '';
 		}
+
+		$image = $image ? sprintf(
+			'<div class="et_pb_main_blurb_image">%1$s</div>',
+			( '' !== $url
+				? sprintf(
+					'<a href="%1$s"%3$s>%2$s</a>',
+					esc_url( $url ),
+					$image,
+					( 'on' === $url_new_window ? ' target="_blank"' : '' )
+				)
+				: $image
+			)
+		) : '';
 
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout} et_pb_text_align_{$text_orientation}";
 
@@ -9590,12 +9592,13 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			wp_enqueue_script( 'fittext' );
 		}
 
-		$number = str_ireplace( '%', '', $number );
+		$separator = strpos( $number, ',' ) ? ',' : '';
+		$number = str_ireplace( array( '%', ',' ), '', $number );
 
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout}";
 
 		$output = sprintf(
-			'<div%1$s class="et_pb_number_counter%2$s%3$s" data-number-value="%4$s">
+			'<div%1$s class="et_pb_number_counter%2$s%3$s" data-number-value="%4$s" data-number-separator="%8$s">
 				<div class="percent"%5$s><p><span class="percent-value"></span>%6$s</p></div>
 				%7$s
 			</div><!-- .et_pb_number_counter -->',
@@ -9605,7 +9608,8 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			( '' !== $counter_color ? sprintf( ' style="color:%s"', esc_attr( $counter_color ) ) : '' ),
 			( 'on' == $percent_sign ? '%' : ''),
-			( '' !== $title ? '<h3>' . esc_html( $title ) . '</h3>' : '' )
+			( '' !== $title ? '<h3>' . esc_html( $title ) . '</h3>' : '' ),
+			esc_attr( $separator )
 		 );
 
 		return $output;
@@ -11123,10 +11127,17 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 		$this->slug       = 'et_pb_divider';
 		$this->fb_support = true;
 
+		$style_option_name = sprintf( '%1$s-divider_style', $this->slug );
+		$global_divider_style = ET_Global_Settings::get_value( $style_option_name );
+		$position_option_name = sprintf( '%1$s-divider_position', $this->slug );
+		$global_divider_position = ET_Global_Settings::get_value( $position_option_name );
+		$weight_option_name = sprintf( '%1$s-divider_weight', $this->slug );
+		$global_divider_weight = ET_Global_Settings::get_value( $weight_option_name );
+
 		$this->defaults = array(
-			'divider_style'    => 'solid',
-			'divider_position' => 'top',
-			'divider_weight'   => '1px',
+			'divider_style'    => $global_divider_style && '' !== $global_divider_style ? $global_divider_style : 'solid',
+			'divider_position' => $global_divider_position && '' !== $global_divider_position ? $global_divider_position : 'top',
+			'divider_weight'   => $global_divider_weight && '' !== $global_divider_weight ? $global_divider_weight : '1px',
 		);
 
 		// Show divider options is modifieable via customizer
@@ -14097,7 +14108,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 		$all_fields = $this->get_fields();
 		$network_names_mapping = $all_fields['social_network']['options'];
 
-		if ( isset( $network_names_mapping[ $network ] ) ) {
+		if ( isset( $network_names_mapping[ $network ] ) && isset( $network_names_mapping[ $network ]['value'] ) ) {
 			return $network_names_mapping[ $network ]['value'];
 		}
 

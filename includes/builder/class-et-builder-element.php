@@ -643,7 +643,7 @@ class ET_Builder_Element {
 				$value = $shortcode_attr_value;
 			}
 
-			if ( !empty( $value ) ) {
+			if ( '' !== $value ) {
 				$attrs[$shortcode_attr_key] = is_string($value) ? html_entity_decode($value) : $value;
 			}
 		}
@@ -2255,6 +2255,7 @@ class ET_Builder_Element {
 						esc_attr( sprintf( 'parseFloat( %1$s )', $field_name ) ),
 						( '' !== $default ? floatval( $default ) : '' )
 					);
+					$fixed_range = isset($field['fixed_range']) && $field['fixed_range'];
 
 					$range_settings_html = '';
 					$range_properties = apply_filters( 'et_builder_range_properties', array( 'min', 'max', 'step' ) );
@@ -2268,12 +2269,13 @@ class ET_Builder_Element {
 					}
 
 					$range_el = sprintf(
-						'<input type="range" class="et-pb-main-setting et-pb-range%4$s" data-default="%2$s"%1$s%3$s%5$s />',
+						'<input type="range" class="et-pb-main-setting et-pb-range%4$s%6$s" data-default="%2$s"%1$s%3$s%5$s />',
 						$value,
 						esc_attr( $default ),
 						$range_settings_html,
 						$need_mobile_options ? ' et_pb_setting_mobile et_pb_setting_mobile_desktop et_pb_setting_mobile_active' : '',
-						$need_mobile_options ? ' data-device="desktop"' : ''
+						$need_mobile_options ? ' data-device="desktop"' : '',
+						$fixed_range ? ' et-pb-fixed-range' : ''
 					);
 
 					if ( $need_mobile_options ) {
@@ -2289,12 +2291,13 @@ class ET_Builder_Element {
 								( '' !== $default ? floatval( $default ) : '' )
 							);
 							$range_el .= sprintf(
-								'<input type="range" class="et-pb-main-setting et-pb-range et_pb_setting_mobile et_pb_setting_mobile_%3$s" data-default="%1$s"%4$s%2$s data-device="%3$s"%5$s/>',
+								'<input type="range" class="et-pb-main-setting et-pb-range et_pb_setting_mobile et_pb_setting_mobile_%3$s%6$s" data-default="%1$s"%4$s%2$s data-device="%3$s"%5$s/>',
 								esc_attr( $default ),
 								$range_settings_html,
 								esc_attr( $device_type ),
 								$value_mobile_range,
-								$has_saved_value
+								$has_saved_value,
+								$fixed_range ? ' et-pb-fixed-range' : ''
 							);
 						}
 					}

@@ -66,6 +66,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			'padding_1_phone',
 			'padding_2_phone',
 			'padding_3_phone',
+			'padding_1_last_edited',
+			'padding_2_last_edited',
+			'padding_3_last_edited',
 			'admin_label',
 			'module_id_1',
 			'module_id_2',
@@ -225,10 +228,10 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'type'              => 'select',
 				'option_category'   => 'configuration',
 				'options'           => array(
-					'off'  => esc_html__( 'CSS', 'et_builder' ),
 					'on'   => esc_html__( 'True Parallax', 'et_builder' ),
+					'off'  => esc_html__( 'CSS', 'et_builder' ),
 				),
-				'default'           => 'off',
+				'default'           => 'on',
 				'depends_show_if'   => 'on',
 				'description'       => esc_html__( 'Define the method, used for the parallax effect.', 'et_builder' ),
 			),
@@ -358,6 +361,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'depends_show_if' => 'on',
 				'tab_slug'        => 'advanced',
 				'validate_unit'   => false,
+				'fixed_range'     => true,
 			),
 			'columns' => array(
 				'type'            => 'column_settings',
@@ -458,6 +462,15 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'type' => 'skip',
 			),
 			'padding_3_phone' => array(
+				'type' => 'skip',
+			),
+			'padding_1_last_edited' => array(
+				'type' => 'skip',
+			),
+			'padding_2_last_edited' => array(
+				'type' => 'skip',
+			),
+			'padding_3_last_edited' => array(
 				'type' => 'skip',
 			),
 			'module_id_1' => array(
@@ -645,6 +658,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		$padding_1_phone         = $this->shortcode_atts['padding_1_phone'];
 		$padding_2_phone         = $this->shortcode_atts['padding_2_phone'];
 		$padding_3_phone         = $this->shortcode_atts['padding_3_phone'];
+		$padding_1_last_edited   = $this->shortcode_atts['padding_1_last_edited'];
+		$padding_2_last_edited   = $this->shortcode_atts['padding_2_last_edited'];
+		$padding_3_last_edited   = $this->shortcode_atts['padding_3_last_edited'];
 		$padding_mobile          = $this->shortcode_atts['padding_mobile'];
 		$gutter_width            = $this->shortcode_atts['gutter_width'];
 		$use_custom_width        = $this->shortcode_atts['use_custom_width'];
@@ -738,14 +754,17 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				array(
 					'tablet' => explode( '|', $padding_1_tablet ),
 					'phone'  => explode( '|', $padding_1_phone ),
+					'last_edited' => $padding_1_last_edited,
 				),
 				array(
 					'tablet' => explode( '|', $padding_2_tablet ),
 					'phone'  => explode( '|', $padding_2_phone ),
+					'last_edited' => $padding_2_last_edited,
 				),
 				array(
 					'tablet' => explode( '|', $padding_3_tablet ),
 					'phone'  => explode( '|', $padding_3_phone ),
+					'last_edited' => $padding_3_last_edited,
 				),
 			);
 
@@ -1206,6 +1225,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'depends_show_if' => 'on',
 				'description'     => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
 				'validate_unit'   => false,
+				'fixed_range'     => true,
 			),
 			'custom_padding' => array(
 				'label'           => esc_html__( 'Custom Padding', 'et_builder' ),
@@ -1319,10 +1339,10 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'type'              => 'select',
 				'option_category'   => 'configuration',
 				'options'           => array(
-					'off' => esc_html__( 'CSS', 'et_builder' ),
 					'on'  => esc_html__( 'True Parallax', 'et_builder' ),
+					'off' => esc_html__( 'CSS', 'et_builder' ),
 				),
-				'default'           => 'off',
+				'default'           => 'on',
 				'depends_show_if'   => 'on',
 				'tab_slug'          => 'advanced',
 			),
@@ -2170,6 +2190,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'depends_show_if' => 'on',
 				'description'     => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
 				'validate_unit'   => false,
+				'fixed_range'     => true,
 			),
 			'make_equal' => array(
 				'label'             => esc_html__( 'Equalize Column Heights', 'et_builder' ),

@@ -1,3 +1,34 @@
+version 3.0.36 ( updated 3-13-17 )
+- Fixed an issue that caused the Visual Builder to fail to load on websites hosted with WP Engine. This was due to the fact that WP Engine secretly disables the WordPress Heartbeat behind the scenes, which is something the Visual Builder uses for Auto Saves and Divi Builder Sync.
+- Fixed issue with the Divi Builder content not loading in Firefox 52 due to the browser's mishandling of CSS animations.
+- Fixed a bug that prevented custom CSS classes and ID's from appearing in the slider settings modal.
+- Fixed a default settings value mismatch between the Visual Builder and Backend Builder for the parallax mode option for section background images.
+- Fixed a bug that caused default image animation styles to be reset after saving a page in the Visual Builder if the Module Customizer had been used to adjust the default image animation behavior. 
+- The TinyMCE interface for adding new links will now be correctly positioned above the module settings modal in the Visual Builder.
+- Custom page background colors will now render inside of responsive preview modes in the Visual Builder.
+- Number counter modules that include comas will now animate correctly.
+- Fixed an issue where the tabs module lost it's custom colors after using the inline editor to edit text within a tab in the Visual Builder.
+- Fixed a bug that caused unwanted spacing to be added to the top of blurb modules after having disabled icon/image placement.
+- Fixed a bug that caused button border width options to render incorrectly in the Visual Builder.
+- Fixed PHP warning that occurred when adding any empty social media follow module to the page.
+- Gutter widths can no longer be set to "0" since "1" is actually the lowest gutter width value.
+- Improved the way that draggable row width adjustments are stored in the Visual Builder editing history. 
+- Changed the order of font style options in the Visual Builder so that they are the same as the Backend Builder.
+- Custom responsive padding set for Specialty Sections will now render correctly.
+- Prevented modules from being copied and pasted into locked rows. 
+- Locked modules are no longer movable in the Visual Builder.
+- Locked module settings windows will no longer be opened when double clicking a locked module.
+- Fixed a fatal error that occurred in the cron used for split testing in certain situations. 
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/main-modules.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/ab-testing.php
+	* inclues/builder/styles/style.css
+
 version 3.0.35 ( updated 3-2-2017 )
 - When editing a page in the Backend Builder and the Visual Builder at the same time, changes made in both tabs will be synced when switching between tabs to ensure that no changes are lost.
 - Added auto-save functionality to the Visual Builder. The Visual Builder will now automatically save your work and back it up to your database just in case something goes wrong.

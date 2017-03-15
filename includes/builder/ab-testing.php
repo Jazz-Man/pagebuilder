@@ -176,7 +176,7 @@ function et_pb_ab_get_subjects_ranks( $post_id, $ranking_basis = 'engagements', 
  * @param string has to be in Y-m-d H:i:s format
  * @return array stats data
  */
-function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $force_update = false ) {
+function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $force_update = false, $is_cron_task = false ) {
 	global $wpdb;
 
 	$post_id = intval( $post_id );
@@ -184,8 +184,8 @@ function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $
 	$rank_metrics = in_array( $goal_slug, et_pb_ab_get_modules_have_conversions() ) ? 'conversions' : 'clicks';
 
 	// Get subjects
-	$subjects    = et_pb_ab_get_subjects( $post_id, 'array', 'subject_' );
-	$subjects_id = et_pb_ab_get_subjects( $post_id, 'array' );
+	$subjects    = et_pb_ab_get_subjects( $post_id, 'array', 'subject_', $is_cron_task );
+	$subjects_id = et_pb_ab_get_subjects( $post_id, 'array', false, $is_cron_task );
 
 	// Get cached data
 	$cached_data = get_transient( 'et_pb_ab_' . $post_id . '_stats_' . $duration );
@@ -453,11 +453,11 @@ function et_pb_ab_get_stats_data_duration() {
  * @param string array|string type of output
  * @param mixed  string|bool  prefix that should be prepended
  */
-function et_pb_ab_get_subjects( $post_id, $type = 'array', $prefix = false ) {
+function et_pb_ab_get_subjects( $post_id, $type = 'array', $prefix = false, $is_cron_task = false ) {
 	$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects', true );
 
 	// Get autosave/draft subjects if post hasn't been published
-	if ( ! $subjects_data && et_fb_enabled() && 'publish' !== get_post_status() ) {
+	if ( ! $is_cron_task && ! $subjects_data && et_fb_enabled() && 'publish' !== get_post_status() ) {
 		$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects_draft', true );
 	}
 
@@ -892,7 +892,7 @@ function et_pb_ab_cron( $args ) {
 		}
 
 		foreach ( et_pb_ab_get_stats_data_duration() as $duration ) {
-			et_pb_ab_get_stats_data( $test['test_id'], $duration, false, true );
+			et_pb_ab_get_stats_data( $test['test_id'], $duration, false, true, true );
 		}
 	}
 }

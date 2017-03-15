@@ -89,17 +89,13 @@ function et_fb_known_shortcode_wrappers() {
 	) );
 }
 
-function et_fb_autosave_interval() {
-	return apply_filters( 'et_fb_autosave_interval', et_fb_heartbeat_interval() / 2 );
-}
-
-function et_fb_heartbeat_interval() {
-	return apply_filters( 'et_fb_heartbeat_interval', 30 );
+function et_builder_autosave_interval() {
+	return apply_filters( 'et_builder_autosave_interval', et_builder_heartbeat_interval() / 2 );
 }
 
 function et_fb_heartbeat_settings($settings) {
 	$settings['suspension'] = 'disable';
-	$settings['interval'] = et_fb_heartbeat_interval();
+	$settings['interval'] = et_builder_heartbeat_interval();
 	return $settings;
 }
 add_filter( 'heartbeat_settings', 'et_fb_heartbeat_settings', 11 );
@@ -126,7 +122,7 @@ function et_fb_backend_helpers() {
 
 	$helpers = array(
 		'debug'                        => true,
-		'autosaveInterval'             => et_fb_autosave_interval(),
+		'autosaveInterval'             => et_builder_autosave_interval(),
 		'postId'                       => $post_id,
 		'postTitle'                    => $post_title,
 		'postStatus'                   => $post_status,

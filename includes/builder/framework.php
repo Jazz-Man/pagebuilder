@@ -3,6 +3,8 @@
 require_once( ET_BUILDER_DIR . 'core.php' );
 
 if ( defined( 'DOING_AJAX' ) && DOING_AJAX && ! is_customize_preview() ) {
+	define( 'WPE_HEARTBEAT_INTERVAL', et_builder_heartbeat_interval() );
+
 	$builder_load_actions = array(
 		'et_pb_get_backbone_template',
 		'et_pb_get_backbone_templates',

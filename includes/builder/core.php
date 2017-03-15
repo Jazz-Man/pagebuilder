@@ -961,6 +961,52 @@ function et_builder_is_builder_built( $post_id = 0, $builder = '' ) {
 	}
 }
 
+/**
+ * @return bool
+ */
+function et_is_builder_available_cookie_set() {
+	static $builder_available = null;
+
+	if ( null !== $builder_available ) {
+		return $builder_available;
+	}
+
+	foreach( (array) $_COOKIE as $cookie => $value ) {
+		if ( 0 === strpos( $cookie, 'et-editor-available-post-' ) ) {
+			$builder_available = true;
+
+			return $builder_available;
+		}
+	}
+
+	$builder_available = false;
+
+	return $builder_available;
+}
+
+function et_builder_heartbeat_interval() {
+	return apply_filters( 'et_builder_heartbeat_interval', 30 );
+}
+
+function et_builder_ensure_heartbeat_interval( $response, $screen_id ) {
+	if ( ! isset( $response['heartbeat_interval'] ) ) {
+		return $response;
+	}
+
+	if ( et_builder_heartbeat_interval() === $response['heartbeat_interval'] ) {
+		return $response;
+	}
+
+	if ( ! et_is_builder_available_cookie_set() ) {
+		return $response;
+	}
+
+	$response['heartbeat_interval'] = et_builder_heartbeat_interval();
+
+	return $response;
+}
+add_filter( 'heartbeat_send', 'et_builder_ensure_heartbeat_interval', 100, 2 );
+
 function et_pb_heartbeat_post_modified( $response ) {
 	if ( empty( $_POST['data'] ) ) {
 		return $response;

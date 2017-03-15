@@ -2,7 +2,7 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.35';
+window.et_builder_version = '3.0.36';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -2820,10 +2820,16 @@ window.et_builder_version = '3.0.35';
 
 						// replace new lines with || and backlash \ with %92 in Custom CSS settings
 						setting_value = '' !== custom_css_option_value ? custom_css_option_value.replace( /(?:\r\n|\r|\n)/g, '\|\|' ).replace( /\\/g, '%92' ) : '';
-					} else if ( $this_el.hasClass( 'et-pb-range-input' ) || $this_el.hasClass( 'et-pb-validate-unit' ) ) {
-						// Process range sliders. Sanitize for valid unit first
-						var et_validate_default_unit = $this_el.hasClass( 'et-pb-range-input' ) ? 'no_default_unit' : '';
-						setting_value = et_pb_sanitize_input_unit_value( $this_el.val(), false, et_validate_default_unit );
+					} else if ( $this_el.hasClass( 'et-pb-range-input' ) ) {
+						// Get range input value
+						setting_value = et_pb_get_range_input_value( $this_el );
+
+						if ( $this_el.hasClass( 'et-pb-validate-unit' ) ) {
+							setting_value = et_pb_sanitize_input_unit_value( setting_value.toString(), false, 'no_default_unit' );
+						}
+					} else if ( $this_el.hasClass( 'et-pb-validate-unit' ) ) {
+						// Process validated unit
+						setting_value = et_pb_sanitize_input_unit_value( $this_el.val(), false, '' );
 					} else if ( ! $this_el.is( ':checkbox' ) ) {
 						// Process all other settings: inputs, textarea#et_pb_content_new, range sliders etc.
 
@@ -11683,7 +11689,7 @@ window.et_builder_version = '3.0.35';
 			$range_input.on( 'keyup change', function() {
 				var $this_el      = $(this),
 					this_device   = typeof $this_el.data( 'device' ) === 'undefined' ? 'all' : $this_el.data( 'device' ),
-					this_value    = $this_el.val(),
+					this_value    = et_pb_get_range_input_value( $this_el, true ),
 					$range_slider = 'all' === this_device ? $this_el.siblings( '.et-pb-range' ) : $this_el.siblings( '.et-pb-range.et_pb_setting_mobile_' + this_device ),
 					slider_value;
 
@@ -11895,6 +11901,10 @@ window.et_builder_version = '3.0.35';
 			var slider_max = parseFloat( $range_slider.attr( 'max' ) ),
 				slider_min = parseFloat( $range_slider.attr( 'min' ) );
 
+			if ( $range_slider.hasClass( 'et-pb-fixed-range' ) ) {
+				return;
+			}
+
 			slider_value = '' !== slider_value ? parseFloat( slider_value ) : 0;
 
 			// extend max boundary of the slider if needed
@@ -11906,6 +11916,30 @@ window.et_builder_version = '3.0.35';
 			if ( slider_value < slider_min ) {
 				$range_slider.attr( 'min', slider_value );
 			}
+		}
+
+		function et_pb_get_range_input_value( $range_input, update_element_value ) {
+			var $range_field = $range_input.parent().find( '.et-pb-range' ),
+				value        = parseFloat( $range_input.val() );
+
+			if ( $range_field.hasClass( 'et-pb-fixed-range' ) ) {
+				var range_field_max = parseFloat( $range_field.attr( 'max' ) ),
+					range_field_min = parseFloat( $range_field.attr( 'min' ) ),
+					is_too_high = value > range_field_max,
+					is_too_low = value < range_field_min;
+
+				if ( is_too_high ) {
+					value = range_field_max;
+				} else if ( is_too_low ) {
+					value = range_field_min;
+				}
+
+				if ( update_element_value ) {
+					$range_input.val( value );
+				}
+			}
+
+			return value;
 		}
 
 		function et_pb_get_default_setting_value( $element ) {
@@ -12350,6 +12384,28 @@ window.et_builder_version = '3.0.35';
 				}
 			};
 
+			// Used to check if content has changed, to be used before forcing a autosave heartbeat
+			var initialCompareString = wp.autosave.getCompareString();
+			var lastCompareString;
+			var hasContentChanged = function() {
+				var postData = wp.autosave.getPostData('local');
+
+				var compareString = wp.autosave.getCompareString( postData );
+
+				if ( typeof lastCompareString === 'undefined' ) {
+					lastCompareString = initialCompareString;
+				}
+
+				// If the content, title and excerpt did not change since the last save, don't save again
+				if ( compareString === lastCompareString ) {
+					return false;
+				}
+
+				lastCompareString = compareString;
+
+				return true;
+			};
+
 			blurred = function(){
 				if ( !is_builder_used() ) {
 					return;
@@ -12359,6 +12415,12 @@ window.et_builder_version = '3.0.35';
 
 				var cookie = wpCookies.get( 'et-editing-post-' + post_id + '-bb' );
 				if ( cookie ) {
+
+					// if content has not changed, no need to force an autosave heartbeat
+					if ( !hasContentChanged() ) {
+						return false;
+					}
+
 					// fire after next js event loop tick, so that during reload this will not even fire
 					setTimeout(function(){
 						// this flag is set, adding redundency to preventing autosave during reload
@@ -12551,10 +12613,6 @@ window.et_builder_version = '3.0.35';
 				if ( !is_builder_used() ) {
 					return;
 				}
-
-				// if ( force_check ) {
-				// 	force_autosave = false;
-				// }
 
 				heartbeatData.et = {
 					last_post_modified: last_post_modified,
