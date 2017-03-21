@@ -3116,7 +3116,7 @@ function et_builder_get_google_fonts() {
 		),
 		'Lora' => array(
 			'styles' 		=> '400,400italic,700,700italic',
-			'character_set' => 'cyrilic,cyrilic-ext,vietnamese,latin,latin-ext',
+			'character_set' => 'cyrillic,cyrillic-ext,vietnamese,latin,latin-ext',
 			'type'			=> 'serif',
 		),
 		'Luckiest Guy' => array(
@@ -3126,7 +3126,7 @@ function et_builder_get_google_fonts() {
 		),
 		'Merriweather' => array(
 			'styles' 		=> '400,300,900,700',
-			'character_set' => 'cyrilic,cyrilic-ext,latin,latin-ext',
+			'character_set' => 'cyrillic,cyrillic-ext,latin,latin-ext',
 			'type'			=> 'serif',
 		),
 		'Metamorphous' => array(
@@ -3156,7 +3156,7 @@ function et_builder_get_google_fonts() {
 		),
 		'Old Standard TT' => array(
 			'styles' 		=> '400,400italic,700',
-			'character_set' => 'cyrilic,cyrilic-ext,vietnamese,latin,latin-ext',
+			'character_set' => 'cyrillic,cyrillic-ext,vietnamese,latin,latin-ext',
 			'type'			=> 'serif',
 		),
 		'Open Sans' => array(

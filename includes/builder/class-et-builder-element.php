@@ -598,6 +598,11 @@ class ET_Builder_Element {
 			}
 		}
 
+		// Create secondary attribute for transparent_background in VB for precise comparison to avoid saving default value
+		if ( et_is_builder_plugin_active() && 'et_pb_section' === $this->slug && isset( $this->shortcode_atts['transparent_background'] ) && '' !== $this->shortcode_atts['transparent_background'] ) {
+			$attrs['transparent_background_fb'] = $this->shortcode_atts['transparent_background'];
+		}
+
 		foreach( $this->shortcode_atts as $shortcode_attr_key => $shortcode_attr_value ) {
 			if ( isset( $fields[ $shortcode_attr_key ]['type'] ) && 'computed' === $fields[ $shortcode_attr_key ]['type'] ) {
 
@@ -618,7 +623,10 @@ class ET_Builder_Element {
 			}
 
 			// dont set the default, unless, lol, the value is literally 'default'
-			if ( isset( $fields[ $shortcode_attr_key ]['default'] ) && $value === $fields[ $shortcode_attr_key ]['default'] && $value !== 'default' ) {
+			// NOTE: bypass shortcode trimming for section's transparent background attribute in plugin, to preserve BB behaviour in VB
+			// which is loading 'default' if no attribute found, then switch it accordinly to either on/off on settings modal saving process
+			$is_plugin_section_transparent_background = et_is_builder_plugin_active() && 'et_pb_section' === $this->slug && 'transparent_background' === $shortcode_attr_key;
+			if ( isset( $fields[ $shortcode_attr_key ]['default'] ) && $value === $fields[ $shortcode_attr_key ]['default'] && $value !== 'default' && ! $is_plugin_section_transparent_background ) {
 				$value = '';
 			}
 
@@ -696,6 +704,31 @@ class ET_Builder_Element {
 			$attrs = new stdClass();
 		}
 
+		$module_type = $this->type;
+
+		// Ensuring that module which uses another module's template (i.e. accordion item uses toggle's
+		// component) has correct $this->type value. This is covered on front-end, but it causes inheriting
+		// module uses its template's value on _shortcode_passthru_callback()
+		if ( $this->slug !== $function_name && isset( $_POST ) && isset( $_POST['et_post_type'] ) ) {
+			$et_post_type = $_POST['et_post_type'];
+			$parent_modules = self::get_parent_modules( $et_post_type);
+			$function_module = false;
+
+			if ( isset( $parent_modules[ $function_name ] ) ) {
+				$function_module = $parent_modules[ $function_name ];
+			} else {
+				$child_modules = self::get_child_modules( $et_post_type );
+
+				if ( isset( $child_modules[ $function_name] ) ) {
+					$function_module = $child_modules[ $function_name ];
+				}
+			}
+
+			if ( $function_module && isset( $function_module->type ) ) {
+				$module_type = $function_module->type;
+			}
+		}
+
 		// Build object.
 		$object = array(
 			'_i'                => $_i,
@@ -710,7 +743,7 @@ class ET_Builder_Element {
 			'component_path'    => $component_path,
 			'attrs'             => $attrs,
 			'content'           => $prepared_content,
-			'is_module_child'   => 'child' === $this->type,
+			'is_module_child'   => 'child' === $module_type,
 			'prepared_styles'   => ! $this->fb_support ? ET_Builder_Element::get_style() : '',
 		);
 

@@ -37,6 +37,7 @@ function et_get_allowed_localization_html_elements() {
 			'rel'    => array(),
 		),
 		'b'      => array(),
+		'br'     => array(),
 		'em'     => array(),
 		'p'      => array(),
 		'span'   => array(),

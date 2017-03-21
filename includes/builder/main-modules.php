@@ -6278,6 +6278,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		$this->whitelisted_fields = array(
 			'button_url',
 			'url_new_window',
+			'button_rel',
 			'button_text',
 			'background_layout',
 			'button_alignment',
@@ -6315,6 +6316,16 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		);
 	}
 
+	function get_rel_values() {
+		return array(
+			'bookmark',
+			'external',
+			'nofollow',
+			'noreferrer',
+			'noopener',
+		);
+	}
+
 	function get_fields() {
 		$fields = array(
 			'button_url' => array(
@@ -6348,7 +6359,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'center' => esc_html__( 'Center', 'et_builder' ),
 					'right'  => esc_html__( 'Right', 'et_builder' ),
 				),
-				'description'     => esc_html__( 'Here you can define the alignemnt of Button', 'et_builder' ),
+				'description'     => esc_html__( 'Here you can define the alignment of Button', 'et_builder' ),
 			),
 			'background_layout' => array(
 				'label'           => esc_html__( 'Text Color', 'et_builder' ),
@@ -6359,6 +6370,13 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'dark'  => esc_html__( 'Light', 'et_builder' ),
 				),
 				'description'     => esc_html__( 'Here you can choose whether your text should be light or dark. If you are working with a dark background, then your text should be light. If your background is light, then your text should be set to dark.', 'et_builder' ),
+			),
+			'button_rel' => array(
+				'label'           => esc_html__( 'Button Relationship', 'et_builder' ),
+				'type'            => 'multiple_checkboxes',
+				'option_category' => 'configuration',
+				'options'         => $this->get_rel_values(),
+				'description'     => et_get_safe_localization( __( "Specify the value of your link's <em>rel</em> attribute. The <em>rel</em> attribute specifies the relationship between the current document and the linked document.<br><strong>Tip:</strong> Search engines can use this attribute to get more information about a link.", 'et_builder' ) ),
 			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
@@ -6399,6 +6417,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		$module_id         = $this->shortcode_atts['module_id'];
 		$module_class      = $this->shortcode_atts['module_class'];
 		$button_url        = $this->shortcode_atts['button_url'];
+		$button_rel        = $this->shortcode_atts['button_rel'];
 		$button_text       = $this->shortcode_atts['button_text'];
 		$background_layout = $this->shortcode_atts['background_layout'];
 		$url_new_window    = $this->shortcode_atts['url_new_window'];
@@ -6411,13 +6430,28 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 			return;
 		}
 
+		$rel_attributes = array();
+
+		if ( $button_rel ) {
+			$rel_values    = $this->get_rel_values();
+			$selected_rels = explode( '|', $button_rel );
+
+			foreach ( $selected_rels as $index => $selected_rel ) {
+				if ( ! $selected_rel || 'off' === $selected_rel ) {
+					continue;
+				}
+
+				$rel_attributes[] = $rel_values[ $index ];
+			}
+		}
+
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
 		$module_class .= " et_pb_module et_pb_bg_layout_{$background_layout}";
 
 		$output = sprintf(
-			'<div class="et_pb_button_module_wrapper et_pb_module%8$s">
-				<a class="et_pb_button%5$s%7$s" href="%1$s"%3$s%4$s%6$s>%2$s</a>
+			'<div class="et_pb_button_module_wrapper et_pb_module%9$s">
+				<a class="et_pb_button%5$s%7$s" href="%1$s"%3$s%4$s%6$s%8$s>%2$s</a>
 			</div>',
 			esc_url( $button_url ),
 			'' !== $button_text ? esc_html( $button_text ) : esc_url( $button_url ),
@@ -6429,6 +6463,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 			'' !== $custom_icon && 'on' === $button_custom ? ' et_pb_custom_button_icon' : '',
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
+			$rel_attributes ? sprintf( ' rel="%1$s"', esc_attr( implode( ' ', $rel_attributes ) ) ) : '',
 			'right' === $button_alignment || 'center' === $button_alignment ? sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) )  : ''
 		);
 

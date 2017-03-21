@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, when this is updated, you must also update corresponding version in builder.js: `window.et_builder_version`
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.36' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.38' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1409,34 +1409,40 @@ function et_pb_get_page_custom_css() {
 	$dark_text_color = '#666666' !== ( $saved_dark_color = get_post_meta( $page_id, '_et_pb_dark_text_color', true ) ) ? $saved_dark_color : false;
 	$content_area_bg = get_post_meta( $page_id, '_et_pb_content_area_background_color', true );
 	$section_bg = get_post_meta( $page_id, '_et_pb_section_background_color', true );
+	$selector_prefix = et_is_builder_plugin_active() ? ' .et_divi_builder #et_builder_outer_content' : '';
 
 	$output = get_post_meta( $page_id, '_et_pb_custom_css', true );
 
 	if ( $light_text_color ) {
 		$output .= sprintf(
-			' .et_pb_bg_layout_dark { color: %1$s !important; }',
-			esc_html( $light_text_color )
+			'%2$s .et_pb_bg_layout_dark { color: %1$s !important; }',
+			esc_html( $light_text_color ),
+			esc_html( $selector_prefix )
 		);
 	}
 
 	if ( $dark_text_color ) {
 		$output .= sprintf(
-			' .et_pb_bg_layout_light { color: %1$s !important; }',
-			esc_html( $dark_text_color )
+			'%2$s .et_pb_bg_layout_light { color: %1$s !important; }',
+			esc_html( $dark_text_color ),
+			esc_html( $selector_prefix )
 		);
 	}
 
 	if ( $content_area_bg ) {
+		$content_area_bg_selector = et_is_builder_plugin_active() ? $selector_prefix : ' .page.et_pb_pagebuilder_layout #main-content';
 		$output .= sprintf(
-			' .page.et_pb_pagebuilder_layout #main-content { background-color: %1$s; }',
+			'%1$s { background-color: %2$s; }',
+			esc_html( $content_area_bg_selector ),
 			esc_html( $content_area_bg )
 		);
 	}
 
 	if ( '#FFFFFF' !== $section_bg ) {
 		$output .= sprintf(
-			' .et_pb_section { background-color: %1$s; }',
-			esc_html( $section_bg )
+			'%2$s .et_pb_section { background-color: %1$s; }',
+			esc_html( $section_bg ),
+			esc_html( $selector_prefix )
 		);
 	}
 

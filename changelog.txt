@@ -1,3 +1,31 @@
+version 3.0.38 ( updated 3-20-17 )
+- Fixed a bug that caused an unwanted save warning message to appear when leaving a recently-saved page that contained certain combinations of global rows and sections. 
+- Fixed a bug in IE11 and below that made it impossible to open module settings in the Divi Builder for some modules.
+- Fixed an issue where global modules that contained sub items (such as tabs and sliders) did not sync correctly when updated if multiple instances of the same module existed on a single page in the Visual Builder.
+- Fixed an issue with row width units type that caused an incorrect sync of setting values between the Visual Builder and Backend Builder due to different default values in each version of the builder.
+- Added rel attribute settings to the button module to allow for nofollow and other relationships to be set for links.
+- Fixed a waypoints error that occurred in certain situations with background videos in the Visual Builder.
+- Fixed a bug that sometimes caused locked modules to turn green instead of red.
+- Custom CSS and Google Maps API Key will now be reset correctly when resetting theme options.
+- Fixed a bug where formatting for tabs was mistakenly reset in the Visual Builder in some situations.
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/scripts/builder.js
+	* includes/builder/main-structure-elements.php
+	* includes/builder/main-modules.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* core/functions.php
+	* epanel/core_functions.php
+
+version 3.0.37 ( updated 3-15-17 )
+- Fixed a bug that caused custom units of measurement to be replaced with "px" when using range slider inputs in the Divi Builder.
+- Fixed a bug that caused an unwanted save warning to appear when leaving the Divi Builder when the page contained a global row or section, even when no unsaved changes existed on the page. 
+- Fixed a bug that caused multiple instances of the same global module, row or section to not sync correctly when one of the copies was edited in the Visual Builder.
+- Fixed disappearing responsive editing tabs in the Visual Builder.
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/assets/css/style.css
+
 version 3.0.36 ( updated 3-13-17 )
 - Fixed an issue that caused the Visual Builder to fail to load on websites hosted with WP Engine. This was due to the fact that WP Engine secretly disables the WordPress Heartbeat behind the scenes, which is something the Visual Builder uses for Auto Saves and Divi Builder Sync.
 - Fixed issue with the Divi Builder content not loading in Firefox 52 due to the browser's mishandling of CSS animations.
@@ -20,12 +48,12 @@ version 3.0.36 ( updated 3-13-17 )
 - Locked module settings windows will no longer be opened when double clicking a locked module.
 - Fixed a fatal error that occurred in the cron used for split testing in certain situations. 
 	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/bundle.js
 	* includes/builder/frontend-builder/assets/css/style.css
 	* includes/builder/main-modules.php
 	* includes/builder/scripts/frontend-builder-scripts.js
 	* includes/builder/class-et-builder-element.php
 	* includes/builder/main-structure-elements.php
-	* includes/builder/scripts/builder.js
 	* includes/builder/ab-testing.php
 	* inclues/builder/styles/style.css
 
@@ -60,6 +88,7 @@ version 3.0.35 ( updated 3-2-2017 )
 - Improved the UX for creating lists in the Inline Editor. 
 - Individual tab styles will now correctly override the parent tab module styles. 
 	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/bundle.js
 	* includes/builder/class-et-builder-element.php
 	* includes/builder/frontend-builder/assets/css/style.css
 	* includes/builder/scripts/frontend-builder-scripts.js
@@ -96,6 +125,7 @@ version 3.0.33 ( updated 2-6-2017 )
 - Improved slider rendering times and accuracy in the Visual Builder.
 - Custom body font will now be aplied to the read more link in the blog module.
 	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/bundle.js
 	* includes/builder/frontend-builder/assets/css/style.css
 	* includes/builder/functions.php
 	* includes/builder/scripts/frontend-builder-scripts.js
