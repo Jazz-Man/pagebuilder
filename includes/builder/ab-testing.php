@@ -455,9 +455,10 @@ function et_pb_ab_get_stats_data_duration() {
  */
 function et_pb_ab_get_subjects( $post_id, $type = 'array', $prefix = false, $is_cron_task = false ) {
 	$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects', true );
+	$fb_enabled = function_exists( 'et_fb_enabled' ) ? et_fb_enabled() : false;
 
 	// Get autosave/draft subjects if post hasn't been published
-	if ( ! $is_cron_task && ! $subjects_data && et_fb_enabled() && 'publish' !== get_post_status() ) {
+	if ( ! $is_cron_task && ! $subjects_data && $fb_enabled && 'publish' !== get_post_status() ) {
 		$subjects_data = get_post_meta( $post_id, '_et_pb_ab_subjects_draft', true );
 	}
 
@@ -656,7 +657,9 @@ function et_is_ab_testing_active() {
 
 	$split_test_status = 'on' === get_post_meta( $post_id, '_et_pb_use_ab_testing', true );
 
-	if ( ! $split_test_status && et_fb_enabled() && 'publish' !== get_post_status() ) {
+	$fb_enabled = function_exists( 'et_fb_enabled' ) ? et_fb_enabled() : false;
+
+	if ( ! $split_test_status && $fb_enabled && 'publish' !== get_post_status() ) {
 		$split_test_status = 'on' === get_post_meta( $post_id, '_et_pb_use_ab_testing_draft', true );
 	}
 

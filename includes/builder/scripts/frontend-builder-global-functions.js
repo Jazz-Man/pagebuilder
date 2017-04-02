@@ -234,7 +234,7 @@
 
 			if ( 0 !== max_height ) {
 				// set the height of tabs container based on the height of the tallest tab
-				$tab_controls.height( max_height );
+				$tab_controls.css( 'min-height', max_height );
 			}
 		});
 	}

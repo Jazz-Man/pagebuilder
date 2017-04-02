@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, when this is updated, you must also update corresponding version in builder.js: `window.et_builder_version`
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.38' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.39' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -966,7 +966,7 @@ function et_fb_ajax_save() {
 
 		wp_send_json_success( array(
 			'status'            => get_post_status( $update ),
-			'save_verification' => $saved_post->post_content === et_fb_process_to_shortcode( $shortcode_data, $_POST['options'], $layout_type ),
+			'save_verification' => $saved_post->post_content === stripslashes( et_fb_process_to_shortcode( $shortcode_data, $_POST['options'], $layout_type ) ),
 		) );
 	} else {
 		wp_send_json_error();
@@ -1635,6 +1635,43 @@ function et_pb_setup_theme(){
 }
 add_action( 'init', 'et_pb_setup_theme', 11 );
 
+/**
+* The page builders require the WP Heartbeat script in order to function. We ensure the heartbeat
+* is loaded with the page builders by scheduling this callback to run right before scripts
+* are output to the footer. {@see 'admin_enqueue_scripts', 'wp_footer'}
+*/
+function et_builder_maybe_ensure_heartbeat_script() {
+	// Don't perform any actions on 'wp_footer' if VB is not active
+	if ( 'wp_footer' === current_filter() && empty( $_GET['et_fb'] ) ) {
+		return;
+	}
+
+	// We have to check both 'registered' AND 'enqueued' to cover cases where heartbeat has been
+	// de-registered because 'enqueued' will return `true` for a de-registered script at this stage.
+	$heartbeat_okay = wp_script_is( 'heartbeat', 'registered' ) && wp_script_is( 'heartbeat', 'enqueued' );
+	$autosave_okay  = wp_script_is( 'autosave', 'registered' ) && wp_script_is( 'autosave', 'enqueued' );
+
+	if ( $heartbeat_okay && $autosave_okay ) {
+		return;
+	}
+
+	$suffix = SCRIPT_DEBUG ? '' : '.min';
+
+	if ( ! $heartbeat_okay ) {
+		$heartbeat_src = "/wp-includes/js/heartbeat{$suffix}.js";
+		wp_enqueue_script( 'heartbeat', $heartbeat_src, array( 'jquery' ), false, true );
+		wp_localize_script( 'heartbeat', 'heartbeatSettings', apply_filters( 'heartbeat_settings', array() ) );
+	}
+
+	if ( ! $autosave_okay ) {
+		$autosave_src = "/wp-includes/js/autosave{$suffix}.js";
+		wp_enqueue_script( 'autosave', $autosave_src, array( 'heartbeat' ), false, true );
+	}
+}
+add_action( 'admin_print_scripts-post-new.php', 'et_builder_maybe_ensure_heartbeat_script', 9 );
+add_action( 'admin_print_scripts-post.php', 'et_builder_maybe_ensure_heartbeat_script', 9 );
+add_action( 'wp_footer', 'et_builder_maybe_ensure_heartbeat_script', 19 );
+
 function et_builder_set_post_type( $post_type = '' ) {
 	global $et_builder_post_type, $post;
 
@@ -1769,6 +1806,22 @@ function et_pb_set_et_saved_cookie( $post_id, $post ) {
 }
 
 add_action( 'save_post', 'et_pb_set_et_saved_cookie', 10, 2 );
+
+/**
+ * Handling title-less & content-less switching from backend builder to normal editor
+ * @param int   $maybe_empty whether the wp_insert_post content is empty or not
+ * @param array $postarr all $_POST data that is being passed to wp_insert_post()
+ * @return int  whether wp_insert_post content should be considered empty or not
+ */
+function et_pb_ensure_builder_activation_switching( $maybe_empty, $postarr ) {
+	// Consider wp_insert_post() content is not empty if incoming et_pb_use_builder is `off` while currently saved _et_pb_use_builder value is `on`
+	if ( isset( $postarr['et_pb_use_builder'] ) && 'off' === $postarr['et_pb_use_builder'] && isset( $postarr['post_ID'] ) && et_pb_is_pagebuilder_used( $postarr['post_ID'] ) ) {
+		return false;
+	}
+
+	return $maybe_empty;
+}
+add_filter( 'wp_insert_post_empty_content', 'et_pb_ensure_builder_activation_switching', 10, 2 );
 
 function et_pb_before_main_editor( $post ) {
 	if ( ! in_array( $post->post_type, et_builder_get_builder_post_types() ) ) return;

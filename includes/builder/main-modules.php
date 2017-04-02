@@ -15320,7 +15320,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 			esc_attr( 'submit' ),
 			esc_attr( 'et_pb_submit' ),
 			esc_attr( 'submit' ),
-			esc_html( 'Submit Comment', 'et_builder' )
+			esc_html__( 'Submit Comment', 'et_builder' )
 		);
 	}
 

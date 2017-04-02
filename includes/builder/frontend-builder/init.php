@@ -91,25 +91,6 @@ if ( ! ET_FB_ENABLED ) {
 	return;
 }
 
-/**
- * The VB requires the WP Heartbeat script in order to function. We ensure the heartbeat
- * is loaded with the VB by scheduling this callback to run right before scripts
- * are output to the footer. {@see 'wp_footer'}
- */
-function et_fb_ensure_heartbeat_script() {
-	// We have to check both 'registered' AND 'enqueued' to cover cases where heartbeat has been
-	// de-registered because 'enqueued' will return `true` for a de-registered script at this stage.
-	if ( wp_script_is( 'heartbeat', 'registered' ) && wp_script_is( 'heartbeat', 'enqueued' ) ) {
-		return;
-	}
-
-	$suffix = SCRIPT_DEBUG ? '' : '.min';
-	$src    = "/wp-includes/js/heartbeat{$suffix}.js";
-	wp_enqueue_script( 'heartbeat', $src, array( 'jquery' ), false, true );
-	wp_localize_script( 'heartbeat', 'heartbeatSettings', apply_filters( 'heartbeat_settings', array() ) );
-}
-add_action( 'wp_footer', 'et_fb_ensure_heartbeat_script', 19 );
-
 define( 'ET_FB_URI', ET_BUILDER_URI . '/frontend-builder' );
 define( 'ET_FB_ASSETS_URI', ET_FB_URI . '/assets' );
 

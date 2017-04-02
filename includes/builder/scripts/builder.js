@@ -2,7 +2,7 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.38';
+window.et_builder_version = '3.0.39';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -12404,9 +12404,13 @@ window.et_builder_version = '3.0.38';
 			};
 
 			// Used to check if content has changed, to be used before forcing a autosave heartbeat
-			var initialCompareString = wp.autosave.getCompareString();
+			var initialCompareString = _.isUndefined( wp.autosave ) ? '' : wp.autosave.getCompareString();
 			var lastCompareString;
 			var hasContentChanged = function() {
+				if ( _.isUndefined( wp.heartbeat ) || _.isUndefined( wp.autosave ) ) {
+					return false;
+				}
+
 				var postData = wp.autosave.getPostData('local');
 
 				var compareString = wp.autosave.getCompareString( postData );
@@ -12446,7 +12450,10 @@ window.et_builder_version = '3.0.38';
 						if ( !is_reloading ) {
 							force_autosave = true;
 							autosaving_in_progress_cookie(true);
-							wp.autosave.server.triggerSave();
+
+							if ( ! _.isUndefined( wp.heartbeat ) && ! _.isUndefined( wp.autosave ) ) {
+								wp.autosave.server.triggerSave();
+							}
 						}
 					}, 0);
 				}
@@ -12464,6 +12471,10 @@ window.et_builder_version = '3.0.38';
 
 				var cookie = wpCookies.get( 'et-editing-post-' + post_id + '-fb' );
 				if ( !cookie ) {
+					return false;
+				}
+
+				if ( _.isUndefined( wp.heartbeat ) || _.isUndefined( wp.autosave ) ) {
 					return false;
 				}
 
@@ -12525,6 +12536,10 @@ window.et_builder_version = '3.0.38';
 					}
 
 					FBDoneChecks++;
+
+					if ( _.isUndefined( wp.heartbeat ) || _.isUndefined( wp.autosave ) ) {
+						return;
+					}
 
 					// bump temp block autosave
 					wp.autosave.server.tempBlockSave();
@@ -12621,7 +12636,9 @@ window.et_builder_version = '3.0.38';
 				var fb_recommend_sync_cookie = wpCookies.get( 'et-recommend-sync-post-' + post_id + '-fb' );
 				var fb_saved_cookie = wpCookies.get( 'et-saved-post-' + post_id + '-fb' );
 				if ( fb_recommend_sync_cookie && fb_saved_cookie ) {
-					wp.heartbeat.connectNow();
+					if ( ! _.isUndefined( wp.heartbeat ) ) {
+						wp.heartbeat.connectNow();
+					}
 					wpCookies.remove( 'et-recommend-sync-post-' + post_id + '-fb', et_pb_options.cookie_path, false, secure );
 				}
 			}, 3000 );

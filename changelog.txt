@@ -1,3 +1,25 @@
+version 3.0.39 ( updated 3-23-17 )
+- Fixed unwanted "Your Save Has Failed" warning that appeared even when the save was performed successfully when the Visual Builder was used with certain third party plugins.
+- Fixed "Call to undefined function et_fb_enabled()" error that occurred when using some third party plugins that modify the WordPress loading flow.
+- Fixed a bug that made it impossible to disable the Divi Builder if the original version of the page being restored contained no data. 
+- Fixed compatibility issue with BackupGuard and other plugins that caused the Divi Builder to fail when attempting to edit modules due to the de-registering of the WordPress heartbeat.
+- Added graceful failures for situations where the WordPress heartbeat fails to load or is turned off. The Divi Builder will no longer fail to load in these situations, but instead will load without the features that rely on the heartbeat.
+- Fixed a bug that caused extra padding calculations for transparent headers to fail when the first section on the page was hidden.
+- Fixed a bug that caused multiple rows of tab buttons to flow into tab content.
+- Added missing localization for the contact module submit button.
+- Removed empty paragraph tag that was added to CTA modules in the Visual Builder even when the content field was empty.
+	* includes/builder/ab-testing.php
+	* includes/builder/framework.php
+	* includes/builder/main-modules.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/frontend-builder/init.php
+	* includes/builder/frontend-builder/app/lib/autosave.js
+	* includes/builder/frontend-builder/app/lib/heartbeat.js
+	* includes/builder/scripts/builder.js
+	* includes/builder/functions.php
+	* js/custom.js
+
 version 3.0.38 ( updated 3-20-17 )
 - Fixed a bug that caused an unwanted save warning message to appear when leaving a recently-saved page that contained certain combinations of global rows and sections. 
 - Fixed a bug in IE11 and below that made it impossible to open module settings in the Divi Builder for some modules.
