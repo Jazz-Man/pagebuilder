@@ -2,7 +2,7 @@ var ET_PageBuilder = ET_PageBuilder || {};
 
 window.wp = window.wp || {};
 
-window.et_builder_version = '3.0.39';
+window.et_builder_version = '3.0.40';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
@@ -12230,7 +12230,7 @@ window.et_builder_version = '3.0.39';
 			}
 		}
 
-		function et_reinitialize_builder_layout() {
+		function et_reinitialize_builder_layout( update_global_modules ) {
 			ET_PageBuilder_App.saveAsShortcode();
 
 			setTimeout( function(){
@@ -12250,6 +12250,27 @@ window.et_builder_version = '3.0.39';
 				$builder_container.css( { 'height' : 'auto' } );
 
 				ET_PageBuilder_AB_Testing.update();
+
+				// in some cases we may need to update the content of global Rows and Section right after the layout reinit
+				if ( ! update_global_modules ) {
+					return;
+				}
+
+				// get array of global Rows and Sections on the page
+				var global_modules = _.filter( ET_PageBuilder_Modules.models, function( model ) {
+					if ( 'module' !== model.attributes.type && typeof model.attributes.et_pb_global_module !== 'undefined' && model.attributes.et_pb_global_module !== '' ) {
+						return true;
+					} else {
+						return false;
+					}
+				} );
+
+				// update saved global template for each Section and Row
+				if ( 0 !== global_modules.length ) {
+					_.each( global_modules, function( model ) {
+						et_pb_update_global_template( model.attributes.cid );
+					});
+				}
 			}, 600 );
 		}
 
@@ -13162,6 +13183,7 @@ window.et_builder_version = '3.0.39';
 					et_global_id : post_id
 				},
 				success: function( data ){
+					var global_content_is_different = false;
 					if ( data.error ) {
 						// if global template not found, then make module and all child modules not global.
 						var this_view = ET_PageBuilder_Layout.getView( module_cid ),
@@ -13190,6 +13212,7 @@ window.et_builder_version = '3.0.39';
 						processed_content = processed_content.replace( /]\s+/g, ']' ).replace( /\s+\[/g, '[' );
 
 						if ( processed_shortcode !== processed_content ) {
+							global_content_is_different = true;
 							// call createLayoutFromContent only if current_shortcode is different than received shortcode
 							ET_PageBuilder_App.createLayoutFromContent( data.shortcode, '', '', { ignore_template_tag : 'ignore_template', current_row_cid : module_cid, global_id : post_id, is_reinit : 'reinit' } );
 						}
@@ -13199,17 +13222,10 @@ window.et_builder_version = '3.0.39';
 
 					//make sure all global modules have been processed and reinitialize the layout
 					if ( et_pb_globals_requested === et_pb_globals_loaded ) {
-						current_content = et_pb_get_content( 'content', true );
-						new_content = ET_PageBuilder_App.generateCompleteShortcode();
-
-						// remove all the unwanted spaces and line-breaks to make sure content comparison performed correctly.
-						new_content = new_content.replace( /]\s?\n\s?\n\s?/g, '] ' ).replace( /\s?\n\s?\n\s?\[/g, ' [' );
-						new_content = new_content.replace( /]\s+/g, ']' ).replace( /\s+\[/g, '[' );
-						current_content = current_content.replace( /]\s+/g, ']' ).replace( /\s+\[/g, '[' );
-
-						// compare existing content with the updated content. reinitialize the layout only if they are not equal.
-						if ( current_content.replace( / global_parent="\S+"/g, '' ) !== new_content.replace( / global_parent="\S+"/g, '' ) ) {
-							et_reinitialize_builder_layout();
+						// Reinitialize the layout only if global module content is different than content on page.
+						if ( global_content_is_different ) {
+							// reinitialize the layout and update global template in DB to make sure all the attributes saved the same way as on the page.
+							et_reinitialize_builder_layout( true );
 						}
 
 						setTimeout( function(){

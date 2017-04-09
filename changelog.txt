@@ -1,3 +1,19 @@
+version 3.0.40 ( updated 4-4-17 )
+- Added support for new WooCommerce 3.0 galleries and zoom effects on product pages. 
+- Fixed a bug that caused unwanted spacing to remain on the page after closing a settings modal using the ESC hotkey in the Visual Builder when the modal was snapped to the side of the page. 
+- Fixed typo in the shop module settings modal.
+- Fixed a typo in the testimonial module settings that caused an unwanted comma to appear in the Visual Builder.
+- Fixed a bug that caused design setting changes to shop modules made in the Visual Builder to apply to all shop modules on the page.
+- Fixed a bug that caused an unwanted save warning to appear after having saved the page while the Inline Editor was currently editing a piece of text that contained a third party shortcode.
+- Fixed a bug that caused quotes within module content to be replaced with HTML entities on the front end when used within global modules.
+- Fixed a bug that caused an unwanted save warning to appear after leaving a page that contained certain types of global rows and sections.
+	* style.css
+	* functions.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* includes/builder/class-et-builder-element.php
+
 version 3.0.39 ( updated 3-23-17 )
 - Fixed unwanted "Your Save Has Failed" warning that appeared even when the save was performed successfully when the Visual Builder was used with certain third party plugins.
 - Fixed "Call to undefined function et_fb_enabled()" error that occurred when using some third party plugins that modify the WordPress loading flow.

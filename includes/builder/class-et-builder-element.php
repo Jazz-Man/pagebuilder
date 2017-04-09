@@ -28,6 +28,10 @@ class ET_Builder_Element {
 	// number of times shortcode_callback function has been executed
 	private $_shortcode_callback_num;
 
+	// number of times shortcode_callback function has been executed for the shop module
+	// see the returned $object in the _shortcode_passthru_callback() method
+	private static $_shop_shortcode_callback_num = 0;
+
 	// priority number, applied to some CSS rules
 	private $_style_priority;
 
@@ -729,6 +733,18 @@ class ET_Builder_Element {
 			}
 		}
 
+		// Get the current shortcode index
+		$shortcode_index = $this->_shortcode_callback_num;
+
+		// If this is a shop module use the Shop module shortcode index
+		// Shop module creates a new class instance which resets the $_shortcode_callback_num value
+		// ( see get_shop_html() method of ET_Builder_Module_Shop class in main-modules.php )
+		// so we use a static property to track its proper shortcode index
+		if ( 'et_pb_shop' === $function_name ) {
+			$shortcode_index = self::$_shop_shortcode_callback_num;
+			self::$_shop_shortcode_callback_num++;
+		}
+
 		// Build object.
 		$object = array(
 			'_i'                => $_i,
@@ -738,7 +754,7 @@ class ET_Builder_Element {
 			'child_slug'        => $this->child_slug,
 			'fb_support'        => $this->fb_support,
 			'parent_address'    => $parent_address,
-			'shortcode_index'   => $this->_shortcode_callback_num,
+			'shortcode_index'   => $shortcode_index,
 			'type'              => $function_name,
 			'component_path'    => $component_path,
 			'attrs'             => $attrs,

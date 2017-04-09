@@ -12902,7 +12902,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 				),
 			),
 			'posts_number' => array(
-				'label'             => esc_html__( 'Posts Number', 'et_builder' ),
+				'label'             => esc_html__( 'Product Count', 'et_builder' ),
 				'type'              => 'text',
 				'option_category'   => 'configuration',
 				'description'       => esc_html__( 'Control how many products are displayed.', 'et_builder' ),
