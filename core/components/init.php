@@ -199,7 +199,7 @@ function et_core_page_resource_maybe_output_fallback_script() {
 		return;
 	}
 
-	if ( 'off' === et_get_option( 'et_pb_static_css_file', 'on' ) ) {
+	if ( function_exists( 'et_get_option' ) && 'off' === et_get_option( 'et_pb_static_css_file', 'on' ) ) {
 		return;
 	}
 

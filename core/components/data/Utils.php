@@ -128,6 +128,10 @@ class ET_Core_Data_Utils {
 		$directory_contents = glob( trailingslashit( $path ) . '*{,.}*', GLOB_BRACE );
 		$empty              = true;
 
+		if ( false === $directory_contents ) {
+			return false;
+		}
+
 		foreach ( $directory_contents as $item ) {
 			if ( ! $this->_remove_empty_directories( $item ) ) {
 				$empty = false;
@@ -317,7 +321,9 @@ class ET_Core_Data_Utils {
 			die( -1 );
 		}
 
-		et_core_security_check();
+		$capability = 0 === strpos( $path, "{$content_dir}/cache/et" ) ? 'edit_posts' : 'manage_options';
+
+		et_core_security_check( $capability );
 
 		$this->_remove_empty_directories( $path );
 	}

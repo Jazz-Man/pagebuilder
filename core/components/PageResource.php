@@ -793,7 +793,7 @@ class ET_Core_PageResource {
 			return $tag;
 		}
 
-		if ( 'off' === et_get_option( 'et_pb_static_css_file', 'on' ) ) {
+		if ( function_exists( 'et_get_option' ) && 'off' === et_get_option( 'et_pb_static_css_file', 'on' ) ) {
 			return $tag;
 		}
 
@@ -833,7 +833,7 @@ class ET_Core_PageResource {
 		}
 
 		$_ = get_post_meta( get_the_ID(), '_et_core_cached_page_resources', true );
-		$_ = et_get_option( '_et_core_cached_page_resources' );
+		$_ = function_exists( 'et_get_option' ) ? et_get_option( '_et_core_cached_page_resources' ) : '';
 
 		self::$_RESOURCES_LOADED = true;
 	}
@@ -867,7 +867,7 @@ class ET_Core_PageResource {
 	 * @param string     $owner
 	 */
 	public static function remove_static_resources( $post_id, $owner = 'core' ) {
-		et_core_security_check();
+		et_core_security_check( 'edit_posts' );
 
 		if ( ! self::can_write_to_filesystem() ) {
 			return;

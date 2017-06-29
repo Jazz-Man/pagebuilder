@@ -1,3 +1,14 @@
+version 3.0.53 ( updated 6-28-2017 )
+- Improved support for the third party Divi Layout Injector plugin.
+- Improved support for the third party Divi Page Builder Everywhere plugin.
+- Improved support for the third party Divi Overlays plugin.
+- Improved support for other third party plugins that inject Divi Library items in unconventional ways outside of the_content().
+- Fixed an issue with WordPress user privileges that prevented authors and editors from publishing pages that used static CSS file generation.
+- Fixed invalid argument supplied to foreach PHP error that occured in some situations.
+	* includes/builder/class-et-builder-element.php
+	* core/components/PageResource.php
+	* core/components/data/Utils.php
+
 version 3.0.52 ( updated 6-28-2017 )
 - Added static CSS file generation system for the Divi Builder, Divi Theme Options and Divi Theme Customizer.
 - Added the ability to input background image URLs via the media library modal when adding background images in the Visual Builder.
