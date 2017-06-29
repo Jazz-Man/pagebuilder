@@ -309,6 +309,8 @@ if ( ! function_exists( 'et_core_security_check' ) ):
  * @param string $nonce_key      The key to use to lookup nonce value in `$nonce_location`. Default
  *                               is the value of `$nonce_action` with '_nonce' appended to it.
  * @param string $nonce_location Where the nonce is stored (_POST|_GET|_REQUEST). Default: _POST.
+ *
+ * @return bool `true` if check passed.
  */
 function et_core_security_check( $user_can = 'manage_options', $nonce_action = '', $nonce_key = '', $nonce_location = '_POST' ) {
 	if ( empty( $nonce_key ) && false === strpos( $nonce_action, '_nonce' ) ) {
@@ -342,6 +344,8 @@ function et_core_security_check( $user_can = 'manage_options', $nonce_action = '
 	if ( '' === $user_can && '' === $nonce_action ) {
 		die(-1);
 	}
+
+	return true;
 }
 endif;
 

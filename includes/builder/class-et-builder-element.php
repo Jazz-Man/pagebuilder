@@ -28,6 +28,7 @@ class ET_Builder_Element {
 	public $options_toggles = array();
 
 	public static $settings_migrations_initialized = false;
+	public static $setting_advanced_styles = false;
 
 	private static $_current_section_index = -1;
 	private static $_current_row_index     = -1;
@@ -60,6 +61,11 @@ class ET_Builder_Element {
 	private static $structure_module_slugs = array();
 
 	private static $loading_backbone_templates = false;
+
+	public static $advanced_styles_manager  = null;
+	public static $asm_post_id = 0;
+
+	public static $can_reset_shortcode_indexes = true;
 
 	const DEFAULT_PRIORITY = 10;
 	const HIDE_ON_MOBILE   = 'et-hide-mobile';
@@ -94,6 +100,10 @@ class ET_Builder_Element {
 			if ( ! ( $current_module_index >= $start_from && $current_module_index < ( ET_BUILDER_AJAX_TEMPLATES_AMOUNT + $start_from ) ) ) {
 				return;
 			}
+		}
+
+		if ( null === self::$advanced_styles_manager && ! is_admin() && ! et_fb_is_enabled() ) {
+			self::_setup_advanced_styles_manager();
 		}
 
 		$this->init();
@@ -181,6 +191,89 @@ class ET_Builder_Element {
 				add_shortcode( $this->additional_shortcode, array( $this, 'additional_shortcode_callback' ) );
 			}
 		}
+	}
+
+	/**
+	 * Setup the advanced styles manager
+	 *
+	 * {@internal
+	 *   Before the styles manager was implemented, the advanced styles were output inline in the footer.
+	 *   That resulted in them being the last styles parsed by the browser, thus giving them higher
+	 *   priority than other styles on the page. With the styles manager, the advanced styles are
+	 *   enqueued at the very end of the <head>. This is for backwards compatibility (to maintain
+	 *   the same priority for the styles as before).}}
+	 */
+	private static function _setup_advanced_styles_manager() {
+		self::$asm_post_id = $post_id = et_core_page_resource_get_the_ID();
+
+		$is_preview       = is_preview() || is_et_pb_preview();
+		$forced_in_footer = et_builder_setting_is_on( 'et_pb_css_in_footer', $post_id );
+		$forced_inline    = $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id );
+		$unified_styles   = ! $forced_inline && ! $forced_in_footer;
+
+		$resource_owner = $unified_styles ? 'core' : 'builder';
+		$resource_slug  = $unified_styles ? 'unified' : 'module-design';
+
+		if ( $is_preview ) {
+			// Don't let previews cause existing saved static css files to be modified.
+			$resource_slug .= '-preview';
+		}
+
+		self::$advanced_styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 'style', 'head-late', 40 );
+
+		if ( ! $forced_inline && ! $forced_in_footer && self::$advanced_styles_manager->has_file() ) {
+			// This post currently has a fully configured styles manager.
+			return;
+		}
+
+		self::$advanced_styles_manager->forced_inline = $forced_inline;
+
+		if ( $forced_in_footer ) {
+			// Restore legacy behavior--output inline styles in the footer.
+			self::$advanced_styles_manager->set_output_location( 'footer' );
+		}
+
+		// Schedule callback after all module shortcodes are registered so we can generate styles for page resource.
+		add_action( 'et_builder_ready', array( 'ET_Builder_Element', 'set_advanced_styles' ), 20 );
+	}
+
+	/**
+	 * Generates modules' design styles for the current page and passes them to the advanced styles manager.
+	 * {@see 'et_builder_ready' (20) Must run after Extra's Category Builder modules have been loaded.}
+	 */
+	public static function set_advanced_styles() {
+		// Advanced styles is currently being populated
+		self::$setting_advanced_styles = true;
+
+		if ( is_et_pb_preview() && et_core_security_check( 'edit_posts', 'et_pb_preview_nonce', '', '_GET' ) ) {
+			$content = isset( $_POST['shortcode'] ) ? wp_unslash( $_POST['shortcode'] ) : '';
+		} else if ( is_preview() ) {
+			global $wp_query;
+			$content = $wp_query->posts[0]->post_content;
+		} else if ( $post_data = get_post( self::$asm_post_id ) ) {
+			$content = $post_data->post_content;
+		} else {
+			return;
+		}
+
+		// Generate styles
+		self::$can_reset_shortcode_indexes = false;
+		do_shortcode( et_pb_fix_shortcodes( $content ) );
+		self::$can_reset_shortcode_indexes = true;
+
+		// Pass styles to page resource which will handle their output
+		self::$advanced_styles_manager->set_data( self::get_style() . et_pb_get_page_custom_css(), 40 );
+
+		self::reset_shortcode_indexes();
+
+		// Reset styles
+		self::$styles = array();
+		self::$internal_modules_styles = array();
+		self::$prepare_internal_styles = false;
+		self::$media_queries = array();
+
+		// Reset advanced styles flag
+		self::$setting_advanced_styles = false;
 	}
 
 	function process_whitelisted_fields() {
@@ -353,8 +446,11 @@ class ET_Builder_Element {
 			return false;
 		}
 
-		// mark current ab module as processed
-		$this->ab_tests_processed[ $test_id ] = true;
+		// If current loop is advanced styles being populated, skip it
+		if ( ! self::$setting_advanced_styles ) {
+			// mark current ab module as processed
+			$this->ab_tests_processed[ $test_id ] = true;
+		}
 
 		if ( false === $saved_module_id ) {
 			// log the view_page event right away
@@ -387,27 +483,61 @@ class ET_Builder_Element {
 		return $saved_module_id;
 	}
 
-	public static function reset_shortcode_indexes( $content ) {
-		self::$_current_section_index = -1;
-		self::$_current_row_index     = -1;
-		self::$_current_column_index  = -1;
-		self::$_current_module_index  = -1;
+	public static function reset_shortcode_indexes( $content = '' ) {
+		if ( ! self::$can_reset_shortcode_indexes || ! is_main_query() ) {
+			return $content;
+		}
+
+		if ( '' !== $content && false === strpos( $content, '[et_pb_' ) ) {
+			// At least one builder section should be present.
+			return $content;
+		}
+
+		global $wp_current_filter;
+
+		if ( in_array( 'the_content', $wp_current_filter ) ) {
+			$call_counts = array_count_values( $wp_current_filter );
+
+			if ( $call_counts['the_content'] > 1 ) {
+				// This is a nested call. We only want to reset indexes after the top-most call.
+				return $content;
+			}
+		}
+
+		self::$_current_section_index       = -1;
+		self::$_current_row_index           = -1;
+		self::$_current_column_index        = -1;
+		self::$_current_module_index        = -1;
+
+		self::$_shop_shortcode_callback_num = 0;
+		self::$modules_order                = array();
+		self::$inner_modules_order          = array();
+
+		self::$internal_modules_counter     = 10000;
+
+		foreach ( self::get_parent_modules( 'et_pb_layout' ) as $slug => $module ) {
+			$module->_shortcode_callback_num = 0;
+		}
+
+		foreach ( self::get_child_modules( 'et_pb_layout' ) as $slug => $module ) {
+			$module->_shortcode_callback_num = 0;
+		}
 
 		return $content;
 	}
 
 	function _get_current_shortcode_address() {
 		// Yuck! :-/
-		if ( false !== strpos( $this->slug, 'section' ) ) {
+		if ( false !== strpos( $this->slug, '_section' ) ) {
 			self::$_current_section_index++;
 			self::$_current_row_index    = -1;
 			self::$_current_column_index = -1;
 			self::$_current_module_index = -1;
-		} else if ( false !== strpos( $this->slug, 'row' ) ) {
+		} else if ( false !== strpos( $this->slug, '_row' ) ) {
 			self::$_current_row_index++;
 			self::$_current_column_index = -1;
 			self::$_current_module_index = -1;
-		} else if ( false !== strpos( $this->slug, 'column' ) ) {
+		} else if ( false !== strpos( $this->slug, '_column' ) ) {
 			self::$_current_column_index++;
 			self::$_current_module_index = -1;
 		} else {
@@ -498,7 +628,7 @@ class ET_Builder_Element {
 				}
 
 				if ( $content_synced ) {
-					$global_shortcode_content = et_pb_fix_shortcodes( wpautop( et_pb_extract_shortcode_content( $global_content, $function_name ) ) );
+					$global_shortcode_content = et_pb_get_global_module_content( $global_content, $function_name );
 				}
 
 				// cleanup the shortcode string to avoid the attributes messing with content
@@ -699,7 +829,7 @@ class ET_Builder_Element {
 				}
 
 				if ( $content_synced && ! $is_global_template ) {
-					$global_shortcode_content = et_pb_fix_shortcodes( wpautop( et_pb_extract_shortcode_content( $global_content, $function_name_processed ) ) );
+					$global_shortcode_content = et_pb_get_global_module_content( $global_content, $function_name_processed );
 				}
 
 				// remove the shortcode content to avoid conflicts of parent attributes with similar attrs from child modules
@@ -764,7 +894,19 @@ class ET_Builder_Element {
 				$depends_on = array();
 
 				foreach ( $field['computed_depends_on'] as $depends_on_field ) {
-					$depends_on[ $depends_on_field ] = $this->shortcode_atts[ $depends_on_field ];
+					$dependency_value = $this->shortcode_atts[ $depends_on_field ];
+
+					if ( '' === $dependency_value ) {
+						if ( isset( $this->fields_unprocessed[ $depends_on_field]['default'] ) ) {
+							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
+						}
+
+						if ( isset( $this->fields_unprocessed[ $depends_on_field]['shortcode_default'] ) ) {
+							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['shortcode_default'];
+						}
+					}
+
+					$depends_on[ $depends_on_field ] = $dependency_value;
 				}
 
 				if ( ! is_callable( $field['computed_callback'] ) ) {
@@ -1333,7 +1475,7 @@ class ET_Builder_Element {
 					'background_color_gradient_end_position',
 					'background_color_gradient_type',
 				),
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
 			);
@@ -1342,7 +1484,7 @@ class ET_Builder_Element {
 				'label'             => esc_html__( 'Gradient Start', 'et_builder' ),
 				'type'              => 'color-alpha',
 				'option_category'   => 'configuration',
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'default'           => '#2b87da',
 				'shortcode_default' => '#2b87da',
@@ -1355,7 +1497,7 @@ class ET_Builder_Element {
 				'label'             => esc_html__( 'Gradient End', 'et_builder' ),
 				'type'              => 'color-alpha',
 				'option_category'   => 'configuration',
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'default'           => '#29c4a9',
 				'shortcode_default' => '#29c4a9',
@@ -1379,7 +1521,7 @@ class ET_Builder_Element {
 				'default'           => 'linear',
 				'shortcode_default' => 'linear',
 				'default_on_child'  => true,
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'on',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
@@ -1423,7 +1565,7 @@ class ET_Builder_Element {
 				'default'           => 'center',
 				'shortcode_default' => 'center',
 				'default_on_child'  => true,
-				'description'       => esc_html__( '', 'et_builder' ),
+				'description'       => '',
 				'depends_show_if'   => 'radial',
 				'tab_slug'          => $tab_slug,
 				'toggle_slug'       => $toggle_slug,
@@ -2343,7 +2485,34 @@ class ET_Builder_Element {
 		return apply_filters( 'et_pb_module_processed_fields', $fields, $this->slug );
 	}
 
-	// intended to be overridden as needed
+	/**
+	 * Get the settings fields data for this element.
+	 *
+	 * @since 1.0
+	 * @todo  Finish documenting return value's structure.
+	 *
+	 * @return array[] {
+	 *     Settings Fields
+	 *
+	 *     @type mixed[] $setting_field_key {
+	 *         Setting Field Data
+	 *
+	 *         @type string   $type                Setting field type.
+	 *         @type string   $id                  CSS id for the setting.
+	 *         @type string   $label               Text label for the setting. Translatable.
+	 *         @type string   $description         Description for the settings. Translatable.
+	 *         @type string   $class               Optional. Css class for the settings.
+	 *         @type string[] $affects             Optional. The keys of all settings that depend on this setting.
+	 *         @type string[] $depends_to          Optional. The keys of all settings that this setting depends on.
+	 *         @type string   $depends_show_if     Optional. Only show this setting when the settings
+	 *                                             on which it depends has a value equal to this.
+	 *         @type string   $depends_show_if_not Optional. Only show this setting when the settings
+	 *                                             on which it depends has a value that is not equal to this.
+	 *         ...
+	 *     }
+	 *     ...
+	 * }
+	 */
 	function get_fields() { return array(); }
 
 	function hex2rgb( $color ) {
@@ -2900,7 +3069,7 @@ class ET_Builder_Element {
 			$default = '' === $default ? '||||' : $default;
 		}
 
-		$field_value = esc_attr( $field_name ) . '.replace("%91", "[").replace("%93", "]")';
+		$field_value = esc_attr( $field_name ) . '.replace(/%91/g, "[").replace(/%93/g, "]").replace(/%22/g, "\"")';
 
 		$value_html = ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : \'%3$s\' %%>" ';
 		$value = sprintf(
@@ -5819,7 +5988,7 @@ class ET_Builder_Element {
 		$styles_array = $internal ? self::$internal_modules_styles : self::$styles;
 
 		if ( empty( $styles_array ) ) {
-			return false;
+			return '';
 		}
 
 		$output = '';
@@ -6001,6 +6170,7 @@ class ET_Builder_Element {
 
 		$order_class_name = sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
 
+
 		return $order_class_name;
 	}
 
@@ -6023,6 +6193,8 @@ class ET_Builder_Element {
 
 			self::$modules_order[ $function_name ] = isset( self::$modules_order[ $function_name ] ) ? (int) self::$modules_order[ $function_name ] + 1 : 0;
 		}
+
+
 	}
 
 	static function add_module_order_class( $module_class, $function_name ) {

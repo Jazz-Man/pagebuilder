@@ -4,6 +4,12 @@ if ( ! function_exists( 'et_builder_should_load_framework' ) ) :
 function et_builder_should_load_framework() {
 	global $pagenow;
 
+	static $should_load = null;
+
+	if ( null !== $should_load ) {
+		return $should_load;
+	}
+
 	$is_admin = is_admin();
 	$required_admin_pages = array( 'edit.php', 'post.php', 'post-new.php', 'admin.php', 'customize.php', 'edit-tags.php', 'admin-ajax.php', 'export.php', 'options-permalink.php', 'themes.php' ); // list of admin pages where we need to load builder files
 	$specific_filter_pages = array( 'edit.php', 'admin.php', 'edit-tags.php' ); // list of admin pages where we need more specific filtering
@@ -14,11 +20,12 @@ function et_builder_should_load_framework() {
 	$is_edit_layout_category_page = 'edit-tags.php' === $pagenow && isset( $_GET['taxonomy'] ) && 'layout_category' === $_GET['taxonomy'];
 
 	if ( ! $is_admin || ( $is_admin && in_array( $pagenow, $required_admin_pages ) && ( ! in_array( $pagenow, $specific_filter_pages ) || $is_edit_library_page || $is_role_editor_page || $is_edit_layout_category_page || $is_import_page ) ) ) {
-		return true;
+		$should_load = true;
 	} else {
-		return false;
+		$should_load = false;
 	}
 
+	return $should_load;
 }
 endif;
 
@@ -1410,13 +1417,14 @@ function et_fb_wp_refresh_nonces( $response, $data, $screen_id ) {
 add_filter( 'wp_refresh_nonces', 'et_fb_wp_refresh_nonces', 10, 3 );
 
 function et_fb_get_portability_export_url() {
-	$args = array(
+	$admin_url = is_ssl() ? admin_url() : admin_url( '', 'http' );
+	$args      = array(
 		'et_core_portability' => true,
 		'context'             => 'et_builder',
 		'name'                => 'temp_name',
 		'nonce'               => wp_create_nonce( 'et_core_portability_nonce' ),
 	);
-	return add_query_arg( $args, admin_url() );
+	return add_query_arg( $args, $admin_url );
 }
 
 function et_fb_get_nonces() {
@@ -2859,9 +2867,10 @@ function et_builder_set_content_activation( $post_id = false ) {
 	}
 
 	// Save old content
+	$saved_old_content = get_post_meta( $post_id, '_et_pb_old_content', true );
 	$save_old_content = update_post_meta( $post_id, '_et_pb_old_content', $post->post_content );
 
-	if ( true !== $save_old_content && '' !== $post->post_content ) {
+	if ( true !== $save_old_content && $saved_old_content !== $post->post_content && '' !== $post->post_content ) {
 		return false;
 	}
 

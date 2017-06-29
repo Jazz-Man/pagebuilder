@@ -9,13 +9,17 @@ class ET_Core_Logger {
 	 * @param mixed $message
 	 */
 	private static function _write_log( $message ) {
-		if ( ! is_string( $message ) ) {
-			$message = print_r( $message, true );
+		$before_message = ' ';
+
+		if ( ! is_scalar( $message ) ) {
+			$message        = print_r( $message, true );
+			$before_message = "\n";
 		}
 
-		$backtrace = debug_backtrace( 1, 3 );
+		$backtrace = debug_backtrace( 1 );
 		$caller    = $backtrace[2];
-		$message   = "{$caller['function']}(): {$message}";
+		$file      = basename( $backtrace[1]['file'] );
+		$message   = "{$file}:{$backtrace[1]['line']} -> {$caller['function']}():{$before_message}{$message}";
 
 		error_log( $message );
 	}

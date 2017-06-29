@@ -114,6 +114,59 @@ if ( ! function_exists( 'et_back_sync_custom_css_options' ) ) {
 
 add_filter( 'update_custom_css_data', 'et_back_sync_custom_css_options' );
 
+if ( ! function_exists( 'et_update_custom_css_data_cb' ) ):
+function et_update_custom_css_data_cb( $data ) {
+
+	ET_Core_PageResource::remove_static_resources( 'global', 'core' );
+
+	return $data;
+}
+add_filter( 'update_custom_css_data', 'et_update_custom_css_data_cb' );
+endif;
+
+if ( ! function_exists( 'et_epanel_handle_custom_css_output' ) ):
+function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
+	global $wp_current_filter;
+
+	if ( ! $css || ! in_array( 'wp_head', $wp_current_filter ) || is_admin() && ! is_customize_preview() ) {
+		return $css;
+	}
+
+	$post_id        = get_the_ID();
+	$is_preview     = is_preview() || ( function_exists( 'is_et_pb_preview' ) && is_et_pb_preview() );
+
+	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
+	$disabled_post   = $disabled_global || 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true );
+	$forced_inline   = $is_preview || $disabled_global || $disabled_post;
+	$unified_styles  = ! $forced_inline;
+
+	$resource_owner = $unified_styles ? 'core' : 'divi';
+	$resource_slug  = $unified_styles ? 'unified' : 'custom-css';
+
+	if ( $is_preview ) {
+		// Don't let previews cause existing saved static css files to be modified.
+		$resource_slug .= '-preview';
+	}
+
+	if ( $unified_styles && function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
+		$resource_slug .= '-vb';
+	}
+
+	$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 'style', 'head-late', 30 );
+
+	if ( ! $unified_styles ) {
+		$styles_manager->forced_inline = $forced_inline;
+	}
+
+	if ( $styles_manager->forced_inline || ! $styles_manager->has_file() ) {
+		$styles_manager->set_data( $css, 30 );
+	}
+
+	return ''; // We're handling the custom CSS output ourselves.
+}
+add_filter( 'wp_get_custom_css', 'et_epanel_handle_custom_css_output', 999, 2 );
+endif;
+
 /**
  * Gets option value from the single theme option, stored as an array in the database
  * if all options stored in one row.

@@ -1,7 +1,7 @@
 /*
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.51
+Version: 3.0.52
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -4178,6 +4178,7 @@ ul.et_pb_side_nav .side_nav_item a.active {
 .et_header_style_fullscreen .et_slide_menu_top .et-search-form {
 	display: inline-block;
 	width: 140px !important;
+	min-width: 140px;
 	margin-top: 0 !important;
 	margin-bottom: -10px;
 	border: 1px solid #fff;
@@ -4415,6 +4416,47 @@ ul.et_pb_side_nav .side_nav_item a.active {
 .et_header_style_slide .et-fixed-header #et-top-navigation,
 .et_header_style_fullscreen .et-fixed-header #et-top-navigation {
 	padding: 11px 0 !important;
+}
+
+/* Countdown Timer */
+.et_right_sidebar .et_pb_column_2_3 .et_pb_countdown_timer .section p.value,
+.et_right_sidebar .et_pb_column_2_3 .et_pb_countdown_timer .section.sep,
+.et_left_sidebar .et_pb_column_2_3 .et_pb_countdown_timer .section p.value,
+.et_left_sidebar .et_pb_column_2_3 .et_pb_countdown_timer .section.sep {
+	font-size: 44px;
+	line-height: 44px;
+}
+
+.et_right_sidebar .et_pb_column_1_2 .et_pb_countdown_timer .section p.value,
+.et_right_sidebar .et_pb_column_1_2 .et_pb_countdown_timer .section.sep,
+.et_left_sidebar .et_pb_column_1_2 .et_pb_countdown_timer .section p.value,
+.et_left_sidebar .et_pb_column_1_2 .et_pb_countdown_timer .section.sep {
+	font-size: 32px;
+	line-height: 32px;
+}
+
+.et_right_sidebar .et_pb_column_3_8 .et_pb_countdown_timer .section p.value,
+.et_right_sidebar .et_pb_column_3_8 .et_pb_countdown_timer .section.sep,
+.et_left_sidebar .et_pb_column_3_8 .et_pb_countdown_timer .section p.value,
+.et_left_sidebar .et_pb_column_3_8 .et_pb_countdown_timer .section.sep {
+	font-size: 24px;
+	line-height: 24px;
+}
+
+.et_right_sidebar .et_pb_column_1_3 .et_pb_countdown_timer .section p.value,
+.et_right_sidebar .et_pb_column_1_3 .et_pb_countdown_timer .section.sep,
+.et_left_sidebar .et_pb_column_1_3 .et_pb_countdown_timer .section p.value,
+.et_left_sidebar .et_pb_column_1_3 .et_pb_countdown_timer .section.sep {
+	font-size: 20px;
+	line-height: 20px;
+}
+
+.et_right_sidebar .et_pb_column_1_4 .et_pb_countdown_timer .section p.value,
+.et_right_sidebar .et_pb_column_1_4 .et_pb_countdown_timer .section.sep,
+.et_left_sidebar .et_pb_column_1_4 .et_pb_countdown_timer .section p.value,
+.et_left_sidebar .et_pb_column_1_4 .et_pb_countdown_timer .section.sep {
+	font-size: 16px;
+	line-height: 16px;
 }
 
 /* Responsive Styles Large Desktop And Above */
@@ -5305,8 +5347,8 @@ ul.et_pb_side_nav .side_nav_item a.active {
 		position: fixed;
 	}
 
-	.et_vertical_nav.et_vertical_fixed.et_header_style_left .et-fixed-header #et-top-navigation,
-	.et_vertical_nav.et_vertical_fixed.et_header_style_split .et-fixed-header #et-top-navigation {
+	.et_vertical_nav.et_vertical_fixed.et_header_style_left #et-top-navigation,
+	.et_vertical_nav.et_vertical_fixed.et_header_style_split #et-top-navigation {
 		padding-top: 33px;
 	}
 
@@ -6127,7 +6169,27 @@ ul.et_pb_side_nav .side_nav_item a.active {
 
 .et_pb_column_1_3 h2,
 .et_pb_column_1_4 h2 {
-	font-size: 22px;
+	font-size: 23px;
+}
+
+.et_pb_column_1_3 h3,
+.et_pb_column_1_4 h3 {
+	font-size: 20px;
+}
+
+.et_pb_column_1_3 h4,
+.et_pb_column_1_4 h4 {
+	font-size: 18px;
+}
+
+.et_pb_column_1_3 h5,
+.et_pb_column_1_4 h5 {
+	font-size: 16px;
+}
+
+.et_pb_column_1_3 h6,
+.et_pb_column_1_4 h6 {
+	font-size: 15px;
 }
 
 /* Clearfix */
@@ -7777,6 +7839,20 @@ p.et_pb_contact_field.et_pb_contact_field_last + p.et_pb_contact_field.et_pb_con
 	font-size: 14px;
 }
 
+.et_pb_contact p textarea {
+	font-family: inherit;
+}
+
+.et_pb_contact p input::-moz-placeholder,
+.et_pb_contact p textarea::-moz-placeholder {
+	opacity: 1;
+}
+
+.et_pb_contact p input:-moz-placeholder,
+.et_pb_contact p textarea:-moz-placeholder {
+	opacity: 1;
+}
+
 .et_pb_contact_right p input {
 	max-width: 50px;
 	padding: 16px;
@@ -8027,11 +8103,6 @@ p.et_pb_contact_field.et_pb_contact_field_last + p.et_pb_contact_field.et_pb_con
 }
 
 /* Column Adjustments */
-.et_pb_column_1_4 .et_pb_countdown_timer .section p {
-	font-size: 20px;
-	line-height: 20px;
-}
-
 .et_pb_column_1_2 .et_pb_countdown_timer .section p {
 	font-size: 38px;
 	line-height: 38px;
@@ -8056,10 +8127,14 @@ p.et_pb_contact_field.et_pb_contact_field_last + p.et_pb_contact_field.et_pb_con
 }
 
 .et_pb_column_3_8 .et_pb_countdown_timer .section p,
-.et_pb_column_1_3 .et_pb_countdown_timer .section p,
-.et_pb_column_1_4 .et_pb_countdown_timer .section p {
+.et_pb_column_1_3 .et_pb_countdown_timer .section p {
 	font-size: 28px;
 	line-height: 28px;
+}
+
+.et_pb_column_1_4 .et_pb_countdown_timer .section p {
+	font-size: 20px;
+	line-height: 20px;
 }
 
 .et_pb_column_3_8 .et_pb_countdown_timer .section p.label,
@@ -11039,6 +11114,7 @@ article.et_pb_has_overlay {
 
 .et_pb_slider_with_overlay .et_pb_slide_overlay_container {
 	position: absolute;
+	z-index: 1;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -15092,6 +15168,20 @@ span.comment_date {
 		top: -28px !important;
 	}
 
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
+		font-size: 32px !important;
+		line-height: 32px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
+		top: -27px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p.label {
+		font-size: 14px !important;
+		line-height: 25px !important;
+	}
+
 /* Fullwidth Menu Module */
 	.et_pb_fullwidth_menu .fullwidth-menu-nav {
 		display: none;
@@ -15299,16 +15389,29 @@ span.comment_date {
 	}
 }
 
+/* Responsive Styles Tablet Only (Lower Adjustment) */
+@media all and (min-width: 768px) and (max-width: 800px) {
+	/* Countdown Timer Module */
+	.et_pb_countdown_timer .section p {
+		font-size: 50px !important;
+		line-height: 50px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
+		font-size: 25px !important;
+		line-height: 25px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
+		top: -25px !important;
+	}
+}
+
 /* Responsive Styles Smartphone Only */
 @media all and (max-width: 767px) {
 	/* Salvattore Styles */
 	.et_pb_column .et_pb_blog_grid[data-columns]::before {
 		content: "1 .column.size-1of1";
-	}
-
-/* Text Module */
-	.et_pb_text_align_right {
-		text-align: left;
 	}
 
 /* Slider Modules */
@@ -15634,11 +15737,24 @@ span.comment_date {
 		top: -28px !important;
 	}
 
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
+		font-size: 16px !important;
+		line-height: 16px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
+		top: -21px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p.label {
+		font-size: 14px !important;
+		line-height: 25px !important;
+	}
+
 /* Testimonials Module */
 	.et_pb_column .et_pb_testimonial_description {
 		display: block;
 		width: 100%;
-		text-align: center;
 	}
 
 	.et_pb_column .et_pb_testimonial_portrait {
@@ -16080,6 +16196,34 @@ span.comment_date {
 	.et_pb_section .et_pb_column .et_pb_post_slider_image_bottom .et_pb_slide_image,
 	.et_pb_section .et_pb_column .et_pb_post_slider_image_bottom .et_pb_slide_video {
 		margin-bottom: 16% !important;
+	}
+
+/* Countdown Timer Module */
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
+		font-size: 32px !important;
+		line-height: 32px !important;
+	}
+
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
+		top: -25px !important;
+	}
+}
+
+/* Responsive Styles Small Smartphone Portrait */
+@media all and (max-width: 380px) {
+	.et_pb_countdown_timer .section p,
+	.et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
+		font-size: 24px !important;
+		line-height: 24px !important;
+	}
+
+	.et_pb_countdown_timer .section p.label {
+		font-size: 12px !important;
+		line-height: 25px !important;
+	}
+
+	.et_pb_countdown_timer .sep {
+		top: -24px !important;
 	}
 }
 
