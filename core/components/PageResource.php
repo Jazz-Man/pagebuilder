@@ -276,6 +276,13 @@ class ET_Core_PageResource {
 	public $type;
 
 	/**
+	 * The output location during which this resource's static file should be generated.
+	 *
+	 * @var string
+	 */
+	public $write_file_location;
+
+	/**
 	 * ET_Core_PageResource constructor
 	 *
 	 * @param string     $owner    The owner of the instance (core|divi|builder|bloom|monarch|custom).
@@ -285,12 +292,14 @@ class ET_Core_PageResource {
 	 * @param string     $type     The resource type (style|script). Default: `style`.
 	 * @param string     $location Where the resource should be output (head|footer). Default: `head`.
 	 */
-	public function __construct( $owner, $slug, $post_id = null, $type = 'style', $location = 'head', $priority = 10 ) {
+	public function __construct( $owner, $slug, $post_id = null, $priority = 10, $location = 'head-late', $type = 'style' ) {
 		$this->owner    = self::_validate_property( 'owner', $owner );
 		$this->post_id  = $post_id ? $post_id : et_core_page_resource_get_the_ID();
 
 		$this->type     = self::_validate_property( 'type', $type );
 		$this->location = self::_validate_property( 'location', $location );
+
+		$this->write_file_location = $this->location;
 
 		$slug           = sanitize_text_field( $slug );
 		$this->filename = "et-{$this->owner}-{$slug}";
@@ -302,6 +311,10 @@ class ET_Core_PageResource {
 		self::startup();
 
 		$this->_initialize_resource();
+
+		if ( et_is_builder_plugin_active() ) {
+			$this->set_data( '' );
+		}
 	}
 
 	/**
@@ -380,12 +393,12 @@ class ET_Core_PageResource {
 		$can_enqueue = 0 === did_action( 'wp_print_scripts' );
 
 		if ( $can_enqueue ) {
-			wp_enqueue_script( $resource->slug, $resource->URL, array(), ET_CORE_VERSION, true );
+			wp_enqueue_script( $resource->slug, set_url_scheme( $resource->URL ), array(), ET_CORE_VERSION, true );
 		} else {
 			printf(
 				'<script id="%1$s" src="%2$s"></script>',
 				esc_attr( $resource->slug ),
-				esc_url( $resource->URL )
+				esc_url( set_url_scheme( $resource->URL ) )
 			);
 		}
 
@@ -405,12 +418,12 @@ class ET_Core_PageResource {
 		$can_enqueue = 0 === did_action( 'wp_print_styles' );
 
 		if ( $can_enqueue ) {
-			wp_enqueue_style( $resource->slug, $resource->URL );
+			wp_enqueue_style( $resource->slug, set_url_scheme( $resource->URL ) );
 		} else {
 			printf(
 				'<link rel="stylesheet" id="%1$s" href="%2$s" onerror="%3$s" onload="%4$s" />',
 				esc_attr( $resource->slug ),
-				esc_url( $resource->URL ),
+				esc_url( set_url_scheme( $resource->URL ) ),
 				self::$_onerror,
 				self::$_onload
 			);
@@ -458,6 +471,12 @@ class ET_Core_PageResource {
 					continue;
 				}
 
+				if ( $resource->write_file_location !== $location ) {
+					// This resource's static file needs to be generated later on.
+					self::_assign_output_location( $resource->write_file_location, $resource );
+					continue;
+				}
+
 				if ( empty( $resource->data ) && 'footer' !== $location ) {
 					// This resource doesn't have any data yet so we'll assign it to the next output location.
 					$next_location = self::_get_next_output_location();
@@ -478,10 +497,14 @@ class ET_Core_PageResource {
 				}
 
 				// Create the file
-				if ( ! self::$wpfs->put_contents( $resource->PATH, $resource->get_data() ) ) {
+				if ( ! self::$wpfs->put_contents( $resource->PATH, $resource->get_data( 'file' ) ) ) {
 					// There's no point in continuing, so bail.
 					self::$_can_write = false;
 					return;
+				}
+
+				if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+					define( 'DONOTCACHEPAGE', true );
 				}
 			}
 		}
@@ -549,13 +572,16 @@ class ET_Core_PageResource {
 					'<%1$s id="%2$s">%3$s</%1$s>',
 					esc_html( $resource->type ),
 					esc_attr( $resource->slug ),
-					strip_tags( $resource->get_data() )
+					strip_tags( $resource->get_data( 'inline' ) )
 				);
 
-				$resource->inlined = true;
+				if ( $resource->write_file_location === $resource->location ) {
+					// File wasn't created during this location's callback and it won't be created later
+					$resource->inlined = true;
 
-				// Don't save inlined resources to the database
-				self::_unregister_resource( $resource );
+					// Don't allow inlined resources to be stored in the database
+					self::_unregister_resource( $resource );
+				}
 			}
 		}
 	}
@@ -565,6 +591,9 @@ class ET_Core_PageResource {
 	 */
 	protected static function _register_callbacks() {
 		$class = 'ET_Core_PageResource';
+
+		// Delete cached resources if needed.
+		add_action( 'wp', array( $class, 'clear_cache_on_update' ), 8 );
 
 		// Get any existing resources from database as soon as possible.
 		add_action( 'wp', array( $class, 'load_resources_from_database' ), 9 );
@@ -579,7 +608,7 @@ class ET_Core_PageResource {
 		add_action( 'wp_head', array( $class, 'head_late_output_cb' ), 103 );
 
 		// Output Location: footer
-		add_action( 'wp_footer', array( $class, 'footer_output_cb' ) );
+		add_action( 'wp_footer', array( $class, 'footer_output_cb' ), 20 );
 
 		// Always delete cached resources for a post upon saving.
 		add_action( 'save_post', array( $class, 'save_post_cb' ), 10, 3 );
@@ -611,6 +640,16 @@ class ET_Core_PageResource {
 
 		global $wp_filesystem;
 		self::$wpfs = $wp_filesystem;
+	}
+
+	public static function clear_cache_on_update() {
+		$static_css_cache_version = et_get_option( 'et_pb_static_css_cache_version', '0.0.0' );
+		// check the version of cache and remove static css if ET_CORE_VERSION greater than version of cache.
+		if ( version_compare( ET_CORE_VERSION, $static_css_cache_version, '>' ) ) {
+			self::remove_static_resources( 'all', 'all' );
+			// update the cache version once it's cleared.
+			et_update_option( 'et_pb_static_css_cache_version', ET_CORE_VERSION );
+		}
 	}
 
 	/**
@@ -647,7 +686,9 @@ class ET_Core_PageResource {
 				$is_valid = 0 === strpos( $value, self::$WP_CONTENT_DIR . '/cache/et' );
 				break;
 			case 'url':
-				$is_valid = 0 === strpos( $value, wp_make_link_relative( content_url() ) );
+				$content_url = content_url( '/cache/et' );
+				$is_valid    = 0 === strpos( $value, set_url_scheme( $content_url, 'http' ) );
+				$is_valid    = $is_valid ? $is_valid : 0 === strpos( $value, set_url_scheme( $content_url, 'https' ) );
 				break;
 			case 'post_id':
 				$is_valid = 'global' === $value || 'all' === $value || is_numeric( $value );
@@ -675,7 +716,7 @@ class ET_Core_PageResource {
 
 	/**
 	 * Output Location: footer
-	 * {@see 'wp_footer'}
+	 * {@see 'wp_footer' (20) Allow third-party extensions some room to do what they do}
 	 */
 	public static function footer_output_cb() {
 		self::_maybe_create_static_resources( 'footer' );
@@ -855,9 +896,21 @@ class ET_Core_PageResource {
 	 * @param bool    $update
 	 */
 	public static function save_post_cb( $post_id, $post, $update ) {
-		if ( $update ) {
-			self::remove_static_resources( $post_id, 'all' );
+		if ( ! $update ) {
+			return;
 		}
+
+		$post_types = array( 'post', 'page', 'project' );
+
+		if ( function_exists( 'et_builder_get_builder_post_types' ) ) {
+			$post_types = array_merge( $post_types, et_builder_get_builder_post_types() );
+		}
+
+		if ( ! in_array( $post->post_type, $post_types ) ) {
+			return;
+		}
+
+		self::remove_static_resources( $post_id, 'all' );
 	}
 
 	/**
@@ -867,7 +920,13 @@ class ET_Core_PageResource {
 	 * @param string     $owner
 	 */
 	public static function remove_static_resources( $post_id, $owner = 'core' ) {
-		et_core_security_check( 'edit_posts' );
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'edit_posts' ) ) {
+			return;
+		}
 
 		if ( ! self::can_write_to_filesystem() ) {
 			return;
@@ -918,7 +977,7 @@ class ET_Core_PageResource {
 
 		$this->BASE_PATH = self::$_can_write ? self::$data_utils->normalize_path( dirname( $absolute_path ) ) : '';
 		$this->PATH      = self::$_can_write ? $absolute_path : '';
-		$this->URL       = self::$_can_write ? wp_make_link_relative( content_url( $relative_path ) ) : '';
+		$this->URL       = self::$_can_write ? content_url( $relative_path ) : '';
 
 		$this->_register_resource();
 	}
@@ -999,12 +1058,27 @@ class ET_Core_PageResource {
 		return self::$data_utils->all( $props );
 	}
 
-	public function get_data() {
+	public function get_data( $context ) {
 		$result = '';
 
 		ksort( $this->data, SORT_NUMERIC );
 
-		foreach ( $this->data as $priority => $data_part ) {
+		/**
+		 * Filters the resource's data array.
+		 *
+		 * @since 3.0.52
+		 *
+		 * @param array[]              $data {
+		 *
+		 *     @type string[] $priority Resource data.
+		 *     ...
+		 * }
+		 * @param string               $context  Where the data will be used. Accepts 'inline', 'file'.
+		 * @param ET_Core_PageResource $resource The resource instance.
+		 */
+		$resource_data = apply_filters( 'et_core_page_resource_get_data', $this->data, $context, $this );
+
+		foreach ( $resource_data as $priority => $data_part ) {
 			foreach ( $data_part as $data ) {
 				$result .= $data;
 			}

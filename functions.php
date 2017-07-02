@@ -5817,8 +5817,8 @@ function et_divi_add_customizer_css() {
 			$resource_slug .= '-preview';
 		}
 
-		$styles_manager    = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 'style', 'head-late' );
-		$styles_manager_vb = et_core_page_resource_get( $resource_owner, "{$resource_slug}-vb", $post_id, 'style', 'head-late' );
+		$styles_manager    = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id );
+		$styles_manager_vb = et_core_page_resource_get( $resource_owner, "{$resource_slug}-vb", $post_id );
 
 		// Make sure we don't output styles when we're not supposed to
 		$styles_manager->disabled    = function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled();
@@ -7533,7 +7533,7 @@ function et_divi_add_customizer_css() {
 			// Give the output to the style manager so a static resource can be created and served.
 			$styles_manager->set_data( implode( '\n', $css_output ) );
 }
-add_action( 'wp', 'et_divi_add_customizer_css', 20 );
+add_action( 'wp', 'et_divi_add_customizer_css' );
 
 /**
  * Outputting saved customizer style settings

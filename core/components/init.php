@@ -2,26 +2,18 @@
 
 if ( ! function_exists( 'et_core_init' ) ):
 function et_core_init() {
-	// TODO: TL;DR Move et_{*}_option() functions to core.
-	// This should be stored in theme/plugin options array but the et_{*}_option()
-	// functions haven't been loaded yet. Saving to the array manually would have to account
-	// for our themes and plugins which is overkill at this point.
-	$last_core_version = get_option( 'et_core_version', '' );
+	ET_Core_PageResource::startup();
 
-	if ( ET_CORE_VERSION !== $last_core_version ) {
-		update_option( 'et_core_version', ET_CORE_VERSION );
-
+	if ( defined( 'ET_CORE_UPDATED' ) ) {
 		global $wp_rewrite;
 		add_action( 'shutdown', array( $wp_rewrite, 'flush_rules' ) );
 	}
-
-	ET_Core_PageResource::startup();
 
 	$cache_dir = ET_Core_PageResource::get_cache_directory();
 
 	if ( file_exists( $cache_dir . '/DONOTCACHEPAGE' ) ) {
 		! defined( 'DONOTCACHEPAGE' ) ? define( 'DONOTCACHEPAGE', true ) : '';
-		unlink( $cache_dir . '/DONOTCACHEPAGE' );
+		@unlink( $cache_dir . '/DONOTCACHEPAGE' );
 	}
 }
 endif;
@@ -34,8 +26,7 @@ function et_core_clear_wp_cache( $post_id = '' ) {
 	// General Use Cache Plugins (typically use only one)
 	if ( isset( $GLOBALS['comet_cache'] ) ) {
 		// Comet Cache
-		$class = get_class( $GLOBALS['comet_cache'] );
-		call_user_func( array( $class, 'clear' ) );
+		comet_cache::clear();
 
 	} else if ( function_exists( 'rocket_clean_post' ) ) {
 		// WP Rocket
@@ -47,9 +38,11 @@ function et_core_clear_wp_cache( $post_id = '' ) {
 
 	} else if ( function_exists( 'clear_post_supercache' ) ) {
 		// WP Super Cache
+		include_once WPCACHEHOME . 'wp-cache-phase1.php';
 		include_once WPCACHEHOME . 'wp-cache-phase2.php';
-		'' !== $post_id ? clear_post_supercache( $post_id ) : wp_cache_clear_cache_on_menu();
-
+		if ( function_exists('wp_cache_debug') && function_exists('wp_cache_clear_cache_on_menu') ) {
+			'' !== $post_id ? clear_post_supercache( $post_id ) : wp_cache_clear_cache_on_menu();
+		}
 	} else if ( isset( $GLOBALS['wp_fastest_cache'] ) ) {
 		// WP Fastest Cache
 		'' !== $post_id ? $GLOBALS['wp_fastest_cache']->singleDeleteCache( $post_id ) : $GLOBALS['wp_fastest_cache']->deleteCache();
@@ -176,11 +169,11 @@ if ( ! function_exists( 'et_core_page_resource_get' ) ):
  * @param string|int $post_id  The post id that the resource is associated with or `global`.
  *                             If `null`, the return value of {@link get_the_ID()} will be used.
  * @param string     $type     The resource type (style|script). Default: `style`.
- * @param string     $location Where the resource should be output (head|footer). Default: `head`.
+ * @param string     $location Where the resource should be output (head|footer). Default: `head-late`.
  *
  * @return ET_Core_PageResource
  */
-function et_core_page_resource_get( $owner, $slug, $post_id = null, $type = 'style', $location = 'head', $priority = 10 ) {
+function et_core_page_resource_get( $owner, $slug, $post_id = null, $priority = 10, $location = 'head-late', $type = 'style' ) {
 	$post_id = $post_id ? $post_id : get_the_ID();
 	$_slug   = "et-{$owner}-{$slug}-cached-inline-{$type}s";
 
@@ -188,7 +181,7 @@ function et_core_page_resource_get( $owner, $slug, $post_id = null, $type = 'sty
 
 	return isset( $all_resources[ $_slug ] )
 		? $all_resources[ $_slug ]
-		: new ET_Core_PageResource( $owner, $slug, $post_id, $type, $location, $priority );
+		: new ET_Core_PageResource( $owner, $slug, $post_id, $priority, $location, $type );
 }
 endif;
 
@@ -236,4 +229,40 @@ function et_core_page_resource_register_fallback_query() {
 	add_rewrite_tag( '%et_core_page_resource%', '([\w\d-]+)' );
 }
 add_action( 'init', 'et_core_page_resource_register_fallback_query', 11 );
+endif;
+
+
+if ( ! function_exists( 'et_core_page_resource_updated_post_meta_cb' ) ):
+function et_core_page_resource_updated_post_meta_cb( $meta_id, $object_id, $meta_key, $_meta_value ) {
+	$watching_keys = array(
+		'sb_divi_fe_layout_overrides', // Divi Layout Injector Plugin
+	);
+
+	if ( in_array( $meta_key, $watching_keys ) && current_user_can( 'edit_posts' ) ) {
+		ET_Core_PageResource::remove_static_resources( $object_id, 'all' );
+	}
+}
+add_action( 'updated_post_meta', 'et_core_page_resource_updated_post_meta_cb', 10, 4 );
+endif;
+
+
+if ( ! function_exists( 'et_core_page_resource_updated_option_cb' ) ):
+function et_core_page_resource_updated_option_cb( $option, $old_value, $value ) {
+	$clear_cache       = false;
+	$watching_prefixes = array(
+		'sb_divi_fe', // Divi Layout Injector Plugin
+	);
+
+	foreach( $watching_prefixes as $prefix ) {
+		if ( 0 === strpos( $option, $prefix ) ) {
+			$clear_cache = true;
+			break;
+		}
+	}
+
+	if ( $clear_cache && current_user_can( 'edit_posts' ) ) {
+		ET_Core_PageResource::remove_static_resources( 'all', 'all' );
+	}
+}
+add_action( 'updated_option', 'et_core_page_resource_updated_option_cb', 10, 3 );
 endif;

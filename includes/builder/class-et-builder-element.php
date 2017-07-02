@@ -46,20 +46,12 @@ class ET_Builder_Element {
 	private $_style_priority;
 
 	/**
-	 * Holds module styles generated during 'the_content' filter.
+	 * Holds module styles for the current request.
 	 *
 	 * @var array
 	 */
 	private static $styles = array();
 	private static $internal_modules_styles = array();
-
-	/**
-	 * Holds module styles generated outside of 'the_content' filter.
-	 *
-	 * @var array
-	 */
-	private static $other_styles = array();
-	private static $other_internal_module_styles = array();
 
 	private static $prepare_internal_styles = false;
 	private static $internal_modules_counter = 10000;
@@ -233,75 +225,59 @@ class ET_Builder_Element {
 			$resource_slug .= '-preview';
 		}
 
-		self::$advanced_styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 'style', 'head-late', 40 );
+		self::$advanced_styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 40 );
 
-		if ( $forced_inline || $forced_in_footer || ! self::$advanced_styles_manager->has_file() ) {
-			self::$advanced_styles_manager->forced_inline = $forced_inline;
-
-			if ( $forced_in_footer ) {
-				// Restore legacy behavior--output inline styles in the footer.
-				self::$advanced_styles_manager->set_output_location( 'footer' );
-			}
-
-			// Schedule callback after all module shortcodes are registered so we can generate styles for page resource.
-			add_action( 'et_builder_ready', array( 'ET_Builder_Element', 'set_advanced_styles' ), 20 );
+		if ( ! $forced_inline && ! $forced_in_footer && self::$advanced_styles_manager->has_file() ) {
+			// This post currently has a fully configured styles manager.
+			return;
 		}
 
-		// Schedule callback at the end of request to check for styles that might be added outside of 'the_content'.
-		add_action( 'wp_footer', array( 'ET_Builder_Element', 'handle_styles_from_modules_outside_the_content' ), 100 );
+		self::$advanced_styles_manager->forced_inline       = $forced_inline;
+		self::$advanced_styles_manager->write_file_location = 'footer';
+
+		if ( $forced_in_footer ) {
+			// Restore legacy behavior--output inline styles in the footer.
+			self::$advanced_styles_manager->set_output_location( 'footer' );
+		}
+
+		// Schedule callback to run in the footer so we can pass the module design styles to the page resource.
+		add_action( 'wp_footer', array( 'ET_Builder_Element', 'set_advanced_styles' ), 19 );
+
+		// Add filter for the resource data so we can prevent theme customizer css from being
+		// included with the builder css inline on first-load (since its in the head already).
+		add_filter( 'et_core_page_resource_get_data', array( 'ET_Builder_Element', 'filter_page_resource_data' ), 10, 3 );
 	}
 
 	/**
-	 * Generates modules' design styles for the current page and passes them to the advanced styles manager.
-	 * {@see 'et_builder_ready' (20) Must run after Extra's Category Builder modules have been loaded.}
+	 * Passes the module design styles for the current page to the advanced styles manager.
+	 * {@see 'wp_footer' (9) Must run before the style manager's footer callback}
 	 */
 	public static function set_advanced_styles() {
-		// Advanced styles is currently being populated
-		self::$setting_advanced_styles = true;
-
-		if ( is_et_pb_preview() && et_core_security_check( 'edit_posts', 'et_pb_preview_nonce', '', '_GET' ) ) {
-			$content = isset( $_POST['shortcode'] ) ? wp_unslash( $_POST['shortcode'] ) : '';
-		} else if ( is_preview() ) {
-			global $wp_query;
-			$content = $wp_query->posts[0]->post_content;
-		} else if ( $post_data = get_post( self::$asm_post_id ) ) {
-			$content = $post_data->post_content;
-		} else {
-			return;
-		}
-
-		// Generate styles
-		self::$can_reset_shortcode_indexes = false;
-		do_shortcode( et_pb_fix_shortcodes( $content ) );
-		self::$can_reset_shortcode_indexes = true;
-
-		$styles  = self::get_style( false );
-		$styles .= self::get_style( true );
+		$styles = self::get_style() . self::get_style( true ) . et_pb_get_page_custom_css();
 
 		// Pass styles to page resource which will handle their output
-		self::$advanced_styles_manager->set_data( $styles . et_pb_get_page_custom_css(), 40 );
-
-		self::reset_shortcode_indexes();
-
-		// Reset styles
-		self::$styles = array();
-		self::$internal_modules_styles = array();
-		self::$prepare_internal_styles = false;
-		self::$media_queries = array();
-
-		// Reset advanced styles flag
-		self::$setting_advanced_styles = false;
+		self::$advanced_styles_manager->set_data( $styles, 40 );
 	}
 
-	public static function handle_styles_from_modules_outside_the_content() {
-		if ( empty( self::$other_styles ) && empty( self::$other_internal_module_styles ) ) {
-			return;
+	/**
+	 * Filters the unified page resource data. The data is an array of arrays of strings keyed by
+	 * priority. The builder's styles are set with a priority of 40. Here we want to make sure
+	 * only the builder's styles are output in the footer on first-page load so we aren't
+	 * duplicating the customizer and custom css styles which are already in the <head>.
+	 * {@see 'et_core_page_resource_get_data'}
+	 */
+	public static function filter_page_resource_data( $data, $context, $resource ) {
+		global $wp_current_filter;
+
+		if ( 'inline' !== $context || ! in_array( 'wp_footer', $wp_current_filter ) ) {
+			return $data;
 		}
 
-		$styles  = self::get_style( false, false );
-		$styles .= self::get_style( true, false );
+		if ( false === strpos( $resource->slug, 'unified' ) ) {
+			return $data;
+		}
 
-		printf( '<style>%1$s</style>', $styles );
+		return isset( $data[40] ) ? array( 40 => $data[40] ) : array();
 	}
 
 	function process_whitelisted_fields() {
@@ -536,20 +512,6 @@ class ET_Builder_Element {
 		self::$_current_row_index           = -1;
 		self::$_current_column_index        = -1;
 		self::$_current_module_index        = -1;
-
-		self::$_shop_shortcode_callback_num = 0;
-		self::$modules_order                = array();
-		self::$inner_modules_order          = array();
-
-		self::$internal_modules_counter     = 10000;
-
-		foreach ( self::get_parent_modules( 'et_pb_layout' ) as $slug => $module ) {
-			$module->_shortcode_callback_num = 0;
-		}
-
-		foreach ( self::get_child_modules( 'et_pb_layout' ) as $slug => $module ) {
-			$module->_shortcode_callback_num = 0;
-		}
 
 		return $content;
 	}
@@ -6011,12 +5973,9 @@ class ET_Builder_Element {
 		return self::$media_queries[ $name ];
 	}
 
-	static function get_style( $internal = false, $for_the_content = true ) {
-		if ( $for_the_content ) {
-			$styles_array = $internal ? self::$internal_modules_styles : self::$styles;
-		} else {
-			$styles_array = $internal ? self::$other_internal_module_styles : self::$other_styles;
-		}
+	static function get_style( $internal = false ) {
+		// use appropriate array depending on which styles we need
+		$styles_array = $internal ? self::$internal_modules_styles : self::$styles;
 
 		if ( empty( $styles_array ) ) {
 			return '';
@@ -6129,14 +6088,6 @@ class ET_Builder_Element {
 			return;
 		}
 
-		$doing_internal_styles = $et_pb_rendering_column_content && self::$prepare_internal_styles;
-
-		if ( self::$setting_advanced_styles || 'the_content' === current_filter() ) {
-			$styles = $doing_internal_styles ? $styles = &self::$internal_modules_styles : $styles = &self::$styles;
-		} else {
-			$styles = $doing_internal_styles ? $styles = &self::$other_internal_module_styles : $styles = &self::$other_styles;
-		}
-
 		$order_class_name = self::get_module_order_class( $function_name );
 
 		$selector    = str_replace( '%%order_class%%', ".{$order_class_name}", $style['selector'] );
@@ -6157,18 +6108,35 @@ class ET_Builder_Element {
 
 		$media_query = isset( $style[ 'media_query' ] ) ? $style[ 'media_query' ] : 'general';
 
-		if ( isset( $styles[ $media_query ][ $selector ]['declaration'] ) ) {
-			$styles[ $media_query ][ $selector ]['declaration'] = sprintf(
-				'%1$s %2$s',
-				$styles[ $media_query ][ $selector ]['declaration'],
-				$declaration
-			);
-		} else {
-			$styles[ $media_query ][ $selector ]['declaration'] = $declaration;
-		}
+		// prepare styles for internal content. Used in Blog/Slider modules if they contain Divi modules
+		if ( $et_pb_rendering_column_content && self::$prepare_internal_styles ) {
+			if ( isset( self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] ) ) {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] = sprintf(
+					'%1$s %2$s',
+					self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'],
+					$declaration
+				);
+			} else {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['declaration'] = $declaration;
+			}
 
-		if ( isset( $style['priority'] ) ) {
-			$styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			if ( isset( $style['priority'] ) ) {
+				self::$internal_modules_styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			}
+		} else {
+			if ( isset( self::$styles[ $media_query ][ $selector ]['declaration'] ) ) {
+				self::$styles[ $media_query ][ $selector ]['declaration'] = sprintf(
+					'%1$s %2$s',
+					self::$styles[ $media_query ][ $selector ]['declaration'],
+					$declaration
+				);
+			} else {
+				self::$styles[ $media_query ][ $selector ]['declaration'] = $declaration;
+			}
+
+			if ( isset( $style['priority'] ) ) {
+				self::$styles[ $media_query ][ $selector ]['priority'] = (int) $style['priority'];
+			}
 		}
 	}
 

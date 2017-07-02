@@ -1,7 +1,7 @@
 /*
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.53
+Version: 3.0.56
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -6817,7 +6817,8 @@ p.et_pb_gallery_caption {
 	margin: 0 auto 20px;
 }
 
-.et_pb_testimonial_description {
+.et_pb_testimonial_description,
+.et_pb_testimonial_description_inner {
 	display: table-cell;
 	position: relative;
 }
@@ -7959,6 +7960,10 @@ p.et_pb_contact_field.et_pb_contact_field_last + p.et_pb_contact_field.et_pb_con
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
+}
+
+.et_pb_contact_select::-ms-expand {
+	display: none;
 }
 
 .rtl .et_pb_contact_select {
@@ -13176,7 +13181,8 @@ span.comment_date {
 	.et_pb_column_4_4 .et_pb_grid_item,
 	.et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_pb_column_4_4 .et_pb_widget,
-	.et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product {
+	.et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
+	.et_pb_gutters4.et_full_width_page.woocommerce-page ul.products li.product {
 		width: 19%;
 		margin: 0 8% 8% 0;
 	}
@@ -13196,6 +13202,8 @@ span.comment_date {
 	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_widget,
 	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_shop_grid .woocommerce ul.products li.product,
 	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product:nth-child(4n),
+	.et_pb_gutters4.et_left_sidebar.woocommerce-page ul.products li.product,
+	.et_pb_gutters4.et_right_sidebar.woocommerce-page ul.products li.product,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters4.et_pb_row_inner .et_pb_column_4_4 .et_pb_grid_item,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters4.et_pb_row_inner .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters4.et_pb_row_inner .et_pb_column_4_4 .et_pb_column_4_4 .et_pb_grid_item:nth-child(4n),
@@ -13360,6 +13368,10 @@ span.comment_date {
 
 	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 21.918%;
+	}
+
+	.et_pb_gutters4.et_full_width_page.woocommerce-page ul.products li.product:nth-child(4n) {
+		margin-right: 0;
 	}
 
 	.et_pb_gutters4 .footer-widget {
@@ -13656,7 +13668,8 @@ span.comment_date {
 	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_grid_item,
 	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_widget,
-	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product {
+	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
+	.et_pb_gutters2.et_full_width_page.woocommerce-page ul.products li.product {
 		width: 22.75%;
 		margin: 0 3% 3% 0;
 	}
@@ -13676,6 +13689,8 @@ span.comment_date {
 	.et_pb_gutters2.et_pb_row .et_pb_column_3_4 .et_pb_widget,
 	.et_pb_gutters2.et_pb_row .et_pb_column_3_4 .et_pb_shop_grid .woocommerce ul.products li.product,
 	.et_pb_gutters2.et_pb_row .et_pb_column_3_4 .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product:nth-child(4n),
+	.et_pb_gutters2.et_left_sidebar.woocommerce-page ul.products li.product,
+	.et_pb_gutters2.et_right_sidebar.woocommerce-page ul.products li.product,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters2.et_pb_row_inner .et_pb_column_4_4 .et_pb_grid_item,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters2.et_pb_row_inner .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_section_specialty .et_pb_row .et_pb_column_3_4 .et_pb_gutters2.et_pb_row_inner .et_pb_column_4_4 .et_pb_column_4_4 .et_pb_grid_item:nth-child(4n),
@@ -13843,6 +13858,10 @@ span.comment_date {
 
 	.et_pb_gutters2 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 8.08%;
+	}
+
+	.et_pb_gutters2.et_full_width_page.woocommerce-page ul.products li.product:nth-child(4n) {
+		margin-right: 0;
 	}
 
 	.et_pb_gutters2 .footer-widget {
@@ -14044,7 +14063,10 @@ span.comment_date {
 	.et_pb_gutters1 .et_pb_column .et_pb_blog_grid .column.size-1of3,
 	.et_pb_gutters1 .et_pb_column .et_pb_blog_grid .column.size-1of3 .et_pb_post,
 	.et_pb_gutters1 .footer-widget,
-	.et_pb_gutters1 .footer-widget .fwidget {
+	.et_pb_gutters1 .footer-widget .fwidget,
+	.et_pb_gutters1.et_left_sidebar.woocommerce-page ul.products li.product,
+	.et_pb_gutters1.et_right_sidebar.woocommerce-page ul.products li.product,
+	.et_pb_gutters1.et_full_width_page.woocommerce-page ul.products li.product {
 		margin: 0;
 	}
 
@@ -14104,6 +14126,8 @@ span.comment_date {
 	.et_pb_gutters1 .et_pb_column_3_4 .et_pb_row_inner .et_pb_column_4_4 .et_pb_grid_item,
 	.et_pb_gutters1 .et_pb_column_3_4 .et_pb_shop_grid .woocommerce ul.products li.product,
 	.et_pb_gutters1 .et_pb_column_3_4 .et_pb_row_inner .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
+	.et_pb_gutters1.et_left_sidebar.woocommerce-page ul.products li.product,
+	.et_pb_gutters1.et_right_sidebar.woocommerce-page ul.products li.product,
 	.et_pb_gutters1 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3,
 	.et_pb_gutters1 .et_pb_column_3_4 .et_pb_widget,
 	.et_pb_gutters1.et_pb_footer_columns3 .footer-widget,
@@ -14116,6 +14140,7 @@ span.comment_date {
 	.et_pb_gutters1 .et_pb_column_4_4 .et_pb_grid_item,
 	.et_pb_gutters1 .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_pb_gutters1 .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
+	.et_pb_gutters1.et_full_width_page.woocommerce-page ul.products li.product,
 	.et_pb_gutters1 .et_pb_column_4_4 .et_pb_widget,
 	.et_pb_gutters1.et_pb_footer_columns4 .footer-widget,
 	.et_pb_gutters1.et_pb_footer_columns_3_4__1_4 .footer-widget:nth-child(even),

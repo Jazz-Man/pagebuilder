@@ -8,7 +8,7 @@
 
 if ( ! defined( 'ET_CORE' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_CORE_VERSION', '3.0.53' );
+	define( 'ET_CORE_VERSION', '3.0.56' );
 	define( 'ET_CORE', true );
 } else if ( ! defined( 'ET_CORE_OVERRIDE' ) ) {
 	// Core has been loaded already and the override flag is not set.
@@ -83,6 +83,22 @@ function et_core_autoloader( $class_name ) {
 endif;
 
 
+if ( ! function_exists( 'et_core_maybe_set_updated' ) ):
+function et_core_maybe_set_updated() {
+	// TODO: Move et_{*}_option() functions to core.
+	$last_core_version = get_option( 'et_core_version', '' );
+
+	if ( ET_CORE_VERSION === $last_core_version ) {
+		return;
+	}
+
+	update_option( 'et_core_version', ET_CORE_VERSION );
+
+	define( 'ET_CORE_UPDATED', true );
+}
+endif;
+
+
 if ( ! function_exists( 'et_new_core_setup') ):
 function et_new_core_setup() {
 	$core_path   = defined( 'ET_CORE_PATH_OVERRIDE' ) ? ET_CORE_PATH_OVERRIDE : ET_CORE_PATH;
@@ -120,6 +136,7 @@ function et_core_setup( $url ) {
 	}
 
 	load_theme_textdomain( 'et-core', ET_CORE_PATH . 'languages/' );
+	et_core_maybe_set_updated();
 	et_new_core_setup();
 
 	if ( is_admin() || ! empty( $_GET['et_fb'] ) ) {

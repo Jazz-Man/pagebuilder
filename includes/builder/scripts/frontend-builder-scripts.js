@@ -457,8 +457,9 @@
 					$et_slide.each( function(){
 						$(this).css( 'zIndex', 1 );
 					} );
-					$active_slide.css( 'zIndex', 2 ).removeClass( 'et-pb-active-slide' ).addClass('et-pb-moved-slide');
-					$next_slide.css( { 'display' : 'block', opacity : 0 } ).addClass( 'et-pb-active-slide' );
+					// add 'slide-status' data attribute so it can be used to determine active slide in Visual Builder
+					$active_slide.css( 'zIndex', 2 ).removeClass( 'et-pb-active-slide' ).addClass('et-pb-moved-slide').data('slide-status', 'inactive');
+					$next_slide.css( { 'display' : 'block', opacity : 0 } ).addClass( 'et-pb-active-slide' ).data('slide-status', 'active');
 
 					et_fix_slider_content_images();
 

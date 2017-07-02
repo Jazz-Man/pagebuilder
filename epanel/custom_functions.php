@@ -126,7 +126,7 @@ endif;
 
 if ( ! function_exists( 'et_epanel_handle_custom_css_output' ) ):
 function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
-	global $wp_current_filter;
+	global $wp_current_filter, $shortname;
 
 	if ( ! $css || ! in_array( 'wp_head', $wp_current_filter ) || is_admin() && ! is_customize_preview() ) {
 		return $css;
@@ -140,7 +140,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	$forced_inline   = $is_preview || $disabled_global || $disabled_post;
 	$unified_styles  = ! $forced_inline;
 
-	$resource_owner = $unified_styles ? 'core' : 'divi';
+	$resource_owner = $unified_styles ? 'core' : $shortname;
 	$resource_slug  = $unified_styles ? 'unified' : 'custom-css';
 
 	if ( $is_preview ) {
@@ -152,7 +152,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 		$resource_slug .= '-vb';
 	}
 
-	$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 'style', 'head-late', 30 );
+	$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 30 );
 
 	if ( ! $unified_styles ) {
 		$styles_manager->forced_inline = $forced_inline;
@@ -2075,4 +2075,14 @@ function et_uc_theme_name( $key, $raw_key ) {
 }
 add_filter( 'sanitize_key', 'et_uc_theme_name', 10, 2 );
 
+endif;
+
+if ( ! function_exists( 'et_core_exists_in_active_plugins' ) ) :
+function et_core_exists_in_active_plugins() {
+	$result = ( defined( 'ET_BUILDER_PLUGIN_DIR' ) && ! empty( ET_BUILDER_PLUGIN_DIR ) )
+			  || ( defined( 'ET_BLOOM_PLUGIN_DIR' ) && ! empty( ET_BLOOM_PLUGIN_DIR ) )
+			  || ( defined( 'ET_MONARCH_PLUGIN_DIR' ) && ! empty( ET_MONARCH_PLUGIN_DIR ) );
+
+	return $result;
+}
 endif;

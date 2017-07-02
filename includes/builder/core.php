@@ -132,6 +132,25 @@ if ( et_builder_should_load_framework() ) {
 	et_builder_register_layouts();
 }
 
+if ( ! function_exists( 'et_builder_maybe_enable_inline_styles' ) ):
+function et_builder_maybe_enable_inline_styles() {
+	et_update_option( 'static_css_custom_css_safety_check_done', true );
+
+	if ( ! wp_get_custom_css() ) {
+		return;
+	}
+
+	// This site has Custom CSS that existed prior to v3.0.54 which could contain syntax
+	// errors that the user is unaware of. Such errors would cause problems in a unified
+	// static CSS file so let's enable inline styles for the builder's design styles.
+	et_update_option( 'et_pb_css_in_footer', 'on' );
+}
+endif;
+
+if ( defined( 'ET_CORE_UPDATED' ) && ! et_get_option( 'static_css_custom_css_safety_check_done', false ) ) {
+	et_builder_maybe_enable_inline_styles();
+}
+
 function et_pb_video_get_oembed_thumbnail() {
 	if ( ! wp_verify_nonce( $_POST['et_admin_load_nonce'], 'et_admin_load_nonce' ) ) {
 		die( -1 );

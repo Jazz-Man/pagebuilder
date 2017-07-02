@@ -1,3 +1,37 @@
+version 3.0.56 ( updated 7-1-2017 )
+- Fixed a bug that prevented static CSS files from clearing correctly in some situations/ 
+- Static CSS files will now be cleared automatically when Divi is updated.
+	* core/components/PageResource.php
+
+version 3.0.55 ( updated 6-30-2017 )
+- Adjusted static CSS clearing function that was preventing the creation of certain custom post types when published by users without post editing privileges. This caused errors during WooCommerce checkout (and during post creation in many other plugins) when purchase data was published as a custom post type and static CSS files were cleared unnecessarily.
+	* core/components/PageResource.php
+
+version 3.0.54 ( updated 6-30-2017 )
+- Reduced the chance of Custom CSS parse errors affecting builder styles by automatically enabling in-line builder styles when upgrading to the latest version when Custom CSS has been added to the Divi Theme Options panel that could potentially contain user errors and invalid code. In short, do not trust Custom CSS added by customers since we cannot guarantee that the code added is valid.
+- Improved Static CSS compatibility with various third party plugins and shortcodes.
+- Improved compatibility with Divi Builder shortcodes being used outside the_content and within template files.
+- Fixed DONOTECACHEPAGE No such file or directory error that occurred for some customers.
+- Fixed 500 Internal Server Error that occurred when saving a page while WP Super Cache was enabled for a small subset of customers, possibly due to using varying versions of the plugin. 
+- Static CSS files will now use absolute paths to improve compatibility with custom WordPress content folder names.
+- Improved static CSS compatibility with the Comet Cache plugin.
+- Fixed a bug that caused light/dark text settings for slider module slides to not render properly in the Visual Builder in some situations.
+- Added missing WooCommerce grid items CSS.
+- Button modules will now properly turn green in the Visual Builder when they are saved as a global module.
+- Improved the logic for moving items in and out of global sections and rows in the standard Divi Builder.
+- Fixed a bug that caused portrait images in testimonial modules to be misaligned at some breakpoints in certain situations. 
+- Improved contact form dropdown menu appearance in IE 11.
+- Fixed a bug that caused decimal values in range sliders to be rounded. 
+- Improved the way that range sliders handle decimal values, allowing for smooth range sliding of decimal values when decimal values are entered manually.
+	* style.css
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/assets/css/style.css
+	* epanel/custom_functions.php
+	* core/components/init.php
+	* core/components/PageResource.php
+
 version 3.0.53 ( updated 6-28-2017 )
 - Improved support for the third party Divi Layout Injector plugin.
 - Improved support for the third party Divi Page Builder Everywhere plugin.

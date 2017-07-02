@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.53';
+window.et_builder_version = '3.0.56';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -1522,31 +1522,38 @@ window.et_builder_product_name = 'Divi';
 
 						}
 
+						var module_cid = $( ui.item ).find( '.et-pb-row-content' ).data( 'cid' );
+						var model = this_el.collection.find( function( model ) {
+							return model.get('cid') == module_cid;
+						} );
+
 						if ( $( ui.item ).closest( '.et_pb_section.et_pb_global' ).length && $( ui.item ).hasClass( 'et_pb_global' ) ) {
 							$( ui.sender ).sortable( 'cancel' );
 							alert( et_pb_options.global_row_alert );
 						} else if ( ( $( ui.item ).closest( '.et_pb_section.et_pb_global' ).length || $( ui.sender ).closest( '.et_pb_section.et_pb_global' ).length ) && '' === et_pb_options.template_post_id ) {
-							var module_cid = ui.item.data( 'cid' ),
-									model,
-									global_module_cid,
-									$moving_from,
-									$moving_to;
+							var	global_module_cid,
+								$moving_from,
+								$moving_to;
 
 							$moving_from = $( ui.sender ).closest( '.et_pb_section.et_pb_global' );
 							$moving_to = $( ui.item ).closest( '.et_pb_section.et_pb_global' );
 
-
 							if ( $moving_from === $moving_to ) {
-								model = this_el.collection.find( function( model ) {
-									return model.get('cid') == module_cid;
-								} );
-
 								global_module_cid = model.get( 'global_parent_cid' );
 
 								et_pb_update_global_template( global_module_cid );
 								et_reinitialize_builder_layout();
 							} else {
 								var $global_element = $moving_from;
+
+								// remove global parent attributes if moved not to global parent.
+								if ( $moving_to.length === 0 && ( ( ! _.isUndefined( model.get( 'et_pb_global_parent' ) ) && '' !== model.get( 'et_pb_global_parent' ) ) || ! _.isUndefined( model.get( 'global_parent_cid' ) ) ) ) {
+									model.unset( 'et_pb_global_parent' );
+									model.unset( 'global_parent_cid' );
+									// remove global attributes from all the child components
+									ET_PageBuilder_Layout.removeGlobalAttributes( ET_PageBuilder_Layout.getView( model.get( 'cid' ) ) );
+								}
+
 								for ( var i = 1; i <= 2; i++ ) {
 									global_module_cid = $global_element.find( '.et-pb-section-content' ).data( 'cid' );
 
@@ -3189,6 +3196,15 @@ window.et_builder_product_name = 'Divi';
 								et_reinitialize_builder_layout();
 							} else {
 								var $global_element = $moving_from;
+
+								// remove global parent attributes if moved not to global parent.
+								if ( $moving_to.length === 0 && ( ( ! _.isUndefined( model.get( 'et_pb_global_parent' ) ) && '' !== model.get( 'et_pb_global_parent' ) ) || ! _.isUndefined( model.get( 'global_parent_cid' ) ) ) ) {
+									model.unset( 'et_pb_global_parent' );
+									model.unset( 'global_parent_cid' );
+									// remove global attributes from all the child components
+									ET_PageBuilder_Layout.removeGlobalAttributes( ET_PageBuilder_Layout.getView( model.get( 'cid' ) ) );
+								}
+
 								for ( var i = 1; i <= 2; i++ ) {
 									global_module_cid = typeof $global_element.find( '.et-pb-section-content' ).data( 'cid' ) !== 'undefined' ? $global_element.find( '.et-pb-section-content' ).data( 'cid' ) : $global_element.find( '.et-pb-row-content' ).data( 'cid' );
 
@@ -6279,6 +6295,11 @@ window.et_builder_product_name = 'Divi';
 					view.pasted_module = true;
 				} else {
 					view.pasted_module = false;
+				}
+
+				// update global parent attribute when pasting the module from Global Row or Section.
+				if ( !  _.isUndefined( view.et_pb_global_parent ) && '' !== view.et_pb_global_parent ) {
+					view.et_pb_global_parent = et_pb_get_global_parent_cid( ET_PageBuilder_Layout.getView( parent ) );
 				}
 
 				// Set new global_parent_cid for pasted element
@@ -13198,20 +13219,26 @@ window.et_builder_product_name = 'Divi';
 						$range_input.data( 'default', new_phone_default );
 					}
 
-					et_pb_check_range_boundaries( $this_el, range_input_value );
+					et_pb_check_range_boundaries( $this_el, range_input_value, true );
 				} );
 			}
 
-			$range_input.on( 'keyup change', function() {
+			$range_input.on( 'keyup change', function( event ) {
 				var $this_el      = $(this),
 					this_device   = typeof $this_el.data( 'device' ) === 'undefined' ? 'all' : $this_el.data( 'device' ),
 					this_value    = et_pb_get_range_input_value( $this_el, true ),
 					$range_slider = 'all' === this_device ? $this_el.siblings( '.et-pb-range' ) : $this_el.siblings( '.et-pb-range.et_pb_setting_mobile_' + this_device ),
+					update_step   = false,
 					slider_value;
 
 				slider_value = parseFloat( this_value ) || 0;
 
-				et_pb_check_range_boundaries( $range_slider, slider_value );
+				// check the range slider step and update if value entered manually.
+				if ( ! _.isUndefined( event.type ) && 'keyup' === event.type ) {
+					update_step = true;
+				}
+
+				et_pb_check_range_boundaries( $range_slider, slider_value, update_step );
 
 				$range_slider.val( slider_value ).trigger( 'et_pb_setting:change' );
 
@@ -13467,7 +13494,7 @@ window.et_builder_product_name = 'Divi';
 		}
 
 		// check the range slider boundaries against the provided value and extend min or max boundary if needed
-		function et_pb_check_range_boundaries( $range_slider, slider_value ) {
+		function et_pb_check_range_boundaries( $range_slider, slider_value, update_step ) {
 			var slider_max = parseFloat( $range_slider.attr( 'max' ) ),
 				slider_min = parseFloat( $range_slider.attr( 'min' ) );
 
@@ -13489,6 +13516,13 @@ window.et_builder_product_name = 'Divi';
 				$range_slider.attr( 'min', slider_value );
 
 				$range_slider.val(slider_value);
+			}
+
+			// set the step to 0.1 if we need to update step and value is not integer
+			if ( update_step && '0.1' !== $range_slider.attr( 'step' ) && ( slider_value % 1 > 0 ) ) {
+				$range_slider.attr( 'step', '0.1' );
+				// reset the slider value to make sure it updated correctly after changing the step
+				$range_slider.val( slider_value );
 			}
 		}
 
