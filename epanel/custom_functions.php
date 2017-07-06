@@ -2079,9 +2079,9 @@ endif;
 
 if ( ! function_exists( 'et_core_exists_in_active_plugins' ) ) :
 function et_core_exists_in_active_plugins() {
-	$result = ( defined( 'ET_BUILDER_PLUGIN_DIR' ) && ! empty( ET_BUILDER_PLUGIN_DIR ) )
-			  || ( defined( 'ET_BLOOM_PLUGIN_DIR' ) && ! empty( ET_BLOOM_PLUGIN_DIR ) )
-			  || ( defined( 'ET_MONARCH_PLUGIN_DIR' ) && ! empty( ET_MONARCH_PLUGIN_DIR ) );
+	$result = defined( 'ET_BUILDER_PLUGIN_DIR' )
+			  || defined( 'ET_BLOOM_PLUGIN_DIR' )
+			  || defined( 'ET_MONARCH_PLUGIN_DIR' );
 
 	return $result;
 }

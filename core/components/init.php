@@ -7,6 +7,8 @@ function et_core_init() {
 	if ( defined( 'ET_CORE_UPDATED' ) ) {
 		global $wp_rewrite;
 		add_action( 'shutdown', array( $wp_rewrite, 'flush_rules' ) );
+
+		update_option( 'et_core_page_resource_remove_all', true );
 	}
 
 	$cache_dir = ET_Core_PageResource::get_cache_directory();
@@ -14,6 +16,10 @@ function et_core_init() {
 	if ( file_exists( $cache_dir . '/DONOTCACHEPAGE' ) ) {
 		! defined( 'DONOTCACHEPAGE' ) ? define( 'DONOTCACHEPAGE', true ) : '';
 		@unlink( $cache_dir . '/DONOTCACHEPAGE' );
+	}
+
+	if ( get_option( 'et_core_page_resource_remove_all' ) ) {
+		ET_Core_PageResource::remove_static_resources( 'all', 'all', true );
 	}
 }
 endif;
@@ -174,7 +180,7 @@ if ( ! function_exists( 'et_core_page_resource_get' ) ):
  * @return ET_Core_PageResource
  */
 function et_core_page_resource_get( $owner, $slug, $post_id = null, $priority = 10, $location = 'head-late', $type = 'style' ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
+	$post_id = $post_id ? $post_id : et_core_page_resource_get_the_ID();
 	$_slug   = "et-{$owner}-{$slug}-cached-inline-{$type}s";
 
 	$all_resources = ET_Core_PageResource::get_resources();

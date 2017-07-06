@@ -266,7 +266,7 @@ function et_builder_load_framework() {
 
 		do_action( 'et_builder_framework_loaded' );
 
-		add_action( $action_hook, 'et_builder_init_global_settings' );
+		add_action( $action_hook, 'et_builder_init_global_settings', 9 );
 		add_action( $action_hook, 'et_builder_add_main_elements' );
 	} else if ( is_admin() ) {
 		require ET_BUILDER_DIR . 'class-et-builder-settings.php';

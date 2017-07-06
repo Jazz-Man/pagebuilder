@@ -496,6 +496,7 @@ class ET_Builder_Settings {
 			add_filter( 'et_builder_plugin_dashboard_sections', array( $class, 'add_plugin_dashboard_sections' ) );
 			add_filter( 'et_builder_plugin_dashboard_fields_data', array( $class, 'add_plugin_dashboard_fields_data' ) );
 			add_action( 'et_pb_builder_after_save_options', array( $class, 'plugin_dashboard_option_saved_cb' ), 10, 4 );
+			add_action( 'et_pb_builder_option_value', array( $class, 'plugin_dashboard_option_value_cb' ), 10, 2 );
 		} else {
 			add_filter( 'et_epanel_tab_names', array( $class, 'add_epanel_tab' ) );
 			add_filter( 'et_epanel_layout_data', array( $class, 'add_epanel_tab_content' ) );
@@ -546,6 +547,10 @@ class ET_Builder_Settings {
 
 				foreach ( $fields as $field_slug => $field_info ) {
 					if ( $tab_slug !== $field_info['tab_slug'] || $toggle_slug !== $field_info['toggle_slug'] ) {
+						continue;
+					}
+
+					if ( 'et_pb_css_in_footer' === $field_info['id'] ) {
 						continue;
 					}
 
@@ -812,7 +817,23 @@ class ET_Builder_Settings {
 			return;
 		}
 
+		et_update_option( $setting, $setting_value );
+
 		self::_maybe_clear_cached_static_css_files( $setting, $setting_value );
+	}
+
+	public static function plugin_dashboard_option_value_cb( $option_value, $option ) {
+		if ( ! isset( $option['id'] ) ) {
+			return $option_value;
+		}
+
+		$setting = $option['id'];
+
+		if ( ! isset( self::$_BUILDER_SETTINGS_VALUES[ $setting ] ) ) {
+			return $option_value;
+		}
+
+		return self::$_BUILDER_SETTINGS_VALUES[ $setting ];
 	}
 }
 

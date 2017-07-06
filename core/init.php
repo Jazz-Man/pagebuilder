@@ -8,7 +8,7 @@
 
 if ( ! defined( 'ET_CORE' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_CORE_VERSION', '3.0.56' );
+	define( 'ET_CORE_VERSION', '3.0.60' );
 	define( 'ET_CORE', true );
 } else if ( ! defined( 'ET_CORE_OVERRIDE' ) ) {
 	// Core has been loaded already and the override flag is not set.

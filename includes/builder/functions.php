@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.56' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.60' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -6121,6 +6121,11 @@ function et_pb_admin_excluded_shortcodes() {
 	// Triggers issue if Sensei and YOAST SEO are activated
 	if ( et_is_yoast_seo_plugin_active() && function_exists( 'Sensei' ) ) {
 		$shortcodes[] = 'usercourses';
+	}
+
+	// WPL real estate prints unwanted on-page JS that caused an issue on BB
+	if ( class_exists( 'wpl_extensions' ) ) {
+		$shortcodes[] = 'WPL';
 	}
 
 	return apply_filters( 'et_pb_admin_excluded_shortcodes', $shortcodes );

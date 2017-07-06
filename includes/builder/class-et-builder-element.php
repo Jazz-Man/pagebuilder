@@ -235,7 +235,7 @@ class ET_Builder_Element {
 		self::$advanced_styles_manager->forced_inline       = $forced_inline;
 		self::$advanced_styles_manager->write_file_location = 'footer';
 
-		if ( $forced_in_footer ) {
+		if ( $forced_in_footer || $forced_inline ) {
 			// Restore legacy behavior--output inline styles in the footer.
 			self::$advanced_styles_manager->set_output_location( 'footer' );
 		}

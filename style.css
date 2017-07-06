@@ -1,7 +1,7 @@
 /*
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.56
+Version: 3.0.60
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -12840,46 +12840,56 @@ span.comment_date {
 		margin-bottom: 14.94%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 {
+	.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3,
+	.et_pb_gutters3.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 {
 		width: 29.666%;
 		margin-right: 5.5%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
 		margin-bottom: 18.54%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 {
+	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2,
+	.et_pb_gutters3.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 {
 		width: 46.265%;
 		margin-right: 7.47%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
 		margin-bottom: 14.94%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
+	.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2,
+	.et_pb_gutters3.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
 		width: 45.758%;
 		margin-right: 8.483%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
 		margin-bottom: 18.54%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 11.64%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 18.54%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 26.348%;
 	}
 
-	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters3 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters3.et_pb_row .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 14.94%;
 	}
 
@@ -13178,6 +13188,10 @@ span.comment_date {
 	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_widget,
 	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_grid_item,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_widget,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_shop_grid .woocommerce ul.products li.product,
 	.et_pb_column_4_4 .et_pb_grid_item,
 	.et_pb_column_4_4 .et_pb_filterable_portfolio .et_pb_portfolio_item.et_pb_grid_item,
 	.et_pb_column_4_4 .et_pb_widget,
@@ -13327,46 +13341,56 @@ span.comment_date {
 		margin-bottom: 21.918%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 {
+	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 {
 		width: 28%;
 		margin-right: 8%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
 		margin-bottom: 28.572%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 {
+	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2,
+	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 {
 		width: 44.52%;
 		margin-right: 10.959%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
 		margin-bottom: 21.918%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
+	.et_pb_gutters4 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2,
+	.et_pb_gutters4.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 {
 		width: 43.75%;
 		margin-right: 12.5%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_2_3 .et_pb_blog_grid .column.size-1of2 .et_pb_post {
 		margin-bottom: 28.572%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_1_2 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 17.392%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_1_3 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 28.572%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_1_4 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 42.106%;
 	}
 
-	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
+	.et_pb_gutters4 .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post,
+	.et_pb_gutters4.et_pb_row .et_pb_column_3_4 .et_pb_column_3_8 .et_pb_blog_grid .column.size-1of1 .et_pb_post {
 		margin-bottom: 21.918%;
 	}
 
@@ -13820,7 +13844,8 @@ span.comment_date {
 		margin-right: 3%;
 	}
 
-	.et_pb_gutters2 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
+	.et_pb_gutters2 .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post,
+	.et_pb_gutters2.et_pb_row .et_pb_column_4_4 .et_pb_blog_grid .column.size-1of3 .et_pb_post {
 		margin-bottom: 9.574%;
 	}
 

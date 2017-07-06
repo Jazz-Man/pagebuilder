@@ -311,10 +311,6 @@ class ET_Core_PageResource {
 		self::startup();
 
 		$this->_initialize_resource();
-
-		if ( et_is_builder_plugin_active() ) {
-			$this->set_data( '' );
-		}
 	}
 
 	/**
@@ -355,7 +351,7 @@ class ET_Core_PageResource {
 		}
 
 		// Update our resources array in the database only if needed.
-		$post_id              = get_the_ID();
+		$post_id              = et_core_page_resource_get_the_ID();
 		$new_resources        = array_diff( self::$_PATHS['post'], self::$_PATHS_IN_DB['post'] );
 		$new_resources_global = array_diff( self::$_PATHS['global'], self::$_PATHS_IN_DB['global'] );
 
@@ -477,7 +473,9 @@ class ET_Core_PageResource {
 					continue;
 				}
 
-				if ( empty( $resource->data ) && 'footer' !== $location ) {
+				$data = $resource->get_data( 'file' );
+
+				if ( empty( $data ) && 'footer' !== $location ) {
 					// This resource doesn't have any data yet so we'll assign it to the next output location.
 					$next_location = self::_get_next_output_location();
 
@@ -486,7 +484,7 @@ class ET_Core_PageResource {
 					continue;
 				}
 
-				if ( empty( $resource->data ) ) {
+				if ( empty( $data ) ) {
 					continue;
 				}
 
@@ -497,7 +495,7 @@ class ET_Core_PageResource {
 				}
 
 				// Create the file
-				if ( ! self::$wpfs->put_contents( $resource->PATH, $resource->get_data( 'file' ) ) ) {
+				if ( ! self::$wpfs->put_contents( $resource->PATH, $data ) ) {
 					// There's no point in continuing, so bail.
 					self::$_can_write = false;
 					return;
@@ -559,12 +557,16 @@ class ET_Core_PageResource {
 					continue;
 				}
 
-				if ( empty( $resource->data ) && 'footer' !== $location ) {
+				$data = $resource->get_data( 'inline' );
+
+				$same_write_file_location = $resource->write_file_location === $resource->location;
+
+				if ( empty( $data ) && 'footer' !== $location && $same_write_file_location ) {
 					// This resource doesn't have any data yet so we'll assign it to the next output location.
 					$next_location = self::_get_next_output_location();
 					$resource->set_output_location( $next_location );
 					continue;
-				} else if ( empty( $resource->data ) ) {
+				} else if ( empty( $data ) ) {
 					continue;
 				}
 
@@ -572,10 +574,10 @@ class ET_Core_PageResource {
 					'<%1$s id="%2$s">%3$s</%1$s>',
 					esc_html( $resource->type ),
 					esc_attr( $resource->slug ),
-					strip_tags( $resource->get_data( 'inline' ) )
+					wp_strip_all_tags( $data )
 				);
 
-				if ( $resource->write_file_location === $resource->location ) {
+				if ( $same_write_file_location ) {
 					// File wasn't created during this location's callback and it won't be created later
 					$resource->inlined = true;
 
@@ -591,9 +593,6 @@ class ET_Core_PageResource {
 	 */
 	protected static function _register_callbacks() {
 		$class = 'ET_Core_PageResource';
-
-		// Delete cached resources if needed.
-		add_action( 'wp', array( $class, 'clear_cache_on_update' ), 8 );
 
 		// Get any existing resources from database as soon as possible.
 		add_action( 'wp', array( $class, 'load_resources_from_database' ), 9 );
@@ -640,16 +639,6 @@ class ET_Core_PageResource {
 
 		global $wp_filesystem;
 		self::$wpfs = $wp_filesystem;
-	}
-
-	public static function clear_cache_on_update() {
-		$static_css_cache_version = et_get_option( 'et_pb_static_css_cache_version', '0.0.0' );
-		// check the version of cache and remove static css if ET_CORE_VERSION greater than version of cache.
-		if ( version_compare( ET_CORE_VERSION, $static_css_cache_version, '>' ) ) {
-			self::remove_static_resources( 'all', 'all' );
-			// update the cache version once it's cleared.
-			et_update_option( 'et_pb_static_css_cache_version', ET_CORE_VERSION );
-		}
 	}
 
 	/**
@@ -873,7 +862,7 @@ class ET_Core_PageResource {
 			return;
 		}
 
-		$_ = get_post_meta( get_the_ID(), '_et_core_cached_page_resources', true );
+		$_ = get_post_meta( et_core_page_resource_get_the_ID(), '_et_core_cached_page_resources', true );
 		$_ = function_exists( 'et_get_option' ) ? et_get_option( '_et_core_cached_page_resources' ) : '';
 
 		self::$_RESOURCES_LOADED = true;
@@ -919,7 +908,7 @@ class ET_Core_PageResource {
 	 * @param string|int $post_id
 	 * @param string     $owner
 	 */
-	public static function remove_static_resources( $post_id, $owner = 'core' ) {
+	public static function remove_static_resources( $post_id, $owner = 'core', $force = false ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -947,7 +936,22 @@ class ET_Core_PageResource {
 
 		$files = glob( $pattern );
 
+		if ( $force ) {
+			$more_files = glob( "{$cache_dir}/et-{$owner}-*" );
+
+			if ( $more_files && is_array( $more_files ) ) {
+				$files = is_array( $files ) ? array_merge( $files, $more_files ) : $more_files;
+			}
+		}
+
 		foreach( (array) $files as $file ) {
+			$file = self::$data_utils->normalize_path( $file );
+
+			if ( 0 !== strpos( $file, self::$WP_CONTENT_DIR . '/cache/et' ) ) {
+				// File is not located inside cache directory so skip it.
+				continue;
+			}
+
 			if ( is_file( $file ) ) {
 				self::$wpfs->delete( $file );
 			}
@@ -962,6 +966,10 @@ class ET_Core_PageResource {
 
 		// Set our DONOTCACHEPAGE file for the next request.
 		self::$wpfs->put_contents( $cache_dir . '/DONOTCACHEPAGE', '' );
+
+		if ( $force ) {
+			delete_option( 'et_core_page_resource_remove_all' );
+		}
 	}
 
 	protected function _initialize_resource() {

@@ -72,6 +72,10 @@
 					.on( 'click', function() {
 						epanel_clear_static_css( false, true );
 					});
+
+				if ( ! value ) {
+					$checkbox.parents('.epanel-box').next().hide();
+				}
 			}
 		});
 
@@ -85,6 +89,12 @@
 
 			if ( $state.parent().next().hasClass( 'et_pb_clear_static_css' ) ) {
 				$state = $state.add( $state.parent() );
+
+				if ( $checkbox.is( ':checked' ) ) {
+					$box_content.parent().next().hide();
+				} else {
+					$box_content.parent().next().show();
+				}
 			}
 
 			$state.toggleClass('et_pb_on_state et_pb_off_state');
