@@ -15789,7 +15789,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'numbers' => array(
 					'label'    => esc_html__( 'Numbers', 'et_builder' ),
 					'css'      => array(
-						'main' => "#main-content {$this->main_css_element} .section p",
+						'main' => ".et_pb_column {$this->main_css_element} .section p.value",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -15803,7 +15803,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'label' => array(
 					'label'    => esc_html__( 'Label', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} .section p.label",
+						'main'      => ".et_pb_column {$this->main_css_element} .section p.label",
 						'important' => array(
 							'size',
 							'line-height',

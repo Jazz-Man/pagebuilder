@@ -1,3 +1,15 @@
+version 3.0.61 ( updated 7-8-2017 )
+- Eliminated core framework version conflicts that sometimes occurred when running legacy Elegant Themes products alongside updated products due to core version mismatches. 
+- The static CSS cache will now clear automatically whenever Divi, Extra or the Divi Builder is activated.
+- Improved the static CSS fall-back system that detects when files cannot be written to the server due to permissions issues and uses inline styles instead.
+- Fixed an error that occurred when using the third party CTP Layout Injector plugin.
+- The countdown timer module settings for number text will no longer affect label text. CSS specificity has been improved.
+- Added 404 header to empty homepage query argument used for static CSS resource fallback requests.
+- Added a check to automatically delete existing CSS files when new CSS files are created just in case the previous CSS file was not purged successfully due to a request being interrupted.
+	* core/components/PageResource.php
+	* core/components/init.php
+	* includes/builder/main-modules.php
+
 version 3.0.60 ( updated 7-4-2017 )
 - Fixed a bug that prevented the Module Customizer styles from working in some situations. 
 - Fixed a compatibility issue with the Yoast SEO and WPL plugins that prevented the Divi Builder from loading when both of these plugins were activated together. 

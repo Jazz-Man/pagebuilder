@@ -455,21 +455,24 @@ class ET_Core_PageResource {
 	protected static function _maybe_create_static_resources( $location ) {
 		self::$current_output_location = $location;
 
-		if ( ! self::$_can_write ) {
-			return;
-		}
-
 		$sorted_resources = self::get_resources_by_output_location( $location );
 
 		foreach ( $sorted_resources as $priority => $resources ) {
 			foreach ( $resources as $slug => $resource ) {
-				if ( $resource->forced_inline || $resource->has_file() ) {
-					continue;
-				}
-
 				if ( $resource->write_file_location !== $location ) {
 					// This resource's static file needs to be generated later on.
 					self::_assign_output_location( $resource->write_file_location, $resource );
+					continue;
+				}
+
+				if ( ! self::$_can_write ) {
+					// The reason we don't simply check this before looping through resources and
+					// bail if it fails is because we need to perform the output location assignment
+					// in the previous conditional regardless (otherwise builder styles will break).
+					continue;
+				}
+
+				if ( $resource->forced_inline || $resource->has_file() ) {
 					continue;
 				}
 
@@ -495,6 +498,26 @@ class ET_Core_PageResource {
 				}
 
 				// Create the file
+				$dirname = dirname( $resource->PATH );
+				$pattern = "{$dirname}/*";
+
+				$files = glob( $pattern );
+
+				if ( !empty( $files ) ) {
+					foreach( (array) $files as $file ) {
+						$file = self::$data_utils->normalize_path( $file );
+
+						if ( 0 !== strpos( $file, self::$WP_CONTENT_DIR . '/cache/et' ) ) {
+							// File is not located inside cache directory so skip it.
+							continue;
+						}
+
+						if ( is_file( $file ) ) {
+							self::$wpfs->delete( $file );
+						}
+					}
+				}
+
 				if ( ! self::$wpfs->put_contents( $resource->PATH, $data ) ) {
 					// There's no point in continuing, so bail.
 					self::$_can_write = false;
@@ -628,11 +651,11 @@ class ET_Core_PageResource {
 	protected static function _setup_wp_filesystem() {
 		require_once ABSPATH . '/wp-admin/includes/file.php';
 
-		if ( null !== self::$wpfs || ! self::can_write_to_filesystem() ) {
+		if ( null !== self::$wpfs ) {
 			return;
 		}
 
-		if ( ! WP_Filesystem( true ) ) {
+		if ( ! self::can_write_to_filesystem() || ! WP_Filesystem( true ) ) {
 			self::$_can_write = false;
 			return;
 		}

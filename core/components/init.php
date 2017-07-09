@@ -75,7 +75,10 @@ function et_core_clear_wp_cache( $post_id = '' ) {
 	} else if ( function_exists( 'sg_cachepress_purge_cache' ) ) {
 		// Siteground
 		global $sg_cachepress_supercacher;
-		$sg_cachepress_supercacher->purge_cache( true );
+
+		if ( is_object( $sg_cachepress_supercacher ) && method_exists( $sg_cachepress_supercacher, 'purge_cache' ) ) {
+			$sg_cachepress_supercacher->purge_cache( true );
+		}
 
 	} else if ( class_exists( 'WpeCommon' ) ) {
 		// WP Engine
@@ -114,6 +117,16 @@ function et_core_get_nonces() {
 endif;
 
 
+if ( ! function_exists( 'et_core_page_resource_auto_clear' ) ):
+function et_core_page_resource_auto_clear() {
+	ET_Core_PageResource::remove_static_resources( 'all', 'all' );
+}
+add_action( 'switch_theme', 'et_core_page_resource_auto_clear' );
+add_action( 'activated_plugin', 'et_core_page_resource_auto_clear', 10, 0 );
+add_action( 'deactivated_plugin', 'et_core_page_resource_auto_clear', 10, 0 );
+endif;
+
+
 if ( ! function_exists( 'et_core_page_resource_clear' ) ):
 /**
  * Ajax handler for clearing cached page resources.
@@ -139,7 +152,7 @@ if ( ! function_exists( 'et_core_page_resource_fallback' ) ):
  * Handles page resource fallback requests.
  */
 function et_core_page_resource_fallback() {
-	if ( empty( $_GET['et_core_page_resource'] ) ) {
+	if ( ! isset( $_GET['et_core_page_resource'] ) ) {
 		return;
 	}
 
@@ -151,10 +164,14 @@ function et_core_page_resource_fallback() {
 	$pattern     = '/et-(\w+)-([\w-]+)-cached-inline-(?>styles|scripts)(\d+)/';
 	$has_matches = preg_match( $pattern, $resource_id, $matches );
 
-	if ( $has_matches && $resource = et_core_page_resource_get( $matches[1], $matches[2], $matches[3] ) ) {
-		if ( $resource->has_file() ) {
-			wp_redirect( $resource->URL );
-			die();
+	if ( $has_matches ) {
+		if ( get_post_meta( (int) $matches[3], '_et_core_cached_page_resources' ) ) {
+			$resource = et_core_page_resource_get( $matches[1], $matches[2], $matches[3] );
+
+			if ( $resource->has_file() ) {
+				wp_redirect( $resource->URL );
+				die();
+			}
 		}
 	}
 
@@ -221,7 +238,7 @@ if ( ! function_exists( 'et_core_page_resource_get_the_ID' ) ):
 function et_core_page_resource_get_the_ID() {
 	static $post_id = null;
 
-	if ( null !== $post_id ) {
+	if ( is_int( $post_id ) ) {
 		return $post_id;
 	}
 

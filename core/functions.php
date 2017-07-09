@@ -1,11 +1,5 @@
 <?php
 
-if ( ! function_exists( 'et_get_safe_localization' ) ) :
-function et_get_safe_localization( $string ) {
-	return apply_filters( 'et_get_safe_localization', wp_kses( $string, et_get_allowed_localization_html_elements() ) );
-}
-endif;
-
 if ( ! function_exists( 'et_allow_ampersand' ) ) :
 /**
  * Convert &amp; into &
@@ -21,41 +15,181 @@ function et_allow_ampersand( $string ) {
 }
 endif;
 
-if ( ! function_exists( 'et_get_allowed_localization_html_elements' ) ) :
-function et_get_allowed_localization_html_elements() {
-	$whitelisted_attributes = array(
-		'id'    => array(),
-		'class' => array(),
-		'style' => array(),
-	);
 
-	$whitelisted_attributes = apply_filters( 'et_allowed_localization_html_attributes', $whitelisted_attributes );
-
-	$elements = array(
-		'a'      => array(
-			'href'   => array(),
-			'title'  => array(),
-			'target' => array(),
-			'rel'    => array(),
-		),
-		'b'      => array(),
-		'br'     => array(),
-		'em'     => array(),
-		'p'      => array(),
-		'span'   => array(),
-		'div'    => array(),
-		'strong' => array(),
-	);
-
-	$elements = apply_filters( 'et_allowed_localization_html_elements', $elements );
-
-	foreach ( $elements as $tag => $attributes ) {
-		$elements[ $tag ] = array_merge( $attributes, $whitelisted_attributes );
+if ( ! function_exists( 'et_core_autoloader' ) ):
+/**
+ * Callback for {@link spl_autoload_register()}.
+ *
+ * @param $class_name
+ */
+function et_core_autoloader( $class_name ) {
+	if ( 0 !== strpos( $class_name, 'ET_Core' ) ) {
+		return;
 	}
 
-	return $elements;
+	static $components    = null;
+	static $groups_loaded = array();
+
+	if ( null === $components ) {
+		$components = et_core_get_components_metadata();
+	}
+
+	if ( ! isset( $components[ $class_name ] ) ) {
+		return;
+	}
+
+	$file   = ET_CORE_PATH . $components[ $class_name ]['file'];
+	$groups = $components[ $class_name ]['groups'];
+	$slug   = $components[ $class_name ]['slug'];
+
+	if ( ! file_exists( $file ) ) {
+		return;
+	}
+
+	// Load component class
+	require_once $file;
+
+	/**
+	 * Fires when a Core Component is loaded.
+	 *
+	 * The dynamic portion of the hook name, $slug, refers to the slug of the Core Component that was loaded.
+	 *
+	 * @since 1.0.0
+	 */
+	do_action( "et_core_component_{$slug}_loaded" );
+
+	if ( empty( $groups ) ) {
+		return;
+	}
+
+	foreach( $groups as $group_name ) {
+		if ( in_array( $group_name, $groups_loaded ) ) {
+			continue;
+		}
+
+		$groups_loaded[] = $group_name;
+		$slug            = $components['groups'][ $group_name ]['slug'];
+		$init_file       = $components['groups'][ $group_name ]['init'];
+		$init_file       = empty( $init_file ) ? null : ET_CORE_PATH . $init_file;
+
+		et_core_initialize_component_group( $slug, $init_file );
+	}
 }
 endif;
+
+
+if ( ! function_exists( 'et_core_browser_body_class' ) ) :
+function et_core_browser_body_class( $classes ) {
+	global $is_lynx, $is_gecko, $is_IE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone;
+
+	if( $is_lynx ) $classes[] = 'lynx';
+	elseif( $is_gecko ) $classes[] = 'gecko';
+	elseif( $is_opera ) $classes[] = 'opera';
+	elseif( $is_NS4 ) $classes[] = 'ns4';
+	elseif( $is_safari ) $classes[] = 'safari';
+	elseif( $is_chrome ) $classes[] = 'chrome';
+	elseif( $is_IE ) $classes[] = 'ie';
+	else $classes[] = 'unknown';
+
+	if( $is_iphone ) $classes[] = 'iphone';
+	return $classes;
+}
+endif;
+add_filter( 'body_class', 'et_core_browser_body_class' );
+
+
+if ( ! function_exists( 'et_core_clear_transients' ) ):
+function et_core_clear_transients() {
+	delete_site_transient( 'et_core_path' );
+	delete_site_transient( 'et_core_version' );
+	delete_site_transient( 'et_core_needs_old_theme_patch' );
+}
+add_action( 'upgrader_process_complete', 'et_core_clear_transients', 10, 0 );
+add_action( 'switch_theme', 'et_core_clear_transients' );
+add_action( 'update_option_active_plugins', 'et_core_clear_transients', 10, 0 );
+add_action( 'update_site_option_active_plugins', 'et_core_clear_transients', 10, 0 );
+endif;
+
+
+if ( ! function_exists( 'et_core_die' ) ):
+function et_core_die( $message = '' ) {
+	if ( wp_doing_ajax() ) {
+		$message = '' !== $message ? $message : esc_html__( 'Configuration Error', 'et_core' );
+		wp_send_json_error( array( 'error' => $message ) );
+	}
+
+	die(-1);
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_get_components_metadata' ) ):
+function et_core_get_components_metadata() {
+	static $metadata = null;
+
+	if ( null === $metadata ) {
+		require_once '_metadata.php';
+		$metadata = json_decode( $metadata, true );
+	}
+
+	return $metadata;
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_get_component_names' ) ):
+/**
+ * Returns the names of all available components, optionally filtered by type and/or group.
+ *
+ * @param string $include The type of components to include (official|third-party|all). Default is 'official'.
+ * @param string $group   Only include components in $group. Optional.
+ *
+ * @return array
+ */
+function et_core_get_component_names( $include = 'official', $group = '' ) {
+	static $official_components = null;
+
+	if ( null === $official_components ) {
+		$official_components = et_core_get_components_metadata();
+	}
+
+	if ( 'official' === $include ) {
+		return empty( $group ) ? $official_components['names'] : $official_components['groups'][ $group ]['members'];
+	}
+
+	$third_party_components = et_core_get_third_party_components();
+
+	if ( 'third-party' === $include ) {
+		return array_keys( $third_party_components );
+	}
+
+	return array_merge(
+		array_keys( $third_party_components ),
+		empty( $group ) ? $official_components['names'] : $official_components['groups'][ $group ]['members']
+	);
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_get_ip_address' ) ):
+/**
+ * Returns the IP address of the client that initiated the current HTTP request.
+ *
+ * @return string
+ */
+function et_core_get_ip_address() {
+	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
+		$ip = $_SERVER['HTTP_CLIENT_IP'];
+	} else if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
+		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+	} else {
+		$ip = $_SERVER['REMOTE_ADDR'];
+	}
+
+	return sanitize_text_field( $ip );
+}
+endif;
+
 
 if ( ! function_exists( 'et_core_get_main_fonts' ) ) :
 function et_core_get_main_fonts() {
@@ -91,114 +225,23 @@ function et_core_get_main_fonts() {
 }
 endif;
 
-if ( ! function_exists( 'et_core_load_main_fonts' ) ) :
-function et_core_load_main_fonts() {
-	$fonts_url = et_core_get_main_fonts();
-	if ( empty( $fonts_url ) ) {
-		return;
+
+if ( ! function_exists( 'et_core_get_theme_info' ) ):
+function et_core_get_theme_info( $key ) {
+	static $theme_info = null;
+
+	if ( ! $theme_info ) {
+		$theme_info = wp_get_theme();
+
+		if ( defined( 'STYLESHEETPATH' ) && is_child_theme() ) {
+			$theme_info = wp_get_theme( $theme_info->parent_theme );
+		}
 	}
 
-	wp_enqueue_style( 'et-core-main-fonts', esc_url_raw( $fonts_url ), array(), null );
+	return $theme_info->display( $key );
 }
 endif;
 
-if ( ! function_exists( 'et_core_browser_body_class' ) ) :
-function et_core_browser_body_class( $classes ) {
-	global $is_lynx, $is_gecko, $is_IE, $is_opera, $is_NS4, $is_safari, $is_chrome, $is_iphone;
-
-	if( $is_lynx ) $classes[] = 'lynx';
-	elseif( $is_gecko ) $classes[] = 'gecko';
-	elseif( $is_opera ) $classes[] = 'opera';
-	elseif( $is_NS4 ) $classes[] = 'ns4';
-	elseif( $is_safari ) $classes[] = 'safari';
-	elseif( $is_chrome ) $classes[] = 'chrome';
-	elseif( $is_IE ) $classes[] = 'ie';
-	else $classes[] = 'unknown';
-
-	if( $is_iphone ) $classes[] = 'iphone';
-	return $classes;
-}
-endif;
-add_filter( 'body_class', 'et_core_browser_body_class' );
-
-if ( ! function_exists( 'et_force_edge_compatibility_mode' ) ) :
-function et_force_edge_compatibility_mode() {
-	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
-}
-endif;
-add_action( 'et_head_meta', 'et_force_edge_compatibility_mode' );
-
-if ( ! function_exists( 'et_core_register_admin_assets' ) ) :
-/**
- * Register Core admin assets.
- *
- * @since 1.0.0
- *
- * @private
- */
-function et_core_register_admin_assets() {
-	wp_register_style( 'et-core-admin', ET_CORE_URL . 'admin/css/core.css', array(), ET_CORE_VERSION );
-	wp_register_script( 'et-core-admin', ET_CORE_URL . 'admin/js/core.js', array(), ET_CORE_VERSION );
-	wp_localize_script( 'et-core-admin', 'etCore', array(
-		'ajaxurl' => admin_url( 'admin-ajax.php' ),
-		'text'    => array(
-			'modalTempContentCheck' => esc_html__( 'Got it, thanks!', ET_CORE_TEXTDOMAIN ),
-		),
-	) );
-}
-endif;
-add_action( 'admin_enqueue_scripts', 'et_core_register_admin_assets' );
-
-if ( ! function_exists( 'et_core_load_main_styles' ) ) :
-function et_core_load_main_styles( $hook ) {
-	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ) ) ) {
-		return;
-	}
-
-	wp_enqueue_style( 'et-core-admin' );
-}
-endif;
-
-if ( ! function_exists( 'et_core_get_ip_address' ) ):
-/**
- * Returns the IP address of the client that initiated the current HTTP request.
- *
- * @return string
- */
-function et_core_get_ip_address() {
-	if ( ! empty( $_SERVER['HTTP_CLIENT_IP'] ) ) {
-		$ip = $_SERVER['HTTP_CLIENT_IP'];
-	} else if ( ! empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) {
-		$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-	} else {
-		$ip = $_SERVER['REMOTE_ADDR'];
-	}
-
-	return sanitize_text_field( $ip );
-}
-endif;
-
-if ( ! function_exists( 'et_core_initialize_component_group' ) ):
-function et_core_initialize_component_group( $slug, $init_file = null ) {
-	if ( null !== $init_file && file_exists( $init_file ) ) {
-		// Load and run component group's init function
-		require_once $init_file;
-
-		$init = "et_core_{$slug}_init";
-
-		$init();
-	}
-
-	/**
-	 * Fires when a Core Component Group is loaded.
-	 *
-	 * The dynamic portion of the hook name, `$group`, refers to the name of the Core Component Group that was loaded.
-	 *
-	 * @since 1.0.0
-	 */
-	do_action( "et_core_{$slug}_loaded" );
-}
-endif;
 
 if ( ! function_exists( 'et_core_get_third_party_components' ) ):
 function et_core_get_third_party_components( $group = '' ) {
@@ -225,75 +268,128 @@ function et_core_get_third_party_components( $group = '' ) {
 }
 endif;
 
-if ( ! function_exists( 'et_core_get_components_metadata' ) ):
-function et_core_get_components_metadata() {
-	static $metadata = null;
 
-	if ( null === $metadata ) {
-		require_once '_metadata.php';
-		$metadata = json_decode( $metadata, true );
+if ( ! function_exists( 'et_core_initialize_component_group' ) ):
+function et_core_initialize_component_group( $slug, $init_file = null ) {
+	if ( null !== $init_file && file_exists( $init_file ) ) {
+		// Load and run component group's init function
+		require_once $init_file;
+
+		$init = "et_core_{$slug}_init";
+
+		$init();
 	}
 
-	return $metadata;
-}
-endif;
-
-if ( ! function_exists( 'et_core_get_component_names' ) ):
-/**
- * Returns the names of all available components, optionally filtered by type and/or group.
- *
- * @param string $include The type of components to include (official|third-party|all). Default is 'official'.
- * @param string $group   Only include components in $group. Optional.
- *
- * @return array
- */
-function et_core_get_component_names( $include = 'official', $group = '' ) {
-	static $official_components = null;
-
-	if ( null === $official_components ) {
-		$official_components = et_core_get_components_metadata();
-	}
-
-	if ( 'official' === $include ) {
-		return empty( $group ) ? $official_components['names'] : $official_components['groups'][ $group ]['members'];
-	}
-
-	$third_party_components = et_core_get_third_party_components();
-
-	if ( 'third-party' === $include ) {
-		return array_keys( $third_party_components );
-	}
-
-	return array_merge(
-		array_keys( $third_party_components ),
-		empty( $group ) ? $official_components['names'] : $official_components['groups'][ $group ]['members']
-	);
-}
-endif;
-
-if ( ! function_exists( 'wp_doing_ajax' ) ):
-function wp_doing_ajax() {
 	/**
-	 * Filters whether the current request is an Ajax request.
+	 * Fires when a Core Component Group is loaded.
 	 *
-	 * @since 4.7.0
+	 * The dynamic portion of the hook name, `$group`, refers to the name of the Core Component Group that was loaded.
 	 *
-	 * @param bool $wp_doing_ajax Whether the current request is an Ajax request.
+	 * @since 1.0.0
 	 */
-	return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
+	do_action( "et_core_{$slug}_loaded" );
 }
 endif;
 
-if ( ! function_exists( 'et_core_die' ) ):
-function et_core_die( $message = '' ) {
-	if ( wp_doing_ajax() ) {
-		$message = '' !== $message ? $message : esc_html__( 'Configuration Error', 'et_core' );
-		wp_send_json_error( array( 'error' => $message ) );
+
+if ( ! function_exists( 'et_core_load_main_fonts' ) ) :
+function et_core_load_main_fonts() {
+	$fonts_url = et_core_get_main_fonts();
+	if ( empty( $fonts_url ) ) {
+		return;
 	}
 
-	die(-1);
+	wp_enqueue_style( 'et-core-main-fonts', esc_url_raw( $fonts_url ), array(), null );
 }
 endif;
+
+
+if ( ! function_exists( 'et_core_load_main_styles' ) ) :
+function et_core_load_main_styles( $hook ) {
+	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ) ) ) {
+		return;
+	}
+
+	wp_enqueue_style( 'et-core-admin' );
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_maybe_set_updated' ) ):
+function et_core_maybe_set_updated() {
+	// TODO: Move et_{*}_option() functions to core.
+	$last_core_version = get_option( 'et_core_version', '' );
+
+	if ( ET_CORE_VERSION === $last_core_version ) {
+		return;
+	}
+
+	update_option( 'et_core_version', ET_CORE_VERSION );
+
+	define( 'ET_CORE_UPDATED', true );
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_maybe_patch_old_theme' ) ):
+function et_core_maybe_patch_old_theme() {
+	if ( ! ET_Core_Logger::php_notices_enabled() ) {
+		return;
+	}
+
+	if ( get_site_transient( 'et_core_needs_old_theme_patch' ) ) {
+		add_action( 'after_setup_theme', 'ET_Core_Logger::disable_php_notices', 9 );
+		add_action( 'after_setup_theme', 'ET_Core_Logger::enable_php_notices', 11 );
+		return;
+	}
+
+	$themes         = array( 'Divi' => '3.0.41', 'Extra' => '2.0.40' );
+	$current_theme  = et_core_get_theme_info( 'Name' );
+
+	if ( ! in_array( $current_theme, array_keys( $themes ) ) ) {
+		return;
+	}
+
+	$needs_patch   = false;
+	$theme_version = et_core_get_theme_info( 'Version' );
+
+	foreach ( $themes as $dont_patch_version ) {
+		if ( version_compare( $theme_version, $dont_patch_version, '<' ) ) {
+			$needs_patch = true;
+			break;
+		}
+	}
+
+	if ( $needs_patch ) {
+		add_action( 'after_setup_theme', 'ET_Core_Logger::disable_php_notices', 9 );
+		add_action( 'after_setup_theme', 'ET_Core_Logger::enable_php_notices', 11 );
+		set_site_transient( 'et_core_needs_old_theme_patch', true, DAY_IN_SECONDS );
+	}
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_register_admin_assets' ) ) :
+/**
+ * Register Core admin assets.
+ *
+ * @since 1.0.0
+ *
+ * @private
+ */
+function et_core_register_admin_assets() {
+	wp_register_style( 'et-core-admin', ET_CORE_URL . 'admin/css/core.css', array(), ET_CORE_VERSION );
+	wp_register_script( 'et-core-admin', ET_CORE_URL . 'admin/js/core.js', array(), ET_CORE_VERSION );
+	wp_localize_script( 'et-core-admin', 'etCore', array(
+		'ajaxurl' => admin_url( 'admin-ajax.php' ),
+		'text'    => array(
+			'modalTempContentCheck' => esc_html__( 'Got it, thanks!', ET_CORE_TEXTDOMAIN ),
+		),
+	) );
+}
+endif;
+add_action( 'admin_enqueue_scripts', 'et_core_register_admin_assets' );
+
 
 if ( ! function_exists( 'et_core_security_check' ) ):
 /**
@@ -348,6 +444,132 @@ function et_core_security_check( $user_can = 'manage_options', $nonce_action = '
 	return true;
 }
 endif;
+
+
+if ( ! function_exists( 'et_core_setup' ) ) :
+/**
+ * Setup Core.
+ *
+ * @since 1.0.0
+ * @since 3.0.60 The `$url` param is deprecated.
+ *
+ * @param string $deprecated Deprecated parameter.
+ */
+function et_core_setup( $deprecated = '' ) {
+	if ( defined( 'ET_CORE_PATH' ) ) {
+		return;
+	}
+
+	$core_path = _et_core_normalize_path( trailingslashit( dirname( __FILE__ ) ) );
+	$theme_dir = _et_core_normalize_path( get_template_directory() );
+
+	if ( 0 === strpos( $core_path, $theme_dir ) ) {
+		$url = get_template_directory_uri() . '/core/';
+	} else {
+		$url = plugin_dir_url( __FILE__ );
+	}
+
+	define( 'ET_CORE_PATH', $core_path );
+	define( 'ET_CORE_URL', $url );
+	define( 'ET_CORE_TEXTDOMAIN', 'et-core' );
+
+	load_theme_textdomain( 'et-core', ET_CORE_PATH . 'languages/' );
+	et_core_maybe_set_updated();
+	et_new_core_setup();
+
+	if ( is_admin() || ! empty( $_GET['et_fb'] ) ) {
+		add_action( 'admin_enqueue_scripts', 'et_core_load_main_styles' );
+	}
+
+	et_core_maybe_patch_old_theme();
+}
+endif;
+
+
+if ( ! function_exists( 'et_force_edge_compatibility_mode' ) ) :
+function et_force_edge_compatibility_mode() {
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+}
+endif;
+add_action( 'et_head_meta', 'et_force_edge_compatibility_mode' );
+
+
+if ( ! function_exists( 'et_get_allowed_localization_html_elements' ) ) :
+function et_get_allowed_localization_html_elements() {
+	$whitelisted_attributes = array(
+		'id'    => array(),
+		'class' => array(),
+		'style' => array(),
+	);
+
+	$whitelisted_attributes = apply_filters( 'et_allowed_localization_html_attributes', $whitelisted_attributes );
+
+	$elements = array(
+		'a'      => array(
+			'href'   => array(),
+			'title'  => array(),
+			'target' => array(),
+			'rel'    => array(),
+		),
+		'b'      => array(),
+		'br'     => array(),
+		'em'     => array(),
+		'p'      => array(),
+		'span'   => array(),
+		'div'    => array(),
+		'strong' => array(),
+	);
+
+	$elements = apply_filters( 'et_allowed_localization_html_elements', $elements );
+
+	foreach ( $elements as $tag => $attributes ) {
+		$elements[ $tag ] = array_merge( $attributes, $whitelisted_attributes );
+	}
+
+	return $elements;
+}
+endif;
+
+
+if ( ! function_exists( 'et_get_safe_localization' ) ) :
+function et_get_safe_localization( $string ) {
+	return apply_filters( 'et_get_safe_localization', wp_kses( $string, et_get_allowed_localization_html_elements() ) );
+}
+endif;
+
+
+if ( ! function_exists( 'et_new_core_setup') ):
+function et_new_core_setup() {
+	$has_php_52x = -1 === version_compare( PHP_VERSION, '5.3' );
+
+	require_once ET_CORE_PATH . 'components/Updates.php';
+	require_once ET_CORE_PATH . 'components/init.php';
+
+	if ( $has_php_52x ) {
+		spl_autoload_register( 'et_core_autoloader', true );
+	} else {
+		spl_autoload_register( 'et_core_autoloader', true, true );
+	}
+
+	// Initialize top-level components "group"
+	et_core_init();
+}
+endif;
+
+
+if ( ! function_exists( 'wp_doing_ajax' ) ):
+function wp_doing_ajax() {
+	/**
+	 * Filters whether the current request is an Ajax request.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param bool $wp_doing_ajax Whether the current request is an Ajax request.
+	 */
+	return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
+}
+endif;
+
 
 if ( ! function_exists( 'et_core_load_component' ) ) :
 /**
