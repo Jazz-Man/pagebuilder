@@ -17,6 +17,7 @@ version 3.0.64 ( updated 7-19-2017 )
 - Fixed a logic error in the Theme Customizer preview that made mobile font size adjustments inaccurate in some cases.
 - Hover buttons will now be correctly hidden after closing a settings modal in the Visual Builder.
 - Option group font sizes will no longer be affected by responsive preview styling in the Visual Builder.
+- Fixed a fatal error that occured during WooCommerce checkout for some customers.
 	* functions.php
 	* header.php
 	* single.php

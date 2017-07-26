@@ -5802,11 +5802,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 }
 
 function et_divi_add_customizer_css() {
-		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-			return;
-		}
-
-		if ( is_admin() && ! is_customize_preview() ) {
+		if ( wp_doing_ajax() || wp_doing_cron() || ( is_admin() && ! is_customize_preview() ) ) {
 			return;
 		}
 
