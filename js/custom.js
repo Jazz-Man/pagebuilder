@@ -904,6 +904,11 @@
 				target = target.length ? target : $( '[name=' + this.hash.slice(1) +']' );
 				if ( target.length ) {
 
+					// automatically close fullscreen menu if clicked from there
+					if ( $this_link.closest( '.et_pb_fullscreen_menu_opened' ).length > 0 ) {
+						et_pb_toggle_fullscreen_menu();
+					}
+
 					et_pb_smooth_scroll( target, false, 800 );
 
 					if ( ! $( '#main-header' ).hasClass( 'et-fixed-header' ) && $( 'body' ).hasClass( 'et_fixed_nav' ) && $( window ).width() > 980 ) {
@@ -1321,6 +1326,10 @@
 	}
 
 	$( '#page-container' ).on( 'click', '.et_toggle_fullscreen_menu', function() {
+		et_pb_toggle_fullscreen_menu();
+	});
+
+	function et_pb_toggle_fullscreen_menu() {
 		var $menu_container = $( '.et_header_style_fullscreen .et_slide_in_menu_container' ),
 			top_bar_height = $menu_container.find( '.et_slide_menu_top' ).innerHeight();
 
@@ -1337,7 +1346,7 @@
 				$menu_container.removeClass( 'et_pb_fullscreen_menu_animated' );
 			}, 1000 );
 		}
-	});
+	}
 
 	$( window ).unload( function () {
 		/**

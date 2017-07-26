@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.61' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.64' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -330,7 +330,7 @@ function et_pb_get_font_icon_list_items() {
 	$symbols = et_pb_get_font_icon_symbols();
 
 	foreach ( $symbols as $symbol ) {
-		$output .= sprintf( '<li data-icon="%1$s"></li>', esc_attr( $symbol ) );
+		$output .= sprintf( '<li data-icon=\'%1$s\'></li>', esc_attr( $symbol ) );
 	}
 
 	return $output;
@@ -581,13 +581,16 @@ function et_fb_current_page_params() {
 	// Get current page paginated data
 	$et_paged = is_front_page() ? get_query_var( 'page' ) : get_query_var( 'paged' );
 
+	// Get thumbnail size
+	$thumbnail_size = 'post' === get_post_type( $post->ID ) && 'et_full_width_page' === get_post_meta( $post->ID, '_et_pb_page_layout', true ) ? 'et-pb-post-main-image-fullwidth-large' : 'large';
+
 	$current_page = array(
 		'url'                      => esc_url( $current_url ),
 		'permalink'                => esc_url( remove_query_arg( 'et_fb', $current_url ) ),
 		'backendBuilderUrl'        => esc_url( sprintf( admin_url('/post.php?post=%d&action=edit'), get_the_ID() ) ),
 		'id'                       => isset( $post->ID ) ? $post->ID : false,
 		'title'                    => esc_html( get_the_title() ),
-		'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, 'large' ) ) : '',
+		'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail_size ) ) : '',
 		'authorName'               => esc_html( get_the_author() ),
 		'authorUrl'                => isset( $authordata->ID ) && isset( $authordata->user_nicename ) ? esc_html( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ) : false,
 		'authorUrlTitle'           => sprintf( esc_html__( 'Posts by %s', 'et_builder' ), get_the_author() ),
@@ -1088,6 +1091,21 @@ function et_fb_update_layout() {
 	die();
 }
 add_action( 'wp_ajax_et_fb_update_layout', 'et_fb_update_layout' );
+
+if ( ! function_exists( 'et_fb_disable_product_tour' ) ) :
+function et_fb_disable_product_tour() {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		die( -1 );
+	}
+
+	$user_id = (int) get_current_user_id();
+	$all_product_settings = et_get_option( 'product_tour_status', array() );
+	$all_product_settings[$user_id] = 'off';
+
+	et_update_option( 'product_tour_status', $all_product_settings );
+}
+endif;
+add_action( 'wp_ajax_et_fb_disable_product_tour', 'et_fb_disable_product_tour' );
 
 if ( ! function_exists( 'et_builder_include_categories_option' ) ) :
 function et_builder_include_categories_option( $args = array() ) {
@@ -4996,12 +5014,20 @@ function et_aweber_authorization_option() {
 
 if ( ! function_exists( 'et_pb_get_audio_player' ) ) :
 function et_pb_get_audio_player() {
+	$shortcode_audio = do_shortcode( '[audio]' );
+
+	if ( '' === $shortcode_audio ) {
+		return false;
+	}
+
 	$output = sprintf(
 		'<div class="et_audio_container">
 			%1$s
 		</div> <!-- .et_audio_container -->',
-		do_shortcode( '[audio]' )
+		$shortcode_audio
 	);
+
+	add_filter( 'the_content', 'et_delete_post_audio' );
 
 	return $output;
 }
@@ -5180,6 +5206,51 @@ function et_delete_post_video( $content ) {
 			}
 		}
 	endif;
+
+	return $content;
+}
+endif;
+
+if ( ! function_exists( 'et_delete_post_audio' ) ) :
+/*
+ * Removes the audio shortcode of the first attached (NOT embedded) audio from content on single pages since
+ * it is displayed at the top of the page. This will also remove the audio shortcode url from archive pages content
+ * @see https://www.elegantthemes.com/gallery/divi/documentation/post-formats/
+ */
+function et_delete_post_audio( $content ) {
+	// Check whether current post is post format audio
+	if ( has_post_format( 'audio' ) ) {
+		// Get attached audio file (file that is uploadeded on the post'
+		// media library automatically attached to the post)
+		$audios = get_attached_media( 'audio', get_the_ID() );
+
+		// Bail if no attached audio found
+		if ( empty( $audios ) ) {
+			return $content;
+		}
+
+		// Get the first attached audio
+		$audio = reset( $audios );
+
+		// Get the first attached audio file URL
+		$audio_url = wp_get_attachment_url( $audio->ID );
+
+		// Get all shortcode on from current post's content
+		$regex = get_shortcode_regex();
+		preg_match_all( "/{$regex}/s", $content, $matches );
+
+		// $matches[2] holds an array of shortcodes names in the post
+		foreach ( $matches[2] as $key => $shortcode_match ) {
+			// Remove audio shortcode if its contains first attached audio file URL
+			// first attached audio file is automatically appended on post's format content
+			if ( 'audio' === $shortcode_match && strpos( $matches[0][$key], $audio_url ) ) {
+				$content = str_replace( $matches[0][$key], '', $content );
+				if ( is_single() && is_main_query() ) {
+					break;
+				}
+			}
+		}
+	}
 
 	return $content;
 }
@@ -6309,6 +6380,7 @@ function et_fb_retrieve_builder_data() {
 		esc_attr__( 'Email Address', 'et_builder' ),
 		esc_attr__( 'Message', 'et_builder' )
 	) );
+	$fields_data['productTourText'] = et_fb_get_product_tour_text( $post_id );
 
 	$post_data = get_post( $post_id );
 	$post_data_post_modified = date( 'U', strtotime( $post_data->post_modified ) );
@@ -6372,6 +6444,160 @@ function et_pb_get_options_page_link() {
 	}
 
 	return apply_filters( 'et_pb_theme_options_link', admin_url( 'admin.php?page=et_divi_options' ) );
+}
+
+function et_fb_get_product_tour_text( $post_id ) {
+	$post_status = get_post_status( $post_id );
+
+	$productTourText = array(
+		'start' => array(
+			'title' => esc_html__( 'Welcome To The Divi Builder', 'et_builder' ),
+			'description' => sprintf(
+				__( '%10$sBuilding beautiful pages is a breeze using the Visual Builder. To get started, add a new %1$s to your page by pressing the %2$s button. Next, add a %3$s of columns inside your section by pressing the %4$s button. Finally, start adding some content %5$s inside your columns by pressing the %6$s button. You can customize the design and content of any element on the page by pressing the %7$s button. If you ever need help, visit our %9$s page for a full list of tutorials.', 'et_builder' ),
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_blue">%1$s</span>', esc_html__( 'Section' ) ),
+				'<span class="et_fb_tour_icon et_fb_tour_icon_blue"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_green">%1$s</span>', esc_html__( 'Row' ) ),
+				'<span class="et_fb_tour_icon et_fb_tour_icon_green"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_black">%1$s</span>', esc_html__( 'Modules' ) ),
+				'<span class="et_fb_tour_icon"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				'<span class="et_fb_tour_icon"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M20.426 13.088l-1.383-.362a.874.874 0 0 1-.589-.514l-.043-.107a.871.871 0 0 1 .053-.779l.721-1.234a.766.766 0 0 0-.116-.917 6.682 6.682 0 0 0-.252-.253.768.768 0 0 0-.917-.116l-1.234.722a.877.877 0 0 1-.779.053l-.107-.044a.87.87 0 0 1-.513-.587l-.362-1.383a.767.767 0 0 0-.73-.567h-.358a.768.768 0 0 0-.73.567l-.362 1.383a.878.878 0 0 1-.513.589l-.107.044a.875.875 0 0 1-.778-.054l-1.234-.722a.769.769 0 0 0-.918.117c-.086.082-.17.166-.253.253a.766.766 0 0 0-.115.916l.721 1.234a.87.87 0 0 1 .053.779l-.043.106a.874.874 0 0 1-.589.514l-1.382.362a.766.766 0 0 0-.567.731v.357a.766.766 0 0 0 .567.731l1.383.362c.266.07.483.26.588.513l.043.107a.87.87 0 0 1-.053.779l-.721 1.233a.767.767 0 0 0 .115.917c.083.087.167.171.253.253a.77.77 0 0 0 .918.116l1.234-.721a.87.87 0 0 1 .779-.054l.107.044a.878.878 0 0 1 .513.589l.362 1.383a.77.77 0 0 0 .731.567h.356a.766.766 0 0 0 .73-.567l.362-1.383a.878.878 0 0 1 .515-.589l.107-.044a.875.875 0 0 1 .778.054l1.234.721c.297.17.672.123.917-.117.087-.082.171-.166.253-.253a.766.766 0 0 0 .116-.917l-.721-1.234a.874.874 0 0 1-.054-.779l.044-.107a.88.88 0 0 1 .589-.513l1.383-.362a.77.77 0 0 0 .567-.731v-.357a.772.772 0 0 0-.569-.724v-.005zm-6.43 3.9a2.986 2.986 0 1 1 2.985-2.986 3 3 0 0 1-2.985 2.987v-.001z" fillRule="evenodd" /></g></svg></span>',
+				'<span class="et_fb_tour_text et_fb_tour_text_black">?</span>',
+				sprintf( '<a target="_blank" href="https://www.elegantthemes.com/documentation/divi/" class="et_fb_tour_text et_fb_tour_text_black">%1$s</a>', esc_html__( 'Documentation' ) ),
+				sprintf( '<div class="et-fb-tour-video-overlay" data-video="https://www.youtube.com/embed/JXZIGZqr9OE?rel=0&autoplay=1">
+							<img src="%1$s"/>
+							<div class="et-fb-play-overlay"></div>
+						</div>',
+						esc_url( ET_BUILDER_URI . '/frontend-builder/assets/img/product-tour-intro.jpg' )
+				)
+			),
+			'endButtonText' => esc_html__( 'Start Building', 'et_builder' ),
+			'skipButtonText' => esc_html__( 'Take the Tour', 'et_builder' ),
+		),
+		'loadLayout' => array(
+			'title' => esc_html__( 'Load A New Layout', 'et_builder' ),
+			'description' => esc_html__( 'Loading pre-made layouts is a great way to jump-start your new page. The Divi Builder comes with dozens of layouts to choose from, and you can find lots of great free layouts online too. You can save your favorite layouts to the Divi Library and load them on new pages or share them with the community. Click the highlighted button to open the layouts menu and select a pre-made layout.', 'et_builder' ),
+		),
+		'loadLayoutItem' => array(
+			'title' => esc_html__( 'Choose A Design To Start With', 'et_builder' ),
+			'description' => esc_html__( 'Here you can see a list of pre-made layouts that ship with the Divi Builder. You can also access layouts that you have saved to your Divi Library. Choose the “Divi Builder Demo” layout to load the new layout to your page.', 'et_builder' ),
+		),
+		'addSection' => array(
+			'title' => esc_html__( 'Add A New Section', 'et_builder' ),
+			'description' => sprintf(
+				__( 'Now that your pre-made layout has been loaded, we can start adding new content to the page. The Divi Builder organizes content using %1$s, %2$s and Modules. Sections are the largest organizational element. Click the highlighted button to add a new section to the page.', 'et_builder' ),
+				sprintf( '<span class="et_fb_tour_text_blue">%1$s</span>', esc_html__( 'Sections' ) ),
+				sprintf( '<span class="et_fb_tour_text_green">%1$s</span>', esc_html__( 'Rows' ) )
+			)
+		),
+		'selectSectionType' => array(
+			'title' => esc_html__( 'Choose A Section Type', 'et_builder' ),
+			'description' => sprintf(
+				__( 'The Divi Builder has three different section types. %1$s sections conform to the standard width of your page layout. %2$s Sections can be used to create advanced sidebar layouts. %3$s sections extend the full width of your page and can be used with fullwidth modules. Click the “Regular” section button to add a new section to your page.', 'et_builder' ),
+				sprintf( '<span class="et_fb_tour_text_blue">%1$s</span>', esc_html__( 'Regular' ) ),
+				sprintf( '<span class="et_fb_tour_text_red">%1$s</span>', esc_html__( 'Specialty' ) ),
+				sprintf( '<span class="et_fb_tour_text_purple">%1$s</span>', esc_html__( 'Fullwidth' ) )
+			)
+		),
+		'selectRow' => array(
+			'title' => esc_html__( 'Add A New Row Of Columns', 'et_builder' ),
+			'description' => sprintf(
+				__( 'Every section contains one or more %1$s of columns. You can choose between various column layouts for each row you add to your page. Click the highlighted three-column layout to add a new row to your section.', 'et_builder' ),
+				sprintf( '<span class="et_fb_tour_text_green">%1$s</span>', esc_html__( 'Rows' ) )
+			)
+		),
+		'selectModule' => array(
+			'title' => esc_html__( 'Add A Module To The Column', 'et_builder' ),
+			'description' => esc_html__( 'Within each column you can add one or more Modules. A module is basic content element. The Divi Builder comes with over 40 different content elements to choose from, such as Images, Videos, Text, and Buttons. Click the highlighted Blurb button to add a new Blurb module to the first column in your row.', 'et_builder' ),
+		),
+		'configureModule' => array(
+			'title' => esc_html__( 'Adjust Your Module Settings', 'et_builder' ),
+			'description' => esc_html__( 'Each Module comes with various settings. These settings are separated into three tabs: Content, Design and Advanced. Inside the content tab you can modify the module content elements, such as text and images. If you need more control over the appearance of your module, head over to the Design tab. For more advanced modifications, such as custom CSS and HTML attributes, explore the Advanced tab. Try adjusting the Title of your blurb by clicking into the highlighted field.', 'et_builder' ),
+		),
+		'saveModule' => array(
+			'title' => esc_html__( 'Accept Or Discard Your Changes', 'et_builder' ),
+			'description' => esc_html__( 'Whenever you make changes in the Divi Builder, these changes can be Undone, Redone, Discarded or Accepted. Now that you have adjusted your module’s title, you can click the red discard button to cancel these changes, or your can click the green button to accept them.', 'et_builder' ),
+		),
+		'duplicateModule' => array(
+			'title' => esc_html__( 'Hover To Access Action Buttons', 'et_builder' ),
+			'description' => esc_html__( 'Whenever you hover over a Section, Row or Module in the Divi Builder, action buttons will appear. These buttons can be used to move, modify, duplicate or delete your content. Click the highlighted “duplicate” icon to duplicate the blurb module that you just added to the page.', 'et_builder' ),
+		),
+		'moveModule' => array(
+			'title' => __( 'Drag & Drop Content', 'et_builder' ),
+			'description' => esc_html__( 'Every item on the page can be dragged and dropped to new locations. Using your mouse, click the highlighted move icon and hold down the mouse button. While holding down the mouse button, move your cursor over to the empty column and then release your mouse button to drop the module into the new column.', 'et_builder' ),
+		),
+		'rightClickCopy' => array(
+			'title' => esc_html__( 'Access Right Click Options', 'et_builder' ),
+			'description' => esc_html__( 'In addition to hover actions, additional options can be accessed by Right Clicking or Cmd + Clicking on any module, row or section. Using the right click menu shown, click the highlighted “Copy Module” button to copy the blurb module that you just moved.', 'et_builder' ),
+		),
+		'rightClickPaste' => array(
+			'title' => esc_html__( 'Paste Your Copied Module', 'et_builder' ),
+			'description' => esc_html__( 'Now that you have copied a module using the Right Click menu, you can Right Click in a new location to paste that module. Using the right click options shown, click the “Paste Module” button to paste the module you just copied into the empty column.', 'et_builder' ),
+		),
+		'rowOptions' => array(
+			'title' => esc_html__( 'Access Your Row Options', 'et_builder' ),
+			'description' => esc_html__( 'Every Row and Section has its own set of options that can be used to adjust the item’s appearance. You can adjust its width, padding, background and more. To access a row’s settings, hover over the row and click the highlighted options button.', 'et_builder' ),
+		),
+		'editRow' => array(
+			'title' => esc_html__( 'Adjust Your Row Setting', 'et_builder' ),
+			'description' => esc_html__( 'Just like Modules, Rows come with a lot of settings that are separated into the Content, Design and Advanced tabs. Click the highlighted button to add a new background color to your row.', 'et_builder' ),
+		),
+		'saveRow' => array(
+			'title' => esc_html__( 'Accept Your Changes', 'et_builder' ),
+			'description' => esc_html__( 'Click the highlighted green check mark button to accept your changes. ', 'et_builder' ),
+		),
+		'pageSettings' => array(
+			'title' => esc_html__( 'Open Your Page Settings', 'et_builder' ),
+			'description' => esc_html__( 'While using the Divi Builder, you can access your page settings by toggling the page settings bar at the bottom of your screen. Click the highlighted button to reveal your page settings.', 'et_builder' ),
+		),
+		'tabletPreview' => array(
+			'title' => esc_html__( 'Preview Your Page On Mobile', 'et_builder' ),
+			'description' => esc_html__( 'While editing your page, it’s easy to see what your design will look like on mobile devices. You can also make adjustments to your module, row and section settings for each mobile breakpoint. Click the highlighted “Tablet” icon to enter Tablet preview mode. ', 'et_builder' ),
+		),
+		'desktopPreview' => array(
+			'title' => esc_html__( 'Switch Back To Desktop Mode', 'et_builder' ),
+			'description' => esc_html__( 'You can switch back and forth between each preview mode freely while editing your page. Now that we have previewed our page on Tablet, let’s switch back to Desktop preview mode by clicking the highlighted button.', 'et_builder' ),
+		),
+		'openHistory' => array(
+			'title' => esc_html__( 'Access Your Editing History', 'et_builder' ),
+			'description' => esc_html__( 'Every change you make while editing your page is saved in your editing history. You can navigate backwards and forwards through time to any point during your current editing session, as well as undo and redo recent changes. Click the highlighted History button to access your editing history. ', 'et_builder' ),
+		),
+		'editHistory' => array(
+			'title' => esc_html__( 'Undo, Redo And Restore', 'et_builder' ),
+			'description' => esc_html__( 'Here you can undo, redo or restore a saved history state. If you change your mind about recent changes, simply click back in time and start building again. You can also undo and redo recent changes. Click the undo and redo buttons and then accept your changes by clicking the green check mark.', 'et_builder' ),
+		),
+		'savePage' => array(
+			'title' => esc_html__( 'Save Your Page', 'et_builder' ),
+			'description' => sprintf( esc_html__( 'When you are all done, you can save your changes by clicking the %1$s button inside of your page settings bar. You can also press Ctrl + S at any time to save your changes. Click the highlighted Save button to save your changes. Don’t worry, the page you were working on before starting this tour will not be lost!', 'et_builder' ),
+				in_array( $post_status, array( 'private', 'publish' ) ) ? esc_html__( 'Save', 'et_builder' ) : esc_html__( 'Publish', 'et_builder' )
+			),
+		),
+		'finish' => array(
+			'title' => esc_html__( 'You’re Ready To Go!', 'et_builder' ),
+			'description' => sprintf(
+				__( '%10$sBuilding beautiful pages is a breeze using the Visual Builder. To get started, add a new %1$s to your page by pressing the %2$s button. Next, add a %3$s of columns inside your section by pressing the %4$s button. Finally, start adding some content %5$s inside your columns by pressing the %6$s button. You can customize the design and content of any element on the page by pressing the %7$s button. If you ever need help, visit our %9$s page for a full list of tutorials.', 'et_builder' ),
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_blue">%1$s</span>', esc_html__( 'Section' ) ),
+				'<span class="et_fb_tour_icon et_fb_tour_icon_blue"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_green">%1$s</span>', esc_html__( 'Row' ) ),
+				'<span class="et_fb_tour_icon et_fb_tour_icon_green"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				sprintf( '<span class="et_fb_tour_text et_fb_tour_text_black">%1$s</span>', esc_html__( 'Modules' ) ),
+				'<span class="et_fb_tour_icon"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" /></g></svg></span>',
+				'<span class="et_fb_tour_icon"><svg viewBox="0 0 28 28" preserveAspectRatio="xMidYMid meet" shapeRendering="geometricPrecision"><g><path d="M20.426 13.088l-1.383-.362a.874.874 0 0 1-.589-.514l-.043-.107a.871.871 0 0 1 .053-.779l.721-1.234a.766.766 0 0 0-.116-.917 6.682 6.682 0 0 0-.252-.253.768.768 0 0 0-.917-.116l-1.234.722a.877.877 0 0 1-.779.053l-.107-.044a.87.87 0 0 1-.513-.587l-.362-1.383a.767.767 0 0 0-.73-.567h-.358a.768.768 0 0 0-.73.567l-.362 1.383a.878.878 0 0 1-.513.589l-.107.044a.875.875 0 0 1-.778-.054l-1.234-.722a.769.769 0 0 0-.918.117c-.086.082-.17.166-.253.253a.766.766 0 0 0-.115.916l.721 1.234a.87.87 0 0 1 .053.779l-.043.106a.874.874 0 0 1-.589.514l-1.382.362a.766.766 0 0 0-.567.731v.357a.766.766 0 0 0 .567.731l1.383.362c.266.07.483.26.588.513l.043.107a.87.87 0 0 1-.053.779l-.721 1.233a.767.767 0 0 0 .115.917c.083.087.167.171.253.253a.77.77 0 0 0 .918.116l1.234-.721a.87.87 0 0 1 .779-.054l.107.044a.878.878 0 0 1 .513.589l.362 1.383a.77.77 0 0 0 .731.567h.356a.766.766 0 0 0 .73-.567l.362-1.383a.878.878 0 0 1 .515-.589l.107-.044a.875.875 0 0 1 .778.054l1.234.721c.297.17.672.123.917-.117.087-.082.171-.166.253-.253a.766.766 0 0 0 .116-.917l-.721-1.234a.874.874 0 0 1-.054-.779l.044-.107a.88.88 0 0 1 .589-.513l1.383-.362a.77.77 0 0 0 .567-.731v-.357a.772.772 0 0 0-.569-.724v-.005zm-6.43 3.9a2.986 2.986 0 1 1 2.985-2.986 3 3 0 0 1-2.985 2.987v-.001z" fillRule="evenodd" /></g></svg></span>',
+				'<span class="et_fb_tour_text et_fb_tour_text_black">?</span>',
+				sprintf( '<a target="_blank" href="https://www.elegantthemes.com/documentation/divi/" class="et_fb_tour_text et_fb_tour_text_black">%1$s</a>', esc_html__( 'Documentation' ) ),
+				sprintf( '<div class="et-fb-tour-video-overlay" data-video="https://www.youtube.com/embed/JXZIGZqr9OE?rel=0&autoplay=1">
+							<img src="%1$s"/>
+							<div class="et-fb-play-overlay"></div>
+						</div>',
+						esc_url( ET_BUILDER_URI . '/frontend-builder/assets/img/product-tour-intro.jpg' )
+				)
+			),
+			'endButtonText' => esc_html__( 'Start Building', 'et_builder' ),
+		),
+		'endButtonTextDefault' => esc_html__( 'End the Tour', 'et_builder' ),
+		'skipButtonTextDefault' => esc_html__( 'Skip This Step', 'et_builder' ),
+	);
+
+	return $productTourText;
 }
 
 /*

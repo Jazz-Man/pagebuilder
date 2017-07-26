@@ -65,11 +65,14 @@ class ET_Builder_Element {
 	private static $current_module_index = 0;
 	private static $structure_modules = array();
 	private static $structure_module_slugs = array();
+	private static $_module_slugs_by_post_type = array();
 
 	private static $loading_backbone_templates = false;
 
+	/**
+	 * @var ET_Core_PageResource
+	 */
 	public static $advanced_styles_manager  = null;
-	public static $asm_post_id = 0;
 
 	public static $can_reset_shortcode_indexes = true;
 
@@ -175,6 +178,14 @@ class ET_Builder_Element {
 				$this->register_post_type( $post_type );
 			}
 
+			if ( ! isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+				self::$_module_slugs_by_post_type[ $post_type ] = array();
+			}
+
+			if ( ! in_array( $this->slug, self::$_module_slugs_by_post_type ) ) {
+				self::$_module_slugs_by_post_type[ $post_type ][] = $this->slug;
+			}
+
 			if ( 'child' == $this->type ) {
 				self::$child_modules[ $post_type ][ $this->slug ] = $this;
 			} else {
@@ -210,11 +221,15 @@ class ET_Builder_Element {
 	 *   the same priority for the styles as before).}}
 	 */
 	private static function _setup_advanced_styles_manager() {
-		self::$asm_post_id = $post_id = et_core_page_resource_get_the_ID();
+		if ( et_core_page_resource_is_singular() ) {
+			$post_id = et_core_page_resource_get_the_ID();
+		} else {
+			$post_id = 0; // It doesn't matter because we're going to force inline styles.
+		}
 
 		$is_preview       = is_preview() || is_et_pb_preview();
-		$forced_in_footer = et_builder_setting_is_on( 'et_pb_css_in_footer', $post_id );
-		$forced_inline    = $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id );
+		$forced_in_footer = $post_id && et_builder_setting_is_on( 'et_pb_css_in_footer', $post_id );
+		$forced_inline    = ! $post_id || $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id );
 		$unified_styles   = ! $forced_inline && ! $forced_in_footer;
 
 		$resource_owner = $unified_styles ? 'core' : 'builder';
@@ -250,10 +265,18 @@ class ET_Builder_Element {
 
 	/**
 	 * Passes the module design styles for the current page to the advanced styles manager.
-	 * {@see 'wp_footer' (9) Must run before the style manager's footer callback}
+	 * {@see 'wp_footer' (19) Must run before the style manager's footer callback}
 	 */
 	public static function set_advanced_styles() {
-		$styles = self::get_style() . self::get_style( true ) . et_pb_get_page_custom_css();
+		$styles = self::get_style() . self::get_style( true );
+
+		if ( et_core_is_builder_used_on_current_request() ) {
+			$styles .= et_pb_get_page_custom_css();
+		}
+
+		if ( ! $styles ) {
+			return;
+		}
 
 		// Pass styles to page resource which will handle their output
 		self::$advanced_styles_manager->set_data( $styles, 40 );
@@ -275,6 +298,14 @@ class ET_Builder_Element {
 
 		if ( false === strpos( $resource->slug, 'unified' ) ) {
 			return $data;
+		}
+
+		if ( 'footer' !== $resource->location ) {
+			// This is the first load of a page that doesn't currently have a unified static css file.
+			// The theme customizer and custom css have already been inlined in the <head> using the
+			// unified resource's ID. It's invalid HTML to have duplicated IDs on the page so we'll
+			// fix that here since it only applies to this page load anyway.
+			$resource->slug = $resource->slug . '-2';
 		}
 
 		return isset( $data[40] ) ? array( 40 => $data[40] ) : array();
@@ -628,7 +659,7 @@ class ET_Builder_Element {
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
 						// replace %22 with double quotes in options to make sure it's rendered correctly
-						$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! in_array( $single_attr, $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
+						$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
 					}
 				}
 			}
@@ -844,7 +875,7 @@ class ET_Builder_Element {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
 						// replace %22 with double quotes in options to make sure it's rendered correctly
 						if ( ! $is_global_template ) {
-							$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! in_array( $single_attr, $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
+							$this->shortcode_atts[$single_attr] = is_string( $global_atts[$single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[$single_attr] ) : $global_atts[$single_attr];
 						}
 					} else if ( ! $use_updated_global_sync_method ) {
 						// prepare array of unsynced options to migrate the legacy modules to new system
@@ -3915,6 +3946,12 @@ class ET_Builder_Element {
 		}
 
 		foreach ( $tabs_output as $tab_slug => $tab_settings ) {
+
+			// Add only tabs allowed for current user
+			if ( ! et_pb_is_allowed( $tab_slug . '_settings' ) ) {
+				continue;
+			}
+
 			$tab_output        = '';
 			$this->used_tabs[] = $tab_slug;
 			$i = 0;
@@ -6081,6 +6118,29 @@ class ET_Builder_Element {
 	}
 
 	static function set_style( $function_name, $style ) {
+		$builder_post_types = et_builder_get_builder_post_types();
+		$allowed_post_types = apply_filters( 'et_builder_set_style_allowed_post_types', $builder_post_types );
+
+		if ( $builder_post_types != $allowed_post_types ) {
+			$matches = array_intersect( $allowed_post_types, array_keys( self::$_module_slugs_by_post_type ) );
+			$allowed = false;
+
+			foreach ( $matches as $post_type ) {
+				if ( ! isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+					continue;
+				}
+
+				if ( in_array( $function_name, self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+					$allowed = true;
+					break;
+				}
+			}
+
+			if ( ! $allowed ) {
+				return;
+			}
+		}
+
 		global $et_pb_rendering_column_content;
 
 		// do not process all the styles if FB enabled. Only those for modules without fb support and styles for the internal modules from Blog/Slider

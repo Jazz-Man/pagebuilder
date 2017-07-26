@@ -324,7 +324,7 @@ function et_pb_get_current_user_role() {
 function et_pb_get_all_roles_list() {
 	// get all roles registered in current WP
 	if ( ! function_exists( 'get_editable_roles' ) ) {
-		require_once( ABSPATH . '/wp-admin/includes/user.php' );
+		require_once( ABSPATH . 'wp-admin/includes/user.php' );
 	}
 
 	$all_roles = get_editable_roles();
@@ -417,6 +417,11 @@ function et_pb_show_all_layouts() {
 				'key'     => '_et_pb_built_for_post_type',
 				'value'   => $post_type,
 				'compare' => 'IN',
+			),
+			array(
+				'key'     => '_et_pb_layout_applicability',
+				'value'   => 'product_tour',
+				'compare' => 'NOT EXISTS',
 			),
 		),
 		'tax_query' => array(
@@ -603,6 +608,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 				$categories_processed = array();
 				$row_layout = '';
 				$this_layout_type = '';
+				$this_layout_applicability = '';
 
 				if ( ! empty( $categories ) ) {
 					foreach( $categories as $category_data ) {
@@ -616,6 +622,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 
 				if ( 'layout' === $layout_type ) {
 					$this_layout_type = 'on' === get_post_meta( $single_post->ID, '_et_pb_predefined_layout', true ) ? 'predefined' : 'library';
+					$this_layout_applicability = get_post_meta( $single_post->ID, '_et_pb_layout_applicability', true );
 				}
 
 				// get unsynced global optoins for module
@@ -629,6 +636,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 					'shortcode'        => $single_post->post_content,
 					'is_global'        => $global_scope,
 					'layout_type'      => $layout_type,
+					'applicability'    => $this_layout_applicability,
 					'layouts_type'     => $this_layout_type,
 					'module_type'      => $module_type,
 					'categories'       => $categories_processed,
@@ -1465,6 +1473,7 @@ function et_fb_get_nonces() {
 		'moduleEmailOptinFetchLists'    => wp_create_nonce( 'et_builder_email_fetch_lists_nonce' ),
 		'moduleEmailOptinAddAccount'    => wp_create_nonce( 'et_builder_email_add_account_nonce' ),
 		'moduleEmailOptinRemoveAccount' => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
+		'productTourRequest'            => wp_create_nonce( 'et_fb_product_tour_nonce' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );

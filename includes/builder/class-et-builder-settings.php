@@ -161,6 +161,21 @@ class ET_Builder_Settings {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'performance',
 			),
+			'et_pb_product_tour_global'   => array(
+				'type'            => 'yes_no_button',
+				'id'              => 'et_pb_product_tour_global',
+				'index'           => -1,
+				'label'           => esc_html__( 'Product Tour', 'et_builder' ),
+				'description'     => esc_html__( 'If enabled Product Tour will be started automatically when Visual Builder launched for the first time', 'et_builder' ),
+				'options'         => array(
+					'on'  => __( 'On', 'et_builder' ),
+					'off' => __( 'Off', 'et_builder' ),
+				),
+				'default'         => 'on',
+				'validation_type' => 'simple_text',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'product_tour',
+			),
 		);
 	}
 
@@ -745,6 +760,7 @@ class ET_Builder_Settings {
 			'color_palette' => esc_html__( 'Color Palette', 'et_builder' ),
 			'custom_css'    => esc_html__( 'Custom CSS', 'et_builder' ),
 			'performance'   => esc_html__( 'Performance', 'et_builder' ),
+			'product_tour'  => esc_html__( 'Product Tour', 'et_builder' ),
 			'spacing'       => esc_html__( 'Spacing', 'et_builder' ),
 			'split_testing' => esc_html__( 'Split Testing', 'et_builder' ),
 			'text'          => esc_html__( 'Text', 'et_builder' ),

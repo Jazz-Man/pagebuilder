@@ -117,7 +117,7 @@ add_filter( 'update_custom_css_data', 'et_back_sync_custom_css_options' );
 if ( ! function_exists( 'et_update_custom_css_data_cb' ) ):
 function et_update_custom_css_data_cb( $data ) {
 
-	ET_Core_PageResource::remove_static_resources( 'global', 'core' );
+	ET_Core_PageResource::remove_static_resources( 'all', 'all' );
 
 	return $data;
 }
@@ -132,31 +132,34 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 		return $css;
 	}
 
-	$post_id        = get_the_ID();
-	$is_preview     = is_preview() || ( function_exists( 'is_et_pb_preview' ) && is_et_pb_preview() );
+	$post_id        = et_core_page_resource_get_the_ID();
+	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+	$is_singular    = et_core_page_resource_is_singular();
 
 	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
-	$disabled_post   = $disabled_global || 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true );
-	$forced_inline   = $is_preview || $disabled_global || $disabled_post;
-	$unified_styles  = ! $forced_inline;
+	$disabled_post   = $disabled_global || ( $is_singular && 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true ) );
 
+	$forced_inline     = $is_preview || $disabled_global || $disabled_post;
+	$builder_in_footer = 'on' === et_get_option( 'et_pb_css_in_footer', 'off' );
+
+	$unified_styles = $is_singular && ! $forced_inline && ! $builder_in_footer && et_core_is_builder_used_on_current_request();
 	$resource_owner = $unified_styles ? 'core' : $shortname;
-	$resource_slug  = $unified_styles ? 'unified' : 'custom-css';
+	$resource_slug  = $unified_styles ? 'unified' : 'customizer';
 
 	if ( $is_preview ) {
 		// Don't let previews cause existing saved static css files to be modified.
 		$resource_slug .= '-preview';
 	}
 
-	if ( $unified_styles && function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
+	if ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
 		$resource_slug .= '-vb';
 	}
 
-	$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 30 );
-
 	if ( ! $unified_styles ) {
-		$styles_manager->forced_inline = $forced_inline;
+		$post_id = 'global';
 	}
+
+	$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id, 30 );
 
 	if ( $styles_manager->forced_inline || ! $styles_manager->has_file() ) {
 		$styles_manager->set_data( $css, 30 );

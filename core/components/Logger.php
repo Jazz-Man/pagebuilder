@@ -11,6 +11,12 @@ class ET_Core_Logger {
 	private static function _write_log( $message ) {
 		$before_message = ' ';
 
+		if ( function_exists( 'd' ) ) {
+			// https://wordpress.org/plugins/kint-debugger/
+			d( $message );
+			return;
+		}
+
 		if ( ! is_scalar( $message ) ) {
 			$message        = print_r( $message, true );
 			$before_message = "\n";

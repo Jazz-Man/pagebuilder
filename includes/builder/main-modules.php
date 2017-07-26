@@ -13054,6 +13054,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 			foreach ( $condition_rows as $condition_row ) {
 				$condition_value = isset( $condition_row->value ) ? $condition_row->value : '';
+				$condition_value = trim( $condition_value );
 
 				$ruleset[] = array(
 					$condition_row->field,
@@ -22370,8 +22371,10 @@ class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 		$parallax_background_contaier = '';
 
 		if ( 'on' === $featured_image && ( 'above' === $featured_placement || 'below' === $featured_placement ) ) {
+			// Largest featured image size is needed when featured image is used in "post" post type and full width layout
+			$featured_image_size = 'post' === get_post_type() && 'et_full_width_page' === get_post_meta( get_the_ID(), '_et_pb_page_layout', true ) ? 'et-pb-post-main-image-fullwidth-large' : 'large';
 			$featured_image_output = sprintf( '<div class="et_pb_title_featured_container">%1$s</div>',
-				get_the_post_thumbnail( get_the_ID(), 'large' )
+				get_the_post_thumbnail( get_the_ID(), $featured_image_size )
 			);
 		}
 

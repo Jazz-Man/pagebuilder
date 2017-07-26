@@ -35,7 +35,15 @@
 <body <?php body_class(); ?>>
 	<div id="page-container">
 <?php
-	if ( is_page_template( 'page-template-blank.php' ) ) {
+	$product_tour_status = 'off';
+
+	if ( et_fb_is_enabled() ) {
+		$current_user = wp_get_current_user();
+		$product_tour_settings = et_get_option( 'product_tour_status', array() );
+		$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
+	}
+
+	if ( is_page_template( 'page-template-blank.php' ) || 'on' === $product_tour_status ) {
 		return;
 	}
 

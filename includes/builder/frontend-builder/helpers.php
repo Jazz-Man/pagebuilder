@@ -124,6 +124,14 @@ function et_fb_backend_helpers() {
 	$current_user = wp_get_current_user();
 	$current_url  = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
+	$product_tour_settings = et_get_option( 'product_tour_status', array() );
+	$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
+
+	// disable product tour on the app launch, so it won't be started next time.
+	if ( 'on' === $product_tour_status ) {
+		et_fb_disable_product_tour();
+	}
+
 	$fb_modules_array = apply_filters( 'et_fb_modules_array', ET_Builder_Element::get_modules_array( $post_type, true, true ) );
 
 	$helpers = array(
@@ -150,6 +158,7 @@ function et_fb_backend_helpers() {
 			'defaults'                     => array(),
 			'optionsToggles'               => array(),
 		),
+		'productTourStatus'            => $product_tour_status,
 		'moduleParentShortcodes'       => ET_Builder_Element::get_parent_shortcodes( $post_type ),
 		'moduleChildShortcodes'        => ET_Builder_Element::get_child_shortcodes( $post_type ),
 		'moduleChildSlugs'             => ET_Builder_Element::get_child_slugs( $post_type ),
@@ -990,6 +999,7 @@ function et_fb_backend_helpers() {
 		),
 		'unsavedConfirmation' => esc_html__( 'Unsaved changes will be lost if you leave the Divi Builder at this time.', 'et_builder' ),
 		'libraryLoadError'    => esc_html__( 'Error loading Library items from server. Please refresh the page and try again.', 'et_builder' ),
+		'productTourText'     => array(),
 	);
 
 	// Pass helpers via localization.

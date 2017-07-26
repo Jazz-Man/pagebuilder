@@ -111,6 +111,23 @@ add_action( 'update_site_option_active_plugins', 'et_core_clear_transients', 10,
 endif;
 
 
+if ( ! function_exists( 'et_core_cron_schedules_cb' ) ):
+function et_core_cron_schedules_cb( $schedules ) {
+	if ( isset( $schedules['monthly'] ) ) {
+		return $schedules;
+	}
+
+	$schedules['monthly'] = array(
+		'interval' => MONTH_IN_SECONDS,
+		'display'  => __( 'Once Monthly' )
+	);
+
+	return $schedules;
+}
+add_action( 'cron_schedules', 'et_core_cron_schedules_cb' );
+endif;
+
+
 if ( ! function_exists( 'et_core_die' ) ):
 function et_core_die( $message = '' ) {
 	if ( wp_doing_ajax() ) {
@@ -292,6 +309,41 @@ function et_core_initialize_component_group( $slug, $init_file = null ) {
 endif;
 
 
+if ( ! function_exists( 'et_core_is_builder_used_on_current_request' ) ) :
+function et_core_is_builder_used_on_current_request() {
+	static $builder_used = null;
+
+	if ( null !== $builder_used ) {
+		return $builder_used;
+	}
+
+	global $wp_query;
+
+	if ( ! $wp_query ) {
+		ET_Core_Logger::error( 'Called too early! $wp_query is not available.' );
+		return false;
+	}
+
+	$builder_used = false;
+
+	if ( ! empty( $wp_query->posts ) ) {
+		foreach ( $wp_query->posts as $post ) {
+			if ( 'on' === get_post_meta( $post->ID, '_et_pb_use_builder', true ) ) {
+				$builder_used = true;
+				break;
+			}
+		}
+	} else if ( ! empty( $wp_query->post ) ) {
+		if ( 'on' === get_post_meta( $wp_query->post->ID, '_et_pb_use_builder', true ) ) {
+			$builder_used = true;
+		}
+	}
+
+	return $builder_used = apply_filters( 'et_core_is_builder_used_on_current_request', $builder_used );
+}
+endif;
+
+
 if ( ! function_exists( 'et_core_load_main_fonts' ) ) :
 function et_core_load_main_fonts() {
 	$fonts_url = et_core_get_main_fonts();
@@ -350,21 +402,38 @@ function et_core_maybe_patch_old_theme() {
 		return;
 	}
 
-	$needs_patch   = false;
 	$theme_version = et_core_get_theme_info( 'Version' );
 
-	foreach ( $themes as $dont_patch_version ) {
-		if ( version_compare( $theme_version, $dont_patch_version, '<' ) ) {
-			$needs_patch = true;
-			break;
-		}
-	}
-
-	if ( $needs_patch ) {
+	if ( version_compare( $theme_version, $themes[ $current_theme ], '<' ) ) {
 		add_action( 'after_setup_theme', 'ET_Core_Logger::disable_php_notices', 9 );
 		add_action( 'after_setup_theme', 'ET_Core_Logger::enable_php_notices', 11 );
 		set_site_transient( 'et_core_needs_old_theme_patch', true, DAY_IN_SECONDS );
 	}
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_patch_core_3061' ) ):
+function et_core_patch_core_3061() {
+	if ( '3.0.61' !== ET_CORE_VERSION ) {
+		return;
+	}
+
+	if ( ! ET_Core_PageResource::can_write_to_filesystem() ) {
+		return; // Should we display a notice in the dashboard?
+	}
+
+	$old_file = ET_CORE_PATH . 'init.php';
+	$new_file = dirname( __FILE__ ) . '/init.php';
+
+	ET_Core_PageResource::startup();
+
+	if ( ! ET_Core_PageResource::$wpfs ) {
+		return;
+	}
+
+	ET_Core_PageResource::$wpfs->copy( $new_file, $old_file, true, 0644 );
+	et_core_clear_transients();
 }
 endif;
 
@@ -405,10 +474,11 @@ if ( ! function_exists( 'et_core_security_check' ) ):
  * @param string $nonce_key      The key to use to lookup nonce value in `$nonce_location`. Default
  *                               is the value of `$nonce_action` with '_nonce' appended to it.
  * @param string $nonce_location Where the nonce is stored (_POST|_GET|_REQUEST). Default: _POST.
+ * @param bool   $die            Whether or not to `die()` on failure. Default is `true`.
  *
- * @return bool `true` if check passed.
+ * @return bool|null Whether or not the checked passed if `$die` is `false`.
  */
-function et_core_security_check( $user_can = 'manage_options', $nonce_action = '', $nonce_key = '', $nonce_location = '_POST' ) {
+function et_core_security_check( $user_can = 'manage_options', $nonce_action = '', $nonce_key = '', $nonce_location = '_POST', $die = true ) {
 	if ( empty( $nonce_key ) && false === strpos( $nonce_action, '_nonce' ) ) {
 		$nonce_key = $nonce_action . '_nonce';
 	} else if ( empty( $nonce_key ) ) {
@@ -426,22 +496,38 @@ function et_core_security_check( $user_can = 'manage_options', $nonce_action = '
 			$nonce_location = $_REQUEST;
 			break;
 		default:
-			die(-1);
+			return $die ? die(-1) : false;
 	}
 
-	if ( '' !== $user_can && ! current_user_can( $user_can ) ) {
-		die(-1);
-	}
-
-	if ( '' !== $nonce_action && ! wp_verify_nonce( $nonce_location[ $nonce_key ], $nonce_action ) ) {
-		die(-1);
-	}
+	$passed = true;
 
 	if ( '' === $user_can && '' === $nonce_action ) {
+		$passed = false;
+	} else if ( '' !== $user_can && ! current_user_can( $user_can ) ) {
+		$passed = false;
+	} else if ( '' !== $nonce_action && ! wp_verify_nonce( $nonce_location[ $nonce_key ], $nonce_action ) ) {
+		$passed = false;
+	}
+
+	if ( $die && ! $passed ) {
 		die(-1);
 	}
 
-	return true;
+	return $passed;
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_security_check_passed' ) ):
+/**
+ * Wrapper for {@see et_core_security_check()} that disables `die()` on failure.
+ *
+ * @see et_core_security_check() for parameter documentation.
+ *
+ * @return bool Whether or not the security check passed.
+ */
+function et_core_security_check_passed( $user_can = 'manage_options', $nonce_action = '', $nonce_key = '', $nonce_location = '_POST' ) {
+	return et_core_security_check( $user_can, $nonce_action, $nonce_key, $nonce_location, false );
 }
 endif;
 
@@ -476,6 +562,8 @@ function et_core_setup( $deprecated = '' ) {
 	load_theme_textdomain( 'et-core', ET_CORE_PATH . 'languages/' );
 	et_core_maybe_set_updated();
 	et_new_core_setup();
+
+	register_shutdown_function( 'ET_Core_PageResource::shutdown' );
 
 	if ( is_admin() || ! empty( $_GET['et_fb'] ) ) {
 		add_action( 'admin_enqueue_scripts', 'et_core_load_main_styles' );
@@ -552,7 +640,8 @@ function et_new_core_setup() {
 	}
 
 	// Initialize top-level components "group"
-	et_core_init();
+	$hook = did_action( 'plugins_loaded' ) ?  'after_setup_theme' : 'plugins_loaded';
+	add_action( $hook, 'et_core_init', 9999999 );
 }
 endif;
 
@@ -567,6 +656,20 @@ function wp_doing_ajax() {
 	 * @param bool $wp_doing_ajax Whether the current request is an Ajax request.
 	 */
 	return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
+}
+endif;
+
+
+if ( ! function_exists( 'wp_doing_cron' ) ):
+function wp_doing_cron() {
+	/**
+	 * Filters whether the current request is a WordPress cron request.
+	 *
+	 * @since 4.8.0
+	 *
+	 * @param bool $wp_doing_cron Whether the current request is a WordPress cron request.
+	 */
+	return apply_filters( 'wp_doing_cron', defined( 'DOING_CRON' ) && DOING_CRON );
 }
 endif;
 

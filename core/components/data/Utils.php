@@ -302,7 +302,7 @@ class ET_Core_Data_Utils {
 	/**
 	 * Removes empty directories recursively starting at and (possibly) including `$path`. `$path` must be
 	 * an absolute path located under {@see WP_CONTENT_DIR}. Current user must have 'manage_options'
-	 * capability. If the path or permissions check fails, script execution will be terminated.
+	 * capability. If the path or permissions check fails, no directories will be removed.
 	 *
 	 * @param string $path Absolute path to parent directory.
 	 */
@@ -318,12 +318,14 @@ class ET_Core_Data_Utils {
 		$content_dir = $this->normalize_path( WP_CONTENT_DIR );
 
 		if ( 0 !== strpos( $path, $content_dir ) || $content_dir === $path ) {
-			die( -1 );
+			return;
 		}
 
 		$capability = 0 === strpos( $path, "{$content_dir}/cache/et" ) ? 'edit_posts' : 'manage_options';
 
-		et_core_security_check( $capability );
+		if ( ! wp_doing_cron() && ! et_core_security_check_passed( $capability ) ) {
+			return;
+		}
 
 		$this->_remove_empty_directories( $path );
 	}

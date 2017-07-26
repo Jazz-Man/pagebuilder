@@ -88,7 +88,7 @@ function _et_core_path_belongs_to_active_product( $path ) {
 
 	$theme_dir = _et_core_normalize_path( get_template_directory() );
 
-	if ( 0 === strpos( $theme_dir, $path ) ) {
+	if ( 0 === strpos( $path, $theme_dir ) ) {
 		return true;
 	}
 
@@ -115,7 +115,7 @@ function _et_core_load_latest() {
 		return;
 	}
 
-	$core_path = get_site_transient( 'et_core_path' );
+	$core_path = defined( 'ET_DEBUG' ) ? false : get_site_transient( 'et_core_path' );
 
 	if ( $core_path && file_exists( $core_path . '/_et_core_version.php' ) ) {
 		$core_version = get_site_transient( 'et_core_version' );

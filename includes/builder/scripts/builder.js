@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.61';
+window.et_builder_version = '3.0.64';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -882,15 +882,18 @@ window.et_builder_product_name = 'Divi';
 					global_holder_id   = 'row' === this.model.get( 'layout_type' ) ? current_row : parent_id,
 					global_holder_view = ET_PageBuilder_Layout.getView( global_holder_id ),
 					history_noun       = this.options.model.get( 'layout_type' ) === 'row_inner' ? 'saved_row' : 'saved_' + this.options.model.get( 'layout_type' ),
-					$modal_container   = clicked_button.closest( '.et_pb_modal_settings_container' );
+					$modal_container   = clicked_button.closest( '.et_pb_modal_settings_container' ),
+					global_parent_cid  = et_pb_get_global_parent_cid( global_holder_view );
 
 					if ( 'on' === specialty_row ) {
 						global_holder_id = global_holder_view.model.get( 'parent' );
 						global_holder_view = ET_PageBuilder_Layout.getView( global_holder_id );
 					}
 
-					if ( 'section' !== this.model.get( 'layout_type' ) && ( ( typeof global_holder_view.model.get( 'global_parent_cid' ) !== 'undefined' && '' !== global_holder_view.model.get( 'global_parent_cid' ) ) || ( typeof global_holder_view.model.get( 'et_pb_global_module' ) !== 'undefined' && '' !== global_holder_view.model.get( 'et_pb_global_module' ) ) ) ) {
+					if ( 'section' !== this.model.get( 'layout_type' ) && ( '' !== global_parent_cid ) ) {
 						update_global = true;
+						// reset global id when adding global module into global section or row.
+						global_id = '';
 					}
 
 				// Enable history saving and set meta for history
@@ -907,9 +910,7 @@ window.et_builder_product_name = 'Divi';
 				et_reinitialize_builder_layout();
 
 				if ( true === update_global ) {
-						global_module_cid = typeof global_holder_view.model.get( 'global_parent_cid' ) !== 'undefined' ? global_holder_view.model.get( 'global_parent_cid' ) : global_holder_id;
-
-					et_pb_update_global_template( global_module_cid );
+					et_pb_update_global_template( global_parent_cid );
 				}
 
 				if ( $modal_container.length ) {
@@ -12458,8 +12459,11 @@ window.et_builder_product_name = 'Divi';
 
 						fieldID = fieldID.toLowerCase();
 
-						var fieldType = ! _.isUndefined( siblingAttrs.et_pb_field_type ) ? siblingAttrs.et_pb_field_type : 'input';
-						var $option   = $('<option data-type="' + fieldType + '" value="' + fieldID + '">' + siblingAttrs.et_pb_field_title + '</option>');
+						var fieldType  = ! _.isUndefined( siblingAttrs.et_pb_field_type ) ? siblingAttrs.et_pb_field_type : 'input';
+						var fieldTitle = ! _.isUndefined( siblingAttrs.et_pb_field_title ) ? siblingAttrs.et_pb_field_title : fieldID;
+						fieldTitle     = '' !== fieldTitle.trim() ? fieldTitle : fieldID;
+
+						var $option    = $('<option data-type="' + fieldType + '" value="' + fieldID + '">' + fieldTitle + '</option>');
 
 						$field.append( $option );
 
@@ -14695,8 +14699,7 @@ window.et_builder_product_name = 'Divi';
 				});
 
 				if ( typeof $clicked_button.data( 'content_loaded' ) === 'undefined' && ! $clicked_button.hasClass( 'et-pb-new-module' ) && 'layout' !== module_type ) {
-					var include_global = $clicked_button.closest( '.et_pb_modal_settings' ).hasClass( 'et_pb_no_global' ) ? 'no_global' : 'include_global';
-					generate_templates_view( include_global, '', module_type, $( '.' + $clicked_button.data( 'open_tab' ) ), module_width, specialty_columns, 'all' );
+					generate_templates_view( 'include_global', '', module_type, $( '.' + $clicked_button.data( 'open_tab' ) ), module_width, specialty_columns, 'all' );
 					$clicked_button.data( 'content_loaded', 'true' );
 				}
 			}
@@ -14993,6 +14996,9 @@ window.et_builder_product_name = 'Divi';
 
 		function et_pb_open_current_tab() {
 			var $container = $( '.et_pb_modal_settings_container' );
+
+			// always open the first tab by default
+			$container.find( '.et-pb-options-tabs .et-pb-options-tab:first-child' ).css( { 'display' : 'block', opacity : 1 } );
 
 			if ( $( '.et_pb_modal_settings_container' ).hasClass( 'et_pb_hide_general_tab' ) ) {
 				$container.find( '.et-pb-options-tabs-links li' ).removeClass( 'et-pb-options-tabs-links-active' );

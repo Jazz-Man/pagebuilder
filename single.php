@@ -9,6 +9,32 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 ?>
 
 <div id="main-content">
+	<?php
+		// load fullwidth page in Product Tour mode
+		$product_tour_status = 'off';
+
+		if ( et_fb_is_enabled() ) {
+			$current_user = wp_get_current_user();
+			$product_tour_settings = et_get_option( 'product_tour_status', array() );
+			$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
+		}
+
+		if ( 'on' === $product_tour_status ) :
+
+			while ( have_posts() ) : the_post(); ?>
+
+				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+					<div class="entry-content">
+					<?php
+						the_content();
+					?>
+					</div> <!-- .entry-content -->
+
+				</article> <!-- .et_pb_post -->
+
+		<?php endwhile;
+		else :
+	?>
 	<div class="container">
 		<div id="content-area" class="clearfix">
 			<div id="left-area">
@@ -57,14 +83,18 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 
 								switch ( $post_format ) {
 									case 'audio' :
-										printf(
-											'<div class="et_audio_content%1$s"%2$s>
-												%3$s
-											</div>',
-											esc_attr( $text_color_class ),
-											$inline_style,
-											et_pb_get_audio_player()
-										);
+										$audio_player = et_pb_get_audio_player();
+
+										if ( $audio_player ) {
+											printf(
+												'<div class="et_audio_content%1$s"%2$s>
+													%3$s
+												</div>',
+												esc_attr( $text_color_class ),
+												$inline_style,
+												$audio_player
+											);
+										}
 
 										break;
 									case 'quote' :
@@ -134,6 +164,7 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 			<?php get_sidebar(); ?>
 		</div> <!-- #content-area -->
 	</div> <!-- .container -->
+	<?php endif; ?>
 </div> <!-- #main-content -->
 
 <?php get_footer(); ?>

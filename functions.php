@@ -16,6 +16,12 @@ function et_setup_theme() {
 
 	et_core_setup( get_template_directory_uri() );
 
+	if ( '3.0.61' === ET_CORE_VERSION ) {
+		require_once $template_directory . '/core/functions.php';
+		require_once $template_directory . '/core/components/init.php';
+		et_core_patch_core_3061();
+	}
+
 	require_once( $template_directory . '/epanel/custom_functions.php' );
 
 	require_once( $template_directory . '/includes/functions/choices.php' );
@@ -275,10 +281,10 @@ function et_add_post_meta_box() {
 	// Add Page settings meta box only if it's not disabled for current user
 	if ( et_pb_is_allowed( 'page_options' ) ) {
 		add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Page Settings', 'Divi' ), 'et_single_settings_meta_box', 'page', 'side', 'high' );
+		add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Post Settings', 'Divi' ), 'et_single_settings_meta_box', 'post', 'side', 'high' );
+		add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Product Settings', 'Divi' ), 'et_single_settings_meta_box', 'product', 'side', 'high' );
+		add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Project Settings', 'Divi' ), 'et_single_settings_meta_box', 'project', 'side', 'high' );
 	}
-	add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Post Settings', 'Divi' ), 'et_single_settings_meta_box', 'post', 'side', 'high' );
-	add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Product Settings', 'Divi' ), 'et_single_settings_meta_box', 'product', 'side', 'high' );
-	add_meta_box( 'et_settings_meta_box', esc_html__( 'Divi Project Settings', 'Divi' ), 'et_single_settings_meta_box', 'project', 'side', 'high' );
 }
 add_action( 'add_meta_boxes', 'et_add_post_meta_box' );
 
@@ -413,17 +419,22 @@ endif;
 function et_divi_post_settings_save_details( $post_id, $post ){
 	global $pagenow;
 
-	if ( 'post.php' != $pagenow ) return $post_id;
+	if ( 'post.php' !== $pagenow || ! $post || ! is_object( $post ) ) {
+		return;
+	}
 
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
-		return $post_id;
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
 
 	$post_type = get_post_type_object( $post->post_type );
-	if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) )
-		return $post_id;
+	if ( ! current_user_can( $post_type->cap->edit_post, $post_id ) ) {
+		return;
+	}
 
-	if ( ! isset( $_POST['et_settings_nonce'] ) || ! wp_verify_nonce( $_POST['et_settings_nonce'], basename( __FILE__ ) ) )
-		return $post_id;
+	if ( ! isset( $_POST['et_settings_nonce'] ) || ! wp_verify_nonce( $_POST['et_settings_nonce'], basename( __FILE__ ) ) ) {
+		return;
+	}
 
 	if ( isset( $_POST['et_post_use_bg_color'] ) )
 		update_post_meta( $post_id, '_et_post_use_bg_color', true );
@@ -466,8 +477,6 @@ function et_divi_post_settings_save_details( $post_id, $post ){
 	} else {
 		delete_post_meta( $post_id, '_et_pb_side_nav' );
 	}
-
-
 }
 add_action( 'save_post', 'et_divi_post_settings_save_details', 10, 2 );
 
@@ -5792,7 +5801,7 @@ if ( class_exists( 'WP_Customize_Control' ) ) {
 
 }
 
-function et_divi_add_customizer_css() { 
+function et_divi_add_customizer_css() {
 		if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
 			return;
 		}
@@ -5801,14 +5810,17 @@ function et_divi_add_customizer_css() {
 			return;
 		}
 
-		$post_id        = get_the_ID();
-		$is_preview     = is_preview() || ( function_exists( 'is_et_pb_preview' ) && is_et_pb_preview() );
+		$post_id     = et_core_page_resource_get_the_ID();
+		$is_preview  = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+		$is_singular = et_core_page_resource_is_singular();
 
 		$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
-		$disabled_post   = $disabled_global || 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true );
-		$forced_inline   = $is_preview || $disabled_global || $disabled_post;
-		$unified_styles  = ! $forced_inline;
+		$disabled_post   = $disabled_global || ( $is_singular && 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true ) );
 
+		$forced_inline     = $is_preview || $disabled_global || $disabled_post;
+		$builder_in_footer = 'on' === et_get_option( 'et_pb_css_in_footer', 'off' );
+
+		$unified_styles = $is_singular && ! $forced_inline && ! $builder_in_footer && et_core_is_builder_used_on_current_request();
 		$resource_owner = $unified_styles ? 'core' : 'divi';
 		$resource_slug  = $unified_styles ? 'unified' : 'customizer';
 
@@ -5817,14 +5829,15 @@ function et_divi_add_customizer_css() {
 			$resource_slug .= '-preview';
 		}
 
-		$styles_manager    = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id );
-		$styles_manager_vb = et_core_page_resource_get( $resource_owner, "{$resource_slug}-vb", $post_id );
+		if ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) {
+			$resource_slug .= '-vb';
+		}
 
-		// Make sure we don't output styles when we're not supposed to
-		$styles_manager->disabled    = function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled();
-		$styles_manager_vb->disabled = ! $styles_manager->disabled;
+		if ( ! $unified_styles ) {
+			$post_id = 'global';
+		}
 
-		$styles_manager = $styles_manager->disabled ? $styles_manager_vb : $styles_manager;
+		$styles_manager = et_core_page_resource_get( $resource_owner, $resource_slug, $post_id );
 
 		$styles_manager->forced_inline = $forced_inline;
 
@@ -5870,8 +5883,8 @@ function et_divi_add_customizer_css() {
 		$section_padding = absint( et_get_option( 'section_padding', '4' ) );
 		$row_padding = absint( et_get_option( 'row_padding', '2' ) );
 
-		$tablet_header_font_size = absint( et_get_option( 'tablet_header_font_size', $body_header_size ) );
-		$tablet_body_font_size = absint( et_get_option( 'tablet_body_font_size', $body_font_size ) );
+		$tablet_header_font_size = absint( et_get_option( 'tablet_header_font_size', '30' ) );
+		$tablet_body_font_size = absint( et_get_option( 'tablet_body_font_size', '14' ) );
 		$tablet_section_height = absint( et_get_option( 'tablet_section_height', '50' ) );
 		$tablet_row_height = absint( et_get_option( 'tablet_row_height', '30' ) );
 
@@ -8830,4 +8843,15 @@ function et_get_footer_credits() {
 
 	return et_get_safe_localization( sprintf( $credits_format, $footer_credits, 'div' ) );
 }
+endif;
+
+if ( ! function_exists( 'et_divi_filter_et_core_is_builder_used_on_current_request' ) ):
+function et_divi_filter_et_core_is_builder_used_on_current_request( $is_builder_used ) {
+	if ( $is_builder_used && ! is_singular() ) {
+		$is_builder_used = 'on' === et_get_option( 'divi_blog_style', 'false' );
+	}
+
+	return $is_builder_used;
+}
+add_filter( 'et_core_is_builder_used_on_current_request', 'et_divi_filter_et_core_is_builder_used_on_current_request' );
 endif;

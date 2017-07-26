@@ -1,6 +1,9 @@
 <?php
 
 if ( ! function_exists( 'et_core_init' ) ):
+/**
+ * {@see 'plugins_loaded' (9999999) Must run after cache plugins have been loaded.}
+ */
 function et_core_init() {
 	ET_Core_PageResource::startup();
 
@@ -21,13 +24,19 @@ function et_core_init() {
 	if ( get_option( 'et_core_page_resource_remove_all' ) ) {
 		ET_Core_PageResource::remove_static_resources( 'all', 'all', true );
 	}
+
+	if ( ! wp_next_scheduled( 'et_core_page_resource_auto_clear' ) ) {
+		wp_schedule_event( time() + MONTH_IN_SECONDS, 'monthly', 'et_core_page_resource_auto_clear' );
+	}
 }
 endif;
 
 
 if ( ! function_exists( 'et_core_clear_wp_cache' ) ):
 function et_core_clear_wp_cache( $post_id = '' ) {
-	et_core_security_check( 'edit_posts' );
+	if ( ! wp_doing_cron() && ! et_core_security_check_passed( 'edit_posts' ) ) {
+		return;
+	}
 
 	// General Use Cache Plugins (typically use only one)
 	if ( isset( $GLOBALS['comet_cache'] ) ) {
@@ -124,6 +133,7 @@ function et_core_page_resource_auto_clear() {
 add_action( 'switch_theme', 'et_core_page_resource_auto_clear' );
 add_action( 'activated_plugin', 'et_core_page_resource_auto_clear', 10, 0 );
 add_action( 'deactivated_plugin', 'et_core_page_resource_auto_clear', 10, 0 );
+add_action( 'et_core_page_resource_auto_clear', 'et_core_page_resource_auto_clear' );
 endif;
 
 
@@ -161,17 +171,15 @@ function et_core_page_resource_fallback() {
 	}
 
 	$resource_id = sanitize_text_field( $_GET['et_core_page_resource'] );
-	$pattern     = '/et-(\w+)-([\w-]+)-cached-inline-(?>styles|scripts)(\d+)/';
+	$pattern     = '/et-(\w+)-([\w-]+)-cached-inline-(?>styles|scripts)(global|\d+)/';
 	$has_matches = preg_match( $pattern, $resource_id, $matches );
 
 	if ( $has_matches ) {
-		if ( get_post_meta( (int) $matches[3], '_et_core_cached_page_resources' ) ) {
-			$resource = et_core_page_resource_get( $matches[1], $matches[2], $matches[3] );
+		$resource = et_core_page_resource_get( $matches[1], $matches[2], $matches[3] );
 
-			if ( $resource->has_file() ) {
-				wp_redirect( $resource->URL );
-				die();
-			}
+		if ( $resource->has_file() ) {
+			wp_redirect( $resource->URL );
+			die();
 		}
 	}
 
@@ -198,7 +206,8 @@ if ( ! function_exists( 'et_core_page_resource_get' ) ):
  */
 function et_core_page_resource_get( $owner, $slug, $post_id = null, $priority = 10, $location = 'head-late', $type = 'style' ) {
 	$post_id = $post_id ? $post_id : et_core_page_resource_get_the_ID();
-	$_slug   = "et-{$owner}-{$slug}-cached-inline-{$type}s";
+	$global  = 'global' === $post_id ? '-global' : '';
+	$_slug   = "et-{$owner}-{$slug}{$global}-cached-inline-{$type}s";
 
 	$all_resources = ET_Core_PageResource::get_resources();
 
@@ -219,16 +228,17 @@ function et_core_page_resource_maybe_output_fallback_script() {
 		return;
 	}
 
-	$POST_ID = et_core_page_resource_get_the_ID();
+	$IS_SINGULAR = et_core_page_resource_is_singular();
+	$POST_ID     = $IS_SINGULAR ? et_core_page_resource_get_the_ID() : 'global';
 
-	if ( 'off' === get_post_meta( $POST_ID, '_et_pb_static_css_file', true ) ) {
+	if ( $IS_SINGULAR && 'off' === get_post_meta( $POST_ID, '_et_pb_static_css_file', true ) ) {
 		return;
 	}
 
 	$SITE_URL = get_site_url();
 	$SCRIPT   = file_get_contents( ET_CORE_PATH . 'admin/js/page-resource-fallback.min.js' );
 
-	print( "<script>var et_site_url='{$SITE_URL}';var et_post_id={$POST_ID};{$SCRIPT}</script>" );
+	print( "<script>var et_site_url='{$SITE_URL}';var et_post_id='{$POST_ID}';{$SCRIPT}</script>" );
 }
 add_action( 'wp_head', 'et_core_page_resource_maybe_output_fallback_script', 0 );
 endif;
@@ -247,6 +257,13 @@ function et_core_page_resource_get_the_ID() {
 endif;
 
 
+if ( ! function_exists( 'et_core_page_resource_is_singular' ) ):
+function et_core_page_resource_is_singular() {
+	return apply_filters( 'et_core_page_resource_is_singular', is_singular() );
+}
+endif;
+
+
 if ( ! function_exists( 'et_core_page_resource_register_fallback_query' ) ):
 function et_core_page_resource_register_fallback_query() {
 	add_rewrite_tag( '%et_core_page_resource%', '([\w\d-]+)' );
@@ -255,37 +272,8 @@ add_action( 'init', 'et_core_page_resource_register_fallback_query', 11 );
 endif;
 
 
-if ( ! function_exists( 'et_core_page_resource_updated_post_meta_cb' ) ):
-function et_core_page_resource_updated_post_meta_cb( $meta_id, $object_id, $meta_key, $_meta_value ) {
-	$watching_keys = array(
-		'sb_divi_fe_layout_overrides', // Divi Layout Injector Plugin
-	);
-
-	if ( in_array( $meta_key, $watching_keys ) && current_user_can( 'edit_posts' ) ) {
-		ET_Core_PageResource::remove_static_resources( $object_id, 'all' );
-	}
+if ( ! function_exists( 'et_debug' ) ):
+function et_debug( $msg ) {
+	ET_Core_Logger::debug( $msg );
 }
-add_action( 'updated_post_meta', 'et_core_page_resource_updated_post_meta_cb', 10, 4 );
-endif;
-
-
-if ( ! function_exists( 'et_core_page_resource_updated_option_cb' ) ):
-function et_core_page_resource_updated_option_cb( $option, $old_value, $value ) {
-	$clear_cache       = false;
-	$watching_prefixes = array(
-		'sb_divi_fe', // Divi Layout Injector Plugin
-	);
-
-	foreach( $watching_prefixes as $prefix ) {
-		if ( 0 === strpos( $option, $prefix ) ) {
-			$clear_cache = true;
-			break;
-		}
-	}
-
-	if ( $clear_cache && current_user_can( 'edit_posts' ) ) {
-		ET_Core_PageResource::remove_static_resources( 'all', 'all' );
-	}
-}
-add_action( 'updated_option', 'et_core_page_resource_updated_option_cb', 10, 3 );
 endif;

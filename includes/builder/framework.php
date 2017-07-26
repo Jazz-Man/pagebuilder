@@ -25,6 +25,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 		'et_fb_process_imported_content',
 		'et_fb_get_saved_templates',
 		'et_fb_retrieve_builder_data',
+		'et_fb_disable_product_tour',
 		'et_builder_email_add_account',     // email opt-in module
 		'et_builder_email_remove_account',  // email opt-in module
 		'et_builder_email_get_lists',       // email opt-in module
@@ -240,6 +241,7 @@ function et_builder_load_framework() {
 
 	require ET_BUILDER_DIR . 'functions.php';
 	require ET_BUILDER_DIR . 'compat/woocommerce.php';
+	require ET_BUILDER_DIR . 'class-et-global-settings.php';
 
 	if ( is_admin() ) {
 		global $pagenow, $et_current_memory_limit;
@@ -258,7 +260,6 @@ function et_builder_load_framework() {
 		require ET_BUILDER_DIR . 'class-et-builder-element.php';
 		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-base.php';
 		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-loader.php';
-		require ET_BUILDER_DIR . 'class-et-global-settings.php';
 		require ET_BUILDER_DIR . 'ab-testing.php';
 		require ET_BUILDER_DIR . 'class-et-builder-settings.php';
 
@@ -269,6 +270,8 @@ function et_builder_load_framework() {
 		add_action( $action_hook, 'et_builder_init_global_settings', 9 );
 		add_action( $action_hook, 'et_builder_add_main_elements' );
 	} else if ( is_admin() ) {
+		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-base.php';
+		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-loader.php';
 		require ET_BUILDER_DIR . 'class-et-builder-settings.php';
 		$builder_settings_loaded = true;
 	}
