@@ -10,18 +10,9 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 
 <div id="main-content">
 	<?php
-		// load fullwidth page in Product Tour mode
-		$product_tour_status = 'off';
-
-		if ( et_fb_is_enabled() ) {
-			$current_user = wp_get_current_user();
-			$product_tour_settings = et_get_option( 'product_tour_status', array() );
-			$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
-		}
-
-		if ( 'on' === $product_tour_status ) :
-
-			while ( have_posts() ) : the_post(); ?>
+		if ( et_builder_is_product_tour_enabled() ):
+			// load fullwidth page in Product Tour mode
+			while ( have_posts() ): the_post(); ?>
 
 				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 					<div class="entry-content">
@@ -33,7 +24,7 @@ $is_page_builder_used = et_pb_is_pagebuilder_used( get_the_ID() );
 				</article> <!-- .et_pb_post -->
 
 		<?php endwhile;
-		else :
+		else:
 	?>
 	<div class="container">
 		<div id="content-area" class="clearfix">

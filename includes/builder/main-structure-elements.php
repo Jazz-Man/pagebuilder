@@ -1327,8 +1327,8 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		$output = sprintf(
 			'<div%7$s class="et_pb_section%3$s%4$s%5$s%6$s%8$s%12$s%13$s"%14$s>
 				%11$s
+				%2$s
 				%9$s
-					%2$s
 					%1$s
 				%10$s
 			</div> <!-- .et_pb_section -->',

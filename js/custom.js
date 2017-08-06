@@ -7,7 +7,7 @@
 		et_is_ipad = navigator.userAgent.match( /iPad/ ),
 		$et_container = $( '.container' ),
 		et_container_width = $et_container.width(),
-		et_is_fixed_nav = $( 'body' ).hasClass( 'et_fixed_nav' ),
+		et_is_fixed_nav = $( 'body' ).hasClass( 'et_fixed_nav' ) || $( 'body' ).hasClass( 'et_vertical_fixed' ),
 		et_is_vertical_fixed_nav = $( 'body' ).hasClass( 'et_vertical_fixed' ),
 		et_is_rtl = $( 'body' ).hasClass( 'rtl' ),
 		et_hide_nav = $( 'body' ).hasClass( 'et_hide_nav' ),
@@ -85,7 +85,7 @@
 				et_top_navigation_li_break_index = Math.round( et_top_navigation_li_size / 2 ) - 1,
 				window_width = $et_window.prop('outerWidth') || $et_window.width();
 
-			if ( window_width > 980 && $logo_container.length ) {
+			if ( window_width > 980 && $logo_container.length && $('body').hasClass('et_header_style_split') ) {
 				$('<li class="centered-inline-logo-wrap"></li>').insertAfter($et_top_navigation.find('nav > ul >li:nth('+et_top_navigation_li_break_index+')') );
 				$logo_container.appendTo( $et_top_navigation.find('.centered-inline-logo-wrap') );
 			}
@@ -93,6 +93,17 @@
 			if ( window_width <= 980 && $logo_container_splitted.length ) {
 				$logo_container_splitted.prependTo('#main-header > .container');
 				$('#main-header .centered-inline-logo-wrap').remove();
+			}
+		}
+
+		function et_set_right_vertical_menu() {
+			var $body = $( 'body' );
+			if ( $body.hasClass( 'et_boxed_layout' ) && $body.hasClass( 'et_vertical_fixed' ) && $body.hasClass( 'et_vertical_right' ) ) {
+				var header_offset = parseFloat( $( '#page-container' ).css( 'margin-right' ) );
+				header_offset += ( parseFloat( $( '#et-main-area' ).css( 'margin-right' ) ) - 225 );
+				header_offset = 0 > header_offset ? 0 : header_offset;
+
+				$( '#main-header' ).addClass( 'et_vertical_menu_set' ).css( { 'left': '', 'right': header_offset } );
 			}
 		}
 
@@ -112,6 +123,7 @@
 			if ( $( '#main-header' ).height() < $( '#et-top-navigation' ).height() ) {
 				$( '#main-header' ).height( $( '#et-top-navigation' ).height() + $( '#logo' ).height() + 100 );
 			}
+			et_set_right_vertical_menu();
 		}
 
 		window.et_calculate_header_values = function() {
@@ -754,6 +766,8 @@
 
 				$slide_menu_container.css( { 'padding-top': top_bar_height + 20 } );
 			}
+
+			et_set_right_vertical_menu();
 		} );
 
 		$( window ).ready( function(){

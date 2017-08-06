@@ -1,3 +1,53 @@
+version 3.0.65 ( updated 7-27-2017 )
+- Custom Color Pallets will now be recognized in the Theme Customizer. 
+- Changed all standard color pickers in the Theme Customizer to RGBA color pickers that support a wider range of color possibilities, including opacity adjustments.
+- Added new UI for contact form checkbox field types that allows multiple checkboxes to be added to a single field group.
+- Right-aligned vertical navigation will now appear within the box when boxed layout is enabled in the Theme Customizer.
+- Added line height and letter spacing options to the Fullwidth Header text elements.
+- Used realpath() when detecting core directory path to work when symlinks are used in the theme directory during WordPress configuration.
+- Improved nested conditional logic behavior for the contact form module.
+- Fixed an issue that caused button color customizers to not appear in the Theme Customizer in some situations.
+- Added a warning when attempting to export selected library items when no library items have been selected.
+- Gallery captions will now re-render correctly when changed in the Visual Builder.
+- Fixed a bug that caused header styles to break when switching between various header modes in the Theme Customizer.
+- Fixed a bug that prevented filterable portfolio filters from working correctly if the active URL contained an ID.
+- Background images for rows and columns will now be exported and encoded correctly when exporting Divi Builder layouts.
+- Improved contact form encoding.
+- Improved the way conditional logic applies to custom message patterns in the contact form module.
+- Fixed a bug that caused specialty section background videos to be applied to the section's inner row instead of the parent section.
+- Improved range slider appearance in Edge and Firefox.
+- Fixed a bug that caused unsynced options to be loaded when adding a global module to the page in some situations.
+- Fixed a bug that caused row contents to be emptied when duplicating newly added rows in the standard Divi Builder.
+- Fixed incorrect height value that was applied to the tooltip used for inserting column structures into specialty sections in the Visual Builder.
+- Updated the shop module options to ensure that the category selection option only appears when applicable.
+- Improved WooCommerce sidebar positioning and gutter width calculation for WooCommerce archive pages.
+- Fixed a bug that prevented the theme accent color from being properly applied in the Theme Customizer preview in some cases.
+- Fixed a bug that sometimes caused a scrollbar to appear inside of the fullwidth portfolio module.
+- Fixed a bug that caused the Visual Builder to fail to load when an invalid map module address was used in a map module on the page being loaded.
+- Adjusted testimonial module width calculation mechanism to better handle sporadic screen re-sizing.
+- Improved compatibility with third party Ajax requests.
+- Fixed a bug that caused Divi Builder layouts to load incorrectly in WooCommerce terms and conditions pages.
+- Custom CSS applied to the blog module's read more button will now render correctly in the Visual Builder.
+- The WordPress revision system will now load properly for Divi Library items.
+- Fixed a bug that prevented global module settings from returning to Divi Builder default values.
+- Fixed inconsistencies in the rendering of draggable padding in the Visual Builder when switching between different responsive preview modes and when toggling responsive editing mode.
+- Fixed a bug that caused line breaks to be removed when loading global modules after having edited the module in the Divi Library.
+- Fixed a bug that prevented the page from being updated correctly in the Visual Builder when disabling filterable portfolio elements in some situations.
+- Fixed a bug that prevented blog module icons from updating in the Visual Builder in some situations.
+- Fixed a design glitch in the import/export modal.
+	* style.css
+	* functions.php
+	* js/custom.js
+	* js/theme-customizer.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/main-modules.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/core.php
+	* core/functions.php
+	* core/admin/js/portability.js
+	* core/components/Portability.php
+	
 version 3.0.64 ( updated 7-19-2017 )
 - Added the new Divi Builder product tour system.
 - Implemented an introductory product tour that is run once when a new user launches the Visual Builder for the first time.
@@ -17,7 +67,7 @@ version 3.0.64 ( updated 7-19-2017 )
 - Fixed a logic error in the Theme Customizer preview that made mobile font size adjustments inaccurate in some cases.
 - Hover buttons will now be correctly hidden after closing a settings modal in the Visual Builder.
 - Option group font sizes will no longer be affected by responsive preview styling in the Visual Builder.
-- Fixed a fatal error that occured during WooCommerce checkout for some customers.
+- Fixed a fatal error that occurred during WooCommerce checkout for some customers.
 	* functions.php
 	* header.php
 	* single.php

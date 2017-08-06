@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.64' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.65' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1094,18 +1094,20 @@ add_action( 'wp_ajax_et_fb_update_layout', 'et_fb_update_layout' );
 
 if ( ! function_exists( 'et_fb_disable_product_tour' ) ) :
 function et_fb_disable_product_tour() {
-	if ( ! current_user_can( 'edit_posts' ) ) {
-		die( -1 );
+	do_action( 'et_fb_disable_product_tour' );
+
+	if ( ! et_core_security_check_passed( 'edit_posts' ) ) {
+		ET_Core_Logger::debug( 'Unable to disable product tour. Security check failed!' );
+		return;
 	}
 
 	$user_id = (int) get_current_user_id();
 	$all_product_settings = et_get_option( 'product_tour_status', array() );
-	$all_product_settings[$user_id] = 'off';
+	$all_product_settings[ $user_id ] = 'off';
 
 	et_update_option( 'product_tour_status', $all_product_settings );
 }
 endif;
-add_action( 'wp_ajax_et_fb_disable_product_tour', 'et_fb_disable_product_tour' );
 
 if ( ! function_exists( 'et_builder_include_categories_option' ) ) :
 function et_builder_include_categories_option( $args = array() ) {

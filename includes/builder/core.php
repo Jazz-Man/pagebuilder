@@ -11,7 +11,7 @@ function et_builder_should_load_framework() {
 	}
 
 	$is_admin = is_admin();
-	$required_admin_pages = array( 'edit.php', 'post.php', 'post-new.php', 'admin.php', 'customize.php', 'edit-tags.php', 'admin-ajax.php', 'export.php', 'options-permalink.php', 'themes.php' ); // list of admin pages where we need to load builder files
+	$required_admin_pages = array( 'edit.php', 'post.php', 'post-new.php', 'admin.php', 'customize.php', 'edit-tags.php', 'admin-ajax.php', 'export.php', 'options-permalink.php', 'themes.php', 'revision.php' ); // list of admin pages where we need to load builder files
 	$specific_filter_pages = array( 'edit.php', 'admin.php', 'edit-tags.php' ); // list of admin pages where we need more specific filtering
 
 	$is_edit_library_page = 'edit.php' === $pagenow && isset( $_GET['post_type'] ) && 'et_pb_layout' === $_GET['post_type'];
@@ -870,7 +870,7 @@ function et_pb_get_global_module() {
 		wp_reset_postdata();
 
 		if ( !empty( $query->post ) ) {
-			$global_shortcode['shortcode'] = $query->post->post_content;
+			$global_shortcode['shortcode'] = wpautop( $query->post->post_content );
 			$excluded_global_options = get_post_meta( $post_id, '_et_pb_excluded_global_options' );
 			$selective_sync_status = empty( $excluded_global_options ) ? '' : 'updated';
 
@@ -1473,11 +1473,44 @@ function et_fb_get_nonces() {
 		'moduleEmailOptinFetchLists'    => wp_create_nonce( 'et_builder_email_fetch_lists_nonce' ),
 		'moduleEmailOptinAddAccount'    => wp_create_nonce( 'et_builder_email_add_account_nonce' ),
 		'moduleEmailOptinRemoveAccount' => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
-		'productTourRequest'            => wp_create_nonce( 'et_fb_product_tour_nonce' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );
 }
+
+if ( ! function_exists( 'et_builder_is_product_tour_enabled' ) ):
+function et_builder_is_product_tour_enabled() {
+	static $product_tour_enabled = null;
+
+	if ( null !== $product_tour_enabled ) {
+		return $product_tour_enabled;
+	}
+
+	if ( ! ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) ) {
+		return $product_tour_enabled = false;
+	}
+
+	/**
+	 * Filters the on/off status of the product tour for the current user.
+	 *
+	 * @since 3.0.64
+	 *
+	 * @param string $product_tour_status_override Accepts 'on', 'off'.
+	 */
+	$product_tour_status_override = apply_filters( 'et_builder_product_tour_status_override', false );
+
+	if ( false !== $product_tour_status_override ) {
+		$product_tour_enabled = 'on' === $product_tour_status_override;
+	} else {
+		$user_id                    = (int) get_current_user_id();
+		$product_tour_settings      = et_get_option( 'product_tour_status', array() );
+		$product_tour_status_global = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' );
+		$product_tour_enabled       = $product_tour_status_global && ( ! isset( $product_tour_settings[ $user_id ] ) || 'on' === $product_tour_settings[ $user_id ] );
+	}
+
+	return $product_tour_enabled;
+}
+endif;
 
 function et_pb_get_backbone_template() {
 	if ( ! wp_verify_nonce( $_POST['et_admin_load_nonce'], 'et_admin_load_nonce' ) ) {

@@ -1411,10 +1411,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[link_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[link_color]', array(
 		'label'		=> esc_html__( 'Body Link Color', 'Divi' ),
 		'section'	=> 'et_divi_general_typography',
 		'settings'	=> 'et_divi[link_color]',
@@ -1425,10 +1425,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[font_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[font_color]', array(
 		'label'		=> esc_html__( 'Body Text Color', 'Divi' ),
 		'section'	=> 'et_divi_general_typography',
 		'settings'	=> 'et_divi[font_color]',
@@ -1439,10 +1439,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[header_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[header_color]', array(
 		'label'		=> esc_html__( 'Header Text Color', 'Divi' ),
 		'section'	=> 'et_divi_general_typography',
 		'settings'	=> 'et_divi[header_color]',
@@ -1453,10 +1453,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[accent_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[accent_color]', array(
 		'label'		=> esc_html__( 'Theme Accent Color', 'Divi' ),
 		'section'	=> 'et_divi_general_layout',
 		'settings'	=> 'et_divi[accent_color]',
@@ -2461,10 +2461,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[footer_bg]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[footer_bg]', array(
 		'label'		=> esc_html__( 'Footer Background Color', 'Divi' ),
 		'section'	=> 'et_divi_footer_layout',
 		'settings'	=> 'et_divi[footer_bg]',
@@ -2562,10 +2562,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[footer_widget_text_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[footer_widget_text_color]', array(
 		'label'		=> esc_html__( 'Widget Text Color', 'Divi' ),
 		'section'	=> 'et_divi_footer_widgets',
 		'settings'	=> 'et_divi[footer_widget_text_color]',
@@ -2576,10 +2576,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[footer_widget_link_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[footer_widget_link_color]', array(
 		'label'		=> esc_html__( 'Widget Link Color', 'Divi' ),
 		'section'	=> 'et_divi_footer_widgets',
 		'settings'	=> 'et_divi[footer_widget_link_color]',
@@ -2590,10 +2590,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[footer_widget_header_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[footer_widget_header_color]', array(
 		'label'		=> esc_html__( 'Widget Header Color', 'Divi' ),
 		'section'	=> 'et_divi_footer_widgets',
 		'settings'	=> 'et_divi[footer_widget_header_color]',
@@ -2604,10 +2604,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 		'type'			=> 'option',
 		'capability'	=> 'edit_theme_options',
 		'transport'		=> 'postMessage',
-		'sanitize_callback' => 'sanitize_hex_color',
+		'sanitize_callback' => 'et_sanitize_alpha_color',
 	) );
 
-	$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[footer_widget_bullet_color]', array(
+	$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[footer_widget_bullet_color]', array(
 		'label'		=> esc_html__( 'Widget Bullet Color', 'Divi' ),
 		'section'	=> 'et_divi_footer_widgets',
 		'settings'	=> 'et_divi[footer_widget_bullet_color]',
@@ -3176,10 +3176,10 @@ function et_divi_customizer_module_settings( $wp_customize ) {
 				'type'			=> 'option',
 				'capability'	=> 'edit_theme_options',
 				'transport'		=> 'postMessage',
-				'sanitize_callback' => 'sanitize_hex_color',
+				'sanitize_callback' => 'et_sanitize_alpha_color',
 			) );
 
-			$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[et_pb_gallery-zoom_icon_color]', array(
+			$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[et_pb_gallery-zoom_icon_color]', array(
 				'label'		=> esc_html__( 'Zoom Icon Color', 'Divi' ),
 				'section'	=> 'et_pagebuilder_gallery',
 				'settings'	=> 'et_divi[et_pb_gallery-zoom_icon_color]',
@@ -3959,10 +3959,10 @@ function et_divi_customizer_module_settings( $wp_customize ) {
 				'type'			=> 'option',
 				'capability'	=> 'edit_theme_options',
 				'transport'		=> 'postMessage',
-				'sanitize_callback' => 'sanitize_hex_color',
+				'sanitize_callback' => 'et_sanitize_alpha_color',
 			) );
 
-			$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[et_pb_portfolio-zoom_icon_color]', array(
+			$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[et_pb_portfolio-zoom_icon_color]', array(
 				'label'		=> esc_html__( 'Zoom Icon Color', 'Divi' ),
 				'section'	=> 'et_pagebuilder_portfolio',
 				'settings'	=> 'et_divi[et_pb_portfolio-zoom_icon_color]',
@@ -4068,10 +4068,10 @@ function et_divi_customizer_module_settings( $wp_customize ) {
 				'type'			=> 'option',
 				'capability'	=> 'edit_theme_options',
 				'transport'		=> 'postMessage',
-				'sanitize_callback' => 'sanitize_hex_color',
+				'sanitize_callback' => 'et_sanitize_alpha_color',
 			) );
 
-			$wp_customize->add_control( new WP_Customize_Color_Control( $wp_customize, 'et_divi[et_pb_filterable_portfolio-zoom_icon_color]', array(
+			$wp_customize->add_control( new ET_Divi_Customize_Color_Alpha_Control( $wp_customize, 'et_divi[et_pb_filterable_portfolio-zoom_icon_color]', array(
 				'label'		=> esc_html__( 'Zoom Icon Color', 'Divi' ),
 				'section'	=> 'et_pagebuilder_filterable_portfolio',
 				'settings'	=> 'et_divi[et_pb_filterable_portfolio-zoom_icon_color]',
@@ -5594,6 +5594,7 @@ function et_divi_customize_preview_css() {
 	wp_enqueue_script( 'divi-customizer-controls-js', get_template_directory_uri() . '/js/theme-customizer-controls.js', array( 'jquery' ), $theme_version, true );
 	wp_localize_script( 'divi-customizer-controls-js', 'et_divi_customizer_data', array(
 		'is_old_wp' => et_pb_is_wp_old_version() ? 'old' : 'new',
+		'color_palette' => implode( '|', et_pb_get_default_color_palette() ),
 	) );
 }
 add_action( 'customize_controls_enqueue_scripts', 'et_divi_customize_preview_css' );
@@ -6269,7 +6270,7 @@ function et_divi_add_customizer_css() {
 			.woocommerce.et_pb_button_helper_class a.button.alt, .woocommerce-page.et_pb_button_helper_class a.button.alt, .woocommerce.et_pb_button_helper_class button.button.alt, .woocommerce-page.et_pb_button_helper_class button.button.alt, .woocommerce.et_pb_button_helper_class input.button.alt, .woocommerce-page.et_pb_button_helper_class input.button.alt, .woocommerce.et_pb_button_helper_class #respond input#submit.alt, .woocommerce-page.et_pb_button_helper_class #respond input#submit.alt, .woocommerce.et_pb_button_helper_class #content input.button.alt, .woocommerce-page.et_pb_button_helper_class #content input.button.alt,
 			.woocommerce.et_pb_button_helper_class a.button, .woocommerce-page.et_pb_button_helper_class a.button, .woocommerce.et_pb_button_helper_class button.button, .woocommerce-page.et_pb_button_helper_class button.button, .woocommerce.et_pb_button_helper_class input.button, .woocommerce-page.et_pb_button_helper_class input.button, .woocommerce.et_pb_button_helper_class #respond input#submit, .woocommerce-page.et_pb_button_helper_class #respond input#submit, .woocommerce.et_pb_button_helper_class #content input.button, .woocommerce-page.et_pb_button_helper_class #content input.button {
 				<?php if ( '#ffffff' !== $button_text_color ) { ?>
-					color: <?php echo esc_html( $button_text_color ); ?> !important;
+					color: <?php echo esc_html( $button_text_color ); ?>;
 				<?php } ?>
 			}
 		<?php } ?>

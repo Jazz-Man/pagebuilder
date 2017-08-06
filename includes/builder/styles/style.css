@@ -491,15 +491,16 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et_pb_button_equal_sides span.et_pb_value_text.et_pb_on_value { color: #8E969E; }
 
 .et-pb-option-container input.et-pb-color-picker-hex { height: 40px; width: 90px; margin-left: 15px !important; }
-.et-pb-option-container input[type=range] { -webkit-appearance: none; background-color: #F1F5F9; height: 5px; width: 512px; display: inline-block; position: relative;  padding: 0; margin: 0 10px 0 0; top: -3px; }
+.et-pb-option-container input[type=range] { -webkit-appearance: none; width: 512px; display: inline-block; position: relative; top: 6px; height: 25px; padding: 0; margin: 0 10px 0 0; background: none;}
 .et-pb-option-container input[type=range]:focus { box-shadow: none !important; outline: none !important; }
+.et-pb-option-container input[type="range"]::-webkit-slider-runnable-track { height: 5px; background: #F1F5F9; top: -6px; }
 .et-pb-option-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; background-color: #008bdb; width: 15px; height: 15px; border-radius: 15px; -webkit-border-radius: 15px; }
-.et-pb-option-container input[type="range"]::-moz-range-track { border: inherit; background: transparent; }
-.et-pb-option-container input[type="range"]::-ms-track { border: inherit; color: transparent; background: transparent; }
+.et-pb-option-container input[type="range"]::-moz-range-track { border: inherit; background: #F1F5F9; height: 5px; }
+.et-pb-option-container input[type="range"]::-ms-track { color: transparent; background: #F1F5F9; height: 5px; border-color: #FFFFFF; border-width: 6px 0; }
 .et-pb-option-container input[type="range"]::-ms-fill-lower,
 .et-pb-option-container input[type="range"]::-ms-fill-upper { background: transparent; }
 .et-pb-option-container input[type="range"]::-ms-tooltip { display: none; }
-.et-pb-option-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border: none; border-radius: 15px; background-color: #008bdb; }
+.et-pb-option-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border: none; border-radius: 15px; background-color: #008bdb; margin-top: -5px; }
 .et-pb-option-container input[type="range"]::-moz-range-thumb { width: 15px; height: 15px; border: none; border-radius: 15px; background-color: #008bdb; }
 .et-pb-option-container input[type="range"]::-ms-thumb { width: 15px; height: 15px; border-radius: 15px; border: 0; background-color: #008bdb; }
 .et_pb_modal_settings_container input[type=checkbox]:checked:before { color: #00c3aa; float: none; margin-top: 2px; }

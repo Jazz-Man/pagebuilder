@@ -547,7 +547,7 @@ function et_core_setup( $deprecated = '' ) {
 	}
 
 	$core_path = _et_core_normalize_path( trailingslashit( dirname( __FILE__ ) ) );
-	$theme_dir = _et_core_normalize_path( get_template_directory() );
+	$theme_dir = _et_core_normalize_path( realpath( get_template_directory() ) );
 
 	if ( 0 === strpos( $core_path, $theme_dir ) ) {
 		$url = get_template_directory_uri() . '/core/';
@@ -704,8 +704,10 @@ function et_core_load_component( $components ) {
 		return true;
 	}
 
-	include_once ET_CORE_PATH . 'components/Cache.php';
-	include_once ET_CORE_PATH . 'components/Portability.php';
+	if ( ! class_exists( 'ET_Core_Portability', false ) ) {
+		include_once ET_CORE_PATH . 'components/Cache.php';
+		include_once ET_CORE_PATH . 'components/Portability.php';
+	}
 
 	return $portability_loaded = true;
 }

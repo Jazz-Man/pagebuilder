@@ -1847,7 +1847,8 @@
 					$the_portfolio.on('click', '.et_pb_portfolio_filter a', function(e){
 						e.preventDefault();
 						var category_slug = $(this).data('category-slug');
-						$the_portfolio_items = $(this).parents('.et_pb_filterable_portfolio').find('.et_pb_portfolio_items');
+						var $the_portfolio = $(this).parents('.et_pb_filterable_portfolio');
+						var $the_portfolio_items = $the_portfolio.find('.et_pb_portfolio_items');
 
 						if ( 'all' == category_slug ) {
 							$the_portfolio.find('.et_pb_portfolio_filter a').removeClass('active');
@@ -1884,9 +1885,9 @@
 					$the_portfolio.on('click', '.et_pb_portofolio_pagination a', function(e){
 						e.preventDefault();
 
-						var to_page = $(this).data('page'),
-							$the_portfolio = $(this).parents('.et_pb_filterable_portfolio'),
-							$the_portfolio_items = $the_portfolio.find('.et_pb_portfolio_items');
+						var to_page = $(this).data('page');
+						var $the_portfolio = $(this).parents('.et_pb_filterable_portfolio');
+						var $the_portfolio_items = $the_portfolio.find('.et_pb_portfolio_items');
 
 						et_pb_smooth_scroll( $the_portfolio, false, 800 );
 
@@ -2734,14 +2735,11 @@
 
 						$this_inputs.removeClass( 'et_contact_error' );
 
-						$this_inputs.each( function(){
-							var $this_el      = $( this );
-							var $this_wrapper = false;
+						var hidden_fields = [];
 
-							// Prevent field processing if that field is not visible (conditional logic)
-							if ( ! $this_el.is(':visible') ) {
-								return;
-							}
+						$this_inputs.each( function(){
+							var $this_el        = $( this );
+							var $this_wrapper   = false;
 
 							if ( 'checkbox' === $this_el.data('type') ) {
 								$this_el      = $this_el.find('input[type="checkbox"]');
@@ -2799,6 +2797,13 @@
 								unchecked     = ! $checkbox.prop('checked');
 
 								$handle.val( this_val );
+							}
+
+							// Store the labels of the conditionally hidden fields so that they can be
+							// removed later if a custom message pattern is enabled
+							if ( ! $this_el.is(':visible') ) {
+								hidden_fields.push( this_label );
+								return;
 							}
 
 							// add current field data into array of inputs
@@ -2870,7 +2875,17 @@
 							var $href = $( this ).attr( 'action' ),
 								form_data = $( this ).serializeArray();
 
-							form_data.push( { 'name': 'et_pb_contact_email_fields_' + form_unique_id, 'value' : JSON.stringify( inputs_list ) } );
+							form_data.push( {
+								'name': 'et_pb_contact_email_fields_' + form_unique_id,
+								'value' : JSON.stringify( inputs_list )
+							} );
+
+							if ( hidden_fields.length > 0 ) {
+								form_data.push( {
+									'name': 'et_pb_contact_email_hidden_fields_' + form_unique_id,
+									'value' : JSON.stringify( hidden_fields )
+								} );
+							}
 
 							$this_contact_container.fadeTo( 'fast', 0.2 ).load( $href + ' #' + $this_contact_form.closest( '.et_pb_contact_form_container' ).attr( 'id' ), form_data, function( responseText ) {
 								if ( ! $( responseText ).find( '.et_pb_contact_error_text').length ) {
@@ -4223,6 +4238,16 @@
 							var field_id    = $wrapper.data('id');
 							var field_type  = $wrapper.data('type');
 							var field_value;
+
+							/*
+								Check if the field wrapper is actually visible when including it in the rules check.
+								This avoids the scenario with a parent, child and grandchild field where the parent
+								field is changed but the grandchild remains visible, because the child one has the
+								right value, even though it is not visible
+							*/
+							if ( ! $wrapper.is(':visible') ) {
+								continue;
+							}
 
 							/* Get the proper compare value based on the field type */
 							switch( field_type ) {

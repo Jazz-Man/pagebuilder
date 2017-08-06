@@ -33,17 +33,12 @@
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>
-	<div id="page-container">
 <?php
-	$product_tour_status = 'off';
-
-	if ( et_fb_is_enabled() ) {
-		$current_user = wp_get_current_user();
-		$product_tour_settings = et_get_option( 'product_tour_status', array() );
-		$product_tour_status = 'on' === et_get_option( 'et_pb_product_tour_global', 'on' ) && ( ! isset( $product_tour_settings[$current_user->ID] ) || 'off' !== $product_tour_settings[$current_user->ID] ) ? 'on' : 'off';
-	}
-
-	if ( is_page_template( 'page-template-blank.php' ) || 'on' === $product_tour_status ) {
+	$product_tour_enabled = et_builder_is_product_tour_enabled();
+	$page_container_style = $product_tour_enabled ? ' style="padding-top: 0px;"' : ''; ?>
+	<div id="page-container"<?php echo $page_container_style; ?>>
+<?php
+	if ( $product_tour_enabled || is_page_template( 'page-template-blank.php' ) ) {
 		return;
 	}
 

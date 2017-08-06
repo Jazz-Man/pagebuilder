@@ -518,6 +518,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 			'src',
 			'gallery_ids',
 			'gallery_orderby',
+			'gallery_captions',
 			'fullwidth',
 			'posts_number',
 			'show_title_and_caption',
@@ -645,6 +646,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 				'overwrite'       => array(
 					'ids'         => 'gallery_ids',
 					'orderby'     => 'gallery_orderby',
+					'captions'    => 'gallery_captions',
 				),
 				'toggle_slug'     => 'main_content',
 			),
@@ -663,6 +665,13 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 					'__gallery',
 				),
 				'toggle_slug' => 'main_content',
+			),
+			'gallery_captions' => array(
+				'type'  => 'hidden',
+				'class' => array( 'et-pb-gallery-captions-field' ),
+				'computed_affects'   => array(
+					'__gallery',
+				),
 			),
 			'fullwidth' => array(
 				'label'             => esc_html__( 'Layout', 'et_builder' ),
@@ -854,6 +863,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 				'computed_depends_on' => array(
 					'gallery_ids',
 					'gallery_orderby',
+					'gallery_captions',
 					'fullwidth',
 					'orientation',
 				),
@@ -883,10 +893,11 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		$attachments = array();
 
 		$defaults = array(
-			'gallery_ids'     => array(),
-			'gallery_orderby' => '',
-			'fullwidth'       => 'off',
-			'orientation'     => 'landscape',
+			'gallery_ids'      => array(),
+			'gallery_orderby'  => '',
+			'gallery_captions' => array(),
+			'fullwidth'        => 'off',
+			'orientation'      => 'landscape',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
@@ -12382,6 +12393,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$et_error_message = '';
 		$et_contact_error = false;
 		$current_form_fields = isset( $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] : '';
+		$hidden_form_fields = isset( $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] : false;
 		$contact_email = '';
 		$processed_fields_values = array();
 
@@ -12456,6 +12468,17 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				foreach ( $processed_fields_values as $key => $value ) {
 					$message_pattern = str_ireplace( "%%{$key}%%", $value['value'], $message_pattern );
 				}
+
+				if ( false !== $hidden_form_fields ) {
+					$hidden_form_fields = str_replace( '\\', '' ,  $hidden_form_fields );
+					$hidden_form_fields = json_decode( $hidden_form_fields );
+
+					if ( is_array( $hidden_form_fields ) ) {
+						foreach ( $hidden_form_fields as $hidden_field_label ) {
+							$message_pattern = str_ireplace( "%%{$hidden_field_label}%%", '', $message_pattern );
+						}
+					}
+				}
 			} else {
 				// use default message pattern if custom pattern is not defined
 				$message_pattern = isset( $processed_fields_values['message']['value'] ) ? $processed_fields_values['message']['value'] : '';
@@ -12485,8 +12508,8 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			wp_mail( apply_filters( 'et_contact_page_email_to', $et_email_to ),
 				et_get_safe_localization( sprintf(
 					__( 'New Message From %1$s%2$s', 'et_builder' ),
-					sanitize_text_field( html_entity_decode( $et_site_name ) ),
-					( '' !== $title ? sprintf( _x( ' - %s', 'contact form title separator', 'et_builder' ), sanitize_text_field( html_entity_decode( $title ) ) ) : '' )
+					sanitize_text_field( html_entity_decode( $et_site_name, ENT_QUOTES, 'UTF-8' ) ),
+					( '' !== $title ? sprintf( _x( ' - %s', 'contact form title separator', 'et_builder' ), sanitize_text_field( html_entity_decode( $title, ENT_QUOTES, 'UTF-8' ) ) ) : '' )
 				) ),
 				! empty( $email_message ) ? $email_message : ' ',
 				apply_filters( 'et_contact_page_headers', $headers, $contact_name, $contact_email )
@@ -14220,11 +14243,11 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		$this->custom_css_options = array(
 			'title' => array(
 				'label'    => esc_html__( 'Title', 'et_builder' ),
-				'selector' => '.et_pb_post .entry-title',
+				'selector' => '.entry-title',
 			),
 			'post_meta' => array(
 				'label'    => esc_html__( 'Post Meta', 'et_builder' ),
-				'selector' => '.et_pb_post .post-meta',
+				'selector' => '.post-meta',
 			),
 			'pagenavi' => array(
 				'label'    => esc_html__( 'Pagenavi', 'et_builder' ),
@@ -14236,7 +14259,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 			),
 			'read_more' => array(
 				'label'    => esc_html__( 'Read More Button', 'et_builder' ),
-				'selector' => '.et_pb_post .more-link',
+				'selector' => '.more-link',
 			),
 		);
 	}
@@ -15379,6 +15402,9 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 					'top_rated' => esc_html__( 'Top Rated Products', 'et_builder' ),
 					'product_category' => esc_html__( 'Product Category', 'et_builder' ),
 				),
+				'affects'        => array(
+					'include_categories',
+				),
 				'description'      => esc_html__( 'Choose which type of products you would like to display.', 'et_builder' ),
 				'toggle_slug'      => 'main_content',
 				'computed_affects' => array(
@@ -15403,6 +15429,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module {
 					'use_terms'    => true,
 					'term_name'    => 'product_cat',
 				),
+				'depends_show_if'  => 'product_category',
 				'description'      => esc_html__( 'Choose which categories you would like to include.', 'et_builder' ),
 				'taxonomy_name'    => 'product_category',
 				'toggle_slug'      => 'main_content',
@@ -18854,9 +18881,13 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 					'font_size' => array(
 						'default'      => '30px',
 					),
-					'hide_line_height'    => true,
+					'line_height'    => array(
+						'default' => '1em',
+					),
+					'letter_spacing' => array(
+						'default' => '0px',
+					),
 					'hide_text_color'     => true,
-					'hide_letter_spacing' => true,
 				),
 				'content' => array(
 					'label'    => esc_html__( 'Content', 'et_builder' ),
@@ -18866,18 +18897,26 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 					'font_size' => array(
 						'default'      => '14px',
 					),
-					'hide_line_height'    => true,
+					'line_height'    => array(
+						'default' => '1em',
+					),
+					'letter_spacing' => array(
+						'default' => '0px',
+					),
 					'hide_text_color'     => true,
-					'hide_letter_spacing' => true,
 				),
 				'subhead' => array(
 					'label'    => esc_html__( 'Subhead', 'et_builder' ),
 					'css'      => array(
 						'main' => "%%order_class%%.et_pb_fullwidth_header .et_pb_fullwidth_header_subhead",
 					),
-					'hide_line_height'    => true,
+					'line_height'    => array(
+						'default' => '1em',
+					),
+					'letter_spacing' => array(
+						'default' => '0px',
+					),
 					'hide_text_color'     => true,
-					'hide_letter_spacing' => true,
 				),
 			),
 			'button' => array(

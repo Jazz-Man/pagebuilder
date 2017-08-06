@@ -1,7 +1,7 @@
 /*
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.64
+Version: 3.0.65
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -519,6 +519,17 @@ blockquote {
 .et_boxed_layout.et_vertical_nav #page-container #top-header {
 	width: auto;
 	max-width: none;
+}
+
+.et_boxed_layout.et_vertical_right.et_vertical_fixed #main-header {
+	opacity: 0;
+}
+
+.et_boxed_layout.et_vertical_right.et_vertical_fixed #page-container #main-header.et_vertical_menu_set {
+	opacity: 1;
+	-webkit-transition: opacity 0.4s ease-in-out;
+	-moz-transition: opacity 0.4s ease-in-out;
+	transition: opacity 0.4s ease-in-out;
 }
 
 /* Vertical Navigation */
@@ -5010,7 +5021,7 @@ ul.et_pb_side_nav .side_nav_item a.active {
 	}
 
 	.et_vertical_nav.et_vertical_right #page-container #main-header {
-		right: 0 !important;
+		right: 0;
 		left: auto !important;
 	}
 
@@ -5182,7 +5193,8 @@ ul.et_pb_side_nav .side_nav_item a.active {
 /* Grid Layouts: Gallery, Portfolio, Filterable Portfolio, Shop */
 	.et_full_width_page.woocommerce-page ul.products li.product:nth-child(4n),
 	.et_pb_row .et_full_width_page.woocommerce-page ul.products li.product:nth-child(4n),
-	.et_left_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
+	.single.et_left_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
+	.archive.et_left_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
 	.et_pb_row .et_left_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
 	.single.et_right_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
 	.archive.et_right_sidebar.woocommerce-page ul.products li.product:nth-child(3n),
@@ -14391,6 +14403,10 @@ span.comment_date {
 		padding-bottom: 0;
 		font-size: 18px;
 		word-wrap: break-word;
+	}
+
+	.et_pb_gutters1 .et_pb_portfolio_grid .et_pb_grid_item h2:last-child {
+		line-height: normal;
 	}
 
 	.et_pb_portfolio_item .post-meta,
