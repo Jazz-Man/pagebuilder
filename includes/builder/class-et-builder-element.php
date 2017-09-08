@@ -419,7 +419,19 @@ class ET_Builder_Element {
 		$font_icon_options = array( 'font_icon', 'button_icon', 'button_one_icon', 'button_two_icon' );
 
 		foreach ( $this->shortcode_atts as $attribute_key => $attribute_value ) {
-			$shortcode_attributes[ $attribute_key ] = in_array( $attribute_key, $font_icon_options ) || preg_match( "/^\%\%\d+\%\%$/i", $attribute_value ) ? $attribute_value : str_replace( array( '%22', '%92', '%91', '%93' ), array( '"', '\\', '&#91;', '&#93;' ), $attribute_value );
+			// the icon shortcodes are fine.
+			if ( in_array( $attribute_key, $font_icon_options, true ) ) {
+				$shortcode_attributes[ $attribute_key ] = $attribute_value;
+				// icon attributes must not be str_replaced
+				continue;
+			}
+
+			// URLs are weird since they can allow non-ascii characters so we escape those separately.
+			if ( in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
+				$shortcode_attributes[ $attribute_key ] = esc_url_raw( $attribute_value );
+			} else {
+				$shortcode_attributes[ $attribute_key ] = str_replace( array( '%22', '%92', '%91', '%93' ), array( '"', '\\', '&#91;', '&#93;' ), $attribute_value );
+			}
 		}
 
 		$this->shortcode_atts = $shortcode_attributes;
@@ -690,7 +702,52 @@ class ET_Builder_Element {
 		// Prepare shortcode for the frontend building if enabled.
 		$shortcode_callback = $et_fb_processing_shortcode_object ? '_shortcode_passthru_callback' : 'shortcode_callback';
 
+		$animation_style            = isset( $this->shortcode_atts['animation_style'] ) ? $this->shortcode_atts['animation_style'] : false;
+		$animation_repeat           = isset( $this->shortcode_atts['animation_repeat'] ) ? $this->shortcode_atts['animation_repeat'] : 'once';
+		$animation_direction        = isset( $this->shortcode_atts['animation_direction'] ) ? $this->shortcode_atts['animation_direction'] : 'center';
+		$animation_duration         = isset( $this->shortcode_atts['animation_duration'] ) ? $this->shortcode_atts['animation_duration'] : '500ms';
+		$animation_delay            = isset( $this->shortcode_atts['animation_delay'] ) ? $this->shortcode_atts['animation_delay'] : '0ms';
+		$animation_intensity        = isset( $this->shortcode_atts["animation_intensity_{$animation_style }"] ) ? $this->shortcode_atts["animation_intensity_{$animation_style }"] : '50%';
+		$animation_starting_opacity = isset( $this->shortcode_atts['animation_starting_opacity'] ) ? $this->shortcode_atts['animation_starting_opacity'] : '0%';
+		$animation_speed_curve      = isset( $this->shortcode_atts['animation_speed_curve'] ) ? $this->shortcode_atts['animation_speed_curve'] : 'ease-in-out';
+
+		$output_before = '';
+		$output_after  = '';
+
+		if ( $animation_style && 'none' !== $animation_style && ! et_fb_is_enabled() ) {
+			// Fade doesn't have direction
+			if ( 'fade' === $animation_style ) {
+				$animation_direction = '';
+			}
+
+			if ( in_array( $animation_direction, array( 'top', 'right', 'bottom', 'left' ) ) ) {
+				$animation_style .= ucfirst( $animation_direction );
+			}
+
+			$module_class  = ET_Builder_Element::get_module_order_class( $function_name );
+
+			if ( $module_class ) {
+				et_builder_handle_animation_data( array(
+					'class'            => trim( $module_class ),
+					'style'            => $animation_style,
+					'repeat'           => $animation_repeat,
+					'duration'         => $animation_duration,
+					'delay'            => $animation_delay,
+					'intensity'        => $animation_intensity,
+					'starting_opacity' => $animation_starting_opacity,
+					'speed_curve'      => $animation_speed_curve,
+				) );
+			}
+
+			$output_before = '<div class="et_animated_wrapper">';
+			$output_after  = '</div>';
+		}
+
 		$output = $this->{$shortcode_callback}( $atts, $content, $function_name, $parent_address, $global_parent, $global_parent_type );
+
+		if ( ! is_array( $output ) ) {
+			$output = $output_before . $output . $output_after;
+		}
 
 		$this->_shortcode_callback_num++;
 
@@ -870,6 +927,9 @@ class ET_Builder_Element {
 				} else {
 					$global_atts = shortcode_parse_atts( $global_content_processed );
 				}
+
+				// Run et_pb_module_shortcode_attributes filter to apply migration system on attributes of global module
+				$global_atts = apply_filters( 'et_pb_module_shortcode_attributes', $global_atts, $atts, $this->slug, $this->_get_current_shortcode_address() );
 
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
@@ -1060,21 +1120,24 @@ class ET_Builder_Element {
 
 		// Build object.
 		$object = array(
-			'_i'                => $_i,
-			'_order'            => $_i,
+			'_i'                          => $_i,
+			'_order'                      => $_i,
 			// TODO make address be _address, its conflicting with 'address' prop in map module... (not sure how though, they are in diffent places...)
-			'address'           => $address,
-			'child_slug'        => $this->child_slug,
-			'fb_support'        => $this->fb_support,
-			'parent_address'    => $parent_address,
-			'shortcode_index'   => $shortcode_index,
-			'type'              => $function_name,
-			'component_path'    => $component_path,
-			'main_css_element'  => $this->main_css_element,
-			'attrs'             => $attrs,
-			'content'           => $prepared_content,
-			'is_module_child'   => 'child' === $module_type,
-			'prepared_styles'   => ! $this->fb_support ? ET_Builder_Element::get_style() : '',
+			'address'                     => $address,
+			'child_slug'                  => $this->child_slug,
+			'fb_support'                  => $this->fb_support,
+			'parent_address'              => $parent_address,
+			'shortcode_index'             => $shortcode_index,
+			'type'                        => $function_name,
+			'component_path'              => $component_path,
+			'main_css_element'            => $this->main_css_element,
+			'attrs'                       => $attrs,
+			'content'                     => $prepared_content,
+			'is_module_child'             => 'child' === $module_type,
+			'prepared_styles'             => ! $this->fb_support ? ET_Builder_Element::get_style() : '',
+			'child_title_var'             => isset( $this->child_title_var ) ? $this->child_title_var : '',
+			'child_title_fallback_var'    => isset( $this->child_title_fallback_var ) ? $this->child_title_fallback_var : '',
+			'advanced_setting_title_text' => isset( $this->advanced_setting_title_text ) ? $this->advanced_setting_title_text : '',
 		);
 
 		if ( ! empty( $unsynced_global_attributes ) ) {
@@ -1158,19 +1221,20 @@ class ET_Builder_Element {
 	}
 
 	private function _add_additional_fields() {
-		if ( ! isset( $this->advanced_options ) ) {
-			return false;
+		if ( isset( $this->advanced_options ) ) {
+			$this->_add_additional_font_fields();
+
+			$this->_add_additional_background_fields();
+
+			$this->_add_additional_border_fields();
+
+			$this->_add_additional_custom_margin_padding_fields();
+
+			$this->_add_additional_button_fields();
 		}
 
-		$this->_add_additional_font_fields();
-
-		$this->_add_additional_background_fields();
-
-		$this->_add_additional_border_fields();
-
-		$this->_add_additional_custom_margin_padding_fields();
-
-		$this->_add_additional_button_fields();
+		// Add animation fields to all modules
+		$this->_add_additional_animation_fields();
 
 		if ( ! isset( $this->_additional_fields_options ) ) {
 			return false;
@@ -2391,6 +2455,499 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
+	private function _add_additional_animation_fields() {
+		$classname = get_class( $this );
+
+		if ( isset( $this->type ) && 'child' === $this->type ) {
+			return;
+		}
+
+		$this->options_toggles['advanced']['toggles']['animation'] = array(
+			'title'    => esc_html__( 'Animation', 'et_builder' ),
+			'priority' => 100,
+		);
+
+		$additional_options          = array();
+		$animations_intensity_fields = array(
+			'animation_intensity_slide',
+			'animation_intensity_zoom',
+			'animation_intensity_flip',
+			'animation_intensity_fold',
+			'animation_intensity_roll',
+		);
+
+		$additional_options['animation_style'] = array(
+			'label'           => esc_html__( 'Animation Style', 'et_builder' ),
+			'type'            => 'select_animation',
+			'option_category' => 'configuration',
+			'default'         => 'none',
+			'description'     => esc_html__( 'Pick an animation style to enable animations for this element. Once enabled, you will be able to customize your animation style further. To disable animations, choose the None option.' ),
+			'options'         => array(
+				'none'   => esc_html__( 'None', 'et_builder' ),
+				'fade'   => esc_html__( 'Fade', 'et_builder' ),
+				'slide'  => esc_html__( 'Slide', 'et_builder' ),
+				'bounce' => esc_html__( 'Bounce', 'et_builder' ),
+				'zoom'   => esc_html__( 'Zoom', 'et_builder' ),
+				'flip'   => esc_html__( 'Flip', 'et_builder' ),
+				'fold'   => esc_html__( 'Fold', 'et_builder' ),
+				'roll'   => esc_html__( 'Roll', 'et_builder' ),
+			),
+			'tab_slug'    => 'advanced',
+			'toggle_slug' => 'animation',
+			'affects'     => array_merge( array(
+				'animation_repeat',
+				'animation_direction',
+				'animation_duration',
+				'animation_delay',
+				'animation_starting_opacity',
+				'animation_speed_curve'
+			), $animations_intensity_fields ),
+		);
+
+		$additional_options['animation_repeat'] = array(
+			'label'           => esc_html__( 'Animation Repeat', 'et_builder' ),
+			'type'            => 'select',
+			'option_category' => 'configuration',
+			'default'         => 'once',
+			'description'     => esc_html__( 'By default, animations will only play once. If you would like to loop your animation continuously you can choose the Loop option here.' ),
+			'options'         => array(
+				'once' => esc_html__( 'Once', 'et_builder' ),
+				'loop' => esc_html__( 'Loop', 'et_builder' ),
+			),
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => 'none',
+		);
+
+		$additional_options['animation_direction'] = array(
+			'label'           => esc_html__( 'Animation Direction', 'et_builder' ),
+			'type'            => 'select',
+			'option_category' => 'configuration',
+			'default'         => 'center',
+			'description'     => esc_html__( 'Pick from up to five different animation directions, each of which will adjust the starting and ending position of your animated element.' ),
+			'options'         => array(
+				'center' => esc_html__( 'Center', 'et_builder' ),
+				'left'   => esc_html__( 'Right', 'et_builder' ),
+				'right'  => esc_html__( 'Left', 'et_builder' ),
+				'bottom' => esc_html__( 'Up', 'et_builder' ),
+				'top'    => esc_html__( 'Down', 'et_builder' ),
+			),
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => array( 'none', 'fade' ),
+		);
+
+		$additional_options['animation_duration'] = array(
+			'label'             => esc_html__( 'Animation Duration', 'et_builder' ),
+			'type'              => 'range',
+			'option_category'   => 'configuration',
+			'range_settings'    => array(
+				'min'  => 0,
+				'max'  => 2000,
+				'step' => 50,
+			),
+			'default'             => '1000ms',
+			'description'         => esc_html__( 'Speed up or slow down your animation by adjusting the animation duration. Units are in milliseconds and the default animation duration is one second.' ),
+			'validate_unit'       => true,
+			'fixed_unit'          => 'ms',
+			'fixed_range'         => true,
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => 'none',
+			'reset_animation'     => true,
+		);
+
+		$additional_options['animation_delay'] = array(
+			'label'           => esc_html__( 'Animation Delay', 'et_builder' ),
+			'type'            => 'range',
+			'option_category' => 'configuration',
+			'range_settings'  => array(
+				'min'  => 0,
+				'max'  => 3000,
+				'step' => 50,
+			),
+			'default'             => '0ms',
+			'description'         => esc_html__( 'If you would like to add a delay before your animation runs you can designate that delay here in milliseconds. This can be useful when using multiple animated modules together.' ),
+			'validate_unit'       => true,
+			'fixed_unit'          => 'ms',
+			'fixed_range'         => true,
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => 'none',
+			'reset_animation'     => true,
+		);
+
+		foreach ( $animations_intensity_fields as $animations_intensity_field ) {
+			$animation_style = str_replace( 'animation_intensity_', '', $animations_intensity_field );
+
+			$additional_options[ $animations_intensity_field ] = array(
+				'label'           => esc_html__( 'Animation Intensity', 'et_builder' ),
+				'type'            => 'range',
+				'option_category' => 'configuration',
+				'range_settings'  => array(
+					'min'  => 0,
+					'max'  => 100,
+					'step' => 1,
+				),
+				'default'         => '50%',
+				'description'     => esc_html__( 'Intensity effects how subtle or aggressive your animation will be. Lowering the intensity will create a smoother and more subtle animation while increasing the intensity will create a snappier more aggressive animation.' ),
+				'validate_unit'   => true,
+				'fixed_unit'      => '%',
+				'fixed_range'     => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'depends_show_if' => $animation_style,
+				'reset_animation' => true,
+			);
+		}
+
+		$additional_options['animation_starting_opacity'] = array(
+			'label'           => esc_html__( 'Animation Starting Opacity', 'et_builder' ),
+			'type'            => 'range',
+			'option_category' => 'configuration',
+			'range_settings'  => array(
+				'min'  => 0,
+				'max'  => 100,
+				'step' => 1,
+			),
+			'default'             => '0%',
+			'description'         => esc_html__( 'By increasing the starting opacity, you can can reduce or remove the fade effect that is applied to all animation styles.' ),
+			'validate_unit'       => true,
+			'fixed_unit'          => '%',
+			'fixed_range'         => true,
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => 'none',
+			'reset_animation'     => true,
+		);
+
+		$additional_options['animation_speed_curve'] = array(
+			'label'             => esc_html__( 'Animation Speed Curve', 'et_builder' ),
+			'type'              => 'select',
+			'option_category'   => 'configuration',
+			'default'           => 'ease-in-out',
+			'description'       => esc_html__( 'Here you can adjust the easing method of your animation. Easing your animation in and out will create a smoother effect when compared to a linear speed curve.' ),
+			'options'         => array(
+				'ease-in-out' => esc_html__( 'Ease-In-Out', 'et_builder' ),
+				'ease'        => esc_html__( 'Ease', 'et_builder' ),
+				'ease-in'     => esc_html__( 'Ease-In', 'et_builder' ),
+				'ease-out'    => esc_html__( 'Ease-Out', 'et_builder' ),
+				'linear'      => esc_html__( 'Linear', 'et_builder' ),
+			),
+			'tab_slug'            => 'advanced',
+			'toggle_slug'         => 'animation',
+			'depends_show_if_not' => 'none',
+		);
+
+		if ( isset( $this->slug ) && 'et_pb_fullwidth_menu' === $this->slug ) {
+			$additional_options['dropdown_menu_animation'] = array(
+				'label'           => esc_html__( 'Dropdown Menu Animation', 'et_builder' ),
+				'type'            => 'select',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'fade'   => esc_html__( 'Fade', 'et_builder' ),
+					'expand' => esc_html__( 'Expand', 'et_builder' ),
+					'slide'  => esc_html__( 'Slide', 'et_builder' ),
+					'flip'   => esc_html__( 'Flip', 'et_builder' ),
+				),
+				'tab_slug'     => 'advanced',
+				'toggle_slug'  => 'animation',
+				'default'      => 'fade',
+			);
+		}
+
+		// Move existing "Animation" section fields under the new animations UI
+		if ( isset( $this->slug ) && 'et_pb_fullwidth_portfolio' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Carousel Rotation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+				),
+				'depends_show_if' => 'on',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( 'If you the carousel layout option is chosen and you would like the carousel to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'         => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Carousel Rotation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the carousel rotates, if 'Automatic Carousel Rotation' option is enabled above. The higher the number the longer the pause between each rotation. (Ex. 1000 = 1 sec)", 'et_builder' ),
+				'default'         => '7000',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_fullwidth_slider' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+					'auto_ignore_hover',
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'     => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
+				'default'         => '7000',
+			);
+
+			$additional_options['auto_ignore_hover'] = array(
+				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'options' => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
+				'default'     => 'off',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_fullwidth_post_slider' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+					'auto_ignore_hover',
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'     => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
+				'default'         => '7000',
+			);
+
+			$additional_options['auto_ignore_hover'] = array(
+				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
+				'default'     => 'off',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_gallery' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+				),
+				'depends_show_if' => 'on',
+				'depends_to'      => array(
+					'fullwidth',
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'     => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
+				'default'         => '7000',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_blurb' === $this->slug ) {
+			$additional_options['animation'] = array(
+				'label'           => esc_html__( 'Image/Icon Animation', 'et_builder' ),
+				'type'            => 'select',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'top'    => esc_html__( 'Top To Bottom', 'et_builder' ),
+					'left'   => esc_html__( 'Left To Right', 'et_builder' ),
+					'right'  => esc_html__( 'Right To Left', 'et_builder' ),
+					'bottom' => esc_html__( 'Bottom To Top', 'et_builder' ),
+					'off'    => esc_html__( 'No Animation', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
+				'default'     => 'top',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_slider' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+					'auto_ignore_hover',
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'     => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
+				'default'         => '7000',
+			);
+
+			$additional_options['auto_ignore_hover'] = array(
+				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
+				'default'     => 'off',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_post_slider' === $this->slug ) {
+			$additional_options['auto'] = array(
+				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'affects' => array(
+					'auto_speed',
+					'auto_ignore_hover',
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
+				'default'     => 'off',
+			);
+
+			$additional_options['auto_speed'] = array(
+				'label'           => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
+				'type'            => 'text',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'animation',
+				'description'     => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
+				'default'         => '7000',
+			);
+
+			$additional_options['auto_ignore_hover'] = array(
+				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'depends_default' => true,
+				'options'         => array(
+					'off' => esc_html__( 'Off', 'et_builder' ),
+					'on'  => esc_html__( 'On', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
+				'default'     => 'off',
+			);
+		}
+
+		if ( isset( $this->slug ) && 'et_pb_team_member' === $this->slug ) {
+			$additional_options['animation'] = array(
+				'label'             => esc_html__( 'Animation', 'et_builder' ),
+				'type'              => 'select',
+				'option_category'   => 'configuration',
+				'options'           => array(
+					'off'     => esc_html__( 'No Animation', 'et_builder' ),
+					'fade_in' => esc_html__( 'Fade In', 'et_builder' ),
+					'left'    => esc_html__( 'Left To Right', 'et_builder' ),
+					'right'   => esc_html__( 'Right To Left', 'et_builder' ),
+					'top'     => esc_html__( 'Top To Bottom', 'et_builder' ),
+					'bottom'  => esc_html__( 'Bottom To Top', 'et_builder' ),
+				),
+				'tab_slug'    => 'advanced',
+				'toggle_slug' => 'animation',
+				'description' => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
+				'default'     => 'off',
+			);
+		}
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
 	private function _add_custom_css_fields() {
 		if ( isset( $this->custom_css_tab ) && ! $this->custom_css_tab ) {
 			return;
@@ -2499,6 +3056,28 @@ class ET_Builder_Element {
 		}
 
 		return $this->fields;
+	}
+
+	/**
+	 * Checks if the field value equals its default value
+	 *
+	 * @param string $name Field name.
+	 * @param mixed $value Field value.
+	 */
+	private function _is_field_default( $name, $value ) {
+		if ( ! isset( $this->fields_unprocessed[ $name ] ) ) {
+			// field do not exist
+			return false;
+		}
+		$field = $this->fields_unprocessed[ $name ];
+
+		if ( isset( $field['shortcode_default'] ) ) {
+			// we have a shortcode default
+			return $field['shortcode_default'] === $value;
+		}
+
+		// check if we have a default and compare
+		return isset( $field['default'] ) && $field['default'] === $value;
 	}
 
 	// intended to be overridden as needed
@@ -2612,7 +3191,9 @@ class ET_Builder_Element {
 		if ( isset( $field['depends_show_if'] ) || isset( $field['depends_show_if_not'] ) ) {
 			$depends = true;
 			if ( isset( $field['depends_show_if_not'] ) ) {
-				$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $field['depends_show_if_not'] ) );
+				$depends_show_if_not = is_array( $field['depends_show_if_not'] ) ? implode( ',', $field['depends_show_if_not'] ) : $field['depends_show_if_not'];
+
+				$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $depends_show_if_not ) );
 			} else {
 				$depends_attr = sprintf( ' data-depends_show_if="%s"', esc_attr( $field['depends_show_if'] ) );
 			}
@@ -2784,6 +3365,83 @@ class ET_Builder_Element {
 				$icon = '
 					<g>
 						<path d="M19 12h-3V9c0-0.5-0.5-1-1-1H8C7.5 8 7 8.5 7 9v7c0 0.5 0.5 1 1 1h3v3c0 0.5 0.5 1 1 1h7c0.5 0 1-0.5 1-1v-7C20 12.5 19.5 12 19 12zM18 19h-5v-2h2c0.5 0 1-0.5 1-1v-2h2V19z" fillRule="evenodd"/>
+					</g>
+				';
+				break;
+
+			case 'animation-none':
+				$icon = '
+					<g>
+						<path d="M14 24c5.5 0 10-4.5 10-10S19.5 4 14 4 4 8.5 4 14s4.5 10 10 10zm0-17.5c4.1 0 7.5 3.4 7.5 7.5 0 1.5-.5 2.9-1.2 4.1L9.9 7.7c1.2-.7 2.6-1.2 4.1-1.2zM7.7 9.9l10.4 10.4c-1.2.8-2.6 1.2-4.1 1.2-4.1 0-7.5-3.4-7.5-7.5 0-1.5.5-2.9 1.2-4.1z"/>
+					</g>
+				';
+				break;
+
+			case 'animation-fade':
+				$icon = '
+					<g>
+						<circle cx="8.5" cy="19.5" r="1.5"/>
+						<circle cx="8.5" cy="14.5" r="1.5"/>
+						<circle cx="5" cy="12" r="1"/>
+						<circle cx="5" cy="17" r="1"/>
+						<circle cx="8.5" cy="9.5" r="1.5"/>
+						<path d="M15.7 4c-.4 0-.8.1-1.2.3-.6.3-.5.7-1.5.7-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c1 0 .9.4 1.4.7.4.2.8.3 1.2.3 4.3-.4 8.3-5.3 8.3-10.5s-4-10-8.2-10.5z"/>
+					</g>
+				';
+				break;
+
+			case 'animation-slide':
+				$icon = '
+					<g>
+						<path d="M22 4h-5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h5c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM10 14c0 .6.4 1 1 1h.6L10 16.6c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.3-3.3c.2-.2.3-.5.3-.7s-.1-.5-.3-.7L11.4 10c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l1.6 1.6H11c-.6 0-1 .4-1 1z"/>
+						<circle cx="7" cy="14" r="1.5"/>
+						<circle cx="3" cy="14" r="1"/>
+					</g>
+				';
+				break;
+
+			case 'animation-bounce':
+				$icon = '
+					<g>
+						<circle cx="21.5" cy="8.5" r="3.5"/>
+						<circle cx="16" cy="12" r="1.7"/>
+						<circle cx="13" cy="15" r="1.2"/>
+						<circle cx="11" cy="18" r="1"/>
+						<circle cx="9" cy="22" r="1"/>
+						<circle cx="7" cy="19" r="1"/>
+						<circle cx="4" cy="17" r="1"/>
+					</g>
+				';
+				break;
+
+			case 'animation-zoom':
+				$icon = '
+					<g>
+						<path d="M23.7 4.3c-.1-.1-.2-.2-.3-.2-.1-.1-.3-.1-.4-.1h-5c-.6 0-1 .4-1 1s.4 1 1 1h2.6l-3.1 3.1c-.2-.1-.3-.1-.5-.1h-6c-.2 0-.3 0-.5.1L7.4 6H10c.6 0 1-.4 1-1s-.4-1-1-1H5c-.1 0-.3 0-.4.1-.2.1-.4.3-.5.5-.1.1-.1.3-.1.4v5c0 .6.4 1 1 1s1-.4 1-1V7.4l3.1 3.1c-.1.2-.1.3-.1.5v6c0 .2 0 .3.1.5L6 20.6V18c0-.6-.4-1-1-1s-1 .4-1 1v5c0 .1 0 .3.1.4.1.2.3.4.5.5.1.1.3.1.4.1h5c.6 0 1-.4 1-1s-.4-1-1-1H7.4l3.1-3.1c.2 0 .3.1.5.1h6c.2 0 .3 0 .5-.1l3.1 3.1H18c-.6 0-1 .4-1 1s.4 1 1 1h5c.1 0 .3 0 .4-.1.2-.1.4-.3.5-.5.1-.1.1-.3.1-.4v-5c0-.6-.4-1-1-1s-1 .4-1 1v2.6l-3.1-3.1c0-.2.1-.3.1-.5v-6c0-.2 0-.3-.1-.5L22 7.4V10c0 .6.4 1 1 1s1-.4 1-1V5c0-.1 0-.3-.1-.4 0-.1-.1-.2-.2-.3z"/>
+					</g>
+				';
+				break;
+
+			case 'animation-flip':
+				$icon = '
+					<g>
+						<path d="M22 2.4l-7 2.9V7h-2v-.8L7.6 8.7c-.4.2-.6.5-.6.9v8.7c0 .4.2.7.6.9l5.4 2.5V21h2v1.7l7 2.9c.5.2 1-.2 1-.7V3.1c0-.5-.5-.9-1-.7zM15 19h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zM13 2h2v2.5h-2zM13 23.5h2V26h-2z"/>
+					</g>
+				';
+				break;
+
+			case 'animation-fold':
+				$icon = '
+					<g>
+						<path d="M24 7h-4V3.4c0-.8-.6-1.4-1.3-1.4-.2 0-.5.1-.7.2l-6.5 3.9c-.9.6-1.5 1.6-1.5 2.6V23c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-6 10.5c0 .2-.1.4-.3.5L12 21.5V8.7c0-.4.2-.7.5-.9L18 4.5v13zM6 7h2v2H6zM6 23h2v2H6zM2.6 7.1c-.1 0-.1.1-.2.1v.1l-.1.1-.1.1c-.1.1-.2.3-.2.5v1h2V7H3c-.1 0-.2 0-.4.1zM2 23v1c0 .4.3.8.7.9.1.1.2.1.3.1h1v-2H2zM2 11h2v2H2zM2 19h2v2H2zM2 15h2v2H2z"/>
+					</g>
+				';
+				break;
+
+			case 'animation-roll':
+				$icon = '
+					<g>
+						<path d="M18.8 5c-5.3-2.7-11.8.2-14 5.6-1.1 2.8-1 6 .2 8.8.4 1 3.9 6.5 5 3.6.5-1.2-1.3-2.2-1.9-3-.8-1.2-1.4-2.5-1.6-3.9-.4-2.7.5-5.5 2.4-7.4 4-4 11.6-2.5 12.6 3.4.4 2.7-.9 5.5-3.4 6.6-2.6 1.1-6 0-6.8-2.8-.7-2.4 1.2-5.7 4-4.8 1.1.3 2 1.5 1.5 2.7-.3.7-1.7 1.2-1.6.1 0-.3.2-.4.2-.8-.1-.4-.5-.6-.9-.6-1.1.1-1.6 1.6-1.3 2.5.3 1.2 1.5 1.9 2.7 1.9 2.9 0 4.2-3.4 3.1-5.7-1.2-2.6-4.6-3.4-7-2.2-2.6 1.3-3.8 4.4-3.1 7.2 1.6 5.9 9.3 6.8 13.1 2.5 3.8-4.2 1.9-11.1-3.2-13.7z"/>
 					</g>
 				';
 				break;
@@ -2990,7 +3648,9 @@ class ET_Builder_Element {
 				if ( isset( $tab_field['depends_show_if'] ) || isset( $tab_field['depends_show_if_not'] ) ) {
 					$depends = true;
 					if ( isset( $tab_field['depends_show_if_not'] ) ) {
-						$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $tab_field['depends_show_if_not'] ) );
+						$depends_show_if_not = is_array( $field['depends_show_if_not'] ) ? implode( ',', $field['depends_show_if_not'] ) : $field['depends_show_if_not'];
+
+						$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $depends_show_if_not ) );
 					} else {
 						$depends_attr = sprintf( ' data-depends_show_if="%s"', esc_attr( $tab_field['depends_show_if'] ) );
 					}
@@ -3090,7 +3750,13 @@ class ET_Builder_Element {
 			$default = '' === $default ? '||||' : $default;
 		}
 
-		$field_value = esc_attr( $field_name ) . '.replace(/%91/g, "[").replace(/%93/g, "]").replace(/%22/g, "\"")';
+		$font_icon_options = array( 'et_pb_font_icon', 'et_pb_button_icon', 'et_pb_button_one_icon', 'et_pb_button_two_icon' );
+
+		if ( in_array( $field_name, $font_icon_options ) ) {
+			$field_value = esc_attr( $field_name );
+		} else {
+			$field_value = esc_attr( $field_name ) . '.replace(/%91/g, "[").replace(/%93/g, "]").replace(/%22/g, "\"")';
+		}
 
 		$value_html = ' value="<%%- typeof( %1$s ) !== \'undefined\' ?  %2$s : \'%3$s\' %%>" ';
 		$value = sprintf(
@@ -3114,7 +3780,7 @@ class ET_Builder_Element {
 			$field['class'] .= ' et-pb-font-select';
 		}
 
-		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups' ) ) && ! $only_options ) {
+		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups', 'select_animation' ) ) && ! $only_options ) {
 			$hidden_field = sprintf(
 				'<input type="hidden" name="%1$s" id="%2$s" class="et-pb-main-setting %3$s" data-default="%4$s" %5$s %6$s/>',
 				esc_attr( $field['name'] ),
@@ -3195,6 +3861,11 @@ class ET_Builder_Element {
 				if ( 'options_list' === $field['type'] ) {
 					$radio_check = '';
 					$row_class   = 'et_options_list_row';
+
+					if ( isset( $field['checkbox'] ) && true === $field['checkbox'] ) {
+						$radio_check = '<a href="#" class="et_options_list_check"></a>';
+						$row_class   .= ' et_options_list_row_checkbox';
+					}
 
 					if ( isset( $field['radio'] ) && true === $field['radio'] ) {
 						$radio_check = '<a href="#" class="et_options_list_check"></a>';
@@ -3302,7 +3973,7 @@ class ET_Builder_Element {
 
 				if ( 'font' === $field['type'] ) {
 					$font_style_button_html = sprintf(
-						'<%%= window.et_builder.options_font_buttons_output(%1$s) %%>',
+						'<%%= window.et_builder.options_template_output("font_buttons",%1$s) %%>',
 						json_encode( array( 'bold', 'italic', 'uppercase', 'underline' ) )
 					);
 
@@ -3320,6 +3991,33 @@ class ET_Builder_Element {
 					$field_el .= $hidden_field;
 				}
 
+				break;
+			case 'select_animation':
+				$options           = $field['options'];
+				$animation_buttons = '';
+
+				foreach ( $options as $option_name => $option_title ) {
+					$animation_buttons .= sprintf(
+						'<div class="et_animation_button">
+							<a href="#">
+								<span class="et_animation_button_title" data-value="%1$s">%2$s</span>
+								<span class="et_animation_button_icon">%3$s</span>
+							</a>
+						</div>',
+						esc_attr( $option_name ),
+						esc_html( $option_title ),
+						$this->get_icon( "animation-{$option_name}" )
+					);
+				}
+
+				$field_el = sprintf(
+					'<div class="et_select_animation et-pb-main-setting" data-default="none">
+						%1$s
+						%2$s
+					</div>',
+					$animation_buttons,
+					$hidden_field
+				);
 				break;
 			case 'color':
 			case 'color-alpha':
@@ -3496,28 +4194,28 @@ class ET_Builder_Element {
 					$attributes,
 					esc_attr( $default ), // #5
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'top', $field['sides'] ) ) ?
-						sprintf( '<%%= window.et_builder.options_padding_output(%1$s) %%>',
+						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
 							json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'top',
 								'label' => esc_html__( 'Top', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'right', $field['sides'] ) ) ?
-						sprintf( '<%%= window.et_builder.options_padding_output(%1$s) %%>',
+						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
 							json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'right',
 								'label' => esc_html__( 'Right', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'bottom', $field['sides'] ) ) ?
-						sprintf( '<%%= window.et_builder.options_padding_output(%1$s) %%>',
+						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
 							json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'bottom',
 								'label' => esc_html__( 'Bottom', 'et_builder' ),
 							) ) )
 						) : '',
 					! isset( $field['sides'] ) || ( ! empty( $field['sides'] ) && in_array( 'left', $field['sides'] ) ) ?
-						sprintf( '<%%= window.et_builder.options_padding_output(%1$s) %%>',
+						sprintf( '<%%= window.et_builder.options_template_output("padding",%1$s) %%>',
 							json_encode( array_merge( $single_fields_settings, array(
 								'side' => 'left',
 								'label' => esc_html__( 'Left', 'et_builder' ),
@@ -3746,36 +4444,6 @@ class ET_Builder_Element {
 		return $field_el;
 	}
 
-	public function render_select_options( $select_name, $options, $default ) {
-		$options_output = '';
-
-		foreach ( (array) $options as $option_value => $option_label ) {
-			$data = '';
-			if ( is_array( $option_label ) ) {
-				if ( isset( $option_label['data'] ) ) {
-					$data_key_name = key( $option_label['data'] );
-					$data = sprintf(
-						' data-%1$s="%2$s"',
-						esc_attr( $data_key_name ),
-						esc_attr( $option_label['data'][ $data_key_name ] )
-					);
-				}
-				$option_label = $option_label['value'];
-			}
-			$selected_attr = '<%- ( typeof( ' . esc_attr( $select_name ) . ' ) !== \'undefined\' && \'' . esc_attr( $option_value ) . '\' === ' . esc_attr( $select_name ) . ' ) || ( typeof( ' . esc_attr( $select_name ) . ' ) === \'undefined\' && \'' . $default . '\' !== \'\' && \'' . esc_attr( $option_value ) . '\' === \'' . $default .'\' ) ?  \' selected="selected"\' : \'\' %>';
-			$options_output .= sprintf(
-				'%4$s<option%5$s value="%1$s"%2$s>%3$s</option>',
-				esc_attr( $option_value ),
-				$selected_attr,
-				esc_html( $option_label ),
-				"\n\t\t\t\t\t\t",
-				( '' !== $data ? $data : '' )
-			);
-		}
-
-		return $options_output;
-	}
-
 	function render_select( $name, $options, $id = '', $class = '', $attributes = '', $field_type = '', $button_options = array(), $default = '', $only_options = false ) {
 		$options_output = '';
 
@@ -3786,7 +4454,13 @@ class ET_Builder_Element {
 			foreach ( $options as $option_group_name => $option_group ) {
 				$option_group_name = esc_attr( $option_group_name );
 				$options_output   .= '0' !== $option_group_name ? "<optgroup label='{$option_group_name}'>" : '';
-				$options_output   .= $this->render_select_options( $name, $option_group, $default );
+				$options_output   .= sprintf( '<%%= window.et_builder.options_template_output("select",%1$s,this.model.toJSON()) %%>',
+					json_encode( array(
+						'select_name' => $name,
+						'list'        => $option_group,
+						'default'     => $default,
+					) )
+				);
 				$options_output   .= '0' !== $option_group_name ? '</optgroup>' : '';
 			}
 
@@ -3795,8 +4469,14 @@ class ET_Builder_Element {
 			$name = $id = '';
 
 		} else {
-			$options_output .= $this->render_select_options( $name, $options, $default );
 			$class           = rtrim( 'et-pb-main-setting ' . $class );
+			$options_output .= sprintf( '<%%= window.et_builder.options_template_output("select",%1$s,this.model.toJSON()) %%>',
+				json_encode( array(
+					'select_name' => $name,
+					'list'        => $options,
+					'default'     => $default,
+				) )
+			);
 		}
 
 		$output = sprintf(
@@ -3812,7 +4492,7 @@ class ET_Builder_Element {
 				sprintf(
 					'<div class="et_pb_yes_no_button_wrapper %2$s">
 						%1$s',
-					sprintf( '<%%= window.et_builder.options_yes_no_button_output(%1$s) %%>',
+					sprintf( '<%%= window.et_builder.options_template_output("yes_no_button",%1$s) %%>',
 						json_encode( array(
 							'on' => esc_html( $options['on'] ),
 							'off' => esc_html( $options['off'] ),
@@ -4986,6 +5666,12 @@ class ET_Builder_Element {
 			$button_icon_pseudo_selector = $button_icon_placement === 'left' ? ':before' : ':after';
 
 			if ( 'on' === $button_custom ) {
+				$is_default_button_text_size = $this->_is_field_default( 'button_text_size', $button_text_size );
+				$is_default_button_icon_placement = $this->_is_field_default( 'button_icon_placement', $button_icon_placement );
+				$is_default_button_on_hover = $this->_is_field_default( 'button_on_hover', $button_on_hover );
+				$is_default_button_icon = $this->_is_field_default( 'button_icon', $button_icon );
+				$is_default_hover_placement = $is_default_button_on_hover && $is_default_button_icon_placement;
+
 				$button_text_size = '' === $button_text_size || 'px' === $button_text_size ? '20px' : $button_text_size;
 				$button_text_size = '' !== $button_text_size && false === strpos( $button_text_size, 'px' ) ? $button_text_size . 'px' : $button_text_size;
 				$button_border_radius_processed = '' !== $button_border_radius && 'px' !== $button_border_radius ? et_builder_process_range_value( $button_border_radius ) : '';
@@ -5006,7 +5692,9 @@ class ET_Builder_Element {
 					$button_border_radius_hover_processed .= '' !== $button_border_radius_hover_processed ? ' !important' : '';
 				}
 
-				$main_element_styles_padding_important = 'no' === et_builder_option( 'all_buttons_icon' ) && 'off' !== $button_use_icon;
+				$global_use_icon_value = et_builder_option( 'all_buttons_icon' );
+
+				$main_element_styles_padding_important = 'no' === $global_use_icon_value && 'off' !== $button_use_icon;
 
 				$main_element_styles = sprintf(
 					'%1$s
@@ -5024,7 +5712,7 @@ class ET_Builder_Element {
 					'' !== $button_border_color ? sprintf( 'border-color:%1$s;', $button_border_color ) : '',
 					'' !== $button_border_radius_processed ? sprintf( 'border-radius:%1$s;', $button_border_radius_processed ) : '',
 					'' !== $button_letter_spacing && 'px' !== $button_letter_spacing ? sprintf( 'letter-spacing:%1$s;', et_builder_process_range_value( $button_letter_spacing ) ) : '',
-					'' !== $button_text_size && 'px' !== $button_text_size ? sprintf( 'font-size:%1$s;', et_builder_process_range_value( $button_text_size ) ) : '',
+					! $is_default_button_text_size && '' !== $button_text_size && 'px' !== $button_text_size ? sprintf( 'font-size:%1$s;', et_builder_process_range_value( $button_text_size ) ) : '',
 					'' !== $button_font ? et_builder_set_element_font( $button_font, true ) : '',
 					'off' === $button_on_hover ?
 						sprintf( 'padding-left:%1$s%3$s; padding-right: %2$s%3$s;',
@@ -5040,6 +5728,18 @@ class ET_Builder_Element {
 					'declaration' => rtrim( $main_element_styles ),
 				) );
 
+				// if button has default icon position or disabled globally and not enabled in module then no padding css should be generated.
+				$on_hover_padding = $is_default_button_icon_placement || ('default' === $button_use_icon && 'no' === $global_use_icon_value)
+					? ''
+					: sprintf( 'padding-left:%1$s%3$s; padding-right: %2$s%3$s;',
+						'left' === $button_icon_placement ? '2em' : '0.7em',
+						'left' === $button_icon_placement ? '0.7em' : '2em',
+						$main_element_styles_padding_important ? ' !important' : ''
+					);
+
+				// Avoid adding useless style when value equals its default
+				$button_letter_spacing_hover = $this->_is_field_default('button_letter_spacing_hover', $button_letter_spacing_hover) ? '' : $button_letter_spacing_hover;
+
 				$main_element_styles_hover = sprintf(
 					'%1$s
 					%2$s
@@ -5052,14 +5752,7 @@ class ET_Builder_Element {
 					'' !== $button_border_color_hover ? sprintf( 'border-color:%1$s !important;', $button_border_color_hover ) : '',
 					'' !== $button_border_radius_hover_processed ? sprintf( 'border-radius:%1$s;', $button_border_radius_hover_processed ) : '',
 					'' !== $button_letter_spacing_hover && 'px' !== $button_letter_spacing_hover ? sprintf( 'letter-spacing:%1$s;', et_builder_process_range_value( $button_letter_spacing_hover ) ) : '',
-					'off' === $button_on_hover ?
-						''
-						:
-						sprintf( 'padding-left:%1$s%3$s; padding-right: %2$s%3$s;',
-							'left' === $button_icon_placement ? '2em' : '0.7em',
-							'left' === $button_icon_placement ? '0.7em' : '2em',
-							$main_element_styles_padding_important ? ' !important' : ''
-						)
+					'off' === $button_on_hover ? '' : $on_hover_padding
 				);
 
 				self::set_style( $function_name, array(
@@ -5097,7 +5790,7 @@ class ET_Builder_Element {
 							sprintf( 'line-height:%1$s;', '35' !== $button_icon_code ? '1.7em' : '1em' )
 							: '',
 						'' !== $button_icon_code ? sprintf( 'font-size:%1$s !important;', $button_icon_size ) : '',
-						sprintf( 'opacity:%1$s;', 'off' !== $button_on_hover ? '0' : '1' ),
+						$is_default_hover_placement ? '' : sprintf( 'opacity:%1$s;', 'off' !== $button_on_hover ? '0' : '1' ),
 						'off' !== $button_on_hover && '' !== $button_icon_code ?
 							sprintf( 'margin-left: %1$s; %2$s: auto;',
 								'left' === $button_icon_placement ? '-1.3em' : '-1em',
@@ -5110,7 +5803,7 @@ class ET_Builder_Element {
 								'left' === $button_icon_placement ? 'right' : 'left'
 							)
 							: '',
-						( in_array( $button_use_icon , array( 'default', 'on' ) ) ? 'display: inline-block;' : '' )
+						( ! $is_default_button_icon_placement && in_array( $button_use_icon , array( 'default', 'on' ) ) ? 'display: inline-block;' : '' )
 					);
 
 					// Reverse icon position
@@ -5135,28 +5828,32 @@ class ET_Builder_Element {
 						) );
 					}
 
-					$hover_after_styles = sprintf(
-						'%1$s
-						%2$s
-						%3$s',
-						'' !== $button_icon_code ?
-							sprintf( 'margin-left:%1$s;', '35' !== $button_icon_code ? '.3em' : '0' )
-							: '',
+					// if button has default icon/hover/placement and disabled globally or not enabled in module then no :after:hover css should be generated.
+					if ( ! ( $is_default_button_icon && $is_default_hover_placement ) &&
+						( 'default' !== $button_use_icon || 'no' !== $global_use_icon_value ) ) {
+						$hover_after_styles = sprintf(
+							'%1$s
+							%2$s
+							%3$s',
+							'' !== $button_icon_code ?
+								sprintf( 'margin-left:%1$s;', '35' !== $button_icon_code ? '.3em' : '0' )
+								: '',
 							'' !== $button_icon_code ?
 								sprintf( '%1$s: auto; margin-left: %2$s;',
 									'left' === $button_icon_placement ? 'right' : 'left',
 									'left' === $button_icon_placement ? '-1.3em' : '.3em'
 								)
-							: '',
-						'off' !== $button_on_hover ? 'opacity: 1;' : ''
-					);
+								: '',
+							'off' !== $button_on_hover ? 'opacity: 1;' : ''
+						);
 
-					self::set_style( $function_name, array(
-						'selector'    => $css_element_processed . ':hover' . $button_icon_pseudo_selector,
-						'declaration' => rtrim( $hover_after_styles ),
-					) );
+						self::set_style( $function_name, array(
+							'selector'    => $css_element_processed . ':hover' . $button_icon_pseudo_selector,
+							'declaration' => rtrim( $hover_after_styles ),
+						) );
+					}
 
-					if ( '' === $button_icon ) {
+					if ( '' === $button_icon && ! $is_default_button_text_size ) {
 						$default_icons_size = $int_font_size * 1.6 . 'px';
 						$custom_icon_size = $button_text_size;
 
@@ -5653,6 +6350,15 @@ class ET_Builder_Element {
 			}
 
 			$module_fields_defaults[ $_module_slug ] = isset( $_module->fields_defaults ) ? $_module->fields_defaults : array();
+			$module_fields_defaults[ $_module_slug ]['defaultProps'] = array();
+
+			$child_items_default_fields = array( 'advanced_setting_title_text', 'child_title_fallback_var', 'child_title_var' );
+
+			foreach( $child_items_default_fields as $single_field ) {
+				if ( isset( $_module->$single_field ) ) {
+					$module_fields_defaults[ $_module_slug ]['defaultProps'][ $single_field ] = $_module->$single_field ;
+				}
+			}
 		}
 
 		return $module_fields_defaults;
@@ -6118,6 +6824,11 @@ class ET_Builder_Element {
 	}
 
 	static function set_style( $function_name, $style ) {
+		$declaration = rtrim($style['declaration']);
+		if ( empty($declaration) ) {
+			// Do not add empty declarations
+			return;
+		}
 		$builder_post_types = et_builder_get_builder_post_types();
 		$allowed_post_types = apply_filters( 'et_builder_set_style_allowed_post_types', $builder_post_types );
 
@@ -6162,7 +6873,6 @@ class ET_Builder_Element {
 			$selector = str_replace( ',', ',.et_divi_builder #et_builder_outer_content ', $selector );
 		}
 
-		$declaration = $style['declaration'];
 		// New lines are saved as || in CSS Custom settings, remove them
 		$declaration = preg_replace( '/(\|\|)/i', '', $declaration );
 
@@ -6388,7 +7098,9 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 				if ( isset( $field['depends_show_if'] ) || isset( $field['depends_show_if_not'] ) ) {
 					$depends = true;
 					if ( isset( $field['depends_show_if_not'] ) ) {
-						$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $field['depends_show_if_not'] ) );
+						$depends_show_if_not = is_array( $field['depends_show_if_not'] ) ? implode( ',', $field['depends_show_if_not'] ) : $field['depends_show_if_not'];
+
+						$depends_attr = sprintf( ' data-depends_show_if_not="%s"', esc_attr( $depends_show_if_not ) );
 					} else {
 						$depends_attr = sprintf( ' data-depends_show_if="%s"', esc_attr( $field['depends_show_if'] ) );
 					}
@@ -6466,7 +7178,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 					current_background_position_topcenter = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'top_center\' ? \' selected="selected"\' : \'\';
 					current_background_position_topright = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'top_right\' ? \' selected="selected"\' : \'\';
 					current_background_position_centerleft = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'center_left\' ? \' selected="selected"\' : \'\';
-					current_background_position_center = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'center\' ? \' selected="selected"\' : \'\';
+					current_background_position_center = typeof et_pb_background_position_%1$s === \'undefined\' || et_pb_background_position_%1$s === \'center\' ? \' selected="selected"\' : \'\';
 					current_background_position_centerright = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'center_right\' ? \' selected="selected"\' : \'\';
 					current_background_position_bottomleft = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'bottom_left\' ? \' selected="selected"\' : \'\';
 					current_background_position_bottomcenter = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'bottom_center\' ? \' selected="selected"\' : \'\';

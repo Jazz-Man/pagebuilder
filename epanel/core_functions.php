@@ -84,6 +84,11 @@ if ( ! function_exists( 'et_epanel_admin_scripts' ) ) {
 
 		wp_enqueue_style( 'epanel-style', get_template_directory_uri() . '/epanel/css/panel.css', array(), et_get_theme_version() );
 
+		if ( wp_style_is( 'activecampaign-subscription-forms', 'enqueued' ) ) {
+			// activecampaign-subscription-forms style breaks the panel.
+			wp_dequeue_style( 'activecampaign-subscription-forms' );
+		}
+
 		// ePanel on theme others than Divi might want to add specific styling
 		if ( ! apply_filters( 'et_epanel_is_divi', $is_divi ) ) {
 			wp_enqueue_style( 'epanel-theme-style', apply_filters( 'et_epanel_style_url', get_template_directory_uri() . '/style-epanel.css'), array( 'epanel-style' ), et_get_theme_version() );
@@ -325,7 +330,6 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 															} else {
 																$et_textarea_value = '';
 																$et_textarea_value = ( '' != et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name ) ) ? et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name ) : $value['std'];
-																$et_textarea_value = stripslashes( $et_textarea_value );
 															}
 														?>
 

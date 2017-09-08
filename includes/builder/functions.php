@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.66' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.72' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1070,7 +1070,7 @@ function et_fb_update_layout() {
 		die( -1 );
 	}
 
-	$post_id = isset( $_POST['et_template_post_id'] ) ? $_POST['et_template_post_id'] : '';
+	$post_id = isset( $_POST['et_template_post_id'] ) ? absint( $_POST['et_template_post_id'] ) : '';
 	$post_content = json_decode( stripslashes( $_POST['et_layout_content'] ), true );
 	$new_content = isset( $_POST['et_layout_content'] ) ? et_fb_process_to_shortcode( et_pb_builder_post_content_capability_check( $post_content ) ) : '';
 	$excluded_global_options = isset( $_POST['et_excluded_global_options'] ) ? stripslashes( $_POST['et_excluded_global_options'] ) : array();
@@ -1078,15 +1078,21 @@ function et_fb_update_layout() {
 
 	if ( '' !== $post_id ) {
 		$update = array(
-			'ID'           => absint( $post_id ),
+			'ID'           => $post_id,
 			'post_content' => $new_content,
 		);
 
-		wp_update_post( $update );
+		$result = wp_update_post( $update );
+
+		if ( ! $result || is_wp_error( $result ) ) {
+			wp_send_json_error();
+		}
+
+		ET_Core_PageResource::remove_static_resources( 'all', 'all' );
 
 		// update list of unsynced options for global module
 		if ( 'true' === $is_saving_global_module ) {
-			update_post_meta( absint( $post_id ), '_et_pb_excluded_global_options', sanitize_text_field( $excluded_global_options ) );
+			update_post_meta( $post_id, '_et_pb_excluded_global_options', sanitize_text_field( $excluded_global_options ) );
 		}
 	}
 
@@ -1120,10 +1126,12 @@ function et_builder_include_categories_option( $args = array() ) {
 
 	$args = wp_parse_args( $args, $defaults );
 
+	$term_args = apply_filters( 'et_builder_include_categories_option_args', array( 'hide_empty' => false, ) );
+
 	$output = "\t" . "<% var et_pb_include_categories_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
 
 	if ( $args['use_terms'] ) {
-		$cats_array = get_terms( $args['term_name'] );
+		$cats_array = get_terms( $args['term_name'], $term_args );
 	} else {
 		$cats_array = get_categories( apply_filters( 'et_builder_get_categories_args', 'hide_empty=0' ) );
 	}
@@ -1164,11 +1172,13 @@ function et_builder_include_categories_shop_option( $args = array() ) {
 		'term_name' => 'product_category',
 	) );
 
+	$term_args = apply_filters( 'et_builder_include_categories_shop_args', array( 'hide_empty' => false, ) );
+
 	$args = wp_parse_args( $args, $defaults );
 
 	$output = "\t" . "<% var et_pb_include_categories_shop_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
 
-	$cats_array = $args['use_terms'] ? get_terms( $args['term_name'] ) : get_categories( apply_filters( 'et_builder_get_categories_shop_args', 'hide_empty=0' ) );
+	$cats_array = $args['use_terms'] ? get_terms( $args['term_name'], $term_args ) : get_categories( apply_filters( 'et_builder_get_categories_shop_args', 'hide_empty=0' ) );
 
 	$output .= '<div id="et_pb_include_categories">';
 
@@ -1426,6 +1436,25 @@ function et_builder_enqueue_font( $font_name ) {
 	}
 	$font_character_set = $fonts[ $font_name ]['character_set'];
 
+	global $shortname;
+
+	// Force enabled subsets for existing sites once
+	if ( ! et_get_option( "{$shortname}_skip_font_subset_force", false ) ) {
+		et_update_option( "{$shortname}_gf_enable_all_character_sets", 'on' );
+		et_update_option( "{$shortname}_skip_font_subset_force", true );
+	}
+
+	// By default, only latin and latin-ext subsets are loaded, all available subsets can be enabled in ePanel
+	if ( 'false' === et_get_option( "{$shortname}_gf_enable_all_character_sets", 'false' ) ) {
+		$latin_ext = '';
+
+		if ( false !== strpos( $fonts[$font_name]['character_set'], 'latin-ext' ) ) {
+			$latin_ext = ',latin-ext';
+		}
+
+		$font_character_set = "latin{$latin_ext}";
+	}
+
 	$font_name_slug = sprintf(
 		'et-gf-%1$s',
 		strtolower( str_replace( ' ', '-', $font_name ) )
@@ -1443,6 +1472,21 @@ function et_builder_enqueue_font( $font_name ) {
 	$et_fonts_queue[$font_name_slug] = $queued_font;
 }
 endif;
+
+if ( ! function_exists( 'et_font_subset_force_check' ) ) :
+function et_font_subset_force_check() {
+	global $shortname;
+
+	if ( empty( $shortname ) || ! in_array( $shortname, array( 'divi', 'extra' ) ) ) {
+		return;
+	}
+
+	if ( ! et_get_option( "{$shortname}_skip_font_subset_force", false ) ) {
+		et_update_option( "{$shortname}_skip_font_subset_force", true );
+	}
+}
+endif;
+add_action( 'after_switch_theme', 'et_font_subset_force_check' );
 
 /**
  * Enqueue queued Google Fonts into WordPress' wp_enqueue_style as one request
@@ -3404,22 +3448,27 @@ function et_pb_pagebuilder_meta_box() {
 		$portability_class .= ' et-core-disabled';
 	}
 
-	printf(
-		'<script type="text/template" id="et-builder-app-settings-button-template">
-			<a href="#" class="et-pb-app-settings-button" title="%1$s">
-				<span class="icon">
-					<object type="image/svg+xml" data="%5$s/images/menu.svg"></object>
-				</span>
-				<span class="label">%2$s</span>
-			</a>
-			%3$s
-			%4$s
-		</script>',
+	$page_settings_button = sprintf(
+		'<a href="#" class="et-pb-app-settings-button" title="%1$s">
+			<span class="icon">
+				<object type="image/svg+xml" data="%3$s/images/menu.svg"></object>
+			</span>
+			<span class="label">%2$s</span>
+		</a>',
 		esc_attr__( 'Settings', 'et_builder' ),
 		esc_html__( 'Settings', 'et_builder' ),
-		et_core_portability_link( 'et_builder', array( 'class' => $portability_class ) ),
-		et_pb_is_allowed( 'ab_testing' ) ? $view_stats_button : '',
 		esc_url( ET_BUILDER_URI )
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-app-settings-button-template">
+			%1$s
+			%2$s
+			%3$s
+		</script>',
+		et_pb_is_allowed( 'page_options' ) ? $page_settings_button : '',
+		et_core_portability_link( 'et_builder', array( 'class' => $portability_class ) ),
+		et_pb_is_allowed( 'ab_testing' ) ? $view_stats_button : ''
 	);
 
 	$section_settings_button = sprintf(
@@ -4531,7 +4580,7 @@ function et_pb_pagebuilder_meta_box() {
 	);
 
 	printf(
-		'<script type="text/template" id="et-builder-padding-inputs-template">
+		'<script type="text/template" id="et-builder-padding-option-template">
 			<label>
 				<%%= this.et_builder_template_options.padding.options.label %%>
 				<input type="text" class="et_custom_margin et_custom_margin_<%%= this.et_builder_template_options.padding.options.side %%><%%= this.et_builder_template_options.padding.options.class %%><%%= \'need_mobile\' === this.et_builder_template_options.padding.options.need_mobile ? \' et_pb_setting_mobile et_pb_setting_mobile_desktop et_pb_setting_mobile_active\' : \'\' %%>"<%%= \'need_mobile\' === this.et_builder_template_options.padding.options.need_mobile ? \' data-device="desktop"\' : \'\' %%> />
@@ -4544,7 +4593,7 @@ function et_pb_pagebuilder_meta_box() {
 	);
 
 	printf(
-		'<script type="text/template" id="et-builder-yes-no-button-template">
+		'<script type="text/template" id="et-builder-yes_no_button-option-template">
 			<div class="et_pb_yes_no_button et_pb_off_state">
 				<span class="et_pb_value_text et_pb_on_value"><%%= this.et_builder_template_options.yes_no_button.options.on %%></span>
 				<span class="et_pb_button_slider"></span>
@@ -4554,13 +4603,40 @@ function et_pb_pagebuilder_meta_box() {
 	);
 
 	printf(
-		'<script type="text/template" id="et-builder-font-buttons-option-template">
+		'<script type="text/template" id="et-builder-font_buttons-option-template">
 			<%% _.each(this.et_builder_template_options.font_buttons.options, function(font_button) { %%>
 				<div class="et_builder_<%%= font_button %%>_font et_builder_font_style mce-widget mce-btn">
 					<button type="button">
 						<i class="mce-ico mce-i-<%%= font_button %%>"></i>
 					</button>
 				</div>
+			<%% }); %%>
+		</script>'
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-select-option-template">
+			<%% _.each(this.et_builder_template_options.select.options.list, function(option_label, option_value) {
+				var data = "";
+				var option_label_updated = option_label;
+
+				if ( _.isObject( option_label ) ) {
+					if ( ! _.isUndefined( option_label["data"] ) ) {
+						var data_key_name = _.keys( option_label["data"] );
+
+						data = " data-" + _.escape( data_key_name[0] ) + "=\'" + _.escape( option_label["data"][ data_key_name[0] ] ) + "\'";
+					}
+					var option_label_updated = option_label["value"];
+				}
+
+				var select_name = this.et_builder_template_options.select.options.select_name.replace( "data.", "" );
+				var select_value = this.et_builder_template_options.select.data[ select_name ];
+				var select_value_escaped = _.escape( select_value );
+				var option_value_escaped = _.escape( option_value );
+				var default_value = this.et_builder_template_options.select.options.default;
+				var selected_attr = ! _.isUndefined( select_value ) && option_value_escaped === select_value_escaped || ( _.isUndefined( select_value ) && default_value !== "" && option_value_escaped === default_value ) ? \' selected="selected"\' : "";
+				%%>
+				<option <%%= data %%> value="<%%= option_value_escaped %%>" <%%= selected_attr %%>><%%= _.escape( option_label_updated ) %%></option>
 			<%% }); %%>
 		</script>'
 	);
@@ -6915,6 +6991,13 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 					'fb',
 				),
 			),
+			'wireframe' => array(
+				'kbd'  => array( 'shift', 'w' ),
+				'desc' => esc_html__( 'Wireframe mode', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
 			'help' => array(
 				'kbd'  => array( '?' ),
 				'desc' => esc_html__( 'List All Shortcuts', 'et_builder' ),
@@ -7225,7 +7308,7 @@ if ( ! function_exists( 'et_pb_get_value_unit' ) ) :
 function et_pb_get_value_unit( $value ) {
 	$value                 = isset( $value ) ? $value : '';
 	$valid_one_char_units  = array( "%" );
-	$valid_two_chars_units = array( "em", "px", "cm", "mm", "in", "pt", "pc", "ex", "vh", "vw" );
+	$valid_two_chars_units = array( "em", "px", "cm", "mm", "in", "pt", "pc", "ex", "vh", "vw", "ms" );
 	$important             = "!important";
 	$important_length      = strlen( $important );
 	$value_length          = strlen( $value );
@@ -7263,7 +7346,7 @@ if ( ! function_exists( 'et_sanitize_input_unit' ) ) :
 function et_sanitize_input_unit( $value = '', $auto_important = false, $default_unit = false ) {
 	$value                   = (string) $value;
 	$valid_one_char_units    = array( '%' );
-	$valid_two_chars_units   = array( 'em', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw' );
+	$valid_two_chars_units   = array( 'em', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw', 'ms' );
 	$valid_three_chars_units = array( 'deg' );
 	$important               = '!important';
 	$important_length        = strlen( $important );
@@ -7329,3 +7412,4 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	return $result;
 }
 endif;
+

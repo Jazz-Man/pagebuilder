@@ -349,7 +349,8 @@ if ( ! function_exists( 'et_wp_trim_words' ) ) {
 	function et_wp_trim_words( $text, $num_words = 55, $more = null ) {
 		if ( null === $more )
 			$more = esc_html__( '&hellip;' );
-		$original_text = $text;
+		// Completely remove icons so that unicode hex entities representing the icons do not get included in words.
+		$text = preg_replace( '/<span class="et-pb-icon .*<\/span>/', '', $text );
 		$text = wp_strip_all_tags( $text );
 
 		$text = trim( preg_replace( "/[\n\r\t ]+/", ' ', $text ), ' ' );

@@ -104,6 +104,7 @@ add_action( 'wp_enqueue_scripts', 'et_builder_load_global_functions_script', 7 )
 function et_builder_load_modules_styles() {
 	$current_page_id = apply_filters( 'et_is_ab_testing_active_post_id', get_the_ID() );
 	$is_fb_enabled = function_exists( 'et_fb_enabled' ) ? et_fb_enabled() : false;
+	$is_ab_testing = function_exists( 'et_is_ab_testing_active' ) ? et_is_ab_testing_active() : false;
 
 	wp_register_script( 'google-maps-api', esc_url( add_query_arg( array( 'key' => et_pb_get_google_api_key(), 'callback' => 'initMap' ), is_ssl() ? 'https://maps.googleapis.com/maps/api/js' : 'http://maps.googleapis.com/maps/api/js' ) ), array(), ET_BUILDER_VERSION, true );
 	wp_register_script( 'hashchange', ET_BUILDER_URI . '/scripts/jquery.hashchange.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
@@ -115,7 +116,6 @@ function et_builder_load_modules_styles() {
 	wp_enqueue_script( 'magnific-popup', ET_BUILDER_URI . '/scripts/jquery.magnific-popup.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 	wp_enqueue_script( 'et-jquery-touch-mobile', ET_BUILDER_URI . '/scripts/jquery.mobile.custom.min.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 	wp_enqueue_script( 'et-builder-modules-script', ET_BUILDER_URI . '/scripts/frontend-builder-scripts.js', apply_filters( 'et_pb_frontend_builder_scripts_dependencies', array( 'jquery', 'et-jquery-touch-mobile' ) ), ET_BUILDER_VERSION, true );
-
 	wp_enqueue_style( 'magnific-popup', ET_BUILDER_URI . '/styles/magnific_popup.css', array(), ET_BUILDER_VERSION );
 
 	if ( et_is_builder_plugin_active() ) {
@@ -129,12 +129,11 @@ function et_builder_load_modules_styles() {
 	}
 
 	// Load visible.min.js only if AB testing active on current page OR VB (because post settings is synced between VB and BB)
-	if ( et_is_ab_testing_active() || $is_fb_enabled ) {
+	if ( $is_ab_testing || $is_fb_enabled ) {
 		wp_enqueue_script( 'et-jquery-visible-viewport', ET_BUILDER_URI . '/scripts/ext/jquery.visible.min.js', array( 'jquery', 'et-builder-modules-script' ), ET_BUILDER_VERSION, true );
 	}
 
 	$builder_modules_script_handle = apply_filters( 'et_builder_modules_script_handle', 'et-builder-modules-script' );
-
 
 	wp_localize_script( $builder_modules_script_handle, 'et_pb_custom', array(
 		'ajaxurl'                => is_ssl() ? admin_url( 'admin-ajax.php' ) : admin_url( 'admin-ajax.php', 'http' ),
@@ -155,7 +154,7 @@ function et_builder_load_modules_styles() {
 		'ignore_waypoints'       => et_is_ignore_waypoints() ? 'yes' : 'no',
 		'is_divi_theme_used'     => function_exists( 'et_divi_fonts_url' ),
 		'widget_search_selector' => apply_filters( 'et_pb_widget_search_selector', '.widget_search' ),
-		'is_ab_testing_active'   => et_is_ab_testing_active(),
+		'is_ab_testing_active'   => $is_ab_testing,
 		'page_id'                => $current_page_id,
 		'unique_test_id'         => get_post_meta( $current_page_id, '_et_pb_ab_testing_id', true ),
 		'ab_bounce_rate'         => '' !== get_post_meta( $current_page_id, '_et_pb_ab_bounce_rate_limit', true ) ? get_post_meta( $current_page_id, '_et_pb_ab_bounce_rate_limit', true ) : 5,
@@ -204,6 +203,26 @@ function et_builder_load_modules_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'et_builder_load_modules_styles', 11 );
 
+function et_builder_get_animation_data() {
+	$animation_data      = et_builder_handle_animation_data();
+	$animation_data_json = json_encode( $animation_data ); ?>
+	<script type="text/javascript">
+		var et_animation_data = <?php echo $animation_data_json; ?>;
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'et_builder_get_animation_data' );
+
+function et_builder_handle_animation_data( $element_data = false ) {
+	static $data = array();
+
+	if ( ! $element_data ) {
+		return $data;
+	}
+
+	$data[] = $element_data;
+}
+
 /**
  * Get list of concatenated & minified script and their possible alternative name
  * @return array
@@ -239,6 +258,7 @@ function et_builder_get_minified_styles() {
 	$minified_styles = array(
 		'et-shortcodes-css',
 		'et-shortcodes-responsive-css',
+		'et-animations',
 		'magnific-popup',
 	);
 
@@ -252,8 +272,39 @@ function et_builder_get_minified_styles() {
  * @return void
  */
 function et_builder_dequeue_minified_scripts() {
-	if ( ! et_load_unminified_scripts() ) {
+	if ( ! et_load_unminified_scripts() && ! is_admin() ) {
+		// Get builder script handle name
+		$builder_script_handle = apply_filters( 'et_builder_modules_script_handle', 'et-builder-modules-script' );
+
 		foreach ( et_builder_get_minified_scripts() as $script ) {
+			// Get script's localized data before the script is dequeued
+			$script_data = wp_scripts()->get_data( $script, 'data' );
+
+			// If to-be dequeued script has localized data, get builder script's data and concatenated both to ensure compatibility
+			// Concatenating is needed because script's localize data is saved as string (encoded array concatenated into variable name)
+			if ( $script_data && '' !== trim( $script_data ) ) {
+
+				// If builder script handle localized data returns false/empty, $script_data still need to be added
+				$concatenated_scripts_data = implode( ' ', array_filter( array(
+					wp_scripts()->get_data( $builder_script_handle, 'data' ),
+					$script_data,
+				) ) );
+
+				// Add concatenated localized data to builder script handle
+				wp_scripts()->add_data( $builder_script_handle, 'data', $concatenated_scripts_data );
+			}
+
+			// If dequeued script has inline script, get it then re-add it to builder script handle using appropriate position
+			$inline_script_positions = array( 'before', 'after' );
+			foreach ( $inline_script_positions as $inline_script_position ) {
+				$inline_script = wp_scripts()->get_data( $script, $inline_script_position );
+
+				// Inline script is saved as array. add_inline_script() method will handle it appending process
+				if ( is_array( $inline_script ) && ! empty( $inline_script ) ) {
+					wp_scripts()->add_inline_script( $builder_script_handle, implode( ' ', $inline_script ), $inline_script_position );
+				}
+			}
+
 			wp_dequeue_script( $script );
 			wp_deregister_script( $script );
 			wp_register_script( $script, '', array(), ET_BUILDER_VERSION, true );
@@ -264,11 +315,60 @@ add_action( 'wp_print_scripts', 'et_builder_dequeue_minified_scripts', 99999999 
 add_action( 'wp_print_footer_scripts', 'et_builder_dequeue_minified_scripts', 9 ); // <footer>
 
 function et_builder_dequeue_minifieds_styles() {
-	if ( ! et_load_unminified_styles() ) {
+	if ( ! et_load_unminified_styles() && ! is_admin() ) {
+		// Get builder minified + combined style handle
+		$builder_optimized_style_name = apply_filters( 'et_builder_optimized_style_handle', '' );
+
 		foreach ( et_builder_get_minified_styles() as $style ) {
+			// If dequeued style has inline style, get it then re-add it to minified + combiled style handle
+			// Inline style only has 'after' position
+			$inline_style = wp_styles()->get_data( $style, 'after' );
+
+			// Inline style is saved as array. add_inline_style() method will handle it appending process
+			if ( is_array( $inline_style ) && ! empty( $inline_style ) ) {
+				wp_styles()->add_inline_style( $builder_optimized_style_name, implode( ' ', $inline_style ), 'after' );
+			}
+
 			wp_dequeue_style( $style );
 			wp_deregister_style( $style );
 			wp_register_style( $style, '', array(), ET_BUILDER_VERSION );
+		}
+	} else {
+
+		// Child theme might manually enqueues parent themes' style.css. When combine + minify CSS file is enabled, this isn't an issue.
+		// However, when combine + minify CSS is disabled, child theme should load style.dev.css (source) instead of style.css (minified).
+		// Child theme might not considering this, which causes minified file + other source files are printed. To fix it, deregister any
+		// style handle that contains parent theme's style.css URL, then re-queue new one with the same name handle + URL to parent theme's style.dev.css
+		// This should be done in theme only. Divi-Builder plugin doesn't need this.
+		if ( ! et_is_builder_plugin_active() && is_child_theme() ) {
+			$registered_styles = wp_styles();
+
+			if ( ! empty( $registered_styles->registered ) ) {
+				// Get parent theme's optimized & unoptimized CSS file
+				$parent_optimized_style_src   = get_template_directory_uri() . '/style.css';
+				$parent_unoptimized_style_src = get_template_directory_uri() . '/style.dev.css';
+
+				// Pluck registed styles' src
+				$registered_styles_src = wp_list_pluck( $registered_styles->registered, 'src' );
+
+				// Look for style handle name which uses exact same URL as optimized parent theme's style.css
+				foreach ( $registered_styles_src as $style_handle => $style_src ) {
+
+					// Modify enqueued script that uses parent theme's optimized style.css
+					if ( $style_src === $parent_optimized_style_src ) {
+						$style_data  = $registered_styles->registered[ $style_handle ];
+						$style_deps  = isset( $style_data->deps ) ? $style_data->deps : array();
+						$style_ver   = isset( $style_data->ver ) ? $style_data->ver : false;
+						$style_media = isset( $style_data->args ) ? $style_data->args : 'all';
+
+						// Deregister first, so the handle can be re-enqueued
+						wp_deregister_style( $style_handle );
+
+						// Enqueue the same handle with unoptimized style.css src
+						wp_enqueue_style( $style_handle, $parent_unoptimized_style_src, $style_deps, $style_ver, $style_media );
+					}
+				}
+			}
 		}
 	}
 }

@@ -12,7 +12,6 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			'show_in_lightbox',
 			'url',
 			'url_new_window',
-			'animation',
 			'sticky',
 			'align',
 			'admin_label',
@@ -30,14 +29,9 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			'max_width_last_edited',
 		);
 
-		$animation_option_name = sprintf( '%1$s-animation', $this->slug );
-		$global_animation_direction = ET_Global_Settings::get_value( $animation_option_name );
-		$default_animation = $global_animation_direction && '' !== $global_animation_direction ? $global_animation_direction : 'left';
-
 		$this->fields_defaults = array(
 			'show_in_lightbox'        => array( 'off' ),
 			'url_new_window'          => array( 'off' ),
-			'animation'               => array( $default_animation ),
 			'sticky'                  => array( 'off' ),
 			'align'                   => array( 'left' ),
 			'force_fullwidth'         => array( 'off' ),
@@ -88,35 +82,6 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 	}
 
 	function get_fields() {
-		// List of animation options
-		$animation_options_list = array(
-			'left'    => esc_html__( 'Left To Right', 'et_builder' ),
-			'right'   => esc_html__( 'Right To Left', 'et_builder' ),
-			'top'     => esc_html__( 'Top To Bottom', 'et_builder' ),
-			'bottom'  => esc_html__( 'Bottom To Top', 'et_builder' ),
-			'fade_in' => esc_html__( 'Fade In', 'et_builder' ),
-			'off'     => esc_html__( 'No Animation', 'et_builder' ),
-		);
-
-		$animation_option_name       = sprintf( '%1$s-animation', $this->slug );
-		$default_animation_direction = ET_Global_Settings::get_value( $animation_option_name );
-
-		// If user modifies default animation option via Customizer, we'll need to change the order
-		if ( 'left' !== $default_animation_direction && ! empty( $default_animation_direction ) && array_key_exists( $default_animation_direction, $animation_options_list ) ) {
-			// The options, sans user's preferred direction
-			$animation_options_wo_default = $animation_options_list;
-			unset( $animation_options_wo_default[ $default_animation_direction ] );
-
-			// All animation options
-			$animation_options = array_merge(
-				array( $default_animation_direction => $animation_options_list[$default_animation_direction] ),
-				$animation_options_wo_default
-			);
-		} else {
-			// Simply copy the animation options
-			$animation_options = $animation_options_list;
-		}
-
 		$fields = array(
 			'src' => array(
 				'label'              => esc_html__( 'Image URL', 'et_builder' ),
@@ -243,15 +208,6 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'toggle_slug'         => 'overlay',
 				'description'         => esc_html__( 'Here you can define a custom icon for the overlay', 'et_builder' ),
 			),
-			'animation' => array(
-				'label'             => esc_html__( 'Animation', 'et_builder' ),
-				'type'              => 'select',
-				'option_category'   => 'configuration',
-				'options'           => $animation_options,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
-			),
 			'sticky' => array(
 				'label'             => esc_html__( 'Remove Space Below The Image', 'et_builder' ),
 				'type'              => 'yes_no_button',
@@ -367,7 +323,6 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$src                     = $this->shortcode_atts['src'];
 		$alt                     = $this->shortcode_atts['alt'];
 		$title_text              = $this->shortcode_atts['title_text'];
-		$animation               = $this->shortcode_atts['animation'];
 		$url                     = $this->shortcode_atts['url'];
 		$url_new_window          = $this->shortcode_atts['url_new_window'];
 		$show_in_lightbox        = $this->shortcode_atts['show_in_lightbox'];
@@ -383,6 +338,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$hover_overlay_color     = $this->shortcode_atts['hover_overlay_color'];
 		$hover_icon              = $this->shortcode_atts['hover_icon'];
 		$use_overlay             = $this->shortcode_atts['use_overlay'];
+		$animation_style         = $this->shortcode_atts['animation_style'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -489,14 +445,12 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			);
 		}
 
-		$animation = '' === $animation ? ET_Global_Settings::get_value( 'et_pb_image-animation' ) : $animation;
-
 		$output = sprintf(
-			'<div%5$s class="et_pb_module et-waypoint et_pb_image%2$s%3$s%4$s%6$s">
+			'<div%5$s class="et_pb_module et_pb_image%2$s%3$s%4$s%6$s">
 				%1$s
 			</div>',
 			$output,
-			esc_attr( " et_pb_animation_{$animation}" ),
+			in_array( $animation_style, array( '', 'none' ) ) ? '' : ' et-waypoint',
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( ltrim( $module_class ) ) ) : '' ),
 			( 'on' === $sticky ? esc_attr( ' et_pb_image_sticky' ) : '' ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
@@ -766,34 +720,6 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'text',
 				'description'       => esc_html__( 'Here you can choose whether your text should be light or dark. If you are working with a dark background, then your text should be light. If your background is light, then your text should be set to dark.', 'et_builder' ),
-			),
-			'auto' => array(
-				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects' => array(
-					'auto_speed',
-				),
-				'depends_show_if'   => 'on',
-				'depends_to'        => array(
-					'fullwidth',
-				),
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
 			),
 			'zoom_icon_color' => array(
 				'label'             => esc_html__( 'Zoom Icon Color', 'et_builder' ),
@@ -1832,8 +1758,8 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		);
 
 		$this->fields_defaults = array(
-			'background_layout' => array( 'light' ),
-			'text_orientation'  => array( 'left' ),
+			'background_layout'   => array( 'light' ),
+			'text_orientation'    => array( 'left' ),
 		);
 
 		$this->options_toggles = array(
@@ -1984,13 +1910,13 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
-		$module_id            = $this->shortcode_atts['module_id'];
-		$module_class         = $this->shortcode_atts['module_class'];
-		$background_layout    = $this->shortcode_atts['background_layout'];
-		$text_orientation     = $this->shortcode_atts['text_orientation'];
-		$max_width            = $this->shortcode_atts['max_width'];
-		$max_width_tablet     = $this->shortcode_atts['max_width_tablet'];
-		$max_width_phone      = $this->shortcode_atts['max_width_phone'];
+		$module_id             = $this->shortcode_atts['module_id'];
+		$module_class          = $this->shortcode_atts['module_class'];
+		$background_layout     = $this->shortcode_atts['background_layout'];
+		$text_orientation      = $this->shortcode_atts['text_orientation'];
+		$max_width             = $this->shortcode_atts['max_width'];
+		$max_width_tablet      = $this->shortcode_atts['max_width_tablet'];
+		$max_width_phone       = $this->shortcode_atts['max_width_phone'];
 		$max_width_last_edited = $this->shortcode_atts['max_width_last_edited'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
@@ -2030,7 +1956,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 			esc_attr( $class ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
+			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '', // #5
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
 			$parallax_image_background
@@ -2326,21 +2252,6 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'toggle_slug'       => 'icon_settings',
 				'description'       => esc_html__( 'Here you can choose where to place the icon.', 'et_builder' ),
 			),
-			'animation' => array(
-				'label'             => esc_html__( 'Image/Icon Animation', 'et_builder' ),
-				'type'              => 'select',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'top'    => esc_html__( 'Top To Bottom', 'et_builder' ),
-					'left'   => esc_html__( 'Left To Right', 'et_builder' ),
-					'right'  => esc_html__( 'Right To Left', 'et_builder' ),
-					'bottom' => esc_html__( 'Bottom To Top', 'et_builder' ),
-					'off'    => esc_html__( 'No Animation', 'et_builder' ),
-				),
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
-			),
 			'background_layout' => array(
 				'label'             => esc_html__( 'Text Color', 'et_builder' ),
 				'type'              => 'select',
@@ -2555,6 +2466,11 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			$title = "<h4>{$title}</h4>";
 		}
 
+		// Added for backward compatibility
+		if ( empty( $animation ) ) {
+			$animation = 'top';
+		}
+
 		if ( 'off' === $use_icon ) {
 			$image = ( '' !== trim( $image ) ) ? sprintf(
 				'<img src="%1$s" alt="%2$s" class="et-waypoint%3$s" />',
@@ -2617,12 +2533,12 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			$image,
 			$title,
 			esc_attr( $class ),
-			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
+			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ), // 5
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			sprintf( ' et_pb_blurb_position_%1$s', esc_attr( $icon_placement ) ),
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
-			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
+			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '', // 10
 			$parallax_image_background
 		);
 
@@ -2818,11 +2734,10 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 			$all_tabs_content,
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
+			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '', // 5
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
 			$parallax_image_background
-
 		);
 
 		return $output;
@@ -3131,44 +3046,6 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 				),
 				'toggle_slug'       => 'elements',
 				'description'       => esc_html__( 'This setting will turn on and off the circle buttons at the bottom of the slider.', 'et_builder' ),
-			),
-			'auto' => array(
-				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects' => array(
-					'auto_speed',
-					'auto_ignore_hover',
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
-			),
-			'auto_ignore_hover' => array(
-				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'depends_default' => true,
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
 			),
 			'parallax' => array(
 				'label'           => esc_html__( 'Use Parallax effect', 'et_builder' ),
@@ -4881,44 +4758,6 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'layout',
 			),
-			'auto' => array(
-				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects' => array(
-					'auto_speed',
-					'auto_ignore_hover',
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
-			),
-			'auto_ignore_hover' => array(
-				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'depends_default' => true,
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
-			),
 			'top_padding' => array(
 				'label'           => esc_html__( 'Top Padding', 'et_builder' ),
 				'type'            => 'text',
@@ -5610,6 +5449,10 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
 					),
+					'animation' => array(
+						'title'    => esc_html__( 'Animation', 'et_builder' ),
+						'priority' => 100,
+					),
 				),
 			),
 		);
@@ -5636,6 +5479,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 					'important' => 'all',
 				),
 			),
+			'animation' => array(),
 		);
 
 		$this->custom_css_options = array(
@@ -5956,10 +5800,6 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout} et_pb_text_align_{$text_orientation}";
 
-		if ( ! isset( $atts['quote_icon'] ) ) {
-			$class .= "	et_pb_testimonial_old_layout";
-		}
-
 		if ( '' !== $portrait_url ) {
 			$portrait_image = sprintf(
 				'<div class="et_pb_testimonial_portrait" style="background-image: url(%1$s);">
@@ -5999,7 +5839,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			$author,
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			( 'off' === $quote_icon ? ' et_pb_icon_off' : '' ),
+			( 'off' === $quote_icon ? ' et_pb_icon_off' : '' ), // 5
 			( '' !== $job_title ? esc_html( $job_title ) : '' ),
 			( '' !== $company_name
 				? sprintf( '%2$s%1$s',
@@ -6010,7 +5850,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			),
 			( '' !== $portrait_image ? $portrait_image : '' ),
 			( '' === $portrait_image ? ' et_pb_testimonial_no_image' : '' ),
-			esc_attr( $class ),
+			esc_attr( $class ), // 10
 			( 'on' === $use_background_color
 				? sprintf( ' style="background-color: %1$s;"', esc_attr( $background_color ) )
 				: ''
@@ -6018,9 +5858,8 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			( 'off' === $use_background_color ? ' et_pb_testimonial_no_bg' : '' ),
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
-			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
+			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '', // 15
 			$parallax_image_background
-
 		);
 
 		return $output;
@@ -9298,6 +9137,14 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 					'posts_number',
 					'include_categories',
 					'fullwidth',
+					'__page',
+				),
+			),
+			'__page'          => array(
+				'type'              => 'computed',
+				'computed_callback' => array( 'ET_Builder_Module_Portfolio', 'get_portfolio_item' ),
+				'computed_affects'  => array(
+					'__projects',
 				),
 			),
 		);
@@ -9345,6 +9192,11 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 
 		if ( $is_front_page ) {
 			$paged = $et_paged;
+		}
+
+		// support pagination in VB
+		if ( isset( $args['__page'] ) ) {
+			$et_paged = $args['__page'];
 		}
 
 		if ( ! is_search() ) {
@@ -9613,12 +9465,14 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 
 		$output = sprintf(
 			'<div%5$s class="%1$s%3$s%6$s%7$s%9$s">
-				%10$s
-				%8$s
-				%11$s
-					%2$s
-				%12$s
-				%13$s
+				<div class="et_pb_ajax_pagination_container">
+					%10$s
+					%8$s
+					%11$s
+						%2$s
+					%12$s
+					%13$s
+				</div>
 			%4$s',
 			$fullwidth ? 'et_pb_portfolio' : 'et_pb_portfolio_grid clearfix',
 			$posts,
@@ -11350,7 +11204,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			'<div%1$s class="et_pb_number_counter%2$s%3$s%9$s%11$s" data-number-value="%4$s" data-number-separator="%8$s">
 				%12$s
 				%10$s
-				<div class="percent"%5$s><p><span class="percent-value"></span>%6$s</p></div>
+				<div class="percent" %5$s><p><span class="percent-value"></span>%6$s</p></div>
 				%7$s
 			</div><!-- .et_pb_number_counter -->',
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
@@ -11359,7 +11213,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			( '' !== $counter_color ? sprintf( ' style="color:%s"', esc_attr( $counter_color ) ) : '' ),
 			( 'on' == $percent_sign ? '%' : ''),
-			( '' !== $title ? '<h3>' . esc_html( $title ) . '</h3>' : '' ),
+			( '' !== $title ? '<h3 class="title">' . esc_html( $title ) . '</h3>' : '' ),
 			esc_attr( $separator ),
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
@@ -11586,6 +11440,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 		if ( '' !== $icon_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% .et_pb_toggle_title:before',
+				'priority'    => ET_Builder_Element::DEFAULT_PRIORITY,
 				'declaration' => sprintf(
 					'color: %1$s;',
 					esc_html( $icon_color )
@@ -11708,7 +11563,7 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 				'label'           => esc_html__( 'Title', 'et_builder' ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'The toggle title will appear above the content and when the toggle is closed.', 'et_builder' ),
+				'description'     => esc_html__( 'The title will appear above the content and when the toggle is closed.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
 			),
 			'content_new' => array(
@@ -11860,7 +11715,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 				'label'           => esc_html__( 'Title', 'et_builder' ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'The toggle title will appear above the content and when the toggle is closed.', 'et_builder' ),
+				'description'     => esc_html__( 'The title will appear above the content and when the toggle is closed.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
 			),
 			'open' => array(
@@ -11990,6 +11845,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		if ( '' !== $icon_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
 				'selector'    => '%%order_class%% .et_pb_toggle_title:before',
+				'priority'    => ET_Builder_Element::DEFAULT_PRIORITY + 1,
 				'declaration' => sprintf(
 					'color: %1$s;',
 					esc_html( $icon_color )
@@ -12616,6 +12472,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			'input_border_radius',
 			'field_background_color',
 			'checkbox_checked',
+			'checkbox_options',
 			'radio_options',
 			'select_options',
 			'conditional_logic',
@@ -12717,13 +12574,13 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 					'input'    => esc_html__( 'Input Field', 'et_builder' ),
 					'email'    => esc_html__( 'Email Field', 'et_builder' ),
 					'text'     => esc_html__( 'Textarea', 'et_builder' ),
-					'checkbox' => esc_html__( 'Checkbox', 'et_builder' ),
+					'checkbox' => esc_html__( 'Checkboxes', 'et_builder' ),
 					'radio'    => esc_html__( 'Radio Buttons', 'et_builder' ),
 					'select'   => esc_html__( 'Select Dropdown', 'et_builder' ),
 				),
 				'description' => esc_html__( 'Choose the type of field', 'et_builder' ),
 				'affects'     => array(
-					'checkbox_checked',
+					'checkbox_options',
 					'radio_options',
 					'select_options',
 					'min_length',
@@ -12734,13 +12591,17 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			),
 			'checkbox_checked' => array(
 				'label'           => esc_html__( 'Checked By Default', 'et_builder' ),
-				'type'            => 'yes_no_button',
+				'type'            => 'hidden',
 				'option_category' => 'layout',
 				'default'         => 'off',
-				'options'         => array(
-					'on'  => esc_html__( 'Yes', 'et_builder' ),
-					'off' => esc_html__( 'No', 'et_builder' ),
-				),
+				'depends_show_if' => 'checkbox',
+				'toggle_slug'     => 'field_options',
+			),
+			'checkbox_options' => array(
+				'label'           => esc_html__( 'Options', 'et_builder' ),
+				'type'            => 'options_list',
+				'checkbox'        => true,
+				'option_category' => 'basic_option',
 				'depends_show_if' => 'checkbox',
 				'toggle_slug'     => 'field_options',
 			),
@@ -12899,6 +12760,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$field_background_color     = $this->shortcode_atts['field_background_color'];
 		$input_border_radius        = $this->shortcode_atts['input_border_radius'];
 		$checkbox_checked           = $this->shortcode_atts['checkbox_checked'];
+		$checkbox_options           = $this->shortcode_atts['checkbox_options'];
 		$radio_options              = $this->shortcode_atts['radio_options'];
 		$select_options             = $this->shortcode_atts['select_options'];
 		$min_length                 = $this->shortcode_atts['min_length'];
@@ -12918,6 +12780,8 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$field_id = strtolower( $field_id );
 
 		$current_module_num = '' === $et_pb_contact_form_num ? 0 : intval( $et_pb_contact_form_num ) + 1;
+
+		$shortcode_callback_num = $this->shortcode_callback_num();
 
 		$module_class = ET_Builder_Element::add_module_order_class( '', $function_name );
 
@@ -13130,20 +12994,54 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				);
 				break;
 			case 'checkbox' :
+				$input_field = '';
+
+				if ( ! $checkbox_options ) {
+					$is_checked       = ! empty( $checkbox_checked ) && 'on' === $checkbox_checked;
+					$checkbox_options = sprintf(
+						'[{"value":"%1$s","checked":%2$s}]',
+						esc_attr( $field_title ),
+						$is_checked ? 1 : 0
+					);
+					$field_title = '';
+				}
+
+				$option_search    = array( '&#91;', '&#93;' );
+				$option_replace   = array( '[', ']' );
+				$checkbox_options = str_replace( $option_search, $option_replace, $checkbox_options );
+				$checkbox_options = json_decode( $checkbox_options );
+
+				foreach ( $checkbox_options as $index => $option ) {
+					$is_checked   = 1 === $option->checked ? true : false;
+					$option_value = wp_strip_all_tags( $option->value );
+
+					$input_field .= sprintf(
+						'<span class="et_pb_contact_field_checkbox">
+							<input type="checkbox" id="et_pb_contact_%1$s_%5$s_%3$s" class="input" value="%2$s"%4$s>
+							<label for="et_pb_contact_%1$s_%5$s_%3$s"><i></i>%2$s</label>
+						</span>',
+						esc_attr( $field_id ),
+						esc_attr( $option_value ),
+						esc_attr( $index ),
+						$is_checked ? ' checked="checked"' : '',
+						esc_attr( $shortcode_callback_num )
+					);
+				}
+
 				$input_field = sprintf(
-					'<input type="checkbox" id="et_pb_contact_%3$s_%2$s_checkbox" class="input" value="%8$s" data-required_mark="%6$s" data-field_type="%4$s" data-original_id="%3$s"%9$s>
-					<label for="et_pb_contact_%3$s_%2$s_checkbox"><i></i>%5$s</label>
-					<input id="et_pb_contact_%3$s_%2$s" name="et_pb_contact_%3$s_%2$s" type="text" value="%8$s" data-checked="%7$s" data-unchecked="%8$s">',
-					( isset( $_POST['et_pb_contact_' . $field_id . '_' . $current_module_num] ) ? esc_attr( sanitize_text_field( $_POST['et_pb_contact_' . $field_id . '_' . $current_module_num] ) ) : '' ),
-					esc_attr( $current_module_num ),
+					'<input class="et_pb_checkbox_handle" type="hidden" name="et_pb_contact_%1$s_%4$s" data-required_mark="%3$s" data-field_type="%2$s" data-original_id="%1$s">
+					<span class="et_pb_contact_field_options_wrapper">
+						<span class="et_pb_contact_field_options_title">%5$s</span>
+						<span class="et_pb_contact_field_options_list">%6$s</span>
+					</span>',
 					esc_attr( $field_id ),
 					esc_attr( $field_type ),
-					esc_attr( $field_title ),
 					'off' === $required_mark ? 'not_required' : 'required',
-					esc_attr__( 'checked', 'et_builder' ),
-					esc_attr__( 'not checked', 'et_builder' ),
-					'on' === $checkbox_checked ? 'checked="checked"' : ''
+					esc_attr( $current_module_num ),
+					esc_html( $field_title ),
+					$input_field
 				);
+
 				break;
 			case 'radio' :
 				$input_field = '';
@@ -13159,18 +13057,19 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 						$input_field .= sprintf(
 							'<span class="et_pb_contact_field_radio">
-								<input type="radio" id="et_pb_contact_%3$s_%2$s_%7$s" class="input" value="%8$s" name="et_pb_contact_%3$s_%2$s" data-required_mark="%6$s" data-field_type="%4$s" data-original_id="%3$s" %9$s>
-								<label for="et_pb_contact_%3$s_%2$s_%7$s"><i></i>%8$s</label>
+								<input type="radio" id="et_pb_contact_%3$s_%2$s_%10$s_%7$s" class="input" value="%8$s" name="et_pb_contact_%3$s_%2$s" data-required_mark="%6$s" data-field_type="%4$s" data-original_id="%3$s" %9$s>
+								<label for="et_pb_contact_%3$s_%2$s_%10$s_%7$s"><i></i>%8$s</label>
 							</span>',
 							( isset( $_POST['et_pb_contact_' . $field_id . '_' . $current_module_num] ) ? esc_attr( sanitize_text_field( $_POST['et_pb_contact_' . $field_id . '_' . $current_module_num] ) ) : '' ),
 							esc_attr( $current_module_num ),
 							esc_attr( $field_id ),
 							esc_attr( $field_type ),
-							esc_attr( $field_title ),
+							esc_attr( $field_title ), // #5
 							'off' === $required_mark ? 'not_required' : 'required',
 							esc_attr( $index ),
 							wp_strip_all_tags( $option->value ),
-							checked( $is_checked, true, false )
+							checked( $is_checked, true, false ),
+							esc_attr( $shortcode_callback_num ) // #10
 						);
 					}
 				} else {
@@ -13178,9 +13077,9 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				}
 
 				$input_field = sprintf(
-					'<span class="et_pb_contact_field_radio_wrapper">
-						<span class="et_pb_contact_field_radio_title">%1$s</span>
-						<span class="et_pb_contact_field_radio_list">%2$s</span>
+					'<span class="et_pb_contact_field_options_wrapper">
+						<span class="et_pb_contact_field_options_title">%1$s</span>
+						<span class="et_pb_contact_field_options_list">%2$s</span>
 					</span>',
 					esc_html( $field_title ),
 					$input_field
@@ -13895,22 +13794,6 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display.', 'et_builder' ),
 				'toggle_slug'        => 'image',
 			),
-			'animation' => array(
-				'label'             => esc_html__( 'Animation', 'et_builder' ),
-				'type'              => 'select',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'off'     => esc_html__( 'No Animation', 'et_builder' ),
-					'fade_in' => esc_html__( 'Fade In', 'et_builder' ),
-					'left'    => esc_html__( 'Left To Right', 'et_builder' ),
-					'right'   => esc_html__( 'Right To Left', 'et_builder' ),
-					'top'     => esc_html__( 'Top To Bottom', 'et_builder' ),
-					'bottom'  => esc_html__( 'Bottom To Top', 'et_builder' ),
-				),
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
-			),
 			'background_layout' => array(
 				'label'           => esc_html__( 'Text Color', 'et_builder' ),
 				'type'            => 'select',
@@ -14087,6 +13970,11 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 			$social_links = sprintf( '<ul class="et_pb_member_social_links">%1$s</ul>', $social_links );
 		}
 
+		// Added for backward compatibility
+		if ( empty( $animation ) ) {
+			$animation = 'top';
+		}
+
 		if ( '' !== $image_url ) {
 			$image = sprintf(
 				'<div class="et_pb_team_member_image et-waypoint%3$s">
@@ -14219,7 +14107,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
-						'main'        => "{$this->main_css_element}, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p",
+						'main'        => "{$this->main_css_element} .post-content, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p",
 						'color'       => "{$this->main_css_element}, {$this->main_css_element} .post-content *",
 						'line_height' => "{$this->main_css_element} p",
 						'plugin_main' => "{$this->main_css_element}, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_light .et_pb_post a.more-link, %%order_class%%.et_pb_bg_layout_dark .et_pb_post a.more-link",
@@ -14591,9 +14479,17 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 					'offset_number',
 					'use_overlay',
 					'hover_icon',
+					'__page',
 				),
 				'computed_minimum' => array(
 					'posts_number',
+				),
+			),
+			'__page'          => array(
+				'type'              => 'computed',
+				'computed_callback' => array( 'ET_Builder_Module_Blog', 'get_blog_posts' ),
+				'computed_affects'  => array(
+					'__posts',
 				),
 			),
 		);
@@ -14684,6 +14580,11 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 			$paged = $is_front_page ? get_query_var( 'page' ) : get_query_var( 'paged' );
 		}
 
+		// support pagination in VB
+		if ( isset( $args['__page'] ) ) {
+			$paged = $args['__page'];
+		}
+
 		if ( '' !== $args['include_categories'] ) {
 			$query_args['cat'] = $args['include_categories'];
 		}
@@ -14720,6 +14621,9 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		ob_start();
 
 		if ( $query->have_posts() ) {
+			if ( 'on' !== $args['fullwidth'] ) {
+				echo '<div class="et_pb_salvattore_content" data-columns>';
+			}
 
 			while( $query->have_posts() ) {
 				$query->the_post();
@@ -14903,6 +14807,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 				$et_fb_processing_shortcode_object = $global_processing_original_value;
 			} // endwhile
 
+			if ( 'on' !== $args['fullwidth'] ) {
+				echo '</div>';
+			}
+
 			if ( 'on' === $args['show_pagination'] && ! $is_search ) {
 				// echo '</div> <!-- .et_pb_posts -->'; // @todo this causes closing tag issue
 
@@ -14979,6 +14887,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
 		$container_is_closed = false;
+
+		// some themes do not include these styles/scripts so we need to enqueue them in this module to support audio post format
+		wp_enqueue_style( 'wp-mediaelement' );
+		wp_enqueue_script( 'wp-mediaelement' );
 
 		// remove all filters from WP audio shortcode to make sure current theme doesn't add any elements into audio module
 		remove_all_filters( 'wp_audio_shortcode_library' );
@@ -15078,6 +14990,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		query_posts( $args );
 
 		if ( have_posts() ) {
+			if ( 'off' === $fullwidth ) {
+				echo '<div class="et_pb_salvattore_content" data-columns>';
+			}
+
 			while ( have_posts() ) {
 				the_post();
 
@@ -15227,11 +15143,11 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 	<?php
 			} // endwhile
 
+			if ( 'off' === $fullwidth ) {
+ 				echo '</div><!-- .et_pb_salvattore_content -->';
+ 			}
+
 			if ( 'on' === $show_pagination && ! is_search() ) {
-				echo '</div> <!-- .et_pb_posts -->';
-
-				$container_is_closed = true;
-
 				if ( function_exists( 'wp_pagenavi' ) ) {
 					wp_pagenavi();
 				} else {
@@ -15241,6 +15157,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 						get_template_part( 'includes/navigation', 'index' );
 					}
 				}
+
+				echo '</div> <!-- .et_pb_posts -->';
+
+				$container_is_closed = true;
 			}
 		} else {
 			if ( et_is_builder_plugin_active() ) {
@@ -15259,16 +15179,17 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		$class = " et_pb_module et_pb_bg_layout_{$background_layout}";
 
 		$output = sprintf(
-			'<div%5$s class="%1$s%3$s%6$s"%7$s>
-				%2$s
+			'<div%5$s class="%1$s%3$s%6$s">
+				<div class="et_pb_ajax_pagination_container">
+					%2$s
+				</div>
 			%4$s',
 			( 'on' === $fullwidth ? 'et_pb_posts' : 'et_pb_blog_grid clearfix' ),
 			$posts,
 			esc_attr( $class ),
 			( ! $container_is_closed ? '</div> <!-- .et_pb_posts -->' : '' ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
-			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			( 'on' !== $fullwidth ? ' data-columns' : '' )
+			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' )
 		);
 
 		if ( 'on' !== $fullwidth )
@@ -17350,7 +17271,7 @@ class ET_Builder_Module_Post_Title extends ET_Builder_Module {
 		$background_images  = array();
 
 		// display the shortcode only on singlular pages
-		if ( ! is_singular() ) {
+		if ( ! is_singular() && ! is_et_pb_preview() ) {
 			return;
 		}
 
@@ -19746,19 +19667,6 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 				'tab_slug'     => 'advanced',
 				'toggle_slug'  => 'links',
 			),
-			'dropdown_menu_animation' => array(
-				'label'             => esc_html__( 'Dropdown Menu Animation', 'et_builder' ),
-				'type'              => 'select',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'fade'     => esc_html__( 'Fade', 'et_builder' ),
-					'expand'   => esc_html__( 'Expand', 'et_builder' ),
-					'slide'	   => esc_html__( 'Slide', 'et_builder' ),
-					'flip'	   => esc_html__( 'Flip', 'et_builder' ),
-				),
-				'tab_slug'     => 'custom_css',
-				'toggle_slug'  => 'animation',
-			),
 			'mobile_menu_bg_color' => array(
 				'label'        => esc_html__( 'Mobile Menu Background Color', 'et_builder' ),
 				'type'         => 'color-alpha',
@@ -20233,44 +20141,6 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 				),
 				'toggle_slug'     => 'elements',
 				'description'     => esc_html__( 'Disabling this option will remove the circle button at the bottom of the slider.', 'et_builder' ),
-			),
-			'auto' => array(
-				'label'             => esc_html__( 'Automatic Animation', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'off'  => esc_html__( 'Off', 'et_builder' ),
-					'on' => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects'           => array(
-					'auto_speed',
-					'auto_ignore_hover',
-				),
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
-			),
-			'auto_ignore_hover' => array(
-				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'depends_default' => true,
-				'options' => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
 			),
 			'parallax' => array(
 				'label'           => esc_html__( 'Use Parallax effect', 'et_builder' ),
@@ -20804,31 +20674,6 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 				'toggle_slug'       => 'text',
 				'description'       => esc_html__( 'Here you can choose whether your text should be light or dark. If you are working with a dark background, then your text should be light. If your background is light, then your text should be set to dark.', 'et_builder' ),
 			),
-			'auto' => array(
-				'label'             => esc_html__( 'Automatic Carousel Rotation', 'et_builder' ),
-				'type'              => 'yes_no_button',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'off'  => esc_html__( 'Off', 'et_builder' ),
-					'on' => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects'           => array(
-					'auto_speed',
-				),
-				'depends_show_if'   => 'on',
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'If you the carousel layout option is chosen and you would like the carousel to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Carousel Rotation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the carousel rotates, if 'Automatic Carousel Rotation' option is enabled above. The higher the number the longer the pause between each rotation. (Ex. 1000 = 1 sec)", 'et_builder' ),
-			),
 			'zoom_icon_color' => array(
 				'label'             => esc_html__( 'Zoom Icon Color', 'et_builder' ),
 				'type'              => 'color-alpha',
@@ -21150,12 +20995,16 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			'admin_label',
 			'module_id',
 			'module_class',
+			'use_grayscale_filter',
+			'grayscale_filter_amount',
 		);
 
 		$this->fields_defaults = array(
 			'zoom_level'  => array( '18', 'only_default_setting' ),
 			'mouse_wheel' => array( 'on' ),
 			'mobile_dragging' => array( 'on' ),
+			'use_grayscale_filter'    => array( 'off' ),
+			'grayscale_filter_amount' => array( '0' ),
 		);
 
 		$this->options_toggles = array(
@@ -21167,6 +21016,7 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			'advanced' => array(
 				'toggles' => array(
 					'controls' => esc_html__( 'Controls', 'et_builder' ),
+					'filter'   => esc_html__( 'Filter', 'et_builder' ),
 				),
 			),
 		);
@@ -21257,6 +21107,30 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 				'toggle_slug'     => 'controls',
 				'description'     => esc_html__( 'Here you can choose whether or not the map will be draggable on mobile devices.', 'et_builder' ),
 			),
+			'use_grayscale_filter' => array(
+				'label'           => esc_html__( 'Use Grayscale Filter', 'et_builder' ),
+				'type'            => 'yes_no_button',
+				'option_category' => 'configuration',
+				'options'         => array(
+					'off' => esc_html__( 'No', 'et_builder' ),
+					'on'  => esc_html__( 'Yes', 'et_builder' ),
+				),
+				'affects'         => array(
+					'grayscale_filter_amount',
+				),
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'filter',
+			),
+			'grayscale_filter_amount' => array(
+				'label'           => esc_html__( 'Grayscale Filter Amount (%)', 'et_builder' ),
+				'type'            => 'range',
+				'default'         => '0',
+				'option_category' => 'configuration',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'filter',
+				'depends_show_if' => 'on',
+				'validate_unit'   => false,
+			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
 				'type'            => 'multiple_checkboxes',
@@ -21298,13 +21172,15 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
-		$module_id    = $this->shortcode_atts['module_id'];
-		$module_class = $this->shortcode_atts['module_class'];
-		$address_lat  = $this->shortcode_atts['address_lat'];
-		$address_lng  = $this->shortcode_atts['address_lng'];
-		$zoom_level   = $this->shortcode_atts['zoom_level'];
-		$mouse_wheel  = $this->shortcode_atts['mouse_wheel'];
-		$mobile_dragging = $this->shortcode_atts['mobile_dragging'];
+		$module_id               = $this->shortcode_atts['module_id'];
+		$module_class            = $this->shortcode_atts['module_class'];
+		$address_lat             = $this->shortcode_atts['address_lat'];
+		$address_lng             = $this->shortcode_atts['address_lng'];
+		$zoom_level              = $this->shortcode_atts['zoom_level'];
+		$mouse_wheel             = $this->shortcode_atts['mouse_wheel'];
+		$mobile_dragging         = $this->shortcode_atts['mobile_dragging'];
+		$use_grayscale_filter    = $this->shortcode_atts['use_grayscale_filter'];
+		$grayscale_filter_amount = $this->shortcode_atts['grayscale_filter_amount'];
 
 		if ( et_pb_enqueue_google_maps_script() ) {
 			wp_enqueue_script( 'google-maps-api' );
@@ -21314,8 +21190,13 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 
 		$all_pins_content = $this->shortcode_content;
 
+		$grayscale_filter_data = '';
+		if ( 'on' === $use_grayscale_filter && '' !== $grayscale_filter_amount ) {
+			$grayscale_filter_data = sprintf( ' data-grayscale="%1$s"', esc_attr( $grayscale_filter_amount ) );
+		}
+
 		$output = sprintf(
-			'<div%5$s class="et_pb_module et_pb_map_container%6$s">
+			'<div%5$s class="et_pb_module et_pb_map_container%6$s"%9$s>
 				<div class="et_pb_map" data-center-lat="%1$s" data-center-lng="%2$s" data-zoom="%3$d" data-mouse-wheel="%7$s" data-mobile-dragging="%8$s"></div>
 				%4$s
 			</div>',
@@ -21326,7 +21207,8 @@ class ET_Builder_Module_Fullwidth_Map extends ET_Builder_Module {
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			esc_attr( $mouse_wheel ),
-			esc_attr( $mobile_dragging )
+			esc_attr( $mobile_dragging ),
+			$grayscale_filter_data
 		);
 
 		return $output;
@@ -21606,7 +21488,6 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 			'show_in_lightbox',
 			'url',
 			'url_new_window',
-			'animation',
 			'admin_label',
 			'module_id',
 			'module_class',
@@ -21619,7 +21500,6 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		$this->fields_defaults = array(
 			'show_in_lightbox' => array( 'off' ),
 			'url_new_window'   => array( 'off' ),
-			'animation'        => array( 'left' ),
 			'use_overlay'      => array( 'off' ),
 		);
 
@@ -21787,22 +21667,6 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				'toggle_slug'         => 'overlay',
 				'description'         => esc_html__( 'Here you can define a custom icon for the overlay', 'et_builder' ),
 			),
-			'animation' => array(
-				'label'             => esc_html__( 'Animation', 'et_builder' ),
-				'type'              => 'select',
-				'option_category'   => 'configuration',
-				'options'           => array(
-					'left'    => esc_html__( 'Left To Right', 'et_builder' ),
-					'right'   => esc_html__( 'Right To Left', 'et_builder' ),
-					'top'     => esc_html__( 'Top To Bottom', 'et_builder' ),
-					'bottom'  => esc_html__( 'Bottom To Top', 'et_builder' ),
-					'fade_in' => esc_html__( 'Fade In', 'et_builder' ),
-					'off'     => esc_html__( 'No Animation', 'et_builder' ),
-				),
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( 'This controls the direction of the lazy-loading animation.', 'et_builder' ),
-			),
 			'disabled_on' => array(
 				'label'           => esc_html__( 'Disable on', 'et_builder' ),
 				'type'            => 'multiple_checkboxes',
@@ -21850,7 +21714,6 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		$src                 = $this->shortcode_atts['src'];
 		$alt                 = $this->shortcode_atts['alt'];
 		$title_text          = $this->shortcode_atts['title_text'];
-		$animation           = $this->shortcode_atts['animation'];
 		$url                 = $this->shortcode_atts['url'];
 		$url_new_window      = $this->shortcode_atts['url_new_window'];
 		$show_in_lightbox    = $this->shortcode_atts['show_in_lightbox'];
@@ -21858,6 +21721,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		$hover_overlay_color = $this->shortcode_atts['hover_overlay_color'];
 		$hover_icon          = $this->shortcode_atts['hover_icon'];
 		$use_overlay         = $this->shortcode_atts['use_overlay'];
+		$animation_style     = $this->shortcode_atts['animation_style'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -21923,11 +21787,11 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<div%4$s class="et_pb_module et-waypoint et_pb_fullwidth_image%2$s%3$s%5$s">
+			'<div%4$s class="et_pb_module et_pb_fullwidth_image%2$s%3$s%5$s">
 				%1$s
 			</div>',
 			$output,
-			esc_attr( " et_pb_animation_{$animation}" ),
+			in_array( $animation_style, array( '', 'none' ) ) ? '' : ' et-waypoint',
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			'on' === $is_overlay_applied ? ' et_pb_has_overlay' : ''
@@ -23185,44 +23049,6 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module {
 				),
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'layout',
-			),
-			'auto' => array(
-				'label'           => esc_html__( 'Automatic Animation', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'affects' => array(
-					'auto_speed',
-					'auto_ignore_hover',
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'If you would like the slider to slide automatically, without the visitor having to click the next button, enable this option and then adjust the rotation speed below if desired.', 'et_builder' ),
-			),
-			'auto_speed' => array(
-				'label'             => esc_html__( 'Automatic Animation Speed (in ms)', 'et_builder' ),
-				'type'              => 'text',
-				'option_category'   => 'configuration',
-				'depends_default'   => true,
-				'tab_slug'          => 'custom_css',
-				'toggle_slug'       => 'animation',
-				'description'       => esc_html__( "Here you can designate how fast the slider fades between each slide, if 'Automatic Animation' option is enabled above. The higher the number the longer the pause between each rotation.", 'et_builder' ),
-			),
-			'auto_ignore_hover' => array(
-				'label'           => esc_html__( 'Continue Automatic Slide on Hover', 'et_builder' ),
-				'type'            => 'yes_no_button',
-				'option_category' => 'configuration',
-				'depends_default' => true,
-				'options'         => array(
-					'off' => esc_html__( 'Off', 'et_builder' ),
-					'on'  => esc_html__( 'On', 'et_builder' ),
-				),
-				'tab_slug'        => 'custom_css',
-				'toggle_slug'     => 'animation',
-				'description'     => esc_html__( 'Turning this on will allow automatic sliding to continue on mouse hover.', 'et_builder' ),
 			),
 			'top_padding' => array(
 				'label'           => esc_html__( 'Top Padding', 'et_builder' ),
