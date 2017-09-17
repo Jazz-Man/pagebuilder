@@ -17,11 +17,12 @@ abstract class ET_Builder_Module_Settings_Migration {
 	public static $last_hook_checked;
 	public static $last_hook_check_decision;
 
-	public static $max_version = '3.0.72';
+	public static $max_version = '3.0.74';
 	public static $migrated    = array();
 	public static $migrations  = array(
 		'3.0.48' => 'BackgroundUI',
 		'3.0.72' => 'Animation',
+		'3.0.74' => 'OptionsHarmony',
 	);
 
 	public static $migrations_by_version = array();
@@ -164,11 +165,22 @@ abstract class ET_Builder_Module_Settings_Migration {
 			$unprocessed_attrs = array();
 		}
 
-		$migrations = self::get_migrations( $attrs['_builder_version'] );
+		$migrations      = self::get_migrations( $attrs['_builder_version'] );
+		$migration_count = count( $migrations );
+		$migration_index = 0;
 
 		foreach ( $migrations as $migration ) {
+			$migration_index++;
+
 			if ( ! in_array( $module_slug, $migration->modules ) ) {
 				continue;
+			}
+
+			// If current module/field is affected by multiple migrations, all migration that takes place before the last one
+			// needs to have its whitelisted attributes ($attrs) merged with any attributes that exist in shortcode ($unprocessed_attrs)
+			// to avoid migration being blocked with past migration that has similar module/field migrations
+			if ( $migration_index < $migration_count ) {
+				$attrs = array_merge( $attrs, $unprocessed_attrs );
 			}
 
 			foreach ( $migration->fields as $field_name => $field_info ) {

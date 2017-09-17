@@ -164,6 +164,7 @@ function et_fb_backend_helpers() {
 		'modulesCount'                 => count( $fb_modules_array ),
 		'modulesWithChildren'          => ET_Builder_Element::get_shortcodes_with_children( $post_type ),
 		'modulesShowOnCancelDropClassname' => apply_filters( 'et_fb_modules_show_on_cancel_drop_classname', array( 'et_pb_gallery', 'et_pb_filterable_portfolio') ),
+		'modulesFeaturedImageBackground' => ET_Builder_Element::get_featured_image_background_modules( $post_type ),
 		'structureModules'             => ET_Builder_Element::get_structure_modules(),
 		'et_builder_css_media_queries' => ET_Builder_Element::get_media_quries( 'for_js' ),
 		'builderOptions'               => et_builder_options(),
@@ -221,6 +222,15 @@ function et_fb_backend_helpers() {
 		'splitTestSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
 		'defaults'                     => array(
 			'contactFormInputs'        => array(),
+			'backgroundOptions'        => array(
+				'type'                 => ET_Global_Settings::get_value( 'all_background_gradient_type' ),
+				'direction'            => ET_Global_Settings::get_value( 'all_background_gradient_direction' ),
+				'radialDirection'      => ET_Global_Settings::get_value( 'all_background_gradient_direction_radial' ),
+				'colorStart'           => ET_Global_Settings::get_value( 'all_background_gradient_start' ),
+				'colorEnd'             => ET_Global_Settings::get_value( 'all_background_gradient_end' ),
+				'startPosition'        => ET_Global_Settings::get_value( 'all_background_gradient_start_position' ),
+				'endPosition'          => ET_Global_Settings::get_value( 'all_background_gradient_end_position' ),
+			),
 		),
 		'saveModuleLibraryCategories'  => et_fb_prepare_library_cats(),
 		'columnSettingFields'          => array(
@@ -396,7 +406,7 @@ function et_fb_backend_helpers() {
 					'option_category' => 'configuration',
 					'description'     => '',
 					'depends_show_if' => 'on',
-					'default'         => '#2b87da',
+					'default'         => ET_Global_Settings::get_value( 'all_background_gradient_start' ),
 					'depends_to'      => array(
 						'use_background_color_gradient_%s',
 					),
@@ -410,7 +420,7 @@ function et_fb_backend_helpers() {
 					'option_category' => 'configuration',
 					'description'     => '',
 					'depends_show_if' => 'on',
-					'default'         => '#29c4a9',
+					'default'         => ET_Global_Settings::get_value( 'all_background_gradient_end' ),
 					'depends_to'      => array(
 						'use_background_color_gradient_%s',
 					),
@@ -430,7 +440,7 @@ function et_fb_backend_helpers() {
 						'background_color_gradient_direction_%s',
 						'background_color_gradient_direction_radial_%s',
 					),
-					'default'         => 'linear',
+					'default'         => ET_Global_Settings::get_value( 'all_background_gradient_type' ),
 					'description'     => '',
 					'depends_show_if' => 'on',
 					'depends_to'      => array(
@@ -449,7 +459,7 @@ function et_fb_backend_helpers() {
 						'max'  => 360,
 						'step' => 1,
 					),
-					'default'         => '180deg',
+					'default'         => ET_Global_Settings::get_value( 'all_background_gradient_direction' ),
 					'validate_unit'   => true,
 					'fixed_unit'      => 'deg',
 					'fixed_range'     => true,
@@ -495,7 +505,7 @@ function et_fb_backend_helpers() {
 						'max'  => 100,
 						'step' => 1,
 					),
-					'default'         => 0,
+					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_start_position' ) ),
 					'validate_unit'   => true,
 					'fixed_unit'      => '%',
 					'fixed_range'     => true,
@@ -516,7 +526,7 @@ function et_fb_backend_helpers() {
 						'max'  => 100,
 						'step' => 1,
 					),
-					'default'         => 100,
+					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_end_position' ) ),
 					'validate_unit'   => true,
 					'fixed_unit'      => '%',
 					'fixed_range'     => true,
@@ -599,7 +609,7 @@ function et_fb_backend_helpers() {
 					'option_category' => 'layout',
 					'description'     => esc_html__( 'Adjust padding to specific values, or leave blank to use the default padding.', 'et_builder' ),
 					'tab_slug'        => 'advanced',
-					'toggle_slug'     => 'margin_padding',
+					'toggle_slug'     => 'custom_margin_padding',
 					'sub_toggle'      => 'column_%s',
 				),
 			),
@@ -656,6 +666,7 @@ function et_fb_backend_helpers() {
 				'sectionHeight' => et_get_option( 'phone_section_height' ),
 			),
 		),
+		'acceptableCSSStringValues'    => et_builder_get_acceptable_css_string_values( 'all' ),
 	);
 
 	// Internationalization.

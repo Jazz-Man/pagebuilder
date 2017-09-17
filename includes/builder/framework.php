@@ -215,12 +215,24 @@ add_action( 'wp_footer', 'et_builder_get_animation_data' );
 
 function et_builder_handle_animation_data( $element_data = false ) {
 	static $data = array();
+	static $data_classes = array();
 
 	if ( ! $element_data ) {
 		return $data;
 	}
 
+	// This should not be possible but let's be safe
+	if ( empty( $element_data['class'] ) ) {
+		return;
+	}
+
+	// Prevent duplication animation data entries created by global modules
+	if ( in_array( $element_data['class'], $data_classes ) ) {
+		return;
+	}
+
 	$data[] = $element_data;
+	$data_classes[] = $element_data['class'];
 }
 
 /**

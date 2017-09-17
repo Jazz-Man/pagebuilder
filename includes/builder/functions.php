@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.73' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.75' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -416,7 +416,7 @@ function et_builder_accent_color( $default_color = '#7EBEC5' ) {
 endif;
 
 if ( ! function_exists( 'et_builder_get_text_orientation_options' ) ) :
-function et_builder_get_text_orientation_options() {
+function et_builder_get_text_orientation_options( $exclude_options = array(), $include_options = array() ) {
 	$text_orientation_options = array(
 		'left'      => esc_html__( 'Left', 'et_builder' ),
 		'center'    => esc_html__( 'Center', 'et_builder' ),
@@ -429,6 +429,18 @@ function et_builder_get_text_orientation_options() {
 			'right'  => esc_html__( 'Right', 'et_builder' ),
 			'center' => esc_html__( 'Center', 'et_builder' ),
 		);
+	}
+
+	// Exclude some options if needed
+	if ( ! empty( $exclude_options ) ) {
+		foreach ( $exclude_options as $exclude ) {
+			unset( $text_orientation_options[ $exclude ] );
+		}
+	}
+
+	// Include some options if needed
+	if ( ! empty( $exclude_options ) ) {
+		$text_orientation_options = wp_parse_args( $include_options, $text_orientation_options );
 	}
 
 	return apply_filters( 'et_builder_text_orientation_options', $text_orientation_options );
@@ -1238,17 +1250,48 @@ function et_pb_extract_items( $content ) {
 }
 endif;
 
+/**
+ * Get all acceptable string value for given CSS property
+ * @param string property name
+ * @return array of acceptable CSS string values of given property name
+ */
+function et_builder_get_acceptable_css_string_values( $property = 'all' ) {
+	$acceptable_strings = apply_filters( 'et_builder_acceptable_css_string_values', array(
+		'margin' => array(
+			'auto',
+			'inherit',
+			'initial',
+			'unset',
+		),
+		'padding' => array(
+			'inherit',
+			'initial',
+			'unset',
+		),
+	) );
+
+	if ( 'all' === $property ) {
+		return $acceptable_strings;
+	}
+
+	return isset( $acceptable_strings[ $property ] ) ? $acceptable_strings[ $property ] : array();
+}
+
 if ( ! function_exists( 'et_builder_process_range_value' ) ) :
 function et_builder_process_range_value( $range, $option_type = '' ) {
 	$range = trim( $range );
 	$range_digit = floatval( $range );
 	$range_string = str_replace( $range_digit, '', (string) $range );
 
-	if ( '' === $range_string ) {
-		$range_string = 'line_height' === $option_type && 3 >= $range_digit ? 'em' : 'px';
-	}
+	if ( '' !== $option_type && in_array( $range, et_builder_get_acceptable_css_string_values( $option_type ) ) ) {
+		$result = $range;
+	} else {
+		if ( '' === $range_string ) {
+			$range_string = 'line_height' === $option_type && 3 >= $range_digit ? 'em' : 'px';
+		}
 
-	$result = $range_digit . $range_string;
+		$result = $range_digit . $range_string;
+	}
 
 	return apply_filters( 'et_builder_processed_range_value', $result, $range, $range_string );
 }
@@ -1398,7 +1441,7 @@ function et_builder_get_element_style_css( $value, $property = 'margin', $use_im
 				$element_style .= sprintf(
 					'%3$s-%1$s: %2$s%4$s; ',
 					esc_attr( $positions[ $i ] ),
-					esc_attr( et_builder_process_range_value( $element_style_value ) ),
+					esc_attr( et_builder_process_range_value( $element_style_value, $property ) ),
 					esc_attr( $property ),
 					( $use_important ? ' !important' : '' )
 				);
@@ -2412,6 +2455,7 @@ function et_pb_add_builder_page_js_css(){
 		'et_builder_modules'                       => ET_Builder_Element::get_modules_js_array( $post_type ),
 		'et_builder_modules_count'                 => ET_Builder_Element::get_modules_count( $post_type ),
 		'et_builder_modules_with_children'         => ET_Builder_Element::get_shortcodes_with_children( $post_type ),
+		'et_builder_modules_featured_image_background' => ET_Builder_Element::get_featured_image_background_modules( $post_type ),
 		'et_builder_templates_amount'              => ET_BUILDER_AJAX_TEMPLATES_AMOUNT,
 		'default_initial_column_type'              => apply_filters( 'et_builder_default_initial_column_type', '4_4' ),
 		'default_initial_text_module'              => apply_filters( 'et_builder_default_initial_text_module', 'et_pb_text' ),
@@ -2467,6 +2511,7 @@ function et_pb_add_builder_page_js_css(){
 		'et_builder_email_add_account_nonce'       => wp_create_nonce( 'et_builder_email_add_account_nonce' ),
 		'et_builder_email_remove_account_nonce'    => wp_create_nonce( 'et_builder_email_remove_account_nonce' ),
 		'et_pb_module_settings_migrations'         => ET_Builder_Module_Settings_Migration::$migrated,
+		'acceptable_css_string_values'             => et_builder_get_acceptable_css_string_values( 'all' ),
 	), et_pb_history_localization() ) ) );
 
 	wp_localize_script( 'et_pb_admin_js', 'et_pb_ab_js_options', apply_filters( 'et_pb_ab_js_options', array(
@@ -4616,6 +4661,22 @@ function et_pb_pagebuilder_meta_box() {
 	);
 
 	printf(
+		'<script type="text/template" id="et-builder-text-align-buttons-option-template">
+			<%% _.each(this.et_builder_template_options.text_align_buttons.options, function(text_align_button) { %%>
+				<%%
+					var text_align_button_classname = text_align_button === "justified" ? "justify" : text_align_button;
+					var text_align_button_type = this.et_builder_template_options.text_align_buttons.type;
+				%%>
+				<div class="et_builder_<%%= text_align_button %%>_text_align et_builder_text_align mce-widget mce-btn" data-value="<%%= text_align_button %%>">
+					<button type="button">
+						<i class="mce-ico align-<%%= text_align_button_type %%> mce-i-align<%%= text_align_button_classname %%>"></i>
+					</button>
+				</div>
+			<%% }); %%>
+		</script>'
+	);
+
+	printf(
 		'<script type="text/template" id="et-builder-select-option-template">
 			<%% _.each(this.et_builder_template_options.select.options.list, function(option_label, option_value) {
 				var data = "";
@@ -6172,7 +6233,9 @@ function et_pb_generate_responsive_css( $values_array, $css_selector, $css_prope
 				'declaration' => $declaration,
 			);
 
-			if ( 'desktop' !== $device ) {
+			if ( 'desktop_only' === $device ) {
+				$style['media_query'] = ET_Builder_Element::get_media_query( 'min_width_981' );
+			} elseif ( 'desktop' !== $device ) {
 				$current_media_query = 'tablet' === $device ? 'max_width_980' : 'max_width_767';
 				$style['media_query'] = ET_Builder_Element::get_media_query( $current_media_query );
 			}
@@ -7414,3 +7477,12 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 }
 endif;
 
+if ( ! function_exists( 'et_pb_get_spacing' ) ) :
+function et_pb_get_spacing( $spacing, $corner, $default = '' ) {
+	$corners       = array( 'top', 'right', 'bottom', 'left' );
+	$corner_index  = array_search( $corner, $corners );
+	$spacing_array = explode( '|', $spacing );
+
+	return isset( $spacing_array[ $corner_index ] ) && '' !== $spacing_array[ $corner_index ] ? $spacing_array[ $corner_index ] : $default;
+}
+endif;

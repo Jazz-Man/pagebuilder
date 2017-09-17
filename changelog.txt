@@ -1,3 +1,43 @@
+version 3.0.75 ( updated 9-15-2017 )
+- Fixed a bug that caused animated sections to disappear when they were saved as global sections.
+- Fixed a compatibility issue with old deprecated versions of PHP that was introduced in the options harmony update.
+- Fixed a bug that caused a whitespace to be added in button href attributes that made the button unclickable.
+- Fixed a bug that caused global sections to inherit animation properties from child modules and rows. 
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/framework.php
+	* includes/builder/main-modules.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+
+version 3.0.74 (updated 9-14-2017 )
+- Added width options to all modules, rows and sections. 
+- Added module alignment options to all modules. 
+- Added row alignment options to all rows. 
+- Added section alignment options to all sections
+- Added text alignment options to all modules and all module sub elements, such as as title and body text option groups. 
+- Added background color options to all modules.
+- Added background image options to all modules.
+- Added background image position and repeat options to all modules. 
+- Added parallax background image options to all modules.
+- Added background gradient options to all modules. 
+- Added background video options to all modules.
+- Added padding top/bottom/left/right options to all modules.
+- Added margin top/bottom/left/right options to all modules. 
+- Improved options clarity by removing confusing double negatives and ambiguous choices. 
+- Improved options usability by migrating legacy Divi options to more modern and relevant control types. 
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-global-settings.php
+	* includes/builder/functions.php
+	* includes/builder/main-modules.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/OptionsHarmony.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/style.css
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.0.73 ( updated 9-11-2017 )
 - Improved the way that the Visual Builder handles potential button overlap, ensuring that small module hover buttons and row/section buttons will not overlap in various situations. 
 - Made it much easier to access hover buttons of small modules in the Visual Builder, and fixed a few situations where it was impossible to hover over buttons because the button mouse trap was overlapping another module with a higher z-index.

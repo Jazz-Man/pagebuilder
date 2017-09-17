@@ -3473,19 +3473,6 @@
 					animation_speed_curve = 'ease-in-out';
 				}
 
-				// Remove the wrapper of the element that is being scrolled to
-				$('.et_animated_wrapper').each(function() {
-					var child_element_class = $(this).attr('data-element');
-
-					if ( $element.hasClass( child_element_class ) ) {
-						var $wrapped_elements = $(this).find('> *');
-
-						$wrapped_elements.unwrap();
-
-						return false;
-					}
-				});
-
 				$element.css({
 					'animation-duration'        : animation_duration,
 					'animation-delay'           : animation_delay,

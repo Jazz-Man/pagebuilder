@@ -506,6 +506,10 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et_pb_modal_settings_container input[type=checkbox]:checked:before { color: #00c3aa; float: none; margin-top: 2px; }
 .et-pb-option-container .mce-toolbar .mce-ico { color: #8E969E; }
 
+.et_pb_has_mobile_settings .et-pb-option-container input[type="range"]::-ms-track { background: #e8eef5; }
+.et_pb_has_mobile_settings .et-pb-option-container input[type="range"]::-moz-range-track { background: #e8eef5; }
+.et_pb_has_mobile_settings .et-pb-option-container input[type="range"]::-webkit-slider-runnable-track { background: #e8eef5; }
+
 /* options list styles */
 .et-pb-option-container .et_options_list_row { position: relative; padding-right: 109px; }
 .et-pb-option-container .et_options_list_row select { width: 32%; }
@@ -583,7 +587,9 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et-pb-option-container .quicktags-toolbar .button.button-small { height: 20px !important; padding: 0 5px !important; margin: 2px !important; line-height: 12px !important; }
 .et-pb-option-container .quicktags-toolbar { background-color: #F1F5F9 !important; }
 .et-pb-option-container .quicktags-toolbar .button { background-color: #E0E5EA !important; color: #32373C !important; font-weight: 400 !important; }
-
+.align-module.mce-i-alignright:before { content: "\f136"; }
+.align-module.mce-i-aligncenter:before { content: "\f134"; }
+.align-module.mce-i-alignleft:before { content: "\f135"; }
 
 .et-pb-option-container .regular-text { width: 628px; }
 .et-pb-options-tab-custom_css .et_pb_custom_css_regular .regular-text { width: 763px; }
@@ -622,6 +628,16 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et_builder_font_styles.mce-toolbar .et_font_style_active button { background: #008bdb; }
 .et_builder_font_styles.mce-toolbar .et_font_style_active button i { color: #fff !important; }
 .et_builder_font_styles .mce-ico .mce-i-bold { color: #8D98A3; }
+
+.et_builder_text_aligns { display: inline; position: relative; }
+.et_builder_text_align.mce-widget { cursor: pointer; margin-right: 6px; display: inline-block; }
+.et_builder_text_align.mce-widget button { cursor: pointer; background-image: none; background-color: #F1F5F9; border-radius: 4px; border: none; padding: 10px 23px 7px !important; transition: all 0.3s; -moz-transition: all 0.3s; -webkit-transition: all 0.3s; }
+.et_builder_text_align.mce-widget button:focus { box-shadow: none !important; outline: none !important; }
+.et_builder_text_align .et_builder_text_align.mce-widget:last-child { margin-right: 0; }
+.et_builder_text_aligns.mce-toolbar .et_text_align_active button { background: #008bdb; }
+.et_builder_text_aligns.mce-toolbar .et_text_align_active button i { color: #fff !important; }
+.et_builder_text_aligns .mce-ico .mce-i-bold { color: #8D98A3; }
+.et-pb-text-align-select { display: none; }
 
 /* Background Fields */
 .et_pb_background-tab-navs {
@@ -728,10 +744,15 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 }
 
 .et_pb_background-tab .et_pb_background-option--use_background_color_gradient label,
-.et_pb_background-tab .et_pb_background-option--background_url label,
-.et_pb_background-tab .et_pb_background-option--background_image label,
-.et_pb_background-tab .et_pb_background-option--background_color label,
-.et_pb_background-tab .et_pb_background-option--module_bg_color label {
+.et_pb_background-tab .et_pb_background-template--url label,
+.et_pb_background-tab .et_pb_background-template--image label,
+.et_pb_background-tab .et_pb_background-template--color label {
+	display: none;
+}
+
+/* Background Fields Field */
+.et-pb-option-container--background-field > label,
+.et_pb_background-tab--color .et-pb-option-main > label {
 	display: none;
 }
 
@@ -901,6 +922,10 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et-pb-option-preview--empty .et-pb-option-preview-button--edit,
 .et-pb-option-preview--empty .et-pb-option-preview-button--swap {
 	display: none;
+}
+
+.et_pb_background-template--image .et-pb-option-preview.et-pb-featured-image-background .et-pb-option-preview-button {
+	display: none !important;
 }
 
 /* Improved Colorpicker */
@@ -1200,12 +1225,12 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 	margin-bottom: 40px;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--use_background_color_gradient {
+.et_pb_background-tab--gradient .et_pb_background-template--use_color_gradient {
 	display: none;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_start,
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_start,
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end {
 	position: absolute;
 	top: 251px;
 	left: 0;
@@ -1213,12 +1238,12 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 	vertical-align: top;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end {
 	left: 50%;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_start label,
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end label {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_start label,
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end label {
 	display: none;
 }
 
@@ -1229,7 +1254,7 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 	width: 660px;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end .wp-picker-holder {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end .wp-picker-holder {
 	left: -330px
 }
 
@@ -1240,20 +1265,20 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 	z-index: 10;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end .wp-picker-open + .wp-picker-input-wrap {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end .wp-picker-open + .wp-picker-input-wrap {
 	left: -310px;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end .wp-color-result {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end .wp-color-result {
 	margin-left: 32px;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_start .on-right-corner .wp-picker-open + .wp-picker-input-wrap {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_start .on-right-corner .wp-picker-open + .wp-picker-input-wrap {
 	left: auto;
 	right: -245px;
 }
 
-.et_pb_background-tab--gradient .et_pb_background-option--background_color_gradient_end .on-right-corner .wp-picker-open + .wp-picker-input-wrap {
+.et_pb_background-tab--gradient .et_pb_background-template--color_gradient_end .on-right-corner .wp-picker-open + .wp-picker-input-wrap {
 	left: auto;
 	right: 85px;
 }
@@ -1261,6 +1286,7 @@ span.et_pb_value_text.et_pb_on_value { color: #FFF; }
 .et_pb_background-tab--gradient .et-pb-reset-setting {
 	display: none;
 }
+
 
 /* Background Fields - Upload */
 .et_pb_background-tab--image .et-pb-option--has-preview .et-pb-upload-field,
@@ -1301,6 +1327,7 @@ span.et-pb-mobile-settings-toggle.et-pb-mobile-settings-active { color: #0082d3;
 .et-pb-option.et_pb_animate_options { -moz-transition: padding-top 0.4s, padding-bottom 0.4s, margin-top 0.4s; -webkit-transition: padding-top 0.4s, padding-bottom 0.4s, margin-top 0.4s; transition: padding-top 0.4s, padding-bottom 0.4s, margin-top 0.4s; }
 a.et_pb_mobile_settings_tab.et_pb_mobile_settings_active_tab,.et_pb_animate_options .et_pb_mobile_settings_tabs { -moz-transition: all 0.6s; -webkit-transition: all 0.6s; transition: all 0.6s; }
 .et_pb_has_mobile_settings input.et_pb_setting_mobile { background-color: #e8eef5 !important; }
+.et_pb_has_mobile_settings input.et_pb_setting_mobile.et-pb-range { background-color: transparent !important; }
 .et-pb-options-tab .et-pb-option:nth-child(1).et_pb_has_mobile_settings { margin-top: 45px; }
 .et-pb-mobile-icon-visible.et-pb-mobile-settings-toggle, .et-pb-reset-setting.et-pb-reset-icon-visible { z-index: 1; opacity: 1; }
 .et-pb-mobile-icon-visible.et-pb-mobile-settings-toggle { padding: 0 8px; }
