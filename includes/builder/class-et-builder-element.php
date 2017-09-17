@@ -737,10 +737,15 @@ class ET_Builder_Element {
 					'starting_opacity' => $animation_starting_opacity,
 					'speed_curve'      => $animation_speed_curve,
 				) );
-			}
 
-			$output_before = '<div class="et_animated_wrapper">';
-			$output_after  = '</div>';
+				// Add a way to associate the wrapper with the element
+				// so it can be targeted later in JS
+				$output_before = sprintf(
+					'<div class="et_animated_wrapper" data-element="%1$s">',
+					esc_attr( $module_class )
+				);
+				$output_after = '</div>';
+			}
 		}
 
 		$output = $this->{$shortcode_callback}( $atts, $content, $function_name, $parent_address, $global_parent, $global_parent_type );
@@ -974,20 +979,22 @@ class ET_Builder_Element {
 				$field = $fields[ $shortcode_attr_key ];
 				$depends_on = array();
 
-				foreach ( $field['computed_depends_on'] as $depends_on_field ) {
-					$dependency_value = $this->shortcode_atts[ $depends_on_field ];
+				if ( isset( $field['computed_depends_on'] ) ) {
+					foreach ( $field['computed_depends_on'] as $depends_on_field ) {
+						$dependency_value = $this->shortcode_atts[ $depends_on_field ];
 
-					if ( '' === $dependency_value ) {
-						if ( isset( $this->fields_unprocessed[ $depends_on_field]['default'] ) ) {
-							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
+						if ( '' === $dependency_value ) {
+							if ( isset( $this->fields_unprocessed[ $depends_on_field]['default'] ) ) {
+								$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
+							}
+
+							if ( isset( $this->fields_unprocessed[ $depends_on_field]['shortcode_default'] ) ) {
+								$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['shortcode_default'];
+							}
 						}
 
-						if ( isset( $this->fields_unprocessed[ $depends_on_field]['shortcode_default'] ) ) {
-							$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['shortcode_default'];
-						}
+						$depends_on[ $depends_on_field ] = $dependency_value;
 					}
-
-					$depends_on[ $depends_on_field ] = $dependency_value;
 				}
 
 				if ( ! is_callable( $field['computed_callback'] ) ) {
@@ -7183,7 +7190,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 					current_background_position_bottomleft = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'bottom_left\' ? \' selected="selected"\' : \'\';
 					current_background_position_bottomcenter = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'bottom_center\' ? \' selected="selected"\' : \'\';
 					current_background_position_bottomright = typeof et_pb_background_position_%1$s !== \'undefined\' && et_pb_background_position_%1$s === \'bottom_right\' ? \' selected="selected"\' : \'\';
-					current_background_repeat_repeat = typeof et_pb_background_repeat_%1$s !== \'undefined\' && et_pb_background_repeat_%1$s === \'repeat\' ? \' selected="selected"\' : \'\';
+					current_background_repeat_repeat = typeof et_pb_background_repeat_%1$s === \'undefined\' || et_pb_background_repeat_%1$s === \'repeat\' ? \' selected="selected"\' : \'\';
 					current_background_repeat_repeatx = typeof et_pb_background_repeat_%1$s !== \'undefined\' && et_pb_background_repeat_%1$s === \'repeat-x\' ? \' selected="selected"\' : \'\';
 					current_background_repeat_repeaty = typeof et_pb_background_repeat_%1$s !== \'undefined\' && et_pb_background_repeat_%1$s === \'repeat-y\' ? \' selected="selected"\' : \'\';
 					current_background_repeat_space = typeof et_pb_background_repeat_%1$s !== \'undefined\' && et_pb_background_repeat_%1$s === \'space\' ? \' selected="selected"\' : \'\';

@@ -3473,11 +3473,17 @@
 					animation_speed_curve = 'ease-in-out';
 				}
 
-				// Remove each animated element wrapper
+				// Remove the wrapper of the element that is being scrolled to
 				$('.et_animated_wrapper').each(function() {
-					var $wrapped_elements = $(this).find('> *');
+					var child_element_class = $(this).attr('data-element');
 
-					$wrapped_elements.unwrap();
+					if ( $element.hasClass( child_element_class ) ) {
+						var $wrapped_elements = $(this).find('> *');
+
+						$wrapped_elements.unwrap();
+
+						return false;
+					}
 				});
 
 				$element.css({

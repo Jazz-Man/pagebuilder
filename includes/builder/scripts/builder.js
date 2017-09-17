@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.72';
+window.et_builder_version = '3.0.73';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -2763,6 +2763,15 @@ window.et_builder_product_name = 'Divi';
 								unsynced_options_array.push( this_option_name + '_phone' );
 							}
 						});
+					}
+
+					// Automatically sync/unsync gallery_ids and gallery_orderby on gallery module if src is synced/unsynced
+					if ( 'et_pb_gallery' === thisClass.model.get( 'module_type' ) ) {
+						if ( _.contains( unsynced_options_array, 'src' ) ) {
+							unsynced_options_array = _.union( unsynced_options_array, [ 'gallery_ids', 'gallery_orderby' ] );
+						} else {
+							unsynced_options_array = _.without( unsynced_options_array, 'gallery_ids', 'gallery_orderby' );
+						}
 					}
 
 					et_pb_all_unsynced_options[ global_module_id ] = unsynced_options_array;

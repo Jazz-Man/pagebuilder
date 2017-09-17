@@ -33,6 +33,19 @@
 		$et_pb_first_row = $( 'body.et_pb_pagebuilder_layout .et_pb_section:visible:first' ),
 		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints;
 
+	// We need to check first to see if we are on a woocommerce single product.
+	if ( $("body").hasClass("woocommerce") && $("body").hasClass("single-product") ) {
+		// get the gallery container.
+		var gal = $(".woocommerce-product-gallery")[0];
+
+		// let's replace the data attribute since Salvatorre reconfigures
+		// data-columns on the resize event.
+		var newstr = gal.outerHTML.replace( 'data-columns', 'data-cols' );
+
+		// finally we re-insert.
+		gal.outerHTML = newstr;
+	}
+
 	$(document).ready( function(){
 		var $et_top_menu = $( 'ul.nav' ),
 			$et_search_icon = $( '#et_search_icon' ),

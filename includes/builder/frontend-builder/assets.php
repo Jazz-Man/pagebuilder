@@ -105,12 +105,13 @@ function et_fb_enqueue_assets() {
 	wp_register_script( 'react-tiny-mce', "{$assets}/vendors/tinymce.min.js" );
 
 	if ( version_compare( $wp_major_version, '4.5', '<' ) ) {
-		wp_register_script( 'et_pb_admin_date_js', "{$root}/scripts/ext/jquery-ui-1.10.4.custom.min.js", array( 'jquery' ), $ver, true );
+		$jQuery_ui = 'et_pb_admin_date_js';
+		wp_register_script( $jQuery_ui, "{$root}/scripts/ext/jquery-ui-1.10.4.custom.min.js", array( 'jquery' ), $ver, true );
 	} else {
-		wp_register_script( 'et_pb_admin_date_js', "{$root}/scripts/ext/jquery-ui-1.11.4.custom.min.js", array( 'jquery' ), $ver, true );
+		$jQuery_ui = 'jquery-ui-datepicker';
 	}
 
-	wp_register_script( 'et_pb_admin_date_addon_js', "{$root}/scripts/ext/jquery-ui-timepicker-addon.js", array( 'et_pb_admin_date_js' ), $ver, true );
+	wp_register_script( 'et_pb_admin_date_addon_js', "{$root}/scripts/ext/jquery-ui-timepicker-addon.js", array( $jQuery_ui ), $ver, true );
 
 	wp_register_script( 'wp-shortcode', includes_url() . 'js/shortcode.js', array(), $wp_version );
 

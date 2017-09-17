@@ -1,3 +1,30 @@
+version 3.0.73 ( updated 9-11-2017 )
+- Improved the way that the Visual Builder handles potential button overlap, ensuring that small module hover buttons and row/section buttons will not overlap in various situations. 
+- Made it much easier to access hover buttons of small modules in the Visual Builder, and fixed a few situations where it was impossible to hover over buttons because the button mouse trap was overlapping another module with a higher z-index.
+- Ensured that, in rare situations where module buttons must overlap row buttons in the Visual Builder, that the module buttons appear above the row buttons in the z-index.
+- Fixed a bug that caused default values of animation settings that were recently moved to the new animations options group to return false instead of printing their static default values.
+- Prevented multiple instances of the Visual Builder from being launched on home page designs that contain multiple posts.
+- Fixed undefined index error that occurred sometimes when adding new rows to the page.
+- Added class prefixes to all ePanel styles to avoid conflicts with plugins that enqueue their styles on all admin pages. 
+- Improved the way that selective syn works with global gallery modules to avoid inconsistencies with multiple galleries on the same page.
+- Fixed a bug that caused animated sections to flicker when scrolling in some situations. 
+- Fixed an issue that caused text line height values not to work correctly because the default value was being inherited from the body styles in ems, which had incorrect text size relevancy for the particular module being modified. 
+- Fixed an error that occurred when a layout was saved that contained a module with an empty font family declaration in the shortcode.
+- Fixed a bug that caused the number counter module to disappear when you hovered over it in the Visual Builder.
+- Fixed WooCommerce responsive layout issue that was caused by bundled Salvattore script.
+- Loaded the jQuery UI that comes with WordPress, and loaded old jQuery UI for old version of WordPress to avoid conflicts with some plugins.
+- Fixed a bug that caused background repeat settings not to save correctly for some columns in some situations.
+- Fixed a bug that caused null values to return "false" in the Visual Builder interface for text inputs. 
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/epanel/css/panel.css
+	* includes/epanel/core_functions.php
+	* includes/epanel/js/custom_uploader.js
+	* includes/epanel/js/functions-init.js
+
 version 3.0.72 ( updated 9-5-2017 )
 - Added new animation options to all Divi modules, rows and sections. 
 - Implemented new animations UI and animations presets into the new animation options. 
