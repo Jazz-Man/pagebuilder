@@ -878,6 +878,7 @@ function et_fb_backend_helpers() {
 			'allCategoriesText'     => esc_html__( 'All Categories', 'et_builder' ),
 		),
 		'modals' => array(
+			'defaultTitle'   => esc_html__( 'Modal Title', 'et_builder' ),
 			'tabItemTitles'  => array(
 				'general' => esc_html__( 'General', 'et_builder' ),
 				'design'  => esc_html__( 'Design', 'et_builder' ),
@@ -911,6 +912,51 @@ function et_fb_backend_helpers() {
 			),
 			'shortcuts' => et_builder_get_shortcuts('fb'),
 		),
+		'app' => array(
+			'modal' => array(
+				'title'  => esc_html__( 'Builder Settings', 'et_builder' ),
+				'labels' => array(
+					'toolbar'           => esc_html__( 'Customize Builder Settings Toolbar', 'et_builder' ),
+					'view_mode'         => esc_html__( 'Builder Default Interaction Mode', 'et_builder' ),
+					'history'           => esc_html__( 'History State Interval', 'et_builder' ),
+					'modal_position'    => esc_html__( 'Settings Modal Default Position', 'et_builder' ),
+					'animation'         => esc_html__( 'Builder Interface Animations', 'et_builder' ),
+					'disabled_modules'  => esc_html__( 'Show Disabled Modules at 50%', 'et_builder' ),
+					'group_settings'    => esc_html__( 'Group Settings Into Closed Toggles', 'et_builder' ),
+				),
+				'view_mode_select' => array(
+                    '0' => esc_html__( 'Hover Mode' , 'et_builder' ),
+                    '1' => esc_html__( 'Click Mode' , 'et_builder' ),
+                    '2' => esc_html__( 'Grid Mode' , 'et_builder' ),
+				),
+				'history_intervals_select' => array(
+                    '0' => esc_html__( 'After Every Action' , 'et_builder' ),
+                    '1' => esc_html__( 'After Every 10th Action' , 'et_builder' ),
+                    '2' => esc_html__( 'After Every 20th Action' , 'et_builder' ),
+                    '3' => esc_html__( 'After Every 30th Action' , 'et_builder' ),
+                    '4' => esc_html__( 'After Every 40th Action' , 'et_builder' ),
+				),
+				'modal_default_select' => array(
+					'0' => esc_html__( 'Last Used Position', 'et_builder' ),
+					'1' => esc_html__( 'Floating Minimum Size', 'et_builder' ),
+					'2' => esc_html__( 'Fullscreen', 'et_builder' ),
+					'3' => esc_html__( 'Fixed Left Sidebar', 'et_builder' ),
+					'4' => esc_html__( 'Fixed Right Sidebar', 'et_builder' ),
+				),
+				'builder_animation_toggle' => array(
+					'on'   => esc_html__( 'On', 'et_builder' ),
+					'off'  => esc_html__( 'Off', 'et_builder' ),
+				),
+				'hide_disabled_module_toggle' => array(
+					'on'   => esc_html__( 'On', 'et_builder' ),
+					'off'  => esc_html__( 'Off', 'et_builder' ),
+				),
+				'display_modal_settings' => array(
+					'on'   => esc_html__( 'On', 'et_builder' ),
+					'off'  => esc_html__( 'Off', 'et_builder' ),
+				),
+			),
+		),
 		'sortable' => array(
 			'has_no_ab_permission'                     => esc_html__( 'You do not have permission to edit the module, row or section in this split test.', 'et_builder' ),
 			'cannot_move_goal_into_subject'            => esc_html__( 'A split testing goal cannot be moved inside of a split testing subject. To perform this action you must first end your split test.', 'et_builder' ),
@@ -929,6 +975,11 @@ function et_fb_backend_helpers() {
 					'desktop' => esc_html__( 'Desktop View', 'et_builder' ),
 					'tablet'  => esc_html__( 'Tablet View', 'et_builder' ),
 					'phone'   => esc_html__( 'Phone View', 'et_builder' ),
+				),
+				'eventMode' => array(
+					'click' => esc_html__( 'Click Mode', 'et_builder' ),
+					'hover' => esc_html__( 'Hover Mode', 'et_builder' ),
+					'grid'  => esc_html__( 'Grid Mode', 'et_builder' ),
 				),
 				'main' => array(
 					'loadLibrary'       => esc_html__( 'Load From Library', 'et_builder' ),

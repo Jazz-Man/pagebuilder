@@ -1,3 +1,24 @@
+version 3.0.78 ( updated 10-5-2017 )
+- Added new interface settings window to the Visual Builder. 
+- Added new Click Mode interaction mode for the Visual Builder.
+- Added new Grid Mode interaction mode for the Visual Builder. 
+- Improved hover button overlap and accessibility issues in the Visual Builder. 
+- Added the option to completely hide disabled modules in the Visual Builder.
+- Added the option to open all option groups by default in the Visual Builder. 
+- Added the ability to customize the items in the Visual Builder toolbar. 
+- Added the option to disable Divi Builder interface animations in the Visual Builder. 
+- Improved Visual Builder rendering performance.
+- Fixed an error that occurred on some PHP 7.1.8 installations when used with non-standard linux configurations that lacked glob_brace support. 
+- Fixed a bug that prevented success messages from appearing in the contact form module if animations were applied to the module.
+- Fixed a bug that caused an incorrect amount of items to display in the filterable portfolio module in some cases.
+	* core/components/PageResource.php
+	* core/components/data/Utils.php
+	* core/init.php
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.0.77 ( updated 9-29-2017 )
 - Fixed background color inconsistencies on slider and fullwidth slider module.
 - Fixed Javascript type error after clearing layout in zoom out mode.

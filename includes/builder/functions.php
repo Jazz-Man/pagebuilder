@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.77' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.78' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -516,13 +516,37 @@ function et_fb_conditional_tag_params() {
 
 function _et_fb_get_app_preferences_defaults() {
 	$app_preferences = array(
-		'settings_bar_location'    => array(
+		'settings_bar_location'  => array(
 			'type'    => 'string',
 			'default' => 'bottom',
 		),
+		'builder_animation'      => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
+		'builder_display_modal_settings' => array(
+			'type'    => 'bool',
+			'default' => false,
+		),
+		'event_mode'             => array(
+			'type'    => 'string',
+			'default' => 'hover',
+		),
+		'hide_disabled_modules'  => array(
+			'type'    => 'bool',
+			'default' => false,
+		),
+		'history_intervals'      => array(
+			'type'    => 'int',
+			'default' => 1,
+		),
+		'modal_preference'       => array(
+			'type'    => 'string',
+			'default' => 'default',
+		),
 		'modal_snap_location'    => array(
 			'type'    => 'string',
-			'default' => 'left',
+			'default' => '',
 		),
 		'modal_snap'             => array(
 			'type'    => 'bool',
@@ -547,6 +571,38 @@ function _et_fb_get_app_preferences_defaults() {
 		'modal_position_y'       => array(
 			'type'    => 'int',
 			'default' => 50,
+		),
+		'toolbar_click'          => array(
+			'type'    => 'bool',
+			'default' => false,
+		),
+		'toolbar_desktop'        => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
+		'toolbar_grid'           => array(
+			'type'    => 'bool',
+			'default' => false,
+		),
+		'toolbar_hover'          => array(
+			'type'    => 'bool',
+			'default' => false,
+		),
+		'toolbar_phone'          => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
+		'toolbar_tablet'         => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
+		'toolbar_wireframe'      => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
+		'toolbar_zoom'           => array(
+			'type'    => 'bool',
+			'default' => true,
 		),
 	);
 
@@ -7014,7 +7070,28 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 			),
 			'wireframe' => array(
 				'kbd'  => array( 'shift', 'w' ),
-				'desc' => esc_html__( 'Wireframe mode', 'et_builder' ),
+				'desc' => esc_html__( 'Wireframe Mode', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
+			'click_mode' => array(
+				'kbd'  => array( 'super', 'shift', 'c' ),
+				'desc' => esc_html__( 'Click Mode', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
+			'grid_mode' => array(
+				'kbd'  => array( 'super', 'shift', 'g' ),
+				'desc' => esc_html__( 'Grid Mode', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
+			'hover_mode' => array(
+				'kbd'  => array( 'super', 'shift', 'h' ),
+				'desc' => esc_html__( 'Hover Mode', 'et_builder' ),
 				'on' => array(
 					'fb',
 				),

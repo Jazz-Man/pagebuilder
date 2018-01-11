@@ -357,6 +357,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 		$default_query_args = array(
 			'post_type'   => 'project',
 			'post_status' => 'publish',
+			'posts_per_page' => -1,
 		);
 
 		$query_args = wp_parse_args( $query_args, $default_query_args );
