@@ -3814,6 +3814,26 @@
 				return has_animation;
 			}
 
+			function et_get_animation_classes() {
+				return [
+					'et_animated', 'infinite',
+					'fade', 'fadeTop', 'fadeRight', 'fadeBottom', 'fadeLeft',
+					'slide', 'slideTop', 'slideRight', 'slideBottom', 'slideLeft',
+					'bounce', 'bounceTop', 'bounceRight', 'bounceBottom', 'bounceLeft',
+					'zoom', 'zoomTop', 'zoomRight', 'zoomBottom', 'zoomLeft',
+					'flip', 'flipTop', 'flipRight', 'flipBottom', 'flipLeft',
+					'fold', 'foldTop', 'foldRight', 'foldBottom', 'foldLeft',
+					'roll', 'rollTop', 'rollRight', 'rollBottom', 'rollLeft'
+				];
+			}
+
+			function et_remove_animation( $element ) {
+				var animation_classes = et_get_animation_classes();
+
+				$element.removeClass( animation_classes.join(' ') );
+				$element.removeAttr('style');
+			}
+
 			function et_remove_animation_data( $element ) {
 				var attr_name;
 				var data_attrs_to_remove = [];
@@ -4659,24 +4679,33 @@
 
 			// get the content of next/prev page via ajax for modules which have the .et_pb_ajax_pagination_container class
 			$( 'body' ).on( 'click', '.et_pb_ajax_pagination_container .wp-pagenavi a,.et_pb_ajax_pagination_container .pagination a', function() {
-				var this_link = $( this ),
-					href = this_link.attr( 'href' ),
-					current_href = window.location.href,
-					module_classes = this_link.closest( '.et_pb_module' ).attr( 'class' ).split( ' ' ),
-					module_class_processed = '',
-					$current_module;
+				var this_link = $( this );
+				var href = this_link.attr( 'href' );
+				var current_href = window.location.href;
+				var module_classes = this_link.closest( '.et_pb_module' ).attr( 'class' ).split( ' ' );
+				var module_class_processed = '';
+				var $current_module;
+				var animation_classes = et_get_animation_classes();
 
 				// global variable to store the cached content
 				window.et_pb_ajax_pagination_cache = window.et_pb_ajax_pagination_cache || [];
 
 				// construct the selector for current module
 				$.each( module_classes, function( index, value ) {
+					// skip animation classes so no wrong href is formed afterwards
+					if ( $.inArray( value, animation_classes ) !== -1 ) {
+						return;
+					}
+
 					if ( '' !== value.trim() ) {
 						module_class_processed += '.' + value;
 					}
 				});
 
 				$current_module = $( module_class_processed );
+
+				// remove module animation to prevent conflicts with the page changing animation
+				et_remove_animation( $current_module );
 
 				// use cached content if it has beed retrieved already, otherwise retrieve the content via ajax
 				if ( typeof window.et_pb_ajax_pagination_cache[ href + module_class_processed ] !== 'undefined' ) {

@@ -65,9 +65,12 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				'title'   => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h2",
-						'plugin_main' => "{$this->main_css_element} h2, {$this->main_css_element} h2 a",
+						'main' => "{$this->main_css_element} h2, {$this->main_css_element} .et_pb_module_header",
+						'plugin_main' => "{$this->main_css_element} h2, {$this->main_css_element} h2 a, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h1.et_pb_module_header a, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header a, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header a, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header a, {$this->main_css_element} h6.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header a",
 						'important' => 'all',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'filter' => array(
@@ -478,6 +481,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		$hover_icon          = $this->shortcode_atts['hover_icon'];
 		$zoom_icon_color     = $this->shortcode_atts['zoom_icon_color'];
 		$hover_overlay_color = $this->shortcode_atts['hover_overlay_color'];
+		$header_level        = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -579,7 +583,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				?>
 
 				<?php if ( 'on' === $show_title ) : ?>
-					<h2><a href="<?php echo esc_url( $permalink ); ?>"><?php echo $titletext; ?></a></h2>
+					<<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?> class="et_pb_module_header"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo $titletext; ?></a></<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?>>
 				<?php endif; ?>
 
 				<?php if ( 'on' === $show_categories ) : ?>

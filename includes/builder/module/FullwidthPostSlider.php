@@ -111,10 +111,13 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_slide_description .et_pb_slide_title",
 						'important' => array( 'size', 'font-size' ),
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'body'   => array(
@@ -754,6 +757,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		$text_border_radius      = $this->shortcode_atts['text_border_radius'];
 		$dot_nav_custom_color    = $this->shortcode_atts['dot_nav_custom_color'];
 		$arrows_custom_color     = $this->shortcode_atts['arrows_custom_color'];
+		$header_level            = $this->shortcode_atts['header_level'];
 
 		$post_index = 0;
 
@@ -934,7 +938,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 							</div>
 						<?php } ?>
 						<div class="et_pb_slide_description">
-							<h2 class="et_pb_slide_title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
+							<<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?> class="et_pb_slide_title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?>>
 							<div class="et_pb_slide_content <?php if ( 'on' !== $show_content_on_mobile ) { echo esc_attr( $hide_on_mobile_class ); } ?>">
 								<?php
 								if ( 'off' !== $show_meta ) {

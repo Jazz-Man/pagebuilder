@@ -1,6 +1,6 @@
 <?php
 
-define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_loading_amount', 20 ) );
+define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_loading_amount', 10 ) );
 
 add_action( 'init', array( 'ET_Builder_Element', 'set_media_queries' ), 11 );
 
@@ -1362,6 +1362,7 @@ class ET_Builder_Element {
 
 			if ( ! $toggle_disabled ) {
 				$toggle_slug = isset( $option_settings['toggle_slug'] ) ? $option_settings['toggle_slug'] : $option_name;
+				$sub_toggle = isset( $option_settings['sub_toggle'] ) ? $option_settings['sub_toggle'] : '';
 
 				if ( ! isset( $option_settings['toggle_slug'] ) ) {
 					$font_toggle = array(
@@ -1375,13 +1376,40 @@ class ET_Builder_Element {
 				}
 			}
 
+			if ( isset( $option_settings['header_level'] ) ) {
+				$additional_options["{$option_name}_level"] = array(
+					'label'            => sprintf( esc_html__( '%1$s Heading Level', 'et_builder' ), $option_settings['label'] ),
+					'type'            => 'multiple_buttons',
+					'option_category' => 'font_option',
+					'options'         => array(
+						'h1' => array( 'title' => 'H1', 'icon' => 'text-h1', ),
+						'h2' => array( 'title' => 'H2', 'icon' => 'text-h2', ),
+						'h3' => array( 'title' => 'H3', 'icon' => 'text-h3', ),
+						'h4' => array( 'title' => 'H4', 'icon' => 'text-h4', ),
+						'h5' => array( 'title' => 'H5', 'icon' => 'text-h5', ),
+						'h6' => array( 'title' => 'H6', 'icon' => 'text-h6', ),
+					),
+					'default'          => isset( $option_settings['header_level']['default'] ) ? $option_settings['header_level']['default'] : 'h2',
+					'tab_slug'         => $tab_slug,
+					'toggle_slug'      => $toggle_slug,
+					'sub_toggle'       => $sub_toggle,
+					'advanced_options' => true,
+				);
+
+				if ( isset( $option_settings['header_level']['computed_affects'] ) ) {
+					$additional_options["{$option_name}_level"]['computed_affects'] = $option_settings['header_level']['computed_affects'];
+				}
+			}
+
 			if ( ! isset( $option_settings['hide_font'] ) || ! $option_settings['hide_font'] ) {
 				$additional_options["{$option_name}_font"] = wp_parse_args( $option_settings['font'], array(
 					'label'           => sprintf( esc_html__( '%1$s Font', 'et_builder' ), $option_settings['label'] ),
 					'type'            => 'font',
+					'group_label'     => esc_html__( $option_settings['label'] ),
 					'option_category' => 'font_option',
 					'tab_slug'        => $tab_slug,
-					'toggle_slug'     => $option_name,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
 				) );
 
 				// add reference to the obsolete "all caps" option if needed
@@ -1403,17 +1431,19 @@ class ET_Builder_Element {
 					'options'          => et_builder_get_text_orientation_options( array( 'justified' ), array( 'justify' => 'Justified' ) ),
 					'tab_slug'         => $tab_slug,
 					'toggle_slug'      => $toggle_slug,
+					'sub_toggle'       => $sub_toggle,
 					'advanced_options' => true,
 				) );
 			}
 
 			if ( ! isset( $option_settings['hide_font_size'] ) || ! $option_settings['hide_font_size'] ) {
 				$additional_options["{$option_name}_font_size"] = wp_parse_args( $option_settings['font_size'], array(
-					'label'           => sprintf( esc_html__( '%1$s Font Size', 'et_builder' ), $option_settings['label'] ),
+					'label'           => sprintf( esc_html__( '%1$s Text Size', 'et_builder' ), $option_settings['label'] ),
 					'type'            => 'range',
 					'option_category' => 'font_option',
 					'tab_slug'        => $tab_slug,
-					'toggle_slug'     => $option_name,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
 					'mobile_options'  => true,
 					'range_settings'  => array(
 						'min'  => '1',
@@ -1427,20 +1457,37 @@ class ET_Builder_Element {
 					$additional_options["{$option_name}_font_size"]['depends_show_if'] = $option_settings['depends_show_if'];
 				}
 
+				if ( isset( $option_settings['header_level'] ) ) {
+					$header_level_default = isset( $option_settings['header_level']['default'] ) ? $option_settings['header_level']['default'] : 'h2';
+
+					$additional_options["{$option_name}_font_size"]['default_value_depends'] = "{$option_name}_level";
+					$additional_options["{$option_name}_font_size"]['default_values_mapping'] = array(
+						'h1' => '30px',
+						'h2' => '26px',
+						'h3' => '22px',
+						'h4' => '18px',
+						'h5' => '16px',
+						'h6' => '14px',
+					);
+
+					// remove default font-size for default header level to use option default
+					unset( $additional_options["{$option_name}_font_size"]['default_values_mapping'][ $header_level_default ] );
+				}
+
 				$additional_options["{$option_name}_font_size_tablet"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_font_size_phone"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_font_size_last_edited"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 			}
 
@@ -1450,7 +1497,8 @@ class ET_Builder_Element {
 				'option_category' => 'font_option',
 				'custom_color'    => true,
 				'tab_slug'        => $tab_slug,
-				'toggle_slug'     => $option_name,
+				'toggle_slug'     => $toggle_slug,
+				'sub_toggle'      => $sub_toggle,
 			);
 
 			if ( ! isset( $option_settings['hide_text_color'] ) || ! $option_settings['hide_text_color'] ) {
@@ -1460,7 +1508,8 @@ class ET_Builder_Element {
 					'option_category' => 'font_option',
 					'custom_color'    => true,
 					'tab_slug'        => $tab_slug,
-					'toggle_slug'     => $option_name,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
 				);
 
 				// add reference to the obsolete color option if needed
@@ -1486,7 +1535,8 @@ class ET_Builder_Element {
 					'mobile_options'  => true,
 					'option_category' => 'font_option',
 					'tab_slug'        => $tab_slug,
-					'toggle_slug'     => $option_name,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
 					'default'         => '0px',
 					'range_settings'  => array(
 						'min'  => '0',
@@ -1503,17 +1553,17 @@ class ET_Builder_Element {
 				$additional_options["{$option_name}_letter_spacing_tablet"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_letter_spacing_phone"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_letter_spacing_last_edited"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 			}
 
@@ -1524,7 +1574,8 @@ class ET_Builder_Element {
 					'mobile_options'  => true,
 					'option_category' => 'font_option',
 					'tab_slug'        => $tab_slug,
-					'toggle_slug'     => $option_name,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
 					'range_settings'  => array(
 						'min'  => '1',
 						'max'  => '3',
@@ -1549,17 +1600,17 @@ class ET_Builder_Element {
 				$additional_options["{$option_name}_line_height_tablet"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_line_height_phone"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 				$additional_options["{$option_name}_line_height_last_edited"] = array(
 					'type'        => 'skip',
 					'tab_slug'    => $tab_slug,
-					'toggle_slug' => $option_name,
+					'toggle_slug' => $toggle_slug,
 				);
 			}
 
@@ -1569,7 +1620,8 @@ class ET_Builder_Element {
 					'type'              => 'hidden',
 					'shortcode_default' => '',
 					'tab_slug'          => $tab_slug,
-					'toggle_slug'       => $option_name,
+					'toggle_slug'       => $toggle_slug,
+					'sub_toggle'        => $sub_toggle,
 				);
 			}
 		}
@@ -1664,6 +1716,7 @@ class ET_Builder_Element {
 		$text_settings = $this->advanced_options['text'];
 		$tab_slug      = isset( $text_settings['tab_slug'] ) ? $text_settings['tab_slug'] : 'advanced';
 		$toggle_slug   = isset( $text_settings['toggle_slug'] ) ? $text_settings['toggle_slug'] : 'text';
+		$sub_toggle   = isset( $text_settings['sub_toggle'] ) ? $text_settings['sub_toggle'] : '';
 		$orientation_exclude_options = isset( $text_settings['text_orientation'] ) && isset( $text_settings['text_orientation']['exclude_options'] ) ? $text_settings['text_orientation']['exclude_options'] : array();
 
 		$this->_add_option_toggles( $tab_slug, array(
@@ -1686,6 +1739,10 @@ class ET_Builder_Element {
 				'default'         => isset( $this->fields_defaults['text_orientation'] ) && isset( $this->fields_defaults['text_orientation'][0] ) ? $this->fields_defaults['text_orientation'][0] : '',
 			),
 		);
+
+		if ( '' !== $sub_toggle ) {
+			$additional_options['text_orientation']['sub_toggle'] = $sub_toggle;
+		}
 
 		// Allow module to configure specific options
 		if ( isset( $text_settings['options'] ) && is_array( $text_settings['options'] ) ) {
@@ -1773,6 +1830,7 @@ class ET_Builder_Element {
 			'type'              => 'select',
 			'option_category'   => 'layout',
 			'options'           => et_builder_get_border_styles(),
+			'default'           => 'solid',
 			'shortcode_default' => 'solid',
 			'tab_slug'          => $tab_slug,
 			'toggle_slug'       => $toggle_slug,
@@ -3281,157 +3339,8 @@ class ET_Builder_Element {
 	 * @return string div-wrapped svg icon
 	 */
 	function get_icon( $icon_name ) {
-		switch ( $icon_name ) {
-			case 'add':
-				$icon = '
-					<g>
-						<path d="M18 13h-3v-3a1 1 0 0 0-2 0v3h-3a1 1 0 0 0 0 2h3v3a1 1 0 0 0 2 0v-3h3a1 1 0 0 0 0-2z" fillRule="evenodd" />
-					</g>
-				';
-				break;
-
-			case 'delete':
-				$icon = '
-					<g>
-						<path d="M19 9h-3V8a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v1H9a1 1 0 1 0 0 2h10a1 1 0 0 0 .004-2H19zM9 20c.021.543.457.979 1 1h8c.55-.004.996-.45 1-1v-7H9v7zm2.02-4.985h2v4h-2v-4zm4 0h2v4h-2v-4z" fillRule="evenodd" />
-					</g>
-				';
-				break;
-
-			case 'setting':
-				$icon = '
-					<g>
-						<path d="M20.426 13.088l-1.383-.362a.874.874 0 0 1-.589-.514l-.043-.107a.871.871 0 0 1 .053-.779l.721-1.234a.766.766 0 0 0-.116-.917 6.682 6.682 0 0 0-.252-.253.768.768 0 0 0-.917-.116l-1.234.722a.877.877 0 0 1-.779.053l-.107-.044a.87.87 0 0 1-.513-.587l-.362-1.383a.767.767 0 0 0-.73-.567h-.358a.768.768 0 0 0-.73.567l-.362 1.383a.878.878 0 0 1-.513.589l-.107.044a.875.875 0 0 1-.778-.054l-1.234-.722a.769.769 0 0 0-.918.117c-.086.082-.17.166-.253.253a.766.766 0 0 0-.115.916l.721 1.234a.87.87 0 0 1 .053.779l-.043.106a.874.874 0 0 1-.589.514l-1.382.362a.766.766 0 0 0-.567.731v.357a.766.766 0 0 0 .567.731l1.383.362c.266.07.483.26.588.513l.043.107a.87.87 0 0 1-.053.779l-.721 1.233a.767.767 0 0 0 .115.917c.083.087.167.171.253.253a.77.77 0 0 0 .918.116l1.234-.721a.87.87 0 0 1 .779-.054l.107.044a.878.878 0 0 1 .513.589l.362 1.383a.77.77 0 0 0 .731.567h.356a.766.766 0 0 0 .73-.567l.362-1.383a.878.878 0 0 1 .515-.589l.107-.044a.875.875 0 0 1 .778.054l1.234.721c.297.17.672.123.917-.117.087-.082.171-.166.253-.253a.766.766 0 0 0 .116-.917l-.721-1.234a.874.874 0 0 1-.054-.779l.044-.107a.88.88 0 0 1 .589-.513l1.383-.362a.77.77 0 0 0 .567-.731v-.357a.772.772 0 0 0-.569-.724v-.005zm-6.43 3.9a2.986 2.986 0 1 1 2.985-2.986 3 3 0 0 1-2.985 2.987v-.001z" fillRule="evenodd" />
-					</g>
-				';
-				break;
-
-			case 'background-color':
-				$icon = '
-					<g>
-						<path d="M19.4 14.6c0 0-1.5 3.1-1.5 4.4 0 0.9 0.7 1.6 1.5 1.6 0.8 0 1.5-0.7 1.5-1.6C20.9 17.6 19.4 14.6 19.4 14.6zM19.3 12.8l-4.8-4.8c-0.2-0.2-0.4-0.3-0.6-0.3 -0.3 0-0.5 0.1-0.7 0.3l-1.6 1.6L9.8 7.8c-0.4-0.4-1-0.4-1.4 0C8 8.1 8 8.8 8.4 9.1l1.8 1.8 -2.8 2.8c-0.4 0.4-0.4 1-0.1 1.4l4.6 4.6c0.2 0.2 0.4 0.3 0.6 0.3 0.3 0 0.5-0.1 0.7-0.3l6.1-6.1C19.5 13.4 19.5 13.1 19.3 12.8zM15.6 14.6c-1.7 1.7-4.5 1.7-6.2 0l2.1-2.1 1 1c0.4 0.4 1 0.4 1.4 0 0.4-0.4 0.4-1 0-1.4l-1-1 0.9-0.9 3.1 3.1L15.6 14.6z" fillRule="evenodd"/>
-					</g>
-				';
-				break;
-
-			case 'background-image':
-				$icon = '
-					<g>
-						<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9H7v-10h14V18.9z" fillRule="evenodd"/>
-						<circle cx="10.5" cy="12.4" r="1.5"/>
-						<polygon points="15 16.9 13 13.9 11 16.9 "/>
-						<polygon points="17 10.9 15 16.9 19 16.9 "/>
-					</g>
-				';
-				break;
-
-			case 'background-gradient':
-				$icon = '
-					<g>
-						<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9L7 8.9h14V18.9z" fillRule="evenodd"/>
-					</g>
-				';
-				break;
-
-			case 'background-video':
-				$icon = '
-					<g>
-						<path d="M22.9 7.5c-0.1-0.3-0.5-0.6-0.8-0.6H5.9c-0.4 0-0.7 0.2-0.8 0.6C5.1 7.6 5 7.7 5 7.9v12.2c0 0.1 0 0.2 0.1 0.4 0.1 0.3 0.5 0.5 0.8 0.6h16.2c0.4 0 0.7-0.2 0.8-0.6 0-0.1 0.1-0.2 0.1-0.4V7.9C23 7.7 23 7.6 22.9 7.5zM21 18.9H7v-10h14V18.9z" fillRule="evenodd"/>
-						<polygon points="13 10.9 13 16.9 17 13.9 "/>
-					</g>
-				';
-				break;
-
-			case 'swap':
-				$icon = '
-					<g>
-						<path d="M19 12h-3V9c0-0.5-0.5-1-1-1H8C7.5 8 7 8.5 7 9v7c0 0.5 0.5 1 1 1h3v3c0 0.5 0.5 1 1 1h7c0.5 0 1-0.5 1-1v-7C20 12.5 19.5 12 19 12zM18 19h-5v-2h2c0.5 0 1-0.5 1-1v-2h2V19z" fillRule="evenodd"/>
-					</g>
-				';
-				break;
-
-			case 'none':
-			case 'animation-none':
-				$icon = '
-					<g>
-						<path d="M14 24c5.5 0 10-4.5 10-10S19.5 4 14 4 4 8.5 4 14s4.5 10 10 10zm0-17.5c4.1 0 7.5 3.4 7.5 7.5 0 1.5-.5 2.9-1.2 4.1L9.9 7.7c1.2-.7 2.6-1.2 4.1-1.2zM7.7 9.9l10.4 10.4c-1.2.8-2.6 1.2-4.1 1.2-4.1 0-7.5-3.4-7.5-7.5 0-1.5.5-2.9 1.2-4.1z"/>
-					</g>
-				';
-				break;
-
-			case 'animation-fade':
-				$icon = '
-					<g>
-						<circle cx="8.5" cy="19.5" r="1.5"/>
-						<circle cx="8.5" cy="14.5" r="1.5"/>
-						<circle cx="5" cy="12" r="1"/>
-						<circle cx="5" cy="17" r="1"/>
-						<circle cx="8.5" cy="9.5" r="1.5"/>
-						<path d="M15.7 4c-.4 0-.8.1-1.2.3-.6.3-.5.7-1.5.7-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c.3 0 .5.2.5.5s-.2.5-.5.5c-1.1 0-2 .9-2 2s.9 2 2 2c1 0 .9.4 1.4.7.4.2.8.3 1.2.3 4.3-.4 8.3-5.3 8.3-10.5s-4-10-8.2-10.5z"/>
-					</g>
-				';
-				break;
-
-			case 'animation-slide':
-				$icon = '
-					<g>
-						<path d="M22 4h-5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h5c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zM10 14c0 .6.4 1 1 1h.6L10 16.6c-.4.4-.4 1 0 1.4.4.4 1 .4 1.4 0l3.3-3.3c.2-.2.3-.5.3-.7s-.1-.5-.3-.7L11.4 10c-.4-.4-1-.4-1.4 0-.4.4-.4 1 0 1.4l1.6 1.6H11c-.6 0-1 .4-1 1z"/>
-						<circle cx="7" cy="14" r="1.5"/>
-						<circle cx="3" cy="14" r="1"/>
-					</g>
-				';
-				break;
-
-			case 'animation-bounce':
-				$icon = '
-					<g>
-						<circle cx="21.5" cy="8.5" r="3.5"/>
-						<circle cx="16" cy="12" r="1.7"/>
-						<circle cx="13" cy="15" r="1.2"/>
-						<circle cx="11" cy="18" r="1"/>
-						<circle cx="9" cy="22" r="1"/>
-						<circle cx="7" cy="19" r="1"/>
-						<circle cx="4" cy="17" r="1"/>
-					</g>
-				';
-				break;
-
-			case 'animation-zoom':
-				$icon = '
-					<g>
-						<path d="M23.7 4.3c-.1-.1-.2-.2-.3-.2-.1-.1-.3-.1-.4-.1h-5c-.6 0-1 .4-1 1s.4 1 1 1h2.6l-3.1 3.1c-.2-.1-.3-.1-.5-.1h-6c-.2 0-.3 0-.5.1L7.4 6H10c.6 0 1-.4 1-1s-.4-1-1-1H5c-.1 0-.3 0-.4.1-.2.1-.4.3-.5.5-.1.1-.1.3-.1.4v5c0 .6.4 1 1 1s1-.4 1-1V7.4l3.1 3.1c-.1.2-.1.3-.1.5v6c0 .2 0 .3.1.5L6 20.6V18c0-.6-.4-1-1-1s-1 .4-1 1v5c0 .1 0 .3.1.4.1.2.3.4.5.5.1.1.3.1.4.1h5c.6 0 1-.4 1-1s-.4-1-1-1H7.4l3.1-3.1c.2 0 .3.1.5.1h6c.2 0 .3 0 .5-.1l3.1 3.1H18c-.6 0-1 .4-1 1s.4 1 1 1h5c.1 0 .3 0 .4-.1.2-.1.4-.3.5-.5.1-.1.1-.3.1-.4v-5c0-.6-.4-1-1-1s-1 .4-1 1v2.6l-3.1-3.1c0-.2.1-.3.1-.5v-6c0-.2 0-.3-.1-.5L22 7.4V10c0 .6.4 1 1 1s1-.4 1-1V5c0-.1 0-.3-.1-.4 0-.1-.1-.2-.2-.3z"/>
-					</g>
-				';
-				break;
-
-			case 'animation-flip':
-				$icon = '
-					<g>
-						<path d="M22 2.4l-7 2.9V7h-2v-.8L7.6 8.7c-.4.2-.6.5-.6.9v8.7c0 .4.2.7.6.9l5.4 2.5V21h2v1.7l7 2.9c.5.2 1-.2 1-.7V3.1c0-.5-.5-.9-1-.7zM15 19h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zM13 2h2v2.5h-2zM13 23.5h2V26h-2z"/>
-					</g>
-				';
-				break;
-
-			case 'animation-fold':
-				$icon = '
-					<g>
-						<path d="M24 7h-4V3.4c0-.8-.6-1.4-1.3-1.4-.2 0-.5.1-.7.2l-6.5 3.9c-.9.6-1.5 1.6-1.5 2.6V23c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-6 10.5c0 .2-.1.4-.3.5L12 21.5V8.7c0-.4.2-.7.5-.9L18 4.5v13zM6 7h2v2H6zM6 23h2v2H6zM2.6 7.1c-.1 0-.1.1-.2.1v.1l-.1.1-.1.1c-.1.1-.2.3-.2.5v1h2V7H3c-.1 0-.2 0-.4.1zM2 23v1c0 .4.3.8.7.9.1.1.2.1.3.1h1v-2H2zM2 11h2v2H2zM2 19h2v2H2zM2 15h2v2H2z"/>
-					</g>
-				';
-				break;
-
-			case 'animation-roll':
-				$icon = '
-					<g>
-						<path d="M18.8 5c-5.3-2.7-11.8.2-14 5.6-1.1 2.8-1 6 .2 8.8.4 1 3.9 6.5 5 3.6.5-1.2-1.3-2.2-1.9-3-.8-1.2-1.4-2.5-1.6-3.9-.4-2.7.5-5.5 2.4-7.4 4-4 11.6-2.5 12.6 3.4.4 2.7-.9 5.5-3.4 6.6-2.6 1.1-6 0-6.8-2.8-.7-2.4 1.2-5.7 4-4.8 1.1.3 2 1.5 1.5 2.7-.3.7-1.7 1.2-1.6.1 0-.3.2-.4.2-.8-.1-.4-.5-.6-.9-.6-1.1.1-1.6 1.6-1.3 2.5.3 1.2 1.5 1.9 2.7 1.9 2.9 0 4.2-3.4 3.1-5.7-1.2-2.6-4.6-3.4-7-2.2-2.6 1.3-3.8 4.4-3.1 7.2 1.6 5.9 9.3 6.8 13.1 2.5 3.8-4.2 1.9-11.1-3.2-13.7z"/>
-					</g>
-				';
-				break;
-
-			default:
-				$icon = '';
-				break;
-		}
+		$all_svg_icons = et_pb_get_svg_icons_list();
+		$icon = isset( $all_svg_icons[ $icon_name ] ) ? $all_svg_icons[ $icon_name ] : '';
 
 		if ( '' === $icon ) {
 			return '';
@@ -4007,20 +3916,16 @@ class ET_Builder_Element {
 			esc_attr( $base_name )
 		);
 
-		// Tab Nav
-		$background .= '<ul class="et_pb_background-tab-navs">';
+		$tab_names_processed = array();
 
 		foreach ( $tab_names as $tab_nav_name ) {
 			if ( ! empty( $background_fields[ $tab_nav_name ] ) ) {
-				$background .= sprintf(
-					'<li><a href="#" class="et_pb_background-tab-nav et_pb_background-tab-nav--%1$s" data-tab="%1$s" title="%1$s">%2$s</a></li>',
-					esc_attr( $tab_nav_name ),
-					$this->get_icon( 'background-' . $tab_nav_name )
-				);
+				$tab_names_processed[] = sanitize_text_field( $tab_nav_name );
 			}
 		}
 
-		$background .= '</ul>';
+		// Tab Nav
+		$background .= sprintf( '<%%= window.et_builder.options_template_output("background_tabs_nav",%1$s) %%>', json_encode( $tab_names_processed ) );
 
 		// Tabs
 		foreach ( $tab_names as $tab_name ) {
@@ -4034,21 +3939,7 @@ class ET_Builder_Element {
 
 			// Render gradient tab's preview
 			if ( 'gradient' === $tab_name ) {
-				$background .= sprintf('<div class="et-pb-option-preview et-pb-option-preview--empty">
-						<button class="et-pb-option-preview-button et-pb-option-preview-button--add">
-							%1$s
-						</button>
-						<button class="et-pb-option-preview-button et-pb-option-preview-button--swap">
-							%2$s
-						</button>
-						<button class="et-pb-option-preview-button et-pb-option-preview-button--delete">
-							%3$s
-						</button>
-					</div>',
-					$this->get_icon( "add" ),
-					$this->get_icon( "swap" ),
-					$this->get_icon( "delete" )
-				);
+				$background .= '<%= window.et_builder.options_template_output("background_gradient_buttons") %>';
 			}
 
 			// Tab's fields
@@ -4193,8 +4084,8 @@ class ET_Builder_Element {
 		}
 
 		if ( 'font' === $field['type'] ) {
-			$default       = '' === $default ? '||||' : $default;
-			$default_value = '' === $default_value ? '||||' : $default_value;
+			$default       = '' === $default ? '||||||||' : $default;
+			$default_value = '' === $default_value ? '||||||||' : $default_value;
 		}
 
 		$font_icon_options = array( 'et_pb_font_icon', 'et_pb_button_icon', 'et_pb_button_one_icon', 'et_pb_button_two_icon' );
@@ -4406,6 +4297,7 @@ class ET_Builder_Element {
 			case 'text_align':
 			case 'select':
 			case 'yes_no_button':
+			case 'multiple_buttons':
 			case 'font':
 			case 'select_with_option_groups':
 				if ( 'font' === $field['type'] ) {
@@ -4433,7 +4325,12 @@ class ET_Builder_Element {
 				//In other case it needs to be encoded
 				$select_default = $default_is_arr ? $default_value : json_encode( $default_value );
 
-				$select = $this->render_select( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $field['type'], $button_options, $select_default, $only_options );
+				if ( 'font' === $field['type'] ) {
+					$group_label = isset( $field['group_label'] ) ? $field['group_label'] : '';
+					$select = $this->render_font_select( $field_name, $field['id'], $group_label );
+				} else {
+					$select = $this->render_select( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $field['type'], $button_options, $select_default, $only_options );
+				}
 
 				if ( $only_options ) {
 					$field_el = $select;
@@ -4444,7 +4341,7 @@ class ET_Builder_Element {
 				if ( 'font' === $field['type'] ) {
 					$font_style_button_html = sprintf(
 						'<%%= window.et_builder.options_template_output("font_buttons",%1$s) %%>',
-						json_encode( array( 'bold', 'italic', 'uppercase', 'underline' ) )
+						json_encode( array( 'italic', 'uppercase', 'capitalize', 'underline', 'line_through' ) )
 					);
 
 					$field_el .= sprintf(
@@ -4453,6 +4350,8 @@ class ET_Builder_Element {
 						</div> <!-- .et_builder_font_styles -->',
 						$font_style_button_html
 					);
+
+					$field_el .= '<%= window.et_builder.options_template_output("font_line_styles") %>';
 
 					$field_el .= $hidden_field;
 				}
@@ -4483,22 +4382,14 @@ class ET_Builder_Element {
 
 				break;
 			case 'select_animation':
-				$options           = $field['options'];
-				$animation_buttons = '';
+				$options                 = $field['options'];
+				$animation_buttons_array = array();
 
 				foreach ( $options as $option_name => $option_title ) {
-					$animation_buttons .= sprintf(
-						'<div class="et_animation_button">
-							<a href="#">
-								<span class="et_animation_button_title" data-value="%1$s">%2$s</span>
-								<span class="et_animation_button_icon">%3$s</span>
-							</a>
-						</div>',
-						esc_attr( $option_name ),
-						esc_html( $option_title ),
-						$this->get_icon( "animation-{$option_name}" )
-					);
+					$animation_buttons_array[ $option_name ] = sanitize_text_field( $option_title );
 				}
+
+				$animation_buttons = sprintf( '<%%= window.et_builder.options_template_output("animation_buttons",%1$s) %%>', json_encode( $animation_buttons_array ) );
 
 				$field_el = sprintf(
 					'<div class="et_select_animation et-pb-main-setting" data-default="none">
@@ -4959,20 +4850,8 @@ class ET_Builder_Element {
 
 		if ( isset( $field['has_preview'] ) && $field['has_preview'] ) {
 			$field_el = sprintf(
-				'<div class="et-pb-option-preview et-pb-option-preview--empty">
-					<button class="et-pb-option-preview-button et-pb-option-preview-button--add">
-						%1$s
-					</button>
-					<button class="et-pb-option-preview-button et-pb-option-preview-button--edit">
-						%2$s
-					</button>
-					<button class="et-pb-option-preview-button et-pb-option-preview-button--delete">
-						%3$s
-					</button>
-				</div>%4$s',
-				$this->get_icon( 'add' ),
-				$this->get_icon( 'setting' ),
-				$this->get_icon( 'delete' ),
+				'<%%= window.et_builder.options_template_output("option_preview_buttons") %%>
+				%1$s',
 				$field_el
 			);
 		}
@@ -5017,14 +4896,56 @@ class ET_Builder_Element {
 		return $field_el;
 	}
 
+	function render_font_select( $name, $id = '', $group_label ) {
+		$options_output = '<%= window.et_builder.fonts_template() %>';
+		$font_weight_output = '<%= window.et_builder.fonts_weight_template() %>';
+
+		$output = sprintf(
+			'<div class="et-pb-select-font-outer" data-group_label="%6$s">
+				<div class="et-pb-settings-custom-select-wrapper et-pb-settings-option-select-searchable">
+					<div class="et_pb_select_placeholder"></div>
+					<ul class="et-pb-settings-option-select et-pb-settings-option-select-advanced et-pb-main-setting">
+						<li class="et-pb-select-options-filter">
+							<input type="text" class="et-pb-settings-option-input et-pb-main-setting regular-text et-pb-menu-filter" placeholder="Search Fonts">
+						</li>
+						<li class="et_pb_selected_item_container select-option-item">
+						</li>
+						<li class="et-pb-option-subgroup et-pb-recent-fonts">
+							<p class="et-pb-subgroup-title">%4$s</p>
+							<ul>
+							</ul>
+						</li>
+						%3$s
+					</ul>
+				</div>
+			</div>
+			%5$s',
+			esc_attr( $name ),
+			( ! empty( $id ) ? sprintf(' id="%s"', esc_attr( $id ) ) : '' ),
+			$options_output . "\n\t\t\t\t\t",
+			esc_html__( 'Recent', 'et_builder' ),
+			$font_weight_output,
+			esc_attr( $group_label )
+		);
+
+		return $output;
+	}
+
 	function render_select( $name, $options, $id = '', $class = '', $attributes = '', $field_type = '', $button_options = array(), $default = '', $only_options = false ) {
 		$options_output = '';
+		$processed_options = $options;
 
-		if ( 'font' === $field_type ) {
-			$options_output = '<%= window.et_builder.fonts_template() %>';
+		// options format is different for multiple_buttons. Prepare it for further processing
+		if ( 'multiple_buttons' === $field_type ) {
+			$processed_options = array();
 
-		} else if ( 'select_with_option_groups' === $field_type ) {
-			foreach ( $options as $option_group_name => $option_group ) {
+			foreach ( $options as $option_name => $option_data ) {
+				$processed_options[ $option_name ] = $option_data['title'];
+			}
+		}
+
+		if ( 'select_with_option_groups' === $field_type ) {
+			foreach ( $processed_options as $option_group_name => $option_group ) {
 				$option_group_name = esc_attr( $option_group_name );
 				$options_output   .= '0' !== $option_group_name ? "<optgroup label='{$option_group_name}'>" : '';
 				$options_output   .= sprintf( '<%%= window.et_builder.options_template_output("select",%1$s,this.model.toJSON()) %%>',
@@ -5056,6 +4977,7 @@ class ET_Builder_Element {
 
 		$output = sprintf(
 			'%6$s
+			%8$s
 				<select name="%1$s"%2$s%3$s%4$s>%5$s</select>
 			%7$s',
 			esc_attr( $name ),
@@ -5069,14 +4991,21 @@ class ET_Builder_Element {
 						%1$s',
 					sprintf( '<%%= window.et_builder.options_template_output("yes_no_button",%1$s) %%>',
 						json_encode( array(
-							'on' => esc_html( $options['on'] ),
-							'off' => esc_html( $options['off'] ),
+							'on' => esc_html( $processed_options['on'] ),
+							'off' => esc_html( $processed_options['off'] ),
 						) )
 					),
 					( ! empty( $button_options['button_type'] ) && 'equal' === $button_options['button_type'] ? ' et_pb_button_equal_sides' : '' )
 				) : '',
-			'yes_no_button' === $field_type ? '</div>' : ''
+			'yes_no_button' === $field_type || 'multiple_buttons' === $field_type ? '</div>' : '',
+			'multiple_buttons' === $field_type ?
+				sprintf(
+					'<div class="et_pb_multiple_buttons_wrapper">
+					<%%= window.et_builder.options_template_output("multiple_buttons",%1$s) %%>',
+					json_encode( $options )
+				) : ''
 		);
+
 		return $only_options ? $options_output : $output;
 	}
 
@@ -5223,28 +5152,46 @@ class ET_Builder_Element {
 						$i++;
 						$toggle_output = '';
 						$is_accordion_enabled = isset( $this->options_toggles[ $tab_slug ]['settings']['bb_toggles_enabeld'] ) && $this->options_toggles[ $tab_slug ]['settings']['bb_toggles_enabled'] ? true : false;
+						$is_tabbed_subtoggles = isset( $toggle_data['tabbed_subtoggles'] );
+						$is_bb_icons_support = isset( $toggle_data['bb_icons_support'] );
+						$subtoggle_tabs_nav = '';
 
 						if ( is_array( $toggle_data ) && ! empty( $toggle_data ) ) {
 							if ( ! isset( $toggle_data['sub_toggles'] ) ) {
 								$toggle_data['sub_toggles'] = array( 'main' => '' );
 							}
 
-							foreach( $toggle_data['sub_toggles'] as $sub_toggle_id => $sub_toggle_name ) {
+							foreach( $toggle_data['sub_toggles'] as $sub_toggle_id => $sub_toggle_data ) {
 								if ( ! isset( $tabs_output[ $tab_slug ][ $toggle_slug ][ $sub_toggle_id ] ) ) {
 									continue;
 								}
 
+								if ( $is_tabbed_subtoggles ) {
+									$subtoggle_tabs_nav .= sprintf(
+										'<li class="subtoggle_tabs_nav_item"><a class="subtoggle_tabs_nav_item_inner%3$s" data-tab_id="%1$s">%2$s</a></li>',
+										$sub_toggle_id,
+										$is_bb_icons_support ? '' : esc_html( $sub_toggle_data['name'] ),
+										$is_bb_icons_support ? sprintf( ' subtoggle_tabs_nav_icon subtoggle_tabs_nav_icon-%1$s', esc_attr( $sub_toggle_data['icon'] ) ) : ''
+									);
+								}
+
+								$subtoggle_options = '';
+
 								foreach ( $tabs_output[ $tab_slug ][ $toggle_slug ][ $sub_toggle_id ] as $toggle_option_output ) {
-									if ( 'main' === $sub_toggle_id ) {
-										$toggle_output .= $toggle_option_output;
-									} else {
-										$toggle_output .= sprintf(
-											'<div class="et_pb_subtoggle_section">
-												%1$s
-											</div>',
-											$toggle_option_output
-										);
-									}
+									$subtoggle_options .= $toggle_option_output;
+								}
+
+								if ( 'main' === $sub_toggle_id ) {
+									$toggle_output .= $subtoggle_options;
+								} else {
+									$toggle_output .= sprintf(
+										'<div class="et_pb_subtoggle_section%2$s"%3$s>
+											%1$s
+										</div>',
+										$subtoggle_options,
+										$is_tabbed_subtoggles ? ' et_pb_tabbed_subtoggle' : '',
+										$is_tabbed_subtoggles ? sprintf( ' data-tab_id="%1$s"', esc_attr( $sub_toggle_id ) ) : ''
+									);
 								}
 							}
 						} else {
@@ -5260,8 +5207,9 @@ class ET_Builder_Element {
 						}
 
 						$toggle_output = sprintf(
-							'<div class="et-pb-options-toggle-container%3$s%4$s">
+							'<div class="et-pb-options-toggle-container%3$s%4$s%5$s">
 								<h3 class="et-pb-option-toggle-title">%1$s</h3>
+								%6$s
 								<div class="et-pb-option-toggle-content">
 									%2$s
 								</div> <!-- .et-pb-option-toggle-content -->
@@ -5269,7 +5217,9 @@ class ET_Builder_Element {
 							esc_html( $toggle_heading ),
 							$toggle_output,
 							( $is_accordion_enabled ? ' et-pb-options-toggle-enabled' : ' et-pb-options-toggle-disabled' ),
-							( 1 === $i && $is_accordion_enabled ? ' et-pb-option-toggle-content-open' : '' )
+							( 1 === $i && $is_accordion_enabled ? ' et-pb-option-toggle-content-open' : '' ),
+							$is_tabbed_subtoggles ? ' et_pb_contains_tabbed_subtoggle' : '',
+							$is_tabbed_subtoggles && '' !== $subtoggle_tabs_nav ? sprintf( '<ul class="subtoggle_tabs_nav">%1$s</ul>', $subtoggle_tabs_nav ) : ''
 						);
 
 						$tab_output .= $toggle_output;
@@ -7839,7 +7789,13 @@ class ET_Builder_Element {
 			return '';
 		}
 
+		global $et_user_fonts_queue;
+
 		$output = '';
+
+		if ( ! empty( $et_user_fonts_queue ) ) {
+			$output .= et_builder_enqueue_user_fonts( $et_user_fonts_queue );
+		}
 
 		$styles_by_media_queries = $styles_array;
 		$styles_count            = (int) count( $styles_by_media_queries );

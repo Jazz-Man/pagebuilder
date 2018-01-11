@@ -1,6 +1,83 @@
+version 3.0.83 ( updated 10-18-2017 )
+- Added improved font options interface to the Divi Builder.
+- Added font search and recently used fonts list to the font selection menu.
+- Added 600 new fonts to the Divi Builder and Divi Theme Customizer.
+- Added new dynamic font weight options for all 800 Divi fonts, ranging from Ultra Thin to Ultra Bold.
+- Added new font styling choices including strike-through, small caps and underline options.
+- Added individual heading level styling options to the text module, allowing custom fonts, colors and sizes to be applied to H1-H6 headings.
+- Added new heading level settings to all modules allowing custom heading levels to be applied to all module titles.
+- Added custom font uploading and management to the Divi Builder font options interface.
+- Added new styling options for anchor links in the text module.
+- Added new styling options for blockquotes in the text module.
+- Added new styling options for unordered lists in the text module.
+- Added new styling options for ordered lists in the text module.
+- Improved options wording for all module title options.
+- Fixed the fullwidth menu module on mobile devices.
+- Fixed clearings for portfolio and gallery pagination.
+- Fixed an issue that caused post-based modules not to render properly after being duplicated.
+- Fixed module popover getting slightly cut-off on empty slider module.
+- Disabled the Image shadow for gallery module when the slider layout is enabled.
+- Fixed `Cannot read property 'split' of undefined` error that occurs when adding accordion item in backend builder.
+- Fixed portfolio modules ability to change layout in visual builder.
+- Fixed fullwidth header module header image container width in IE.
+- Fixed Image Module - applied image wrapper to apply shadow on image outline.
+- Added fields box shadow control to Email Optin & Login modules.
+	* core/admin/fonts/modules.eot
+	* core/admin/fonts/modules.svg
+	* core/admin/fonts/modules.ttf
+	* core/admin/fonts/modules.woff
+	* css/main-styles.css - Divi
+	* css/theme-customizer-controls.css - Divi
+	* epanel/google-fonts/et_google_fonts.css
+	* epanel/google-fonts/et_google_fonts.js
+	* functions.php - Divi
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-global-settings.php
+	* includes/builder/comments_template.php
+	* includes/builder/core.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/google-fonts-data.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/FullwidthSlider.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/Sidebar.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Slider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/field/BoxShadow.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/styles.css
+	* includes/functions/sanitiation.php - Divi
+
 version 3.0.82 ( updated 10-12-2017 )
 - Fixed image alignment issue that prevented alignment options from working correctly.
-- Fixed a bug that caused the blurb left icon alignment option to not work correctly. 
+- Fixed a bug that caused the blurb left icon alignment option to not work correctly.
 	* style.css
 
 version 3.0.81 ( updated 10-12-2017 )

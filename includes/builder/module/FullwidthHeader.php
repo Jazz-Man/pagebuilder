@@ -104,7 +104,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "%%order_class%%.et_pb_fullwidth_header .header-content h1",
+						'main' => "%%order_class%%.et_pb_fullwidth_header .header-content h1, %%order_class%%.et_pb_fullwidth_header .header-content h2.et_pb_module_header, %%order_class%%.et_pb_fullwidth_header .header-content h3.et_pb_module_header, %%order_class%%.et_pb_fullwidth_header .header-content h4.et_pb_module_header, %%order_class%%.et_pb_fullwidth_header .header-content h5.et_pb_module_header, %%order_class%%.et_pb_fullwidth_header .header-content h6.et_pb_module_header",
 					),
 					'font_size' => array(
 						'default'      => '30px',
@@ -116,6 +116,9 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 						'default' => '0px',
 					),
 					'hide_text_color'     => true,
+					'header_level' => array(
+						'default' => 'h1',
+					),
 				),
 				'content' => array(
 					'label'    => esc_html__( 'Content', 'et_builder' ),
@@ -567,6 +570,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		$button_custom_2              = $this->shortcode_atts['custom_button_two'];
 		$logo_title                   = $this->shortcode_atts['logo_title'];
 		$logo_alt_text                = $this->shortcode_atts['logo_alt_text'];
+		$header_level                 = $this->shortcode_atts['title_level'];
 		$content_max_width             = $this->shortcode_atts['content_max_width'];
 		$content_max_width_tablet      = $this->shortcode_atts['content_max_width_tablet'];
 		$content_max_width_phone       = $this->shortcode_atts['content_max_width_phone'];
@@ -706,7 +710,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 						%5$s
 					</div>
 				</div>',
-				( $title ? sprintf( '<h1>%1$s</h1>', $title ) : '' ),
+				( $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h1' ), $title ) : '' ),
 				( $subhead ? sprintf( '<span class="et_pb_fullwidth_header_subhead">%1$s</span>', $subhead ) : '' ),
 				$logo_image,
 				sprintf( '<div class="et_pb_header_content_wrapper">%1$s</div>', $this->shortcode_content ),

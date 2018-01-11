@@ -65,8 +65,11 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 				'title'   => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h2, {$this->main_css_element} h2 a",
+						'main' => "{$this->main_css_element} h2, {$this->main_css_element} h2 a, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h1.et_pb_module_header a, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header a, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header a, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header a, {$this->main_css_element} h6.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header a",
 						'important' => 'all',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'caption' => array(
@@ -324,7 +327,7 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 
 		$defaults = array(
 			'posts_number'       => 10,
-			'include_categories' => 0,
+			'include_categories' => '',
 			'fullwidth'          => 'on',
 		);
 
@@ -459,10 +462,13 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 		$zoom_icon_color     = $this->shortcode_atts['zoom_icon_color'];
 		$hover_overlay_color = $this->shortcode_atts['hover_overlay_color'];
 		$hover_icon          = $this->shortcode_atts['hover_icon'];
+		$header_level        = $this->shortcode_atts['title_level'];
 
 		global $paged;
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
+
+		$processed_header_level = et_pb_process_header_level( $header_level, 'h2' );
 
 		// Set inline style
 		if ( '' !== $zoom_icon_color ) {
@@ -544,11 +550,11 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 					<?php } ?>
 
 					<?php if ( 'on' === $show_title ) { ?>
-						<h2>
+						<<?php echo $processed_header_level; ?> class="et_pb_module_header">
 							<a href="<?php echo esc_url( $post->post_permalink ); ?>" title="<?php echo esc_attr( get_the_title() ); ?>">
 								<?php echo esc_html( get_the_title() ); ?>
 							</a>
-						</h2>
+						</<?php echo $processed_header_level; ?>>
 					<?php } ?>
 
 

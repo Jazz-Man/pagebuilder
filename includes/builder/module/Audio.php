@@ -50,8 +50,11 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h2",
+						'main' => "{$this->main_css_element} h2, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h4.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h2',
 					),
 				),
 				'caption'   => array(
@@ -265,6 +268,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		$image_url         = $this->shortcode_atts['image_url'];
 		$background_color  = "" !== $this->shortcode_atts['background_color'] ? $this->shortcode_atts['background_color'] : $this->fields_defaults['background_color'][0];
 		$background_layout = $this->shortcode_atts['background_layout'];
+		$header_level      = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -328,7 +332,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					%3$s
 				</div>
 			</div>',
-			( '' !== $title ? '<h2>' . esc_html( $title ) . '</h2>' : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
 			$meta,
 			self::get_audio( array(
 				'audio' => $audio,

@@ -55,7 +55,10 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'title' => array(
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h1",
+						'main' => "{$this->main_css_element} h1, {$this->main_css_element} h2.et_pb_contact_main_title, {$this->main_css_element} h3.et_pb_contact_main_title, {$this->main_css_element} h4.et_pb_contact_main_title, {$this->main_css_element} h5.et_pb_contact_main_title, {$this->main_css_element} h6.et_pb_contact_main_title",
+					),
+					'header_level' => array(
+						'default' => 'h1',
 					),
 				),
 				'form_field'   => array(
@@ -304,6 +307,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$use_redirect          = $this->shortcode_atts['use_redirect'];
 		$redirect_url          = $this->shortcode_atts['redirect_url'];
 		$success_message       = $this->shortcode_atts['success_message'];
+		$header_level          = $this->shortcode_atts['title_level'];
 
 		global $et_pb_contact_form_num;
 
@@ -553,7 +557,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				%3$s
 			</div> <!-- .et_pb_contact_form_container -->
 			',
-			( '' !== $title ? sprintf( '<h1 class="et_pb_contact_main_title">%1$s</h1>', esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
 			'' !== $et_error_message ? $et_error_message : '',
 			$form,
 			( '' !== $module_id

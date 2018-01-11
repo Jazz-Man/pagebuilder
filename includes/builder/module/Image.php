@@ -398,7 +398,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<img src="%1$s" alt="%2$s"%3$s />
+			'<span class="et_pb_image_wrap"><img src="%1$s" alt="%2$s"%3$s /></span>
 			%4$s',
 			esc_url( $src ),
 			esc_attr( $alt ),
@@ -445,7 +445,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
 
 		self::set_style( $function_name, $boxShadow->get_style(
-			'.' . self::get_module_order_class( $function_name ),
+			sprintf( '.%1$s .et_pb_image_wrap', self::get_module_order_class( $function_name ) ),
 			$this->shortcode_atts
 		) );
 	}

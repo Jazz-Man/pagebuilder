@@ -68,10 +68,13 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main'      => "{$this->main_css_element} h4",
+						'main'      => "{$this->main_css_element} h4, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h2.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header",
 						'important' => 'plugin_only',
+					),
+					'header_level' => array(
+						'default' => 'h4',
 					),
 				),
 				'body'   => array(
@@ -273,6 +276,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		$background_layout = $this->shortcode_atts['background_layout'];
 		$icon_color        = $this->shortcode_atts['icon_color'];
 		$icon_hover_color  = $this->shortcode_atts['icon_hover_color'];
+		$header_level      = $this->shortcode_atts['header_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -369,7 +373,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 			( '' !== $image ? $image : '' ),
 			( '' !== $module_id ? sprintf( ' id="%1$s"', esc_attr( $module_id ) ) : '' ),
 			( '' !== $module_class ? sprintf( ' %1$s', esc_attr( $module_class ) ) : '' ),
-			( '' !== $name ? sprintf( '<h4>%1$s</h4>', esc_html( $name ) ) : '' ),
+			( '' !== $name ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), esc_html( $name ) ) : '' ),
 			( '' !== $position ? sprintf( '<p class="et_pb_member_position">%1$s</p>', esc_html( $position ) ) : '' ),
 			$social_links,
 			$background_layout,

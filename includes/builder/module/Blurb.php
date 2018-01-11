@@ -100,9 +100,12 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} h4, {$this->main_css_element} h4 a",
+						'main' => "{$this->main_css_element} h4, {$this->main_css_element} h4 a, {$this->main_css_element} h1.et_pb_module_header, {$this->main_css_element} h1.et_pb_module_header a, {$this->main_css_element} h2.et_pb_module_header, {$this->main_css_element} h2.et_pb_module_header a, {$this->main_css_element} h3.et_pb_module_header, {$this->main_css_element} h3.et_pb_module_header a, {$this->main_css_element} h5.et_pb_module_header, {$this->main_css_element} h5.et_pb_module_header a, {$this->main_css_element} h6.et_pb_module_header, {$this->main_css_element} h6.et_pb_module_header a",
+					),
+					'header_level' => array(
+						'default' => 'h4',
 					),
 				),
 				'body'   => array(
@@ -503,6 +506,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		$icon_font_size        = $this->shortcode_atts['icon_font_size'];
 		$icon_font_size_tablet = $this->shortcode_atts['icon_font_size_tablet'];
 		$icon_font_size_phone  = $this->shortcode_atts['icon_font_size_phone'];
+		$header_level          = $this->shortcode_atts['header_level'];
 		$icon_font_size_last_edited  = $this->shortcode_atts['icon_font_size_last_edited'];
 		$image_max_width             = $this->shortcode_atts['image_max_width'];
 		$image_max_width_tablet      = $this->shortcode_atts['image_max_width_tablet'];
@@ -564,7 +568,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		}
 
 		if ( '' !== $title ) {
-			$title = "<h4>{$title}</h4>";
+			$title = sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), $title );
 		}
 
 		// Added for backward compatibility

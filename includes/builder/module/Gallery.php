@@ -81,6 +81,9 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_gallery_title",
 					),
+					'header_level' => array(
+						'default' => 'h3',
+					),
 				),
 				'caption' => array(
 					'label'    => esc_html__( 'Caption', 'et_builder' ),
@@ -217,7 +220,8 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 					'posts_number',
 					'show_title_and_caption',
 					'show_pagination',
-					'orientation'
+					'orientation',
+					'box_shadow_style_image',
 				),
 				'computed_affects'   => array(
 					'__gallery',
@@ -376,6 +380,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 			'option_category' => 'layout',
 			'tab_slug'        => 'advanced',
 			'toggle_slug'     => 'image',
+			'depends_show_if' => 'off',
 		) ) );
 
 		return $fields;
@@ -462,6 +467,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		$auto_speed             = $this->shortcode_atts['auto_speed'];
 		$orientation            = $this->shortcode_atts['orientation'];
 		$pagination_text_align  = $this->shortcode_atts['pagination_text_align'];
+		$header_level           = $this->shortcode_atts['title_level'];
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -558,10 +564,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 
 			if ( 'on' !== $fullwidth && 'on' === $show_title_and_caption ) {
 				if ( trim($attachment->post_title) ) {
-					$output .= "
-						<h3 class='et_pb_gallery_title'>
-						" . wptexturize($attachment->post_title) . "
-						</h3>";
+					$output .= sprintf( '<%2$s class="et_pb_gallery_title">%1$s</%2$s>', wptexturize($attachment->post_title), et_pb_process_header_level( $header_level, 'h3' ) );
 				}
 				if ( trim($attachment->post_excerpt) ) {
 				$output .= "

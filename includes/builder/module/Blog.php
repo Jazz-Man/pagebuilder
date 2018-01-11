@@ -75,12 +75,18 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		$this->advanced_options = array(
 			'fonts' => array(
 				'header' => array(
-					'label'    => esc_html__( 'Header', 'et_builder' ),
+					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .entry-title",
 						'color' => "{$this->main_css_element} .entry-title a",
 						'plugin_main' => "{$this->main_css_element} .entry-title, {$this->main_css_element} .entry-title a",
 						'important' => 'all',
+					),
+					'header_level' => array(
+						'default' => 'h2',
+						'computed_affects' => array(
+							'__posts',
+						),
 					),
 				),
 				'body'   => array(
@@ -482,6 +488,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 					'offset_number',
 					'use_overlay',
 					'hover_icon',
+					'header_level',
 					'__page',
 				),
 				'computed_minimum' => array(
@@ -533,6 +540,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			'hover_overlay_color'           => '',
 			'hover_icon'                    => '',
 			'use_overlay'                   => '',
+			'header_level'                  => 'h2',
 		);
 
 		// WordPress' native conditional tag is only available during page load. It'll fail during component update because
@@ -551,6 +559,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		remove_all_filters( 'wp_audio_shortcode_class');
 
 		$args = wp_parse_args( $args, $defaults );
+
+		$processed_header_level = et_pb_process_header_level( $args['header_level'], 'h2' );
 
 		$overlay_output = '';
 		$hover_icon = '';
@@ -696,7 +706,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 
 						<?php if ( 'off' === $args['fullwidth'] || ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) ) { ?>
 							<?php if ( ! in_array( $post_format, array( 'link', 'audio' ) ) ) { ?>
-								<h2 class="entry-title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
+								<<?php echo $processed_header_level; ?> class="entry-title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></<?php echo $processed_header_level; ?>>
 							<?php } ?>
 
 							<?php
@@ -878,6 +888,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		$hover_overlay_color = $this->shortcode_atts['hover_overlay_color'];
 		$hover_icon          = $this->shortcode_atts['hover_icon'];
 		$use_overlay         = $this->shortcode_atts['use_overlay'];
+		$header_level        = $this->shortcode_atts['header_level'];
 
 		global $paged;
 
@@ -886,6 +897,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		$parallax_image_background = $this->get_parallax_image_background();
 
 		$container_is_closed = false;
+
+		$processed_header_level = et_pb_process_header_level( $header_level, 'h2' );
 
 		// some themes do not include these styles/scripts so we need to enqueue them in this module to support audio post format
 		wp_enqueue_style( 'wp-mediaelement' );
@@ -1060,7 +1073,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 
 			<?php if ( 'off' === $fullwidth || ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) ) { ?>
 				<?php if ( ! in_array( $post_format, array( 'link', 'audio' ) ) ) { ?>
-					<h2 class="entry-title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></h2>
+					<<?php echo $processed_header_level; ?> class="entry-title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></<?php echo $processed_header_level; ?>>
 				<?php } ?>
 
 				<?php
