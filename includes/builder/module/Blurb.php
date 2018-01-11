@@ -567,7 +567,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				$image_max_width = '100%';
 			}
 
-			$image_max_width_selector = '%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap';
+			$image_max_width_selector = $icon_placement === 'top' && $is_image_svg ? '%%order_class%% .et_pb_main_blurb_image' : '%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap';
 			$image_max_width_property = $is_image_svg ? 'width' : 'max-width';
 
 			$image_max_width_responsive_active = et_pb_get_responsive_status( $image_max_width_last_edited );

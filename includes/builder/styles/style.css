@@ -1213,6 +1213,22 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 	display: none !important;
 }
 
+/* Colorpicker */
+.et-pb-option-container--color-alpha {
+	position: relative;
+}
+
+.et-pb-option-container--color-alpha .et-pb-reset-setting {
+	position: absolute;
+	top: 10px;
+	right: -35px;
+}
+
+.rtl .et-pb-option-container--color-alpha .et-pb-reset-setting {
+	right: auto;
+	left: -35px;
+}
+
 /* Improved Colorpicker */
 .et_pb_background-tab--gradient .wp-picker-container,
 .et-pb-option--has-preview .wp-picker-container{

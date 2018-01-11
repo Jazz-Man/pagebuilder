@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.92' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.93' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -559,6 +559,25 @@ function et_pb_process_header_level( $new_level, $default ) {
 }
 endif;
 
+if ( ! function_exists( 'et_pb_get_alignment' ) ) {
+	function et_pb_get_alignment( $key ) {
+		if ( is_rtl() && 'left' === $key ) {
+			$key = 'right';
+		}
+
+		switch ( $key ) {
+			case 'force_left' :
+				return 'left';
+				break;
+			case 'justified' :
+				return 'justify';
+				break;
+			default :
+				return $key;
+		}
+	}
+}
+
 if ( ! function_exists( 'et_builder_get_text_orientation_options' ) ) :
 function et_builder_get_text_orientation_options( $exclude_options = array(), $include_options = array() ) {
 	$text_orientation_options = array(
@@ -569,10 +588,11 @@ function et_builder_get_text_orientation_options( $exclude_options = array(), $i
 	);
 
 	if ( is_rtl() ) {
-		$text_orientation_options = array(
-			'right'  => esc_html__( 'Right', 'et_builder' ),
-			'center' => esc_html__( 'Center', 'et_builder' ),
-		);
+	  $text_orientation_options = array(
+		  'right'      => esc_html__( 'Right', 'et_builder' ),
+		  'center'     => esc_html__( 'Center', 'et_builder' ),
+		  'force_left' => esc_html__( 'Left', 'et_builder' ),
+	  );
 	}
 
 	// Exclude some options if needed
@@ -650,7 +670,6 @@ function et_fb_conditional_tag_params() {
 
 	return apply_filters( 'et_fb_conditional_tag_params', $conditional_tags );
 }
-
 
 function _et_fb_get_app_preferences_defaults() {
 	$app_preferences = array(
@@ -5344,6 +5363,7 @@ function et_pb_pagebuilder_meta_box() {
 			<%% _.each(this.et_builder_template_options.text_align_buttons.options, function(text_align_button) { %%>
 				<%%
 					var text_align_button_classname = text_align_button === "justified" ? "justify" : text_align_button;
+					text_align_button_classname = text_align_button === "force_left" ? "left" : text_align_button;
 					var text_align_button_type = this.et_builder_template_options.text_align_buttons.type;
 				%%>
 				<div class="et_builder_<%%= text_align_button %%>_text_align et_builder_text_align mce-widget mce-btn" data-value="<%%= text_align_button %%>">
@@ -7132,13 +7152,16 @@ function et_fb_get_saved_layouts() {
 		die( -1 );
 	}
 
+	// Reduce number of results per page if we're hosted on wpengine to avoid 500 error due to memory allocation.
+	// This is caused by one of their custom mu-plugins doing additional stuff but we have no control over there.
+	$page_size = function_exists( 'is_wpe' ) || function_exists( 'is_wpe_snapshot' ) ? 25 : 50;
 	$post_type = ! empty( $_POST['et_post_type'] ) ? sanitize_text_field( $_POST['et_post_type'] ) : 'post';
 	$layouts_type = ! empty( $_POST['et_load_layouts_type'] ) ? sanitize_text_field( $_POST['et_load_layouts_type'] ) : 'all';
 	$start_from = ! empty( $_POST['et_templates_start_page'] ) ? sanitize_text_field( $_POST['et_templates_start_page'] ) : 0;
 
 	$post_type = apply_filters( 'et_pb_show_all_layouts_built_for_post_type', $post_type, $layouts_type );
 
-	$all_layouts_data = et_pb_retrieve_templates( 'layout', '', 'false', '0', $post_type, $layouts_type, array( $start_from, 50 ) );
+	$all_layouts_data = et_pb_retrieve_templates( 'layout', '', 'false', '0', $post_type, $layouts_type, array( $start_from, $page_size ) );
 	$all_layouts_data_processed = $all_layouts_data;
 	$next_page = 'none';
 
@@ -7151,7 +7174,7 @@ function et_fb_get_saved_layouts() {
 			foreach( $all_layouts_data as $index => $data ) {
 				$all_layouts_data_processed[ $index ]['shortcode'] = et_fb_process_shortcode( $data['shortcode'] );
 			}
-			$next_page = $start_from + 50;
+			$next_page = $start_from + $page_size;
 		}
 	}
 
@@ -8210,7 +8233,7 @@ function et_builder_get_shop_categories( $args = array() ) {
 endif;
 
 if ( ! function_exists( 'et_pb_get_spacing' ) ) :
-function et_pb_get_spacing( $spacing, $corner, $default = '' ) {
+function et_pb_get_spacing( $spacing, $corner, $default = '0px' ) {
 	$corners       = array( 'top', 'right', 'bottom', 'left' );
 	$corner_index  = array_search( $corner, $corners );
 	$spacing_array = explode( '|', $spacing );

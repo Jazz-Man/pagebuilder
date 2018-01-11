@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.92';
+window.et_builder_version = '3.0.93';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -15035,31 +15035,39 @@ window.et_builder_product_name = 'Divi';
 
 			if ( $et_affect_fields.length ) {
 				$et_affect_fields.change( function() {
-					var $this_field         = $(this), // this field value affects another field visibility
-						new_field_value     = $this_field.val(),
-						new_field_value_number = parseInt( new_field_value ),
-						data_affects_obj    = _.map( $this_field.data( 'affects' ).split(', '), function( affect ) {
+					var $this_field         = $(this); // this field value affects another field visibility
+					var new_field_value     = $this_field.val();
+					var new_field_value_number = parseInt( new_field_value );
+					var data_affects_obj    = _.map( $this_field.data( 'affects' ).split(', '), function( affect ) {
 							var is_selector = ( 'image' !== affect ) && $( affect ).length;
 
 							return is_selector ? affect : '#et_pb_' + affect;
-						} ),
-						data_affects         = data_affects_obj.join(', '),
-						$affected_fields     = $container.find( data_affects ),
-						this_field_tab_index = $this_field.closest( '.et-pb-options-tab' ).index();
+						} );
+					var data_affects         = data_affects_obj.join(', ');
+					var $affected_fields     = $container.find( data_affects );
+					var this_field_tab_index = $this_field.closest( '.et-pb-options-tab' ).index();
+					var process_filed_visibility = function(field, hide) {
+						//Make sure that there is sent a bool value
+						hide = true === hide;
 
-					$affected_fields.each( function() {
-						var $affected_field          = $(this),
-							$affected_container      = $affected_field.closest( '.et-pb-option' ),
-							is_text_trigger          = 'text' === $this_field.attr( 'type' ) && typeof show_if_not === 'undefined' && typeof show_if === 'undefined', // need to know if trigger is text field
-							show_if                  = $affected_container.data( 'depends_show_if' ) || 'on',
-							show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' ),
-							show                     = show_if === new_field_value || ( typeof show_if_not !== 'undefined' && ! _.contains( show_if_not.split(','), new_field_value ) ),
-							affected_field_tab_index = $affected_field.closest( '.et-pb-options-tab' ).index(),
-							$dependant_fields        = $affected_container.find( '.et-pb-affects' ), // affected field might affect some other fields as well
-							is_use_background_color_gradient = $this_field.closest( '.et_pb_background-template--use_color_gradient' ).length;
+						var $affected_field          = $(field);
+						var $affected_container      = $affected_field.closest( '.et-pb-option' );
+						var is_text_trigger          = 'text' === $this_field.attr( 'type' ) && typeof show_if_not === 'undefined' && typeof show_if === 'undefined'; // need to know if trigger is text field
+						var show_if                  = $affected_container.data( 'depends_show_if' ) || 'on';
+						var show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' );
+						var show                     = !hide && (show_if === new_field_value || ( typeof show_if_not !== 'undefined' && ! _.contains( show_if_not.split(','), new_field_value ) ));
+						var affected_field_tab_index = $affected_field.closest( '.et-pb-options-tab' ).index();
+						var $dependant_fields        = $affected_container.find( '.et-pb-affects' ); // affected field might affect some other fields as well
+						var is_use_background_color_gradient = $this_field.closest( '.et_pb_background-template--use_color_gradient' ).length;
 
 						// make sure hidden text fields do not break the visibility of option
-						if ( is_text_trigger && ! $this_field.is( ':visible' ) ) {
+						if (
+							$affected_field.hasClass('et_pb_field_processed')
+							||
+							is_text_trigger
+							&&
+							! $this_field.is( ':visible' )
+						) {
 							return;
 						}
 
@@ -15081,19 +15089,19 @@ window.et_builder_product_name = 'Divi';
 
 						// if the affected field affects other fields, find out if we need to hide/show them
 						if ( $dependant_fields.length ) {
-								var data_inner_affects_obj = _.map( $dependant_fields.data( 'affects' ).split(', '), function( affect ) {
-									var is_selector = ( 'image' !== affect ) && $( affect ).length;
+							var data_inner_affects_obj = _.map( $dependant_fields.data( 'affects' ).split(', '), function( affect ) {
+								var is_selector = ( 'image' !== affect ) && $( affect ).length;
 
-									return is_selector ? affect : '#et_pb_' + affect;
-								} );
-								var data_inner_affects = data_inner_affects_obj.join(', ');
-								var $inner_affected_elements = $( data_inner_affects );
+								return is_selector ? affect : '#et_pb_' + affect;
+							} );
+							var data_inner_affects = data_inner_affects_obj.join(', ');
+							var $inner_affected_elements = $( data_inner_affects );
 
-							if ( ! $affected_container.is( ':visible' ) ) {
+							if ( ! show ) {
 								// if the main affected field is hidden, hide all fields it affects
 
 								$inner_affected_elements.each( function() {
-									$(this).closest( '.et-pb-option' ).hide();
+									process_filed_visibility(this, true);
 									et_pb_hide_empty_toggles( $(this) );
 								} );
 							} else {
@@ -15102,7 +15110,15 @@ window.et_builder_product_name = 'Divi';
 								$affected_field.trigger( 'change' );
 							}
 						}
-					} );
+
+						$affected_field.addClass('et_pb_field_processed');
+					};
+
+					$affected_fields
+						.each(function () {
+							process_filed_visibility(this);
+						})
+						.removeClass('et_pb_field_processed');
 
 					// don't make conditional logic row sortable as that is not needed and causes it to not work properly
 					$('.et_options_list:not(.et_conditional_logic)').each(function() {

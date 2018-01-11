@@ -131,6 +131,12 @@ function et_fb_backend_helpers() {
 	}
 
 	$fb_modules_array = apply_filters( 'et_fb_modules_array', ET_Builder_Element::get_modules_array( $post_type, true, true ) );
+	$modules_row_overlapping_add_new = apply_filters( 'et_fb_modules_row_overlapping_add_new', array(
+		'et_pb_counters',
+		'et_pb_post_nav',
+		'et_pb_search',
+		'et_pb_social_media_follow',
+	) );
 
 	$helpers = array(
 		'debug'                        => true,
@@ -166,6 +172,7 @@ function et_fb_backend_helpers() {
 		'modulesWithChildren'          => ET_Builder_Element::get_shortcodes_with_children( $post_type ),
 		'modulesShowOnCancelDropClassname' => apply_filters( 'et_fb_modules_show_on_cancel_drop_classname', array( 'et_pb_gallery', 'et_pb_filterable_portfolio') ),
 		'modulesFeaturedImageBackground' => ET_Builder_Element::get_featured_image_background_modules( $post_type ),
+		'modulesRowOverlappingAddNew'  => $modules_row_overlapping_add_new,
 		'structureModules'             => ET_Builder_Element::get_structure_modules(),
 		'et_builder_css_media_queries' => ET_Builder_Element::get_media_quries( 'for_js' ),
 		'builderOptions'               => et_builder_options(),
@@ -1012,6 +1019,9 @@ function et_fb_backend_helpers() {
 					'2' => esc_html__( 'Fullscreen', 'et_builder' ),
 					'3' => esc_html__( 'Fixed Left Sidebar', 'et_builder' ),
 					'4' => esc_html__( 'Fixed Right Sidebar', 'et_builder' ),
+					'5' => esc_html__( 'Fixed Bottom Panel', 'et_builder' ),
+					// TODO, disabled until further notice (Issue #3930 & #5859)
+					// '6' => esc_html__( 'Fixed Top Panel', 'et_builder' ),
 				),
 				'builder_animation_toggle' => array(
 					'on'   => esc_html__( 'On', 'et_builder' ),

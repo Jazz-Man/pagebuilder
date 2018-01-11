@@ -4641,6 +4641,10 @@ class ET_Builder_Element {
 		$need_mobile_options = isset( $field['mobile_options'] ) && $field['mobile_options'] ? true : false;
 		$only_options = isset( $field['only_options'] ) ? $field['only_options'] : false;
 		$is_child = isset( $this->type ) && 'child' === $this->type;
+		// Make sure 'type' is always set to prevent PHP notices
+		if ( empty( $field['type'] ) ) {
+			$field['type'] = 'no-type';
+		}
 
 		if ( $need_mobile_options ) {
 			$mobile_settings_tabs = et_pb_generate_mobile_options_tabs();
@@ -6172,11 +6176,7 @@ class ET_Builder_Element {
 	function get_text_orientation() {
 		$text_orientation = isset( $this->shortcode_atts['text_orientation'] ) ? $this->shortcode_atts['text_orientation'] : '';
 
-		if ( is_rtl() && 'left' === $text_orientation ) {
-			$text_orientation = 'right';
-		}
-
-		return $text_orientation;
+		return et_pb_get_alignment( $text_orientation );
 	}
 
 	function get_text_orientation_classname( $print_default = false ) {
@@ -6429,7 +6429,7 @@ class ET_Builder_Element {
 			if ( isset( $font_options[ $text_align_option_name ] ) && '' !== $font_options[ $text_align_option_name ] ) {
 
 				$important = in_array( 'text-align', $important_options ) || $use_global_important ? ' !important' : '';
-				$text_align = $font_options[ $text_align_option_name ] === 'justified' ? 'justify' : $font_options[ $text_align_option_name ];
+				$text_align = et_pb_get_alignment( $font_options[ $text_align_option_name ] );
 
 				if ( isset( $option_settings['css']['text_align'] ) ) {
 					self::set_style( $function_name, array(
@@ -6761,16 +6761,12 @@ class ET_Builder_Element {
 		if ( isset( $text_options['css'] ) && is_array( $text_options['css'] ) ) {
 			$text_css                 = $text_options['css'];
 			$text_orientation_default = isset( $this->fields_unprocessed['text_orientation']['default'] ) ? $this->fields_unprocessed['text_orientation']['default'] : '';
-			$text_orientation         = $this->shortcode_atts['text_orientation'] !== $text_orientation_default ? $this->shortcode_atts['text_orientation'] : '';
+			$text_orientation         = $this->get_text_orientation() !== $text_orientation_default ? $this->get_text_orientation() : '';
 
 			// Normally, text orientation attr adds et_pb_text_align_* class name to its module wrapper
 			// In some cases, it needs to target particular children inside the module. Thus, only prints
 			// styling if selector is given
 			if ( isset( $text_css['text_orientation'] ) && '' !== $text_orientation ) {
-				if ( 'justified' === $text_orientation ) {
-					$text_orientation = 'justify';
-				}
-
 				self::set_style( $function_name, array(
 					'selector'    => $text_css['text_orientation'],
 					'declaration' => sprintf( 'text-align: %1$s;', esc_attr( $text_orientation ) ),

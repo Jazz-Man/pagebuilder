@@ -1275,7 +1275,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
 			$parallax_image_background,
-			'on' === $fullwidth ? $this->get_text_orientation_classname() : ''
+			$this->get_text_orientation_classname()
 		);
 
 		if ( 'on' !== $fullwidth ) {

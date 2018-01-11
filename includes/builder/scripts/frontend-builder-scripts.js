@@ -1307,7 +1307,8 @@
 							opener: function(element) {
 								return element.find('img');
 							}
-						}
+						},
+						autoFocusLast: false
 					} );
 				} );
 				// prevent attaching of any further actions on click
@@ -1330,7 +1331,8 @@
 							opener: function(element) {
 								return element.find('img');
 							}
-						}
+						},
+						autoFocusLast: false
 					} );
 				}
 
@@ -2526,7 +2528,7 @@
 
 			if ( $et_pb_circle_counter.length || is_frontend_builder || $( '.et_pb_ajax_pagination_container' ).length > 0 ) {
 				window.et_pb_circle_counter_init = function($the_counter, animate) {
-					if ( 0 === $the_counter.width() ) {
+					if ( $the_counter.width() <= 0 ) {
 						return;
 					}
 
@@ -2782,9 +2784,6 @@
 							var unchecked     = false;
 							var default_value;
 
-							// Escape double quotes in label
-							this_label = this_label.replace(/"/g, "&quot;");
-
 							// radio field properties adjustment
 							if ( 'radio' === field_type ) {
 								if ( 0 !== $this_wrapper.find( 'input[type="radio"]').length ) {
@@ -2840,6 +2839,9 @@
 									unchecked = true;
 								}
 							}
+
+							// Escape double quotes in label
+							this_label = this_label.replace(/"/g, "&quot;");
 
 							// Store the labels of the conditionally hidden fields so that they can be
 							// removed later if a custom message pattern is enabled

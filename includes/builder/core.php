@@ -1911,6 +1911,17 @@ function et_is_builder_plugin_active() {
 }
 endif;
 
+if ( ! function_exists( 'et_is_shortcodes_plugin_active' ) ):
+	/**
+	 * Is ET Shortcodes plugin active?
+	 *
+	 * @return bool  True - if the plugin is active
+	 */
+	function et_is_shortcodes_plugin_active() {
+		return (bool) defined( 'ET_SHORTCODES_PLUGIN_VERSION' );
+	}
+endif;
+
 /**
  * Saves the Role Settings into WP database
  * @return void
