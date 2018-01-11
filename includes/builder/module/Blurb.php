@@ -517,7 +517,9 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		$content_max_width_phone       = $this->shortcode_atts['content_max_width_phone'];
 		$content_max_width_last_edited = $this->shortcode_atts['content_max_width_last_edited'];
 
-		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
+		$module_class   = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
+		$image_pathinfo = pathinfo( $image );
+		$is_image_svg   = isset( $image_pathinfo['extension'] ) ? 'svg' === $image_pathinfo['extension'] : false;
 
 		if ( 'off' !== $use_icon_font_size ) {
 			$font_size_responsive_active = et_pb_get_responsive_status( $icon_font_size_last_edited );
@@ -531,7 +533,15 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			et_pb_generate_responsive_css( $font_size_values, '%%order_class%% .et-pb-icon', 'font-size', $function_name );
 		}
 
-		if ( '' !== $image_max_width_tablet || '' !== $image_max_width_phone || '' !== $image_max_width ) {
+		if ( '' !== $image_max_width_tablet || '' !== $image_max_width_phone || '' !== $image_max_width || $is_image_svg ) {
+			// SVG image overwrite. SVG image needs its value to be explicit
+			if ( '' === $image_max_width && $is_image_svg ) {
+				$image_max_width = '100%';
+			}
+
+			$image_max_width_selector = $is_image_svg ? '%%order_class%% .et_pb_main_blurb_image' : '%%order_class%% .et_pb_main_blurb_image img';
+			$image_max_width_property = $is_image_svg ? 'width' : 'max-width';
+
 			$image_max_width_responsive_active = et_pb_get_responsive_status( $image_max_width_last_edited );
 
 			$image_max_width_values = array(
@@ -540,7 +550,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'phone'   => $image_max_width_responsive_active ? $image_max_width_phone : '',
 			);
 
-			et_pb_generate_responsive_css( $image_max_width_values, '%%order_class%% .et_pb_main_blurb_image img', 'max-width', $function_name );
+			et_pb_generate_responsive_css( $image_max_width_values, $image_max_width_selector, $image_max_width_property, $function_name );
 		}
 
 		if ( '' !== $content_max_width_tablet || '' !== $content_max_width_phone || '' !== $content_max_width ) {

@@ -1,3 +1,56 @@
+version 3.0.84 ( updated 10-23-2017 )
+- Greatly reduce the size of the Visual Builder ajax payload by removing redundancies in field definitions.
+- Added gzip compression to the Visual Builder and standard Divi Builder ajax payloads to avoid substitute max length errors.
+- Fixed a bug that caused the Light / Dark text color option to be omitted from the new text options UI in the text module.
+- Fixed roll animation not working properly on Safari when intensity is over 100%.
+- Fixed the Color Picker reset button appearance.
+- Removed responsive mode reset on modal snap.
+- Fixed Incorrect gallery layout for some pages.
+- Fixed incorrect 1/4 Column Margin in Tablet in visual builder as well as front end due to prepended div on row.
+- Fixed nav menu font size.
+- Fixed the issue with wrong escaping of Custom Fonts src attribute.
+- Fixed Theme Customizer Mobile Heading & Body text size.
+- Fixed portfolio initialization on view mode switch in visual builder fullwidth portfolio module.
+- Fixes a compatibility with All in one SEO.
+- Fixed zoom styles overriding popover.
+- Fixed page jumps caused by contact form's conditional logic.
+- Fixed comments count appearance in post title module.
+- Fixed the lightbox on image modules in the Visual Builder.
+- Fixed issue with the Visual Builder textarea not updating when switching to different module child in certain cases.
+- Fixed Blog Module overlay not covering image.
+- Fixed Image Module fullwidth issue.
+- Fixed problem of stripping some text content that was similar to actual wp shortcodes.
+- Fixed issue with IE where the image in the blurb module would be incorrect size.
+- Added migration for fullwidth header font color options, removing redundant options.
+- Fixed the issue when history state was not saved after making module global.
+- Updated Slider module video position calculation method.
+- Fixed disappearing svg image on image and blurb modules.
+- Fixed animations sliders not re-rendering the animation when animation direction is set to center.
+- Fixed the issue when default font cannot be selected if uploaded fonts exist.
+- Fixed the issue when Social Media icon selector was not working correctly.
+- Fixed the Undefined Index notice that occurred in some situations due to legacy font options.
+- Fixed broken logic with the Divi Builder migration system that lead to irregularities after modules were migrated multiple times.
+- Removed deprecated WooCommerce function that was causing warning notices.
+- Fixed a bug that prevented legacy fonts from being enqueued after migrating to the new font options UI.
+- Fixed a bug that occurred when the TinyMCE visual text editor was disabled via a user's profile that resulted in HTML entities being saved into shortcode attributes by mistake.
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/comments_template.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/FullwidthHeader.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+
 version 3.0.83 ( updated 10-18-2017 )
 - Added improved font options interface to the Divi Builder.
 - Added font search and recently used fonts list to the font selection menu.

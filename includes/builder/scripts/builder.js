@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.83';
+window.et_builder_version = '3.0.84';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -3916,15 +3916,15 @@ window.et_builder_product_name = 'Divi';
 							defaultColor : $this.data('default-color'),
 							palettes     : '' !== et_pb_options.page_color_palette ? et_pb_options.page_color_palette.split( '|' ) : et_pb_options.default_color_palette.split( '|' ),
 							change       : function( event, ui ) {
-								var $this_el      = $(this),
-									$option_container = $this_el.closest( '.et-pb-option-container' ),
-									$reset_button = $option_container.find( '.et-pb-reset-setting' ),
-									$custom_color_container = $this_el.closest( '.et-pb-custom-color-container' ),
-									$preview = $option_container.find( '.et-pb-option-preview' ),
-									has_preview = $this_el.hasClass('et-pb-color-picker-hex-has-preview'),
-									is_gradient_colorpicker = $this_el.closest('.et_pb_background-tab--gradient').length > 0,
-									current_value = $this_el.val(),
-									default_value;
+								var $this_el      = $(this);
+								var $option_container = $this_el.closest( '.et-pb-option-container' );
+								var $reset_button = $option_container.find( '.et-pb-reset-setting' );
+								var $custom_color_container = $this_el.closest( '.et-pb-custom-color-container' );
+								var $preview = $option_container.find( '.et-pb-option-preview' );
+								var has_preview = $this_el.hasClass('et-pb-color-picker-hex-has-preview');
+								var is_gradient_colorpicker = $this_el.closest('.et_pb_background-tab--gradient').length > 0;
+								var current_value = ui.color.toString().toLowerCase();
+								var default_value;
 
 								if ( $custom_color_container.length ) {
 									$custom_color_container.find( '.et-pb-custom-color-picker' ).val( ui.color.toString() );
@@ -3935,7 +3935,7 @@ window.et_builder_product_name = 'Divi';
 									}
 								}
 
-								default_value = et_pb_get_default_setting_value( $this_el );
+								default_value = et_pb_get_default_setting_value( $this_el ).toLowerCase();
 
 								// do not apply default rules for reset button inside the font option. It has specific rules
 								if ( ! $option_container.hasClass('et-pb-option-container--font') ) {
@@ -3997,7 +3997,9 @@ window.et_builder_product_name = 'Divi';
 								if ( $this_el.hasClass( 'et-pb-is-cleared' ) ) {
 									$this_el.removeClass( 'et-pb-is-cleared' )
 								}
-							},
+								//Since this event is triggered before the input value is changed we can't use 'et_pb_setting:change'
+								$this_el.trigger('et_pb_setting:color_picker:change', [current_value]);
+              },
 							clear: function() {
 								$(this).val( et_pb_options.invalid_color );
 								$(this).closest( '.et-pb-option-container' ).find( '.et-pb-main-setting' ).val( '' );
@@ -4033,7 +4035,7 @@ window.et_builder_product_name = 'Divi';
 							return true;
 						}
 
-						if ( default_color !== $this.val() ) {
+						if ( default_color.toLowerCase() !== $this.val().toLowerCase() ) {
 							$reset_button.addClass( 'et-pb-reset-icon-visible' );
 						}
 					} );
@@ -4793,15 +4795,15 @@ window.et_builder_product_name = 'Divi';
 							defaultColor : $this.data('default-color'),
 							palettes     : '' !== et_pb_options.page_color_palette ? et_pb_options.page_color_palette.split( '|' ) : et_pb_options.default_color_palette.split( '|' ),
 							change       : function( event, ui ) {
-								var $this_el      = $(this),
-									$option_container = $this_el.closest( '.et-pb-option-container' ),
-									$reset_button = $option_container.find( '.et-pb-reset-setting' ),
-									$custom_color_container = $this_el.closest( '.et-pb-custom-color-container' ),
-									$preview = $option_container.find( '.et-pb-option-preview' ),
-									has_preview = $this_el.hasClass('et-pb-color-picker-hex-has-preview'),
-									is_gradient_colorpicker = $this_el.closest('.et_pb_background-tab--gradient').length > 0,
-									current_value = $this_el.val(),
-									default_value;
+								var $this_el      = $(this);
+								var $option_container = $this_el.closest( '.et-pb-option-container' );
+								var $reset_button = $option_container.find( '.et-pb-reset-setting' );
+								var $custom_color_container = $this_el.closest( '.et-pb-custom-color-container' );
+								var $preview = $option_container.find( '.et-pb-option-preview' );
+								var has_preview = $this_el.hasClass('et-pb-color-picker-hex-has-preview');
+								var is_gradient_colorpicker = $this_el.closest('.et_pb_background-tab--gradient').length > 0;
+								var current_value = ui.color.toString().toLowerCase();
+								var default_value;
 
 								if ( $custom_color_container.length ) {
 									$custom_color_container.find( '.et-pb-custom-color-picker' ).val( ui.color.toString() );
@@ -4811,7 +4813,7 @@ window.et_builder_product_name = 'Divi';
 									return;
 								}
 
-								default_value = et_pb_get_default_setting_value( $this_el );
+								default_value = et_pb_get_default_setting_value( $this_el ).toLowerCase();
 
 								if ( current_value !== default_value ) {
 									$reset_button.addClass( 'et-pb-reset-icon-visible' );
@@ -4868,6 +4870,9 @@ window.et_builder_product_name = 'Divi';
 								if ( $this_el.hasClass( 'et-pb-is-cleared' ) ) {
 									$this_el.removeClass( 'et-pb-is-cleared' )
 								}
+
+								// Since this event is triggered before the input value is changed we can't use 'et_pb_setting:change'
+								$this_el.trigger('et_pb_setting:color_picker:change', [current_value]);
 							},
 							width        : $this.closest( '.et-pb-option--background' ).length ? 660 : 300,
 							height       : 190,
@@ -14059,9 +14064,9 @@ window.et_builder_product_name = 'Divi';
 
 					$current_element = is_range_option && 'all' !== this_device ? $this_el.siblings( '.et-pb-range-input.et_pb_setting_mobile_' + this_device ) : $current_element;
 
-					var default_value    = et_pb_get_default_setting_value( $current_element ),
-						current_value    = $current_element.val(),
-						$mobile_toggle   = $option_container.find( '.et-pb-mobile-settings-toggle' );
+					var default_value    = et_pb_get_default_setting_value( $current_element ).toLowerCase();
+					var current_value    = $current_element.val().toLowerCase();
+					var $mobile_toggle   = $option_container.find( '.et-pb-mobile-settings-toggle' );
 
 					// specific actions required for reset buttons in Font option
 					if ( is_font_option ) {
@@ -14744,7 +14749,7 @@ window.et_builder_product_name = 'Divi';
 					$this_el = $option_container.find( '.et-pb-reset-setting' );
 				}
 
-				$this_el.hide();
+				$this_el.removeClass( 'et-pb-reset-icon-visible' );
 
 				return;
 			}

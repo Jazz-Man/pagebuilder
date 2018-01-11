@@ -986,6 +986,21 @@ function et_pb_delete_layout() {
 }
 add_action( 'wp_ajax_et_pb_delete_layout', 'et_pb_delete_layout' );
 
+/**
+ * Enables zlib compression if needed/supported.
+ */
+function et_builder_enable_zlib_compression() {
+	// If compression is already enabled, do nothing
+	if ( 1 === intval( ini_get( 'zlib.output_compression' ) ) ) {
+		return;
+	}
+
+	// We use ob_gzhandler because less prone to errors with WP
+	if ( function_exists( 'ob_gzhandler' ) ) {
+		ob_start( 'ob_gzhandler' );
+	}
+}
+
 function et_pb_get_backbone_templates() {
 	if ( ! wp_verify_nonce( $_POST['et_admin_load_nonce'], 'et_admin_load_nonce' ) ) {
 		die( -1 );
@@ -999,6 +1014,8 @@ function et_pb_get_backbone_templates() {
 	$start_from = isset( $_POST['et_templates_start_from'] ) ? sanitize_text_field( $_POST['et_templates_start_from'] ) : 0;
 	$amount = ET_BUILDER_AJAX_TEMPLATES_AMOUNT;
 
+	// Enable zlib compression
+	et_builder_enable_zlib_compression();
 	// get the portion of templates
 	$result = json_encode( ET_Builder_Element::output_templates( $post_type, $start_from, $amount ) );
 

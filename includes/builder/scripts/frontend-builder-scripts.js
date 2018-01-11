@@ -2088,14 +2088,33 @@
 
 					var total_grid_items = 0;
 					var _page = 1;
+
+					// Remove existing fillers, if any
+					$the_gallery_items_container.find('.et_pb_gallery_filler').remove();
+					var filler = '<div class="et_pb_gallery_filler"></div>';
+					var fillers_added = 0;
+
 					$the_gallery_items.data('page', '');
 					$the_gallery_items.each(function(i){
 						total_grid_items++;
+						// Do some caching
+						var $this = $(this);
 						if ( 0 === parseInt( total_grid_items % posts_number ) ) {
-							$(this).data('page', _page);
+							$this.data('page', _page);
+							// This is the last item in the current page, since the grid layout is controlled
+							// by css rules using nth-child selectors, we need to make sure the current item
+							// is also the last on its column or else layout might break in other pages.
+							// To do so, we add as many empty filler as needed until the element right margin is 0
+							fillers_added = 0;
+							while (fillers_added < 4 && '0px' !== $this.css('marginRight')) {
+								// We can't possibly need more than 3 fillers for each row, make sure we exit anyway
+								// to prevent infinite loops.
+								fillers_added++
+								$this.before($(filler));
+							}
 							_page++;
 						} else {
-							$(this).data('page', _page);
+							$this.data('page', _page);
 						}
 
 					});
@@ -3764,7 +3783,7 @@
 								var degree = Math.ceil( ( 360 / 100 ) * intensity ) * -1;
 
 								intensity_css = {
-									transform: 'rotate3d(0, 0, 1, ' + degree + 'deg)'
+									transform: 'rotateZ(' + degree + 'deg)'
 								};
 
 								break;
@@ -3773,7 +3792,7 @@
 								var degree = Math.ceil( ( 360 / 100 ) * intensity );
 
 								intensity_css = {
-									transform: 'rotate3d(0, 0, 1, ' + degree + 'deg)'
+									transform: 'rotateZ(' + degree + 'deg)'
 								}
 
 								break;
@@ -3781,7 +3800,7 @@
 								var degree = Math.ceil( ( 360 / 100 ) * intensity );
 
 								intensity_css = {
-									transform: 'rotate3d(0, 0, 1, ' + degree + 'deg)'
+									transform: 'rotateZ(' + degree + 'deg)'
 								};
 
 								break;
@@ -4903,31 +4922,32 @@
 			$('.et_pb_contact_form_container').each( function() {
 				var $form = $(this);
 
-				/* Listen for any field change */
+				// Listen for any field change
 				$form.on( 'change', 'input, textarea, select', function() {
-					et_conditional_check( $form );
+
+					// Get the check id of the element that is changed
+					var trigger_id = $(this).closest('[data-id]').data('id');
+
+					et_conditional_check( $form, trigger_id );
 				} );
 
 				// Conditions may be satisfied on default form state
 				et_conditional_check( $form );
 			} );
 
-			function et_conditional_check( $form ) {
+			function et_conditional_check( $form, trigger_id ) {
 				var $conditionals = $form.find('[data-conditional-logic]');
 
-				/* Upon change loop all the fields that have conditional logic */
+				// Upon change loop all the fields that have conditional logic
 				$conditionals
-					.hide()
 					.each( function() {
 						var $conditional = $(this);
 
-						/* jQuery automatically parses the JSON */
+						// jQuery automatically parses the JSON
 						var rules    = $conditional.data('conditional-logic');
 						var relation = $conditional.data('conditional-relation');
 
-						show_field = false;
-
-						/* Loop all the conditional logic rules */
+						// Loop all the conditional logic rules
 						var matched_rules = [];
 
 						for ( var i = 0; i < rules.length; i++ ) {
@@ -4940,6 +4960,11 @@
 							var field_type  = $wrapper.data('type');
 							var field_value;
 
+							// If the trigger ID is not present in the conditional logic rule there is no need to process further
+							if ( trigger_id && check_id !== trigger_id ) {
+								return;
+							}
+
 							/*
 								Check if the field wrapper is actually visible when including it in the rules check.
 								This avoids the scenario with a parent, child and grandchild field where the parent
@@ -4950,7 +4975,7 @@
 								continue;
 							}
 
-							/* Get the proper compare value based on the field type */
+							// Get the proper compare value based on the field type
 							switch( field_type ) {
 								case 'input':
 								case 'email':
@@ -4970,7 +4995,6 @@
 										Next we always set `check_value` to true so we can compare against the
 										result of the value check.
 									*/
-
 									var $checkbox   = $wrapper.find(':checkbox:checked');
 									var field_value = false;
 
@@ -5008,30 +5032,30 @@
 								}
 							}
 
-							/* Check if the value IS matching (if it has to) */
+							// Check if the value IS matching (if it has to)
 							if ( 'is' === check_type && field_value !== check_value ) {
 								continue;
 							}
 
-							/* Check if the value IS NOT matching (if it has to) */
+							// Check if the value IS NOT matching (if it has to)
 							if ( 'is not' === check_type && field_value === check_value ) {
 								continue;
 							}
 
-							/* Create the contains/not contains regular expresion */
+							// Create the contains/not contains regular expresion
 							var containsRegExp = new RegExp( check_value, 'i' );
 
-							/* Check if the value IS containing */
+							// Check if the value IS containing
 							if ( 'contains' === check_type && ! field_value.match( containsRegExp ) ) {
 								continue;
 							}
 
-							/* Check if the value IS NOT containing */
+							// Check if the value IS NOT containing
 							if ( 'does not contain' === check_type && field_value.match( containsRegExp ) ) {
 								continue;
 							}
 
-							/* Prepare the values for the 'is greater than' / 'is less than' check */
+							// Prepare the values for the 'is greater than' / 'is less than' check
 							var maybeNumericValue       = parseInt( field_value );
 							var maybeNumbericCheckValue = parseInt( check_value );
 
@@ -5042,12 +5066,12 @@
 								continue;
 							}
 
-							/* Check if the value is greater than */
+							// Check if the value is greater than
 							if ( 'is greater' === check_type && maybeNumericValue <= maybeNumbericCheckValue) {
 								continue;
 							}
 
-							/* Check if the value is less than */
+							// Check if the value is less than
 							if ( 'is less' === check_type && maybeNumericValue >= maybeNumbericCheckValue) {
 								continue;
 							}

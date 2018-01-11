@@ -260,6 +260,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 				),
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'text',
+				'sub_toggle'        => 'p',
 				'description'       => esc_html__( 'Here you can choose the value of your text. If you are working with a dark background, then your text should be set to light. If you are working with a light background, then your text should be dark.', 'et_builder' ),
 			),
 			'content_new' => array(

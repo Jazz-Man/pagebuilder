@@ -1,6 +1,6 @@
 <?php
 
-define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_loading_amount', 10 ) );
+define( 'ET_BUILDER_AJAX_TEMPLATES_AMOUNT', apply_filters( 'et_pb_templates_loading_amount', 20 ) );
 
 add_action( 'init', array( 'ET_Builder_Element', 'set_media_queries' ), 11 );
 
@@ -198,7 +198,7 @@ class ET_Builder_Element {
 				self::$_module_slugs_by_post_type[ $post_type ] = array();
 			}
 
-			if ( ! in_array( $this->slug, self::$_module_slugs_by_post_type ) ) {
+			if ( ! in_array( $this->slug, self::$_module_slugs_by_post_type[ $post_type ] ) ) {
 				self::$_module_slugs_by_post_type[ $post_type ][] = $this->slug;
 			}
 
@@ -327,11 +327,20 @@ class ET_Builder_Element {
 		return isset( $data[40] ) ? array( 40 => $data[40] ) : array();
 	}
 
+	/**
+	 * @return array
+	 */
+	public static function get_post_types() {
+		return self::$_module_slugs_by_post_type;
+	}
+
 	function process_whitelisted_fields() {
 		$fields = array();
 
 		// Append _builder_version to all module
 		$this->whitelisted_fields[] = '_builder_version';
+
+		$this->whitelisted_fields = apply_filters( 'et_pb_module_whitelisted_fields', $this->whitelisted_fields, $this->slug );
 
 		foreach ( $this->whitelisted_fields as $key ) {
 			$fields[ $key ] = array();
