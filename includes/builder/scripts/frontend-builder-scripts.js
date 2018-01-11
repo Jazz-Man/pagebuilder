@@ -4814,7 +4814,7 @@
 				$current_module.fadeTo( 'slow', 1 );
 
 				// scroll to the top of the module
-				$( 'body' ).animate({
+				$( 'html, body' ).animate({
 					scrollTop: ( $current_module.offset().top - ( $( '#main-header' ).innerHeight() + $( '#top-header' ).innerHeight() + 50 ) )
 				});
 			}

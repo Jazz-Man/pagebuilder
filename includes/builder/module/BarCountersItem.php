@@ -164,10 +164,10 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		global $et_pb_counters_settings;
 
 		$use_counter_value       = '' !== $this->shortcode_atts['background_color'] || 'on' === $this->shortcode_atts['use_background_color_gradient'] || '' !== $this->shortcode_atts['background_image'] || '' !== $this->shortcode_atts['background_video_mp4'] || '' !== $this->shortcode_atts['background_video_webm'];
-		$background_video_mp4    = $use_counter_value ? $this->shortcode_atts['background_video_mp4'] : $et_pb_counters_settings['background_video_mp4'];
-		$background_video_webm   = $use_counter_value ? $this->shortcode_atts['background_video_webm'] : $et_pb_counters_settings['background_video_webm'];
-		$background_video_width  = $use_counter_value ? $this->shortcode_atts['background_video_width'] : $et_pb_counters_settings['background_video_width'];
-		$background_video_height = $use_counter_value ? $this->shortcode_atts['background_video_height'] : $et_pb_counters_settings['background_video_height'];
+		$background_video_mp4    = $use_counter_value && isset( $this->shortcode_atts['background_video_mp4'] ) ? $this->shortcode_atts['background_video_mp4'] : $et_pb_counters_settings['background_video_mp4'];
+		$background_video_webm   = $use_counter_value && isset( $this->shortcode_atts['background_video_webm'] ) ? $this->shortcode_atts['background_video_webm'] : $et_pb_counters_settings['background_video_webm'];
+		$background_video_width  = $use_counter_value && isset( $this->shortcode_atts['background_video_width'] ) ? $this->shortcode_atts['background_video_width'] : $et_pb_counters_settings['background_video_width'];
+		$background_video_height = $use_counter_value && isset( $this->shortcode_atts['background_video_height'] ) ? $this->shortcode_atts['background_video_height'] : $et_pb_counters_settings['background_video_height'];
 
 		if ( ! empty( $args ) ) {
 			$background_video = self::get_video_background( $args );

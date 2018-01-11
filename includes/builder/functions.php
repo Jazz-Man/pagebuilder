@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.85' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.86' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -3157,17 +3157,12 @@ if ( ! function_exists( 'et_pb_fix_shortcodes' ) ){
 			$content = html_entity_decode( $content, ENT_QUOTES );
 		}
 
-		$post_type  = get_post_type();
-		$post_types = ET_Builder_Element::get_post_types();
-
-		if ( false === $post_type || ! isset( $post_types[ $post_type ] ) || empty( $post_types[ $post_type ] ) ) {
-			return $content;
-		}
+		$slugs = ET_Builder_Element::get_module_slugs_by_post_type();
 
 		// The current patterns take care to replace only the shortcodes that extends `ET_Builder_Element` class
 		// In order to avoid cases like this: `[3:45]<br>`
 		// The pattern looks like this `(\[\/?(et_pb_section|et_pb_column|et_pb_row)[^\]]*\])`
-		$shortcode_pattern = sprintf( '(\[\/?(%s)[^\]]*\])', implode( '|', $post_types[ $post_type ] ) );
+		$shortcode_pattern = sprintf( '(\[\/?(%s)[^\]]*\])', implode( '|', $slugs ) );
 		$opening_pattern   = '(<br\s*\/?>|<p>|\n)+';
 		$closing_pattern   = '(<br\s*\/?>|<\/p>|\n)+';
 		$space_pattern     = '[\s*|\n]*';
@@ -5232,7 +5227,7 @@ function et_pb_pagebuilder_meta_box() {
 				var select_value_escaped = _.escape( select_value );
 				var option_value_escaped = _.escape( option_value );
 				var default_value = this.et_builder_template_options.select.options.default;
-				var selected_attr = ! _.isUndefined( select_value ) && option_value_escaped === select_value_escaped || ( _.isUndefined( select_value ) && default_value !== "" && option_value_escaped === default_value ) ? \' selected="selected"\' : "";
+				var selected_attr = ! _.isUndefined( select_value ) && "" !== select_value && option_value_escaped === select_value_escaped || ( _.isUndefined( select_value ) && default_value !== "" && option_value_escaped === default_value ) ? \' selected="selected"\' : "";
 				%%>
 				<option <%%= data %%> value="<%%= option_value_escaped %%>" <%%= selected_attr %%>><%%= _.escape( option_label_updated ) %%></option>
 			<%% }); %%>

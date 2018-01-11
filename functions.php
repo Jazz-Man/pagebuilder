@@ -6139,7 +6139,7 @@ function et_divi_add_customizer_css() {
 				<?php } ?>
 			}
 		<?php } ?>
-		<?php if ( ! in_array( $primary_nav_font_size, array( $body_font_size, $default_primary_nav_font_size ) ) ) { ?>
+		<?php if ( $primary_nav_font_size !== $default_primary_nav_font_size ) { ?>
 			#top-menu li a { font-size: <?php echo esc_html( $primary_nav_font_size ); ?>px; }
 			body.et_vertical_nav .container.et_search_form_container .et-search-form input { font-size: <?php echo esc_html( $primary_nav_font_size ); ?>px !important; }
 		<?php } ?>

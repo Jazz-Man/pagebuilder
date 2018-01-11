@@ -70,6 +70,9 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'settings' => array(
 					'color' => 'alpha',
 				),
+				'css' => array(
+					'important' => true,
+				),
 			),
 			'border' => array(),
 			'custom_margin_padding' => array(
@@ -86,15 +89,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			'text'      => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% .et_pb_audio_module_content',
-					'text_shadow'      => array(
-						'%%order_class%% .et_pb_audio_module_content p',
-						'%%order_class%% .et_pb_audio_module_content h1',
-						'%%order_class%% .et_pb_audio_module_content h2',
-						'%%order_class%% .et_pb_audio_module_content h3',
-						'%%order_class%% .et_pb_audio_module_content h4',
-						'%%order_class%% .et_pb_audio_module_content h5',
-						'%%order_class%% .et_pb_audio_module_content h6',
-					)
+					'text_shadow'      => '%%order_class%% .et_pb_audio_module_content',
 				),
 			),
 		);

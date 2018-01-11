@@ -108,7 +108,7 @@
 
 .et-pb-controls { position: absolute; top: 0; left: 0; bottom: 0; background-color: #008bdb; -moz-border-radius: 4px 0 0 4px; -webkit-border-radius: 4px 0 0 4px; border-radius: 4px 0 0 4px; width: 50px; font-size: 32px; }
 .et_pb_section_specialty .et_pb_global.et_pb_row .et-pb-controls, .et_pb_section_specialty.et_pb_global .et_pb_row .et-pb-controls, .et_pb_section.et_pb_global .et-pb-controls, .et_pb_row.et_pb_global .et-pb-controls, .et_pb_module_block.et_pb_global, .et_pb_section.et_pb_global .et_pb_module_block, .et_pb_row.et_pb_global .et_pb_module_block { background-color: #97d000; }
-.et_pb_section.et_pb_global .et_pb_row.et_pb_global, .et_pb_section.et_pb_global .et_pb_module_block.et_pb_global, .et_pb_row.et_pb_global .et_pb_module_block.et_pb_global,{ background-color: rgb(95, 160, 0); }
+.et_pb_section.et_pb_global .et_pb_row.et_pb_global, .et_pb_section.et_pb_global .et_pb_module_block.et_pb_global, .et_pb_row.et_pb_global .et_pb_module_block.et_pb_global { background-color: rgb(95, 160, 0); }
 .et_pb_saved_global_modal .et_pb_module_settings .et-pb-options-tabs-links li a, .et_pb_saved_global_modal .et-pb-options-tabs-links { color: #fff; background-color: #87b900; font-weight: 400; }
 .et_pb_saved_global_modal .et-pb-preview-screensize-switcher li a:hover, .et_pb_saved_global_modal .et_pb_module_settings .et-pb-options-tabs-links li a:hover { background-color: #7cab00; color: #fff; }
 
@@ -1797,7 +1797,6 @@ text-align: center; }
 
 #et_pb_toggle_builder, #et_pb_fb_cta { margin: 4px 0 12px; }
 #et_pb_fb_cta { margin-left: 20px; }
-.post-type-et_pb_layout #et_pb_fb_cta { margin-left: 0; }
 #et_pb_layout, .et_pb_hidden, #et_pb_hidden_editor { display: none; }
 #et_pb_layout.postbox { border-radius: 4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; -webkit-animation: et_pb_fade_in_small .5s 1 cubic-bezier(0.77,0,.175,1); animation: et_pb_fade_in_small .5s 1 cubic-bezier(0.77,0,.175,1); }
 
@@ -2730,7 +2729,7 @@ input#et_pb_new_admin_label {
 	color: white;
 	max-width: 340px;
 	z-index: 100;
-	max-height: ;
+	max-height: none;
 	margin: 0;
 	display: none;
 	overflow-y: auto;

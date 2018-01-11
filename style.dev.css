@@ -1,7 +1,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.85
+Version: 3.0.86
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -718,26 +718,26 @@ blockquote {
 }
 
 .et_button_left .et_pb_button:hover:after,
-.et_button_icon_visible.woocommerce a.button.alt:hover:after,
-.et_button_icon_visible.woocommerce-page a.button.alt:hover:after,
-.et_button_icon_visible.woocommerce button.button.alt:hover:after,
-.et_button_icon_visible.woocommerce-page button.button.alt:hover:after,
-.et_button_icon_visible.woocommerce input.button.alt:hover:after,
-.et_button_icon_visible.woocommerce-page input.button.alt:hover:after,
-.et_button_icon_visible.woocommerce #respond input#submit.alt:hover:after,
-.et_button_icon_visible.woocommerce-page #respond input#submit.alt:hover:after,
-.et_button_icon_visible.woocommerce #content input.button.alt:hover:after,
-.et_button_icon_visible.woocommerce-page #content input.button.alt:hover:after,
-.et_button_icon_visible.woocommerce a.button:hover:after,
-.et_button_icon_visible.woocommerce-page a.button:hover:after,
-.et_button_icon_visible.woocommerce button.button:hover:after,
-.et_button_icon_visible.woocommerce-page button.button:hover:after,
-.et_button_icon_visible.woocommerce input.button:hover:after,
-.et_button_icon_visible.woocommerce-page input.button:hover:after,
-.et_button_icon_visible.woocommerce #respond input#submit:hover:after,
-.et_button_icon_visible.woocommerce-page #respond input#submit:hover:after,
-.et_button_icon_visible.woocommerce #content input.button:hover:after,
-.et_button_icon_visible.woocommerce-page #content input.button:hover:after {
+.et_button_left.et_button_icon_visible.woocommerce a.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page a.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce button.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page button.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce input.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page input.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce #respond input#submit.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page #respond input#submit.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce #content input.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page #content input.button.alt:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce a.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page a.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce button.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page button.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce input.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page input.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce #respond input#submit:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page #respond input#submit:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce #content input.button:hover:after,
+.et_button_left.et_button_icon_visible.woocommerce-page #content input.button:hover:after {
 	left: 0.15em;
 }
 
@@ -15725,10 +15725,18 @@ span.comment_date {
 
 /* Person Module */
 	.et_pb_column .et_pb_team_member_image {
-		float: left !important;
-		width: 280px !important;
-		margin: 0 30px 0 0 !important;
-		text-align: left !important;
+		float: left;
+		width: 280px;
+		margin: 0 30px 0 0;
+		text-align: left;
+	}
+
+	.et_pb_row_4col .et_pb_column.et_pb_column_1_4 .et_pb_team_member_image {
+		float: none;
+		width: auto;
+		max-width: none;
+		margin: 0 0 12px 0;
+		text-align: center;
 	}
 
 	.et_pb_column .et_pb_team_member_description {
