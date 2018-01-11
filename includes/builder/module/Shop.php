@@ -94,7 +94,18 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 						// Price
 						"{$this->main_css_element} .woocommerce ul.products .price, {$this->main_css_element} .woocommerce ul.products .price .amount",
 
-					)
+					),
+				),
+			),
+			'filters' => array(
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+			),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_shop_image',
 				),
 			),
 		);
@@ -135,7 +146,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		);
 	}
 
-	protected function _add_remove_pagination_callbacks( $verb ) {
+	protected function _add_remove_pagination_callbacks( $verb, $shortcode_type ) {
 		if ( 'add' !== $verb && 'remove' !== $verb ) {
 			ET_Core_Logger::error( 'Invalid argument!' );
 			return;
@@ -147,10 +158,15 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		$toggle_filter = $verb . '_filter';
 
 		$toggle_action( 'pre_get_posts', array( $this, 'add_paged_param' ) );
-		$toggle_action( 'loop_end', array( $this, 'loop_end_cb' ), 100 );
-		$toggle_action( 'woocommerce_after_template_part', array( __CLASS__, 'add_pagination' ), 10, 1 );
+		
+		$toggle_filter( 'woocommerce_shortcode_products_query', array( $this, 'shortcode_products_query_cb' ), 10 );
 
-		$toggle_filter( 'woocommerce_shortcode_products_query', array( $this, 'shortcode_products_query_cb' ), 10, 1 );
+		$toggle_action( 'woocommerce_shortcode_after_' . $shortcode_type . '_loop', array( __CLASS__, 'add_pagination' ), 10 );
+
+		// reset et_pb_shop_pages when removing pagintaion to avoid conflicts with other shop modules on page.
+		if ( 'remove' === $verb ) {
+			$GLOBALS['et_pb_shop_pages'] = 0;
+		}
 	}
 
 	/**
@@ -183,27 +199,34 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 	/**
 	 * Add pagination to the shortcode after loop end
 	 *
-	 * @param string $template_name
+	 * @param array $atts
 	 */
-	public static function add_pagination( $template_name ) {
-		if ( $template_name !== 'loop/loop-end.php' ) {
+	public static function add_pagination( $atts ) {		
+		$query_var = is_front_page() ? 'page' : 'paged';
+		$paged     = get_query_var( $query_var ) ? get_query_var( $query_var ) : 1;
+
+		// no need to display pagination if all the products appear on 1 page.
+		if ( ! isset( $GLOBALS['et_pb_shop_pages'] ) || $GLOBALS['et_pb_shop_pages'] < 1 ) {
 			return;
 		}
-
-		global $wp_query, $woocommerce_loop;
-
-		if ( ! isset( $woocommerce_loop['pagination'] ) ) {
-			return;
-		}
-
-		$wp_query->query_vars['paged'] = $woocommerce_loop['pagination']['paged'];
-		$wp_query->query['paged']      = $woocommerce_loop['pagination']['paged'];
-		$wp_query->max_num_pages       = $woocommerce_loop['pagination']['max_num_pages'];
-		$wp_query->found_posts         = $woocommerce_loop['pagination']['found_posts'];
-		$wp_query->post_count          = $woocommerce_loop['pagination']['post_count'];
-		$wp_query->current_post        = $woocommerce_loop['pagination']['current_post'];
-
-		woocommerce_pagination();
+		?>
+		<nav class="woocommerce-pagination">
+			<?php
+			echo paginate_links( apply_filters( 'woocommerce_pagination_args', array(
+				'base'      => esc_url_raw( str_replace( 999999999, '%#%', remove_query_arg( 'add-to-cart', get_pagenum_link( 999999999, false ) ) ) ),
+				'format'    => '',
+				'add_args'  => false,
+				'current'   => max( 1, $paged ),
+				'total'     => $GLOBALS['et_pb_shop_pages'],
+				'prev_text' => '&larr;',
+				'next_text' => '&rarr;',
+				'type'      => 'list',
+				'end_size'  => 3,
+				'mid_size'  => 3,
+			) ) );
+			?>
+		</nav>
+		<?php
 	}
 
 	function get_fields() {
@@ -443,7 +466,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 	}
 
 	function get_shop( $args = array(), $conditional_tags = array(), $current_page = array() ) {
-		foreach( $args as $arg => $value ) {
+		foreach ( $args as $arg => $value ) {
 			$this->shortcode_atts[ $arg ] = $value;
 		}
 
@@ -464,7 +487,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		);
 
 		if ( $pagination ) {
-			$this->_add_remove_pagination_callbacks( 'add' );
+			$this->_add_remove_pagination_callbacks( 'add', $woocommerce_shortcodes_types[$type] );
 		}
 
 		/**
@@ -485,7 +508,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 
 		$shop = do_shortcode(
 			sprintf( '[%1$s per_page="%2$s" orderby="%3$s" columns="%4$s" category="%5$s"]',
-				esc_html( $woocommerce_shortcodes_types[$type] ),
+				esc_html( $woocommerce_shortcodes_types[ $type ] ),
 				esc_attr( $posts_number ),
 				esc_attr( $orderby ),
 				esc_attr( $columns ),
@@ -499,7 +522,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		do_action( 'et_pb_shop_after_print_shop' );
 
 		if ( $pagination ) {
-			$this->_add_remove_pagination_callbacks( 'remove' );
+			$this->_add_remove_pagination_callbacks( 'remove', $woocommerce_shortcodes_types[$type] );
 		}
 
 		/**
@@ -595,31 +618,6 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		return false;
 	}
 
-	/**
-	 * Add query params to enable pagination.
-	 *
-	 * @param WP_Query $query
-	 */
-	public function loop_end_cb( $query ) {
-		if ( is_archive() || is_post_type_archive() || ! self::is_product_query( $query ) ) {
-			return;
-		}
-
-		if ( ! isset( $GLOBALS['woocommerce_loop'] ) ) {
-			$GLOBALS['woocommerce_loop'] = array();
-		}
-
-		if ( ! isset( $GLOBALS['woocommerce_loop']['pagination'] ) ) {
-			$GLOBALS['woocommerce_loop']['pagination'] = array();
-		}
-
-		$GLOBALS['woocommerce_loop']['pagination']['paged']         = $this->get_paged_var();
-		$GLOBALS['woocommerce_loop']['pagination']['found_posts']   = $query->found_posts;
-		$GLOBALS['woocommerce_loop']['pagination']['max_num_pages'] = $query->max_num_pages;
-		$GLOBALS['woocommerce_loop']['pagination']['post_count']    = $query->post_count;
-		$GLOBALS['woocommerce_loop']['pagination']['current_post']  = $query->current_post;
-	}
-
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$module_id               = $this->shortcode_atts['module_id'];
 		$module_class            = $this->shortcode_atts['module_class'];
@@ -668,6 +666,15 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			) );
 		}
 
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
+		}
+
 		$data_icon = '' !== $hover_icon
 			? sprintf(
 				' data-icon="%1$s"',
@@ -706,6 +713,11 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 	public function shortcode_products_query_cb( $query_args ) {
 		$query_args['paged'] = $this->get_paged_var();
 
+		$products   = new WP_Query( $query_args );
+		
+		// save the number of pages to global var so it can be used to render pagination
+		$GLOBALS['et_pb_shop_pages'] = $products->max_num_pages;
+
 		return $query_args;
 	}
 
@@ -732,7 +744,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			$query_args = WC()->query->get_catalog_ordering_args( $orderby, $order );
 
 			// Confirm that returned argument isn't empty then merge returned argument with default argument
-			if( is_array( $query_args ) && ! empty( $query_args ) ) {
+			if ( is_array( $query_args ) && ! empty( $query_args ) ) {
 				$args = array_merge( $args, $query_args );
 			}
 		}

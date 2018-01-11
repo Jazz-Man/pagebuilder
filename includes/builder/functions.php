@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.90' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.91' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -8143,7 +8143,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	}
 
 	if ( in_array( substr( $value, -1, 1 ), $valid_one_char_units ) ) {
-		$unit_value = floatval( $value ) . '%';
+		$unit_value = floatval( $value ) . substr( $value, -1, 1 );
 
 		// Re-add !important tag
 		if ( $has_important && ! $auto_important ) {

@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.90';
+window.et_builder_version = '3.0.91';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -7800,7 +7800,8 @@ window.et_builder_product_name = 'Divi';
 
 					// convert line break placeholders into real line-breaks for the message pattern option in Contact Form module
 					if ( 'et_pb_contact_form' === shortcode_name && typeof module_settings['et_pb_custom_message'] !== 'undefined' ) {
-						module_settings['et_pb_custom_message'] = module_settings['et_pb_custom_message'].replace( /\|\|et_pb_line_break_holder\|\|/g, '\r\n' );
+						// unescape content to make sure quotes displayed correctly in the Editor.
+						module_settings['et_pb_custom_message'] = _.unescape( module_settings['et_pb_custom_message'].replace( /\|\|et_pb_line_break_holder\|\|/g, '\r\n' ) );
 					}
 
 					if ( ! module_settings['et_pb_disabled'] !== 'undefined' && module_settings['et_pb_disabled'] === 'on' ) {
@@ -8347,15 +8348,15 @@ window.et_builder_product_name = 'Divi';
 
 								setting_name = setting_name.replace( 'et_pb_', '' );
 
-								if ( 'et_pb_contact_form' === module_type && setting_name === 'custom_message' ) {
-									// save the line breaks in contact message pattern correctly
-									setting_value = setting_value.replace( /\r?\n|\r/g, '||et_pb_line_break_holder||' );
-								}
-
 								if ( typeof setting_value === 'string' ) {
 									// Make sure double quotes are encoded, before adding values to shortcode
 									setting_value = setting_value.replace( /\"/g, '%22' ).replace( /\\/g, '%92' );
 									setting_value = setting_value.replace( /\[/g, '%91' ).replace( /\]/g, '%93' );
+								}
+
+								if ( 'et_pb_contact_form' === module_type && setting_name === 'custom_message' ) {
+									// save the line breaks in contact message pattern correctly
+									setting_value = _.escape( setting_value.replace( /\r?\n|\r/g, '||et_pb_line_break_holder||' ) );
 								}
 
 								// escape URLs
@@ -8872,9 +8873,9 @@ window.et_builder_product_name = 'Divi';
 
 			_onChange: function(value) {
 				var combinedValue = _.isUndefined(value) ? this._getDefaultValue() : value;
-				jQuery(this._setting_field).val(combinedValue);
+				$(this._setting_field).val(combinedValue);
 				this._values = this._splitValue(combinedValue);
-				jQuery(this._setting_field).trigger('et_pb_setting:change');
+				$(this._setting_field).trigger('et_pb_setting:change');
 				this._render();
 			},
 
@@ -8945,7 +8946,6 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			_render: function() {
-				var $ = jQuery;
 				//render fields
 				_.each(this._radius_fields, function(field) {
 					$(field).val(this._getSettingValue($(field).data('corner')));
@@ -8993,7 +8993,6 @@ window.et_builder_product_name = 'Divi';
 					return false;
 				}
 
-				var $ = jQuery;
 				var thisClass = this;
 				this._$container = container;
 				this._suffix = container.data('attr-suffix');
@@ -9004,6 +9003,7 @@ window.et_builder_product_name = 'Divi';
 				this._tab_settings_map = null;
 				this._outside_preview = container.find('.et-pb-outside-preview-container');
 				this._reset_button = container.closest('.et-pb-composite-tabbed-wrapper').siblings('.et-pb-composite-tabbed-reset-setting');
+				this._is_child_settings_container = container.parents('.et_pb_modal_settings_container').hasClass('et_pb_modal_settings_container_step2');
 
 				_tabs.each(function() {
 					var tab = $(this).find('.et-pb-settings-tab-title');
@@ -9025,17 +9025,19 @@ window.et_builder_product_name = 'Divi';
 					}
 				});
 
-				this._buildTabSettingsMap();
+				//wait until control reset icon will be initialized
+				//it has 50ms delay at first control initialization
+				setTimeout(function() {
+					thisClass._buildTabSettingsMap();
+					$(_content_divs).on('et_pb_setting:change et_pb_setting:color_picker:change', thisClass._onChangeHandler.bind(thisClass));
+					$(_content_divs).on('change', 'select', thisClass._onChangeHandler.bind(thisClass));
+					$(thisClass._reset_button).on('click', thisClass._onClickReset.bind(thisClass));
 
-				$(_content_divs).on('et_pb_setting:change et_pb_setting:color_picker:change', this._onChangeHandler.bind(this));
-				$(_content_divs).on('change', 'select',this._onChangeHandler.bind(this));
-				$(this._reset_button).on('click', this._onClickReset.bind(this));
-
-				this._render();
+					thisClass._render();
+				}, 100);
 			},
 
 			_buildTabSettingsMap: function() {
-				var $ = jQuery;
 				var result = {};
 				_.map(this._tab_content, function(tab, tabIndex) {
 					result[tabIndex] = {};
@@ -9097,13 +9099,13 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			_showTab: function(tab) {
-				jQuery(this._tabs[tab]).closest('.et-pb-settings-tab').addClass('active');
-				jQuery(this._tab_content[tab]['content']).show();
+				$(this._tabs[tab]).closest('.et-pb-settings-tab').addClass('active');
+				$(this._tab_content[tab]['content']).show();
 			},
 
 			_hideTab: function(tab) {
-				jQuery(this._tabs[tab]).closest('.et-pb-settings-tab').removeClass('active');
-				jQuery(this._tab_content[tab]['content']).hide();
+				$(this._tabs[tab]).closest('.et-pb-settings-tab').removeClass('active');
+				$(this._tab_content[tab]['content']).hide();
 			},
 
 			_renderOutsidePreviewArea: function(previewContainer) {
@@ -9125,15 +9127,15 @@ window.et_builder_product_name = 'Divi';
 					}
 
 					if (this._tab_settings_map[tabIndex]['modified']) {
-						jQuery(this._tabs[tabIndex]).closest('.et-pb-settings-tab').addClass('modified');
+						$(this._tabs[tabIndex]).closest('.et-pb-settings-tab').addClass('modified');
 					} else {
-						jQuery(this._tabs[tabIndex]).closest('.et-pb-settings-tab').removeClass('modified');
+						$(this._tabs[tabIndex]).closest('.et-pb-settings-tab').removeClass('modified');
 					}
 				}, this);
 				if (this._isAnySettingModified()) {
-					jQuery(this._reset_button).addClass('et-pb-reset-icon-visible');
+					$(this._reset_button).addClass('et-pb-reset-icon-visible');
 				} else {
-					jQuery(this._reset_button).removeClass('et-pb-reset-icon-visible');
+					$(this._reset_button).removeClass('et-pb-reset-icon-visible');
 				}
 			},
 		});
@@ -9149,16 +9151,13 @@ window.et_builder_product_name = 'Divi';
 
 		ET_PageBuilder.Controls.BorderStylesControl = function (container) {
 
+			this._setting_values = null;
+			this._had_previously_resetted = false;
 			this.initialize(container);
 
 		};
 
 		$.extend(ET_PageBuilder.Controls.BorderStylesControl.prototype, ET_PageBuilder.Controls.TabbedControl.prototype, {
-			_getDefaultBorderStyle: function() {
-				var width = this._processWidth(this._getByPath(this._tab_settings_map, 'border_all.border_width_all' + this._suffix + '.value').toString(), false, 'px');
-				return width + ' ' + this._getByPath(this._tab_settings_map, 'border_all.border_style_all' + this._suffix + '.value') + ' ' + this._getByPath(this._tab_settings_map, 'border_all.border_color_all' + this._suffix + '.value');
-			},
-
 			_processWidth: function(value) {
 				var width = parseInt(value);
 				if (width > 50) {
@@ -9167,13 +9166,202 @@ window.et_builder_product_name = 'Divi';
 				return et_pb_sanitize_input_unit_value(width.toString(), false, 'px');
 			},
 
-			_onChangeHandler: function(e, param) {
-				if (!_.isUndefined(param) && param === 'from_all_tab') {
+			_setControlInitials: function($element) {
+			  var that = this;
+				var controlIndex = $element.parents('.et-pb-composite-tabbed-option').data('control-index');
+				this._setting_values[controlIndex] = {};
+
+				var saved_value = $element.data('saved_value');
+				var defaultKey = et_pb_get_default_key($element);
+				var value = '';
+				var defaultValue = '';
+				var parentDefault = '';
+
+				if ($element.hasClass('et-pb-range')) {
+					var $range_input = $element.siblings('.et-pb-range-input');
+
+					defaultValue = $range_input.data(defaultKey);
+					parentDefault = $range_input.data('default_inherited');
+					value = $range_input.val();
+
+					//assign special flag for checking 'default' data attribute instead of backbone
+					//model defaults array while saving child setting
+					$range_input.data('check_attr_default', 'yes');
+				} else {
+					value = $element.val();
+					defaultValue = $element.data(defaultKey);
+					parentDefault = $element.data('default_inherited');
+
+					//assign special flag for checking 'default' data attribute instead of backbone
+					//model defaults array while saving child setting
+					$element.data('check_attr_default', 'yes');
+				}
+
+				var defaultForComparison = _.isUndefined(defaultValue) ? '' : defaultValue;
+				var valueForComparison = '';
+				if (_.isUndefined(saved_value)) {
+					valueForComparison = value;
+				} else {
+					if (_.isEmpty(saved_value)) {
+						if (value === defaultValue) {
+							valueForComparison = defaultValue;
+						} else {
+							valueForComparison = '';
+						}
+					} else {
+						valueForComparison = saved_value;
+					}
+				}
+
+				var isSettingModified = valueForComparison !== defaultForComparison;
+				if (!_.isEmpty(parentDefault)) {//for child setting
+					if (_.isEmpty(valueForComparison) || valueForComparison === parentDefault) {
+						isSettingModified = false;
+					}
+				}
+
+				//if child setting and the setting is modified in parent we should adjust control according to the setting value
+				if (!_.isEmpty(parentDefault) && defaultValue !== parentDefault && !isSettingModified) {
+					that._updateControl($element, defaultValue, false);
+				}
+
+				//saved setting value
+				this._setting_values[controlIndex]['saved_value'] = isSettingModified ? valueForComparison : '';
+
+				//default value
+				this._setting_values[controlIndex]['default_value'] = defaultValue;
+
+				//default from parent
+				this._setting_values[controlIndex]['default_inherited'] = parentDefault;
+
+				//control itself
+				this._setting_values[controlIndex]['control'] = $element;
+
+				//get control edge
+				var lastUnderscoreIndex = controlIndex.replace(this._suffix, '').lastIndexOf('_');
+				var edge = controlIndex.substr(lastUnderscoreIndex).replace(this._suffix, '');
+
+				//related tab
+				this._setting_values[controlIndex]['tab'] = 'border' + edge;
+
+				var modified = this._tab_settings_map['border' + edge]['modified'];
+				this._tab_settings_map['border' + edge]['modified'] = modified || isSettingModified;
+
+			},
+
+			_recalculateEdgeSettings: function(controlIndex) {
+				if (controlIndex.indexOf('all') === -1) {//control not from All tab so nothing to change
 					return;
 				}
 
-				//Workaround for handling color picker changes
-				setTimeout(this._onSettingChange.bind(this), 100);
+				//get setting type
+				var lastUnderscoreIndex = controlIndex.replace(this._suffix, '').lastIndexOf('_');
+				var settingType = controlIndex.substr(0, lastUnderscoreIndex);//one of border_color, border_width, border_style
+				var that = this;
+
+				_.map(this._setting_values, function(values, setting) {
+					if (setting.indexOf(settingType) !== -1 && setting.indexOf('all') === -1) {//setting related to edge tab
+						var $element = values['control'];
+						var allTabValue = _.isEmpty(that._setting_values[controlIndex]['saved_value']) ?
+							that._setting_values[controlIndex]['default_value'] : that._setting_values[controlIndex]['saved_value'];
+
+						if (_.isEmpty(values['default_inherited'])) {//update logic for parent settings
+							values['default_value'] = allTabValue;
+							if (_.isEmpty(values['saved_value'])) {//edge setting is not modified
+								that._updateControl($element, allTabValue, allTabValue);//update value and control default
+							} else {
+								that._updateControl($element, false, allTabValue);//update only control default
+							}
+						} else {//update logic for child settings
+							//implementing the same behavior as within VB
+							allTabValue = that._setting_values[controlIndex]['saved_value'];
+							var allTabDefault = that._setting_values[controlIndex]['default_value'];
+							if (_.isEmpty(values['saved_value'])) {//edge setting is not modified
+								if (!_.isEmpty(allTabValue)) {//rewrite child edge setting only if All tab setting is modified
+									//save edge default to be able to restore setting value in case of All tab setting will be not modified
+									if (_.isEmpty(values['saved_default'])) {
+										values['saved_default'] = values['default_value'];
+									}
+									values['default_value'] = allTabValue;
+									that._updateControl($element, allTabValue, allTabValue);//update value and control default
+								} else {
+									if (!_.isEmpty(values['saved_default'])) {//restore child setting value from previously saved default
+										var previousDefault = values['saved_default'];
+										values['default_value'] = previousDefault;
+										that._updateControl($element, previousDefault, previousDefault);
+										values['saved_default'] = '';
+									} else {
+										if (values['default_value'] === values['default_inherited']) {
+											values['default_value'] = allTabDefault;
+											that._updateControl($element, allTabDefault, allTabDefault);
+										} else {
+											that._updateControl($element, values['default_value'], false);
+										}
+									}
+								}
+							} else {//edge setting is modified so assign default from All tab
+								var defaultValue = _.isEmpty(allTabValue) ? allTabDefault : allTabValue;
+								values['default_value'] = defaultValue;
+								that._updateControl($element, values['saved_value'], defaultValue);
+							}
+						}
+					}
+				});
+			},
+
+			_onSettingChange: function($element, controlIndex, resetFlag) {
+				var value = resetFlag ? '' : ET_PageBuilder.Helpers.getSettingValue($element);
+				this._updateSetting(controlIndex, value);
+				this._recalculateEdgeSettings(controlIndex);
+			},
+
+			_onChangeHandler: function(e, param) {
+				//if change event fired after change value according all tab then skip it
+				if (!_.isUndefined(param) && param === 'et_pb_from_all_tab') {
+					return;
+				}
+
+				var $element = $(e.target);
+				var controlIndex = $element.parents('.et-pb-composite-tabbed-option').data('control-index');
+				var resetFlag = !_.isUndefined(param) && param === 'et_pb_reset_setting';
+
+				//avoid double setting change after reset
+				if (this._had_previously_resetted) {
+					this._had_previously_resetted = false;
+					return;
+				}
+
+				if (resetFlag) {
+					this._had_previously_resetted = true;
+				}
+
+				//otherwise handle control updates
+				if (e.type === 'et_pb_setting:color_picker:change') {//handle color picker changes in different way
+					this._updateSetting(controlIndex, param);
+					this._recalculateEdgeSettings(controlIndex);
+				} else if (controlIndex.indexOf('color') === -1) {
+					this._onSettingChange($element, controlIndex, resetFlag);
+				}
+				this._render();
+			},
+
+			_updateSetting: function(controlIndex, value) {
+				var that = this;
+				var setting = this._setting_values[controlIndex];
+				var isSettingModified = value !== setting['default_value'];
+				setting['saved_value'] = !isSettingModified ? '' : value;
+
+				var tab = setting['tab'];
+				var isTabModified = false;
+				_.map(this._tab_settings_map[tab], function(control, controlIndex) {
+					if (controlIndex !== 'modified') {
+						var settingValue = that._setting_values[controlIndex]['saved_value'];
+						var defaultValue = that._setting_values[controlIndex]['default_value'];
+						isSettingModified = !_.isEmpty(settingValue) && (settingValue !== defaultValue);
+						isTabModified = isTabModified || isSettingModified;
+					}
+				});
+				this._tab_settings_map[tab]['modified'] = isTabModified;
 			},
 
 			_updateControl: function($element, value, defaultValue) {
@@ -9200,145 +9388,88 @@ window.et_builder_product_name = 'Divi';
 						$element = rangeInput;
 					}
 
-					if ($element.hasClass('wp-color-picker')) {
-						$element.val(value).trigger('change', ['from_all_tab']);
-					} else {
-						$element.val(value).trigger('change et_pb_setting:change', ['from_all_tab']);
-					}
+					$element.val(value).trigger('change', ['et_pb_from_all_tab']);
 				}
 			},
 
+			_resetAllTab: function() {
+				var that = this;
+
+				_.map(this._setting_values, function(values, setting) {
+					if (setting.indexOf('all') !== -1) {//setting related to All tab
+						values['saved_value'] = '';
+						that._updateControl(values['control'], values['default_value'], false);
+						that._recalculateEdgeSettings(setting);
+					}
+				});
+			},
+
+			_resetEdgeTabs: function() {
+				var that = this;
+
+				_.map(this._setting_values, function(values, setting) {
+					if (setting.indexOf('all') === -1) {//setting related to edge tab
+						//handle parent and child setting defaults in different way
+						if (_.isEmpty(values['default_inherited'])) {//parent setting
+							values['default_value'] = '';
+						} else {//child setting
+							if (!_.isEmpty(values['saved_default'])) {//restore child setting value from previously saved default
+								values['default_value'] = values['saved_default'];
+								values['saved_default'] = '';
+							}
+						}
+						values['saved_value'] = '';
+					}
+				});
+			},
+
+			_onClickReset: function() {
+				if (this._is_child_settings_container) {
+					this._resetAllTab();
+					this._resetEdgeTabs();
+				} else {
+					this._resetEdgeTabs();
+					this._resetAllTab();
+				}
+
+				this._active_tab  = this._first_tab;
+				this._render();
+			},
+
 			_buildTabSettingsMap: function() {
-				var $ = jQuery;
 				var that = this;
 
 				var result = {};
 				_.map(this._tab_content, function(tab, tabIndex) {
 					result[tabIndex] = {};
-
-					// is update initiated from "all" tab
-					var isFromAllTab = this._active_tab.lastIndexOf('_all') !== -1;
-
-					//on first run save settings values and inherited defaults.
-					if (this._tab_settings_map === null) {
-						$(tab['content']).find('.et-pb-main-setting').each(function (index, element) {
-							var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
-							var saved_value = $(element).data('saved_value');
-							var value = $(element).val();
-							var defaultKey = et_pb_get_default_key($(element));
-							var defaultValue = $(element).data(defaultKey);
-							var parentDefault = $(element).data('default_inherited');
-
-							result[tabIndex][controlIndex] = {};
-
-							//assign special flag for checking 'default' data attribute instead of backbone
-							//model defaults array while saving child setting
-							$(element).data('check_attr_default', 'yes');
-							if ($(element).hasClass('et-pb-range')) {
-								var $range_input = $(element).siblings('.et-pb-range-input');
-
-								defaultValue = $range_input.data(defaultKey);
-								parentDefault = $range_input.data('default_inherited');
-								value = $range_input.val();
-								//assign special flag for checking 'default' data attribute instead of backbone
-								//model defaults array while saving child setting
-								$range_input.data('check_attr_default', 'yes');
-							}
-							if (!_.isUndefined(saved_value)) {//check for combo box saved value
-								value = saved_value;
-							}
-							if (!_.isUndefined(parentDefault)) {
-								if (value === parentDefault) {
-									that._updateControl($(element), defaultValue, false);
-								} else if (_.isEmpty(value) && (defaultValue !== parentDefault)) {//this settings has been changed in parent
-									that._updateControl($(element), defaultValue, false);
-								}
-							} else {
-								if (!_.isEmpty(value) && (value !== defaultValue)) {
-									$(element).data('initial_saved', value);
-								}
-							}
-						});
-					}
-
-					var isTabSettingModified = false;
-
-					$(tab['content']).find('.et-pb-main-setting').each(function (index, element) {
+					$(tab['content']).find('.et-pb-main-setting').each(function(index, element) {
 						var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
-						var controlDefault = '';
-						var defaultValue = '';
-						var parentDefault = '';
-						var initialValue = $(element).data('initial_saved');
+						result[tabIndex][controlIndex] = {};
+					});
+					result[tabIndex]['modified'] = false;
+				});
+				this._tab_settings_map = result;
 
-						//Handle default from parent.
-						if ($(element).hasClass('et-pb-range')) {
-							var $range_input = $(element).siblings('.et-pb-range-input');
-							parentDefault = $range_input.data('default_inherited');
-							controlDefault = et_pb_get_default_setting_value($range_input);
-						} else {
-							parentDefault = $(element).data('default_inherited');
-							controlDefault = et_pb_get_default_setting_value($(element));
+				//on first run walk through all settings and initialize _setting_values
+				if (this._setting_values === null) {
+					this._setting_values = {};
+					//run through edge tabs first
+					_.map(this._tab_content, function(tab, tabIndex) {
+						if (tabIndex !== 'border_all') {
+							$(tab['content']).find('.et-pb-main-setting').each(function(index, element) {
+								that._setControlInitials($(element));
+								});
 						}
-
-						var isAllTab = false;
-						//if control is related to any edge tab then assign setting value from All tab
-						if (controlIndex.lastIndexOf('_all' + that._suffix) === -1) {
-							var lastUnderscoreIndex = controlIndex.replace(that._suffix, '').lastIndexOf('_');
-							var optionName = controlIndex.substr(0, lastUnderscoreIndex);
-
-							var valueFromAllTab = that._getByPath(result, 'border_all.' + optionName + '_all' + that._suffix + '.value');
-							if (_.isUndefined(parentDefault)) {
-								defaultValue = valueFromAllTab;
-							} else {
-								if (parentDefault === controlDefault) {
-									defaultValue = valueFromAllTab;
-								} else {
-									defaultValue = controlDefault;
-								}
-							}
-						} else { //control from All tab
-							isAllTab = true;
-
-							defaultValue = controlDefault;
-						}
-
-						var settingValue = ET_PageBuilder.Helpers.getSettingValue($(element));
-						var saved_value = $(element).data('saved_value');
-						if (!_.isUndefined(saved_value)) {//check for combo box saved value
-							settingValue = saved_value;
-						}
-
-						// if update initiated from All tab, adjust values for non-all tabs.
-						if (isFromAllTab && ! isAllTab) {
-							if (!_.isUndefined(parentDefault)) {//child element
-								if (_.isEmpty(settingValue) || (parentDefault === controlDefault)) {
-									that._updateControl($(element), defaultValue, controlDefault);
-								}
-							} else {
-								if (settingValue === controlDefault || '' === settingValue) {
-									that._updateControl($(element), defaultValue, defaultValue);
-								} else {
-									that._updateControl($(element), false, defaultValue);
-								}
-							}
-						}
-
-						settingValue = ET_PageBuilder.Helpers.getSettingValue($(element));
-
-						if (_.isUndefined(result[tabIndex][controlIndex])) {
-							result[tabIndex][controlIndex] = {};
-						}
-
-						result[tabIndex][controlIndex]['default'] = defaultValue;
-						result[tabIndex][controlIndex]['value'] = settingValue;
-						isTabSettingModified = isTabSettingModified || (settingValue !== defaultValue);
 					});
 
-					result[tabIndex]['modified'] = isTabSettingModified;
+					//then through all edge tab
+					$(this._tab_content['border_all']['content']).find('.et-pb-main-setting').each(function(index, element) {
+						that._setControlInitials($(element));
 
-				}, this);
-
-				this._tab_settings_map = result;
+						var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
+						that._recalculateEdgeSettings(controlIndex);
+					});
+				}
 			},
 
 			_renderTabPreviewArea: function(tab, previewContainer) {
@@ -9359,8 +9490,9 @@ window.et_builder_product_name = 'Divi';
 				_.forEach(borderEdges, function(edge) {
 					var edgeCSS = '';
 					_.forEach(properties, function(property) {
-						var path = 'border_' + edge + '.border_' + property + '_' + edge + this._suffix;
-						var value = this._getByPath(this._tab_settings_map, path + '.value');
+						var path = 'border_' + property + '_' + edge + this._suffix;
+						var value = _.isEmpty(this._setting_values[path]['saved_value']) ?
+							this._setting_values[path]['default_value'] : this._setting_values[path]['saved_value'];
 						if (property == 'width') {
 							value = this._processWidth(value);
 						}
@@ -13148,9 +13280,6 @@ window.et_builder_product_name = 'Divi';
 
 			var $tabbed_subtoggles           = $container.find('.et_pb_contains_tabbed_subtoggle');
 
-			new ET_PageBuilder.Controls.BorderRadius($container);
-			new ET_PageBuilder.Controls.BorderStyles($container);
-
 			if ( $google_maps_api_option.length ) {
 				$google_maps_api_button.attr( 'href', et_pb_options.options_page_url );
 
@@ -15167,7 +15296,11 @@ window.et_builder_product_name = 'Divi';
 					$clicked_button.addClass( 'et_pb_global_unsynced' );
 				}
 			});
-		}
+
+			new ET_PageBuilder.Controls.BorderRadius($container);
+			new ET_PageBuilder.Controls.BorderStyles($container);
+
+    }
 
 		function et_pb_update_font_settings($option_container, font_family) {
 			var	$main_option         = $option_container.find( 'input.et-pb-font-select' ),
@@ -15493,7 +15626,7 @@ window.et_builder_product_name = 'Divi';
 				default_value = et_pb_get_default_setting_value( $main_setting );
 			}
 
-			$main_setting.val( default_value ).trigger( 'et_pb_setting:change' );
+			$main_setting.val( default_value ).trigger( 'et_pb_setting:change', ['et_pb_reset_setting'] );
 
 			$main_setting.data( 'has_saved_value', 'no' );
 
@@ -15558,7 +15691,7 @@ window.et_builder_product_name = 'Divi';
 			}
 
 			if ( $.inArray( value.substr( -1, 1 ), valid_one_char_units ) !== -1 ) {
-				unit_value = parseFloat( value ) + "%";
+				unit_value = parseFloat( value ) + value.substr( -1, 1 );
 
 				// Re-add !important tag
 				if ( has_important && ! auto_important ) {

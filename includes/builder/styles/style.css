@@ -1784,6 +1784,7 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 	float: none;
 	display: block;
 	margin: 12px 0 20px;
+	width: 300px;
 }
 
 .et_pb_saved_global_modal .et-pb-option-container--composite .et-pb-composite-tabbed-option span.et_pb_global_sync_switcher {

@@ -671,6 +671,7 @@ class ET_Builder_Element {
 	 * Resolves conditional defaults
 	 *
 	 * @param array $values Fields.
+	 *
 	 * @return array
 	 */
 	function resolve_conditional_defaults( $values ) {
@@ -1302,7 +1303,9 @@ class ET_Builder_Element {
 
 	/**
 	 * Generate global setting name
-	 * @param  string $option_slug  Option slug
+	 *
+	 * @param  string $option_slug Option slug
+	 *
 	 * @return string               Global setting name in the following format: "module_slug-option_slug"
 	 */
 	public function get_global_setting_name( $option_slug ) {
@@ -1372,10 +1375,14 @@ class ET_Builder_Element {
 			$this->_add_additional_custom_margin_padding_fields();
 
 			$this->_add_additional_button_fields();
+
+			// Add filter fields to modules if requested
+			$this->_add_additional_filter_fields();
 		}
 
 		// Add animation fields to all modules
 		$this->_add_additional_animation_fields();
+
 		$this->_add_additional_shadow_fields();
 
 		// Add text shadow fields to all modules
@@ -2586,7 +2593,7 @@ class ET_Builder_Element {
 				'animation_duration',
 				'animation_delay',
 				'animation_starting_opacity',
-				'animation_speed_curve'
+				'animation_speed_curve',
 			), $animations_intensity_fields ),
 		);
 
@@ -3032,6 +3039,445 @@ class ET_Builder_Element {
 		}
 
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
+	/**
+	 * Add CSS filter controls (i.e. saturation, brightness, opacity) to the `_additional_fields_options` array.
+	 *
+	 * @return void
+	 */
+	protected function _add_additional_filter_fields() {
+
+		if ( ! isset( $this->advanced_options['filters'] ) ) {
+			return;
+		}
+
+		$filter_settings = self::$data_utils->array_get( $this->advanced_options, 'filters' );
+		$tab_slug = self::$data_utils->array_get( $filter_settings, 'tab_slug', 'advanced' );
+		$toggle_slug = self::$data_utils->array_get( $filter_settings, 'toggle_slug','filters' );
+		$toggle_name = self::$data_utils->array_get( $filter_settings, 'toggle_name', esc_html__( 'Filters', 'et_builder' ) );
+
+		$this->_add_option_toggles( $tab_slug, array(
+			$toggle_slug => array(
+				'title'    => $toggle_name,
+				'priority' => 105,
+			),
+		) );
+
+		$additional_options = array();
+
+		$additional_options['filter_hue_rotate'] = array(
+			'label'            => esc_html__( 'Hue', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 359,
+				'step' => 1,
+			),
+			'default'          => '0deg',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Shift all colors by this amount.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => 'deg',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_saturate'] = array(
+			'label'            => esc_html__( 'Saturation', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 200,
+				'step' => 1,
+			),
+			'default'          => '100%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Define how intense the color saturation should be.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_brightness'] = array(
+			'label'            => esc_html__( 'Brightness', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 200,
+				'step' => 1,
+			),
+			'default'          => '100%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Define how bright the colors should be.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_contrast'] = array(
+			'label'            => esc_html__( 'Contrast', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 200,
+				'step' => 1,
+			),
+			'default'          => '100%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Define how distinct bright and dark areas should be.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_invert'] = array(
+			'label'            => esc_html__( 'Invert', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 100,
+				'step' => 1,
+			),
+			'default'          => '0%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Invert the hue, saturation, and brightness by this amount.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_sepia'] = array(
+			'label'            => esc_html__( 'Sepia', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 100,
+				'step' => 1,
+			),
+			'default'          => '0%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Travel back in time by this amount.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_opacity'] = array(
+			'label'            => esc_html__( 'Opacity', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 100,
+				'step' => 1,
+			),
+			'default'          => '100%',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Define how transparent or opaque this should be.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => '%',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['filter_blur'] = array(
+			'label'            => esc_html__( 'Blur', 'et_builder' ),
+			'type'             => 'range',
+			'option_category'  => 'layout',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 50,
+				'step' => 1,
+			),
+			'default'          => '0px',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Blur by this amount.', 'et_builder' ),
+			'validate_unit'    => true,
+			'fixed_unit'       => 'px',
+			'fixed_range'      => true,
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$additional_options['mix_blend_mode'] = array(
+			'label'            => esc_html__( 'Blend Mode', 'et_builder' ),
+			'type'             => 'select',
+			'option_category'  => 'layout',
+			'default'          => 'normal',
+			'default_on_child' => true,
+			'description'      => esc_html__( 'Modify how this element blends with any layers beneath it. To reset, choose the "Normal" option.' ),
+			'options'          => array(
+				'normal'      => esc_html__( 'Normal', 'et_builder' ),
+				'multiply'    => esc_html__( 'Multiply', 'et_builder' ),
+				'screen'      => esc_html__( 'Screen', 'et_builder' ),
+				'overlay'     => esc_html__( 'Overlay', 'et_builder' ),
+				'darken'      => esc_html__( 'Darken', 'et_builder' ),
+				'lighten'     => esc_html__( 'Lighten', 'et_builder' ),
+				'color-dodge' => esc_html__( 'Color Dodge', 'et_builder' ),
+				'color-burn'  => esc_html__( 'Color Burn', 'et_builder' ),
+				'hard-light'  => esc_html__( 'Hard Light', 'et_builder' ),
+				'soft-light'  => esc_html__( 'Soft Light', 'et_builder' ),
+				'difference'  => esc_html__( 'Difference', 'et_builder' ),
+				'exclusion'   => esc_html__( 'Exclusion', 'et_builder' ),
+				'hue'         => esc_html__( 'Hue', 'et_builder' ),
+				'saturation'  => esc_html__( 'Saturation', 'et_builder' ),
+				'color'       => esc_html__( 'Color', 'et_builder' ),
+				'luminosity'  => esc_html__( 'Luminosity', 'et_builder' ),
+			),
+			'tab_slug'         => $tab_slug,
+			'toggle_slug'      => $toggle_slug,
+			'depends_default'  => null,
+			'reset_animation'  => false,
+		);
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+
+		// Maybe add child filters (i.e. targeting only images within a module)
+		if ( ! isset( $this->advanced_options['filters']['child_filters_target'] ) ) {
+			return;
+		}
+
+		$child_filter = $this->advanced_options['filters']['child_filters_target'];
+
+		$additional_child_options = array(
+			'child_filter_hue_rotate' => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Hue', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 359,
+					'step' => 1,
+				),
+				'default'          => '0deg',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Shift all colors by this amount.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => 'deg',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_saturate'   => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Saturation', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 200,
+					'step' => 1,
+				),
+				'default'          => '100%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Define how intense the color saturation should be.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_brightness' => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Brightness', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 200,
+					'step' => 1,
+				),
+				'default'          => '100%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Define how bright the colors should be.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_contrast'   => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Contrast', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 200,
+					'step' => 1,
+				),
+				'default'          => '100%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Define how distinct bright and dark areas should be.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_invert'     => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Invert', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 100,
+					'step' => 1,
+				),
+				'default'          => '0%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Invert the hue, saturation, and brightness by this amount.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_sepia'      => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Sepia', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 100,
+					'step' => 1,
+				),
+				'default'          => '0%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Travel back in time by this amount.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_opacity'    => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Opacity', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 100,
+					'step' => 1,
+				),
+				'default'          => '100%',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Define how transparent or opaque this should be.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => '%',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_filter_blur'       => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Blur', 'et_builder' ),
+				'type'             => 'range',
+				'option_category'  => 'layout',
+				'range_settings'   => array(
+					'min'  => 0,
+					'max'  => 50,
+					'step' => 1,
+				),
+				'default'          => '0px',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Blur by this amount.', 'et_builder' ),
+				'validate_unit'    => true,
+				'fixed_unit'       => 'px',
+				'fixed_range'      => true,
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+			'child_mix_blend_mode'    => array(
+				'label'            => esc_html__( 'Image', 'et_builder' ) . ' ' . esc_html__( 'Blend Mode', 'et_builder' ),
+				'type'             => 'select',
+				'option_category'  => 'layout',
+				'default'          => 'normal',
+				'default_on_child' => true,
+				'description'      => esc_html__( 'Modify how this element blends with any layers beneath it. To reset, choose the "Normal" option.' ),
+				'options'          => array(
+					'normal'      => esc_html__( 'Normal', 'et_builder' ),
+					'multiply'    => esc_html__( 'Multiply', 'et_builder' ),
+					'screen'      => esc_html__( 'Screen', 'et_builder' ),
+					'overlay'     => esc_html__( 'Overlay', 'et_builder' ),
+					'darken'      => esc_html__( 'Darken', 'et_builder' ),
+					'lighten'     => esc_html__( 'Lighten', 'et_builder' ),
+					'color-dodge' => esc_html__( 'Color Dodge', 'et_builder' ),
+					'color-burn'  => esc_html__( 'Color Burn', 'et_builder' ),
+					'hard-light'  => esc_html__( 'Hard Light', 'et_builder' ),
+					'soft-light'  => esc_html__( 'Soft Light', 'et_builder' ),
+					'difference'  => esc_html__( 'Difference', 'et_builder' ),
+					'exclusion'   => esc_html__( 'Exclusion', 'et_builder' ),
+					'hue'         => esc_html__( 'Hue', 'et_builder' ),
+					'saturation'  => esc_html__( 'Saturation', 'et_builder' ),
+					'color'       => esc_html__( 'Color', 'et_builder' ),
+					'luminosity'  => esc_html__( 'Luminosity', 'et_builder' ),
+				),
+				'tab_slug'         => $child_filter['tab_slug'],
+				'toggle_slug'      => $child_filter['toggle_slug'],
+				'depends_default'  => null,
+				'reset_animation'  => false,
+			),
+		);
+
+		if(!array_key_exists('depends_show_if',$child_filter)){
+			$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_child_options );
+			return;
+		}
+		foreach ( $additional_child_options as $option => $value ) {
+			unset($additional_child_options[$option]['depends_default']);
+			$additional_child_options[$option]['depends_show_if'] = $child_filter['depends_show_if'];
+		}
+		//var_dump($additional_child_options);
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_child_options );
 	}
 
 	/**
@@ -3482,6 +3928,7 @@ class ET_Builder_Element {
 
 	/**
 	 * Get svg icon as string
+	 *
 	 * @param string icon name
 	 *
 	 * @return string div-wrapped svg icon
@@ -3570,6 +4017,7 @@ class ET_Builder_Element {
 
 	/**
 	 * Get / extract background fields from all modules fields
+	 *
 	 * @param array all modules fields
 	 *
 	 * @return array background fields multidimensional array grouped based on its tab
@@ -3604,6 +4052,7 @@ class ET_Builder_Element {
 
 	/**
 	 * Generate background fields based on base name
+	 *
 	 * @param string background base name
 	 * @param string background tab name
 	 * @param string field's tab slug
@@ -4051,7 +4500,7 @@ class ET_Builder_Element {
 				),
 				'computed_variables'  => array(
 					'base_name' => $base_name,
-				)
+				),
 			);
 		}
 
@@ -4060,6 +4509,7 @@ class ET_Builder_Element {
 
 	/**
 	 * Get string of background fields UI. Used in place of background_color fields UI
+	 *
 	 * @param array list of all module fields
 	 *
 	 * @return string background fields UI
@@ -4369,7 +4819,8 @@ class ET_Builder_Element {
 				}
 
 				if ( in_array( $field_name, array( 'et_pb_raw_content', 'et_pb_custom_message' ) ) ) {
-					$field_custom_value = sprintf( '_.unescape( %1$s )', $field_custom_value );
+					// escape html to make sure it's not rendered inside the Textarea field in Settings Modal.
+					$field_custom_value = sprintf( '_.escape( %1$s )', $field_custom_value );
 				}
 
 				$field_el .= sprintf(
@@ -5197,7 +5648,7 @@ class ET_Builder_Element {
 			'minlength',
 			'maxlength',
 			'min',
-			'max'
+			'max',
 		);
 	}
 
@@ -5210,7 +5661,7 @@ class ET_Builder_Element {
 			'dateISO',
 			'number',
 			'digits',
-			'creditcard'
+			'creditcard',
 		);
 	}
 
@@ -5778,6 +6229,8 @@ class ET_Builder_Element {
 		$this->process_advanced_text_options( $function_name );
 
 		$this->process_advanced_border_options( $function_name );
+
+		$this->process_advanced_filter_options( $function_name );
 
 		$this->process_max_width_options( $function_name );
 
@@ -6367,6 +6820,15 @@ class ET_Builder_Element {
 		if ( ! $et_fb_processing_shortcode_object && $border_field->needs_border_reset_class( $function_name, $this->shortcode_atts ) ) {
 			add_filter( "{$function_name}_shortcode_output", array( $border_field, 'add_border_reset_class' ), 10, 2 );
 		}
+	}
+
+	/**
+	 * Adds Filter styles to the page custom css code
+	 *
+	 * Wrapper for `generate_css_filters` used for module defaults
+	 */
+	function process_advanced_filter_options( $function_name ) {
+		return $this->generate_css_filters( $function_name );
 	}
 
 	function process_max_width_options( $function_name ) {
@@ -7203,6 +7665,7 @@ class ET_Builder_Element {
 
 		return $a_priority - $b_priority;
 	}
+
 	/*
 	 * Reorder toggles based on the priority with respect to manually ordered items with no priority
 	 *
@@ -8392,8 +8855,138 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Generate CSS Filters
+	 * Check our shortcode arguments for CSS `filter` properties. If found, set the style rules for this block. (This
+	 * function reads options set by the 'Filters' and 'Image Filters' builder menu fields.)
+	 *
+	 * @param string $function_name Builder module's function name (keeps the CSS rules straight)
+	 * @param string $prefix        Optional string prepended to the field name (i.e., `filter_saturate` -> `child_filter_saturate`)
+	 * @param mixed  $selectors     Array or string containing all target DOM element(s), ID(s), and/or class(es)
+	 *
+	 * @return string Any additional CSS classes (added if filters were applied).
+	 */
+	function generate_css_filters( $function_name = '', $prefix = '', $selectors = array('%%order_class%%') ) {
+
+		if ( '' === $function_name ) {
+			ET_Core_Logger::error( '$function_name is required.' );
+			return;
+		}
+
+		// Sanitize `$selectors` and convert to array
+		$selectors_prepared = is_array($selectors) ? $selectors : explode( ',', esc_attr( $selectors ) );
+
+		// If we don't have a target selector, get out now
+		if ( ! $selectors_prepared ) {
+			return $additional_classes;
+		}
+
+		$additional_classes = '';
+
+		// Blend Mode
+		$mix_blend_mode = self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}mix_blend_mode", '' );
+
+		// Filters
+		$filter = array(
+			'hue_rotate' => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_hue_rotate", ''),
+			'saturate'   => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_saturate", ''),
+			'brightness' => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_brightness", ''),
+			'contrast'   => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_contrast", ''),
+			'invert'     => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_invert", ''),
+			'sepia'      => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_sepia", ''),
+			'opacity'    => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_opacity", ''),
+			'blur'       => self::$data_utils->array_get( $this->shortcode_atts, "{$prefix}filter_blur", ''),
+		);
+
+		// Remove any filters with null or default values
+		$filter = array_filter( $filter, 'strlen' );
+
+		// Optional: CSS `mix-blend-mode` rule
+		$mix_blend_mode_default = ET_Global_Settings::get_value( 'all_mix_blend_mode', 'default' );
+		if ( $mix_blend_mode && $mix_blend_mode !== $mix_blend_mode_default ) {
+			foreach ( $selectors_prepared as $selector ) {
+				ET_Builder_Element::set_style( $function_name, array(
+					'selector'    => $selector,
+					'declaration' => sprintf(
+						'mix-blend-mode: %1$s;',
+						esc_html( $mix_blend_mode )
+					),
+				) );
+			}
+			$additional_classes .= ' et_pb_css_mix_blend_mode';
+		} else if ( 'et_pb_column' === $function_name ) {
+			// Columns need to pass through
+			$additional_classes .= ' et_pb_css_mix_blend_mode_passthrough';
+		}
+
+		// Optional: CSS `filter` rule
+		if ( empty( $filter ) ) {
+			return $additional_classes;
+		}
+
+		$css_value = '';
+		$css_value_fb_hover = '';
+
+		foreach ( $filter as $label => $value ) {
+			// Check against our default settings, and only append the rule if it differs
+			if ( ET_Global_Settings::get_value( 'all_filter_' . $label, 'default' ) === $value ) {
+				continue;
+			}
+
+			$value = et_sanitize_input_unit( $value, false, 'deg' );
+			$label_css_format = str_replace( '_', '-', $label );
+
+			// Construct string of all CSS Filter values
+			$css_value .= esc_html( " ${label_css_format}(${value})" );
+
+			// Construct Visual Builder hover rules
+			if ( ! in_array( $label, array( 'opacity', 'blur' ) ) ) {
+				// Skip those, because they mess with VB controls
+				$css_value_fb_hover .= esc_html( " ${label_css_format}(${value})" );
+			}
+		}
+
+		// Append our new CSS rules
+		if ( trim( $css_value ) ) {
+			foreach ( $selectors_prepared as $selector ) {
+				ET_Builder_Element::set_style( $function_name, array(
+					'selector'    => $selector,
+					'declaration' => sprintf(
+						'filter: %1$s;',
+						$css_value
+					),
+				) );
+			}
+			$additional_classes .= ' et_pb_css_filters';
+		}
+
+		// If we have VB hover-friendly CSS rules, we'll gather those and append them here
+		if ( trim( $css_value_fb_hover ) ) {
+			foreach ( $selectors_prepared as $selector ) {
+				$selector_hover = str_replace(
+					'%%order_class%%',
+					'html:not(.et_fb_edit_enabled) #et-fb-app %%order_class%%:hover',
+					$selector
+				);
+				ET_Builder_Element::set_style( $function_name, array(
+					'selector'    => $selector_hover,
+					'declaration' => sprintf(
+						'filter: %1$s;',
+						$css_value_fb_hover
+					),
+				) );
+
+			}
+			$additional_classes .= ' et_pb_css_filters_hover';
+		}
+
+		return $additional_classes;
+	}
+
+	/**
 	 * Convert smart quotes and &amp; entity to their applicable characters
+	 *
 	 * @param  string $text Input text
+	 *
 	 * @return string
 	 */
 	static function convert_smart_quotes_and_amp( $text ) {

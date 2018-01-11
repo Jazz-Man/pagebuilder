@@ -127,6 +127,7 @@
 			$this.ajaxAction( {
 				action: 'et_core_portability_import',
 				file: file,
+				nonce: $this.nonces.import
 			}, function( response ) {
 				etCore.modalContent( '<div class="et-core-loader et-core-loader-success"></div>', false, 3000, '#et-core-portability-import' );
 				$this.toggleCancel();
@@ -211,6 +212,7 @@
 					action: 'et_core_portability_export',
 					content: content,
 					selection: $.isEmptyObject( posts ) ? false : JSON.stringify( posts ),
+					nonce: $this.nonces.export
 				}, function( response ) {
 					var time = ' ' + new Date().toJSON().replace( 'T', ' ' ).replace( ':', 'h' ).substring( 0, 16 ),
 						downloadURL = $this.instance( '[data-et-core-portability-export]' ).data( 'et-core-portability-export' ),
@@ -253,7 +255,7 @@
 					action: 'et_core_portability_export',
 					content: content,
 					timestamp: 0,
-					nonce: $this.nonce,
+					nonce: $this.nonces.export,
 					post: postId,
 					context: 'et_builder',
 					page: page,
@@ -350,7 +352,7 @@
 					file: file,
 					content: false,
 					timestamp: 0,
-					nonce: $this.nonce,
+					nonce: $this.nonces.import,
 					post: postId,
 					context: 'et_builder'
 				};
@@ -435,7 +437,7 @@
 						}
 					}
 				} );
-			}
+			};
 
 			importFBAjax(formData)
 		},
@@ -615,7 +617,7 @@
 					type: 'POST',
 					url: etCore.ajaxurl,
 					data: {
-						nonce: this.nonce,
+						nonce: this.nonces.cancel,
 						context: this.instance().data( 'et-core-portability' ),
 						action: 'et_core_portability_cancel',
 					}

@@ -81,6 +81,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 					),
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
@@ -129,13 +130,13 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'type'              => 'yes_no_button',
 				'option_category'   => 'configuration',
 				'options'           => array(
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
 				),
 				'affects'           => array(
 					'url',
 					'url_new_window',
-					'use_overlay'
+					'use_overlay',
 				),
 				'toggle_slug'       => 'link',
 				'description'       => esc_html__( 'Here you can choose whether or not the image should open in Lightbox. Note: if you select to open the image in Lightbox, url options below will be ignored.', 'et_builder' ),
@@ -238,7 +239,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'type'              => 'yes_no_button',
 				'option_category'   => 'layout',
 				'options'           => array(
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
 				),
 				'tab_slug'    => 'advanced',
@@ -253,7 +254,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 				'option_category'   => 'layout',
 				'options'           => array(
 					'on'  => esc_html__( 'Yes', 'et_builder' ),
-					'off' => esc_html__( "No", 'et_builder' ),
+					'off' => esc_html__( 'No', 'et_builder' ),
 				),
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'alignment',

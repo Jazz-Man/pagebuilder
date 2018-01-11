@@ -58,12 +58,6 @@ if ( ! function_exists( 'et_options_stored_in_one_row' ) ) {
 /* sync custom CSS from ePanel with WP custom CSS option introduced in WP 4.7 */
 if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 	function et_sync_custom_css_options() {
-		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
-
-		if ( 'yes' === $css_synced || ! function_exists( 'wp_get_custom_css' ) ) {
-			return;
-		}
-
 		global $shortname;
 
 		$legacy_custom_css = wp_unslash( et_get_option( "{$shortname}_custom_css" ) );
@@ -74,8 +68,20 @@ if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
 			return;
 		}
 
+		// don't proceed with the sync logic if the custom CSS option does not exist
+		if ( ! function_exists( 'wp_get_custom_css' ) ) {
+			return;
+		}
+
+		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
+
 		// get custom css string from WP customizer
 		$wp_custom_css = wp_get_custom_css();
+
+		// force sync if the current custom CSS is empty
+		if ( 'yes' === $css_synced && '' !== $wp_custom_css ) {
+			return;
+		}
 
 		// ePanel is completely synced with Customizer
 		if ( $wp_custom_css === $legacy_custom_css || false !== strpos( $wp_custom_css, $legacy_custom_css ) ) {

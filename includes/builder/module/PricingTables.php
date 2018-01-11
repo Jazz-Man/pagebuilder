@@ -224,6 +224,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 					'text_shadow'      => '%%order_class%% .et_pb_pricing_heading, %%order_class%% .et_pb_pricing_content_top, %%order_class%% .et_pb_pricing_content',
 				),
 			),
+			'filters' => array(),
 		);
 	}
 
@@ -461,7 +462,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 
 		if ( '' !== $featured_table_header_text_color ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_featured_table .et_pb_pricing_heading h2',
+				'selector'    => '%%order_class%% .et_pb_featured_table .et_pb_pricing_heading h2, %%order_class%% .et_pb_featured_table .et_pb_pricing_heading .et_pb_pricing_title',
 				'declaration' => sprintf(
 					'color: %1$s !important;',
 					esc_html( $featured_table_header_text_color )

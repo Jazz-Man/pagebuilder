@@ -19,7 +19,7 @@ abstract class ET_Builder_Module_Settings_Migration {
 	public static $last_hook_checked;
 	public static $last_hook_check_decision;
 
-	public static $max_version = '3.0.87';
+	public static $max_version = '3.0.91';
 	public static $migrated    = array();
 	public static $migrations  = array(
 		'3.0.48' => 'BackgroundUI',
@@ -27,6 +27,7 @@ abstract class ET_Builder_Module_Settings_Migration {
 		'3.0.74' => 'OptionsHarmony',
 		'3.0.84' => 'FullwidthHeader',
 		'3.0.87' => 'BorderOptions',
+		'3.0.91' => 'FilterOptions',
 	);
 
 	public static $migrations_by_version = array();

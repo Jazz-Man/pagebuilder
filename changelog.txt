@@ -1,3 +1,138 @@
+version 3.0.91 ( updated 12-7-2017 )
+- Fixed broken Builder and unwanted Builder Timeout popup appears when asp_tags is enabled on php.ini.
+- Fixed the issue when Text Alignment value was not saved in Text and Search modules when saved in Backend Builder.
+- Fixing issue on cloning and drag and dropping module item (i.e. video slider) on visual builder.
+- Fixed unwanted horizontal scroll on window when row's equalize height is set and gutter is set to 1.
+- Fixed broken drag and drop behaviour in Visual Builder wireframe mode.
+- Fixed logic bug that caused inconsistent results when checking php memory limit.
+- Added support of Google Fonts API.
+- Updated strings references in translation files.
+- Fixed Blurb image box shadow size when change image size.
+- Fixed the issue when Font Options were not applied for the single Fields in Contact Form module.
+- Fixed broken logic in the permissions check used for the Divi Builder portability system.
+- Fixed several Border Styles settings inheritance issues.
+- Fixed the issue when Featured Table Header Text Color option in Pricing Table module was not applied to headings other than H2.
+- Updated CSS sync logic.
+- Fixed the issue when pagination was not working in Shop module with the latest version of Woocommerce.
+- Fixed the issue when Upwards menu direction was not to mobile version of menu in Fullwidth Menu module.
+- Fixed the issue when some HTML was rendered inside the Content field of Code Module and Message Patternt field of Contact Form Module in Backend Builder.
+- Fixed the issue when "Title" Custom CSS in Fullwidth Header module was applied to H1 heading only.
+- Added filter and blending controls for all Sections, Rows, and Modules.
+	* core/admin/js/portability.js
+	* core/components/Portability.php
+	* core/functions.php
+	* epanel/custom_functions.php
+	* functions.php
+	* includes/builder/ab-testing.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-global-settings.php
+	* includes/builder/core.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/languages/ar.mo
+	* includes/builder/languages/bg_BG.mo
+	* includes/builder/languages/cs_CZ.mo
+	* includes/builder/languages/da_DK.mo
+	* includes/builder/languages/de_DE.mo
+	* includes/builder/languages/el.mo
+	* includes/builder/languages/en_US.pot
+	* includes/builder/languages/en_US.pot
+	* includes/builder/languages/fi.mo
+	* includes/builder/languages/fr_FR.mo
+	* includes/builder/languages/he_IL.mo
+	* includes/builder/languages/hu_HU.mo
+	* includes/builder/languages/id_ID.mo
+	* includes/builder/languages/it_IT.mo
+	* includes/builder/languages/ja.mo
+	* includes/builder/languages/ko_KR.mo
+	* includes/builder/languages/ms_MY.mo
+	* includes/builder/languages/nb_NO.mo
+	* includes/builder/languages/nl_NL.mo
+	* includes/builder/languages/pl_PL.mo
+	* includes/builder/languages/pt_BR.mo
+	* includes/builder/languages/ro_RO.mo
+	* includes/builder/languages/ru_RU.mo
+	* includes/builder/languages/sk_SK.mo
+	* includes/builder/languages/sr_RS.mo
+	* includes/builder/languages/sv_SE.mo
+	* includes/builder/languages/th.mo
+	* includes/builder/languages/tl.mo
+	* includes/builder/languages/tr_TR.mo
+	* includes/builder/languages/uk.mo
+	* includes/builder/languages/vi.mo
+	* includes/builder/languages/zh_CN.mo
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCounters.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/Divider.php
+	* includes/builder/module/field/template/border/Radius.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthCode.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthMap.php
+	* includes/builder/module/FullwidthMenu.php
+	* includes/builder/module/FullwidthMenu.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/FullwidthPostTitle.php
+	* includes/builder/module/FullwidthSlider.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/Map.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PostsNavigation.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/FilterOptions.php
+	* includes/builder/module/settings/migration/OptionsHarmony.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Sidebar.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Slider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollow.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/Tabs.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/Video.php
+	* includes/builder/module/VideoSlider.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/style.css
+
 version 3.0.90 ( updated 11-29-2017 )
 - Improved google fonts loading logic to prevent font flickering on page load.
 - Fixed wrong button icon with uppercase text enabled in Button module.

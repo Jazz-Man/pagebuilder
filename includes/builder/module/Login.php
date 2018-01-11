@@ -103,7 +103,8 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				'css' => array(
 					'text_shadow' => "{$this->main_css_element} input",
 				),
-			)
+			),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'newsletter_description' => array(

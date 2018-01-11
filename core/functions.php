@@ -265,6 +265,23 @@ function et_core_get_third_party_components( $group = '' ) {
 endif;
 
 
+if ( ! function_exists( 'et_core_get_memory_limit' ) ):
+/**
+ * Returns the current php memory limit in megabytes as an int.
+ *
+ * @return int
+ */
+function et_core_get_memory_limit() {
+	// Do NOT convert value to the integer, because wp_convert_hr_to_bytes() expects raw value from php_ini like 128M, 256M, 512M, etc
+	$limit = @ini_get( 'memory_limit' );
+	$mb_in_bytes = 1024*1024;
+	$bytes = max( wp_convert_hr_to_bytes( $limit ), $mb_in_bytes );
+
+	return ceil( $bytes / $mb_in_bytes );
+}
+endif;
+
+
 if ( ! function_exists( 'et_core_initialize_component_group' ) ):
 function et_core_initialize_component_group( $slug, $init_file = null ) {
 	$slug = strtolower( $slug );

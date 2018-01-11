@@ -92,6 +92,9 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 					'layout'     => esc_html__( 'Layout', 'et_builder' ),
 					'overlay'    => esc_html__( 'Overlay', 'et_builder' ),
 					'navigation' => esc_html__( 'Navigation', 'et_builder' ),
+					'image' => array(
+						'title' => esc_html__( 'Image', 'et_builder' ),
+					),
 					'text'       => array(
 						'title'    => esc_html__( 'Text', 'et_builder' ),
 						'priority' => 49,
@@ -158,7 +161,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			),
 			'background' => array(
 				'css' => array(
-					'main' => "{$this->main_css_element}, {$this->main_css_element}.et_pb_bg_layout_dark"
+					'main' => "{$this->main_css_element}, {$this->main_css_element}.et_pb_bg_layout_dark",
 				),
 			),
 			'custom_margin_padding' => array(
@@ -178,8 +181,19 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			'border' => array(
 				'css' => array(
 					'main' => array(
-						'border_radii'  => "%%order_class%%, %%order_class%% .et_pb_slide, %%order_class%% .et_pb_slide_overlay_container",
+						'border_radii'  => '%%order_class%%, %%order_class%% .et_pb_slide, %%order_class%% .et_pb_slide_overlay_container',
 					),
+				),
+			),
+			'filters' => array(
+				'child_filters_target' => array(
+					'tab_slug' => 'advanced',
+					'toggle_slug' => 'image',
+				),
+            ),
+			'image' => array(
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_slide_image',
 				),
 			),
 		);
@@ -595,20 +609,20 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		}
 
 		if ( 'date_desc' !== $args['orderby'] ) {
-			switch( $args['orderby'] ) {
-				case 'date_asc' :
+			switch ( $args['orderby'] ) {
+				case 'date_asc':
 					$query_args['orderby'] = 'date';
 					$query_args['order'] = 'ASC';
 					break;
-				case 'title_asc' :
+				case 'title_asc':
 					$query_args['orderby'] = 'title';
 					$query_args['order'] = 'ASC';
 					break;
-				case 'title_desc' :
+				case 'title_desc':
 					$query_args['orderby'] = 'title';
 					$query_args['order'] = 'DESC';
 					break;
-				case 'rand' :
+				case 'rand':
 					$query_args['orderby'] = 'rand';
 					break;
 			}
@@ -993,6 +1007,15 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			$content  = '<div class="et_pb_no_results">';
 			$content .= self::get_no_results_template();
 			$content .= '</div>';
+		}
+
+		// Images: Add CSS Filters and Mix Blend Mode rules (if set)
+		if ( array_key_exists( 'image', $this->advanced_options ) && array_key_exists( 'css', $this->advanced_options['image'] ) ) {
+			$module_class .= $this->generate_css_filters(
+				$function_name,
+				'child_',
+				self::$data_utils->array_get( $this->advanced_options['image']['css'], 'main', '%%order_class%%' )
+			);
 		}
 
 		$output = sprintf(

@@ -97,7 +97,7 @@ class ET_Builder_Module_Search extends ET_Builder_Module {
 			'background' => array(
 				'css' => array(
 					'main' => "{$this->main_css_element} input.et_pb_s",
-				)
+				),
 			),
 			'border' => array(
 				'css' => array(
@@ -124,6 +124,7 @@ class ET_Builder_Module_Search extends ET_Builder_Module {
 					'exclude_options' => array( 'justified' ),
 				),
 			),
+			'filters' => array(),
 		);
 
 		$this->custom_css_options = array(

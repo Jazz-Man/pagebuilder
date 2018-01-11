@@ -79,6 +79,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 			),
 			'max_width' => array(),
 			'text'      => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'toggle' => array(

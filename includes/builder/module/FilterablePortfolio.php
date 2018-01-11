@@ -74,7 +74,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 					),
 				),
 				'filter' => array(
-					'label'    => esc_html__( 'Filter', 'et_builder' ),
+					'label'    => esc_html__( 'Filter Criteria', 'et_builder' ),
 					'hide_text_align' => true,
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_portfolio_filter",
@@ -123,6 +123,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				),
 			),
 			'text'      => array(),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'portfolio_filters' => array(

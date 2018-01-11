@@ -34,6 +34,10 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 			),
 		);
 
+		$this->advanced_options = array(
+			'filters' => array(),
+		);
+
 		$this->fields_defaults = array(
 			'background_layout' => array( 'dark' ),
 		);
@@ -181,7 +185,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 
 		global $et_pb_slider_image_overlay;
 
-		$class  = '';
+		$class  = ET_Builder_Element::add_module_order_class( '', $function_name );
 		$class .= " et_pb_bg_layout_{$background_layout}";
 
 		if ( '' !== $image_src ) {

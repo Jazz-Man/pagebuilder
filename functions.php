@@ -8910,44 +8910,10 @@ function et_divi_gallery_layout_enable( $option ) {
 }
 add_filter( 'et_gallery_layout_enable', 'et_divi_gallery_layout_enable' );
 
-function et_pb_get_all_categories() {
-	// nonce check will be there..
-
-	$all_cats = get_terms( 'project_category' );
-	$all_cats_processed = array();
-
-	foreach( $all_cats as $cat => $cat_data ) {
-		$all_cats_processed[] = array(
-			'id' => $cat_data->term_id,
-			'name' => $cat_data->name,
-		);
-	}
-	die( json_encode( $all_cats_processed ) );
-}
-add_action( 'wp_ajax_et_pb_get_all_categories', 'et_pb_get_all_categories' );
-
-function et_pb_get_widget_areas_list() {
-	// nonce check will be there..
-	global $wp_registered_sidebars;
-	$widget_areas_processed = array();
-
-	foreach( $wp_registered_sidebars as $id => $options ) {
-		$widget_areas_processed[] = array(
-			'id' => $id,
-			'name' => $options['name'],
-		);
-	}
-
-	die( json_encode( $widget_areas_processed ) );
-}
-add_action( 'wp_ajax_et_pb_get_widget_areas_list', 'et_pb_get_widget_areas_list' );
-
 /**
  * Register theme and modules Customizer portability.
  *
  * @since 2.7.0
- *
- * @return bool Always return true.
  */
 function et_divi_register_customizer_portability() {
 	global $options;

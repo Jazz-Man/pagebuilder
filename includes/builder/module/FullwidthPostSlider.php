@@ -182,6 +182,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					),
 				),
 			),
+			'filters' => array(),
 		);
 		$this->custom_css_options = array(
 			'slide_description' => array(

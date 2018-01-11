@@ -64,6 +64,7 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 				),
 			),
 			'max_width' => array(),
+			'filters' => array(),
 		);
 	}
 
