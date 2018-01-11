@@ -314,6 +314,9 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
+	// Don't add text-shadow fields since they already are via font-options
+	protected function _add_additional_text_shadow_fields() {}
+
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$field_title                = $this->shortcode_atts['field_title'];
 		$field_type                 = $this->shortcode_atts['field_type'];

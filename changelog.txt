@@ -1,3 +1,40 @@
+version 3.0.85 ( updated 10-26-2017 )
+- Added new text shadow options to all modules
+- Fixed disappearing parent module setting when module item settings modal was opened and saved.
+- Fixed over-sized images bug in image module in IE.
+- Disabled gzip compression when output has been sent already, which fixed some errors that were preventing the builder from loading on some servers.
+    * includes/builder/styles/frontend-builder-style.css
+    * includes/builder/class-et-builder-element.php
+    * includes/builder/frontend-builder/bundle.js
+    * includes/builder/module/Audio.php
+    * includes/builder/module/Blog.php
+    * includes/builder/module/Blurb.php
+    * includes/builder/module/Button.php
+    * includes/builder/module/Code.php
+    * includes/builder/module/Comments.php
+    * includes/builder/module/ContactForm.php
+    * includes/builder/module/CountdownTimer.php
+    * includes/builder/module/Cta.php
+    * includes/builder/module/FullwidthCode.php
+    * includes/builder/module/FullwidthPostSlider.php
+    * includes/builder/module/FullwidthSlider.php
+    * includes/builder/module/Gallery.php
+    * includes/builder/module/Login.php
+    * includes/builder/module/PostSlider.php
+    * includes/builder/module/PricingTables.php
+    * includes/builder/module/PricingTablesItem.php
+    * includes/builder/module/Search.php
+    * includes/builder/module/Shop.php
+    * includes/builder/module/Signup.php
+    * includes/builder/module/Slider.php
+    * includes/builder/module/SliderItem.php
+    * includes/builder/module/Testimonial.php
+    * includes/builder/module/Text.php
+    * includes/builder/module/Toggle.php
+    * includes/builder/module/field/TextShadow.php
+    * includes/builder/styles/frontend-builder-style.css
+    * includes/builder/styles/style.css
+
 version 3.0.84 ( updated 10-23-2017 )
 - Greatly reduce the size of the Visual Builder ajax payload by removing redundancies in field definitions.
 - Added gzip compression to the Visual Builder and standard Divi Builder ajax payloads to avoid substitute max length errors.

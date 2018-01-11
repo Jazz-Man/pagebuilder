@@ -112,7 +112,8 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'line_height' => "{$this->main_css_element} p",
-						'text_align' => "{$this->main_css_element} .et_pb_blurb_description",
+						'text_align'  => "{$this->main_css_element} .et_pb_blurb_description",
+						'text_shadow' => "{$this->main_css_element} .et_pb_blurb_description",
 					),
 				),
 			),
@@ -133,7 +134,11 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 					'module_alignment' => '%%order_class%%.et_pb_blurb.et_pb_module',
 				),
 			),
-			'text' => array(),
+			'text' => array(
+				'css'              => array(
+					'text_shadow' => "{$this->main_css_element} .et_pb_blurb_container",
+				),
+			),
 		);
 		$this->custom_css_options = array(
 			'blurb_image' => array(

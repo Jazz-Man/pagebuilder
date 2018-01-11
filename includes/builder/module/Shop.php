@@ -86,7 +86,17 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 			'max_width' => array(),
-			'text'      => array(),
+			'text'      => array(
+				'css' => array(
+					'text_shadow' => array(
+						// Title
+						"{$this->main_css_element} .woocommerce ul.products h3, {$this->main_css_element} .woocommerce ul.products  h1, {$this->main_css_element} .woocommerce ul.products  h2, {$this->main_css_element} .woocommerce ul.products  h4, {$this->main_css_element} .woocommerce ul.products  h5, {$this->main_css_element} .woocommerce ul.products  h6",
+						// Price
+						"{$this->main_css_element} .woocommerce ul.products .price, {$this->main_css_element} .woocommerce ul.products .price .amount",
+
+					)
+				),
+			),
 		);
 
 		$this->custom_css_options = array(

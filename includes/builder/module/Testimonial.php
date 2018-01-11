@@ -73,11 +73,12 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 
 		$this->advanced_options = array(
 			'fonts' => array(
-				'body'   => array(
-					'label' => esc_html__( 'Body', 'et_builder' ),
-					'css'   => array(
+				'body' => array(
+					'label'            => esc_html__( 'Body', 'et_builder' ),
+					'css'              => array(
 						'main' => "{$this->main_css_element} *",
 					),
+					'hide_text_shadow' => true,
 				),
 			),
 			'background' => array(

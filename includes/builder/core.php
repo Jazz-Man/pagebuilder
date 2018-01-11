@@ -995,8 +995,22 @@ function et_builder_enable_zlib_compression() {
 		return;
 	}
 
+	// We need to be sure no content has been pushed yet before enabling compression
+	// to avoid decoding errors. To do so, we flush buffer and then check header_sent
+	while ( ob_get_level() ) {
+		ob_end_flush();
+	}
+
+	if ( headers_sent() ) {
+		// Something has been sent already, could be PHP notices or other plugin output
+		return;
+	}
+
 	// We use ob_gzhandler because less prone to errors with WP
 	if ( function_exists( 'ob_gzhandler' ) ) {
+		// Faster compression, requires less cpu/memory
+		@ini_set( 'zlib.output_compression_level', 1 );
+
 		ob_start( 'ob_gzhandler' );
 	}
 }
@@ -3136,7 +3150,7 @@ endif;
 
 if ( ! function_exists( 'et_builder_get_font_weight_list' ) ) :
 function et_builder_get_font_weight_list() {
-	$default_font_weights_list = array( 
+	$default_font_weights_list = array(
 		'100' => esc_html__( 'Thin', 'et_builder' ),
 		'200' => esc_html__( 'Ultra Light', 'et_builder' ),
 		'300' => esc_html__( 'Light', 'et_builder' ),
@@ -3160,7 +3174,7 @@ function et_builder_get_custom_fonts() {
 endif;
 
 function et_builder_old_fonts_mapping() {
-	return array( 
+	return array(
 		'Raleway Light' => array(
 			'parent_font' => 'Raleway',
 			'styles'      => '300',
@@ -3365,12 +3379,12 @@ function et_pb_process_custom_font() {
 				$fonts_array[ $format ] = $_FILES['et_pb_font_file_' . $format ];
 			}
 		}
-		
+
 		die( json_encode( et_pb_add_font( $fonts_array, $custom_font_name, $custom_font_settings_processed ) ) );
 	} elseif ( 'remove' === $action ) {
 		$font_slug = ! empty( $_POST['et_pb_font_name'] ) ? sanitize_text_field( $_POST['et_pb_font_name'] ) : '';
 		die( json_encode( et_pb_remove_font( $font_slug ) ) );
-	} 
+	}
 }
 
 add_action( 'wp_ajax_et_pb_process_custom_font', 'et_pb_process_custom_font' );
@@ -3385,7 +3399,7 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 	}
 
 	// remove all special characters from the font name
-	$font_name = preg_replace( '/[^A-Za-z0-9\s\_-]/', '', $font_name ); 
+	$font_name = preg_replace( '/[^A-Za-z0-9\s\_-]/', '', $font_name );
 
 	if ( '' === $font_name ) {
 		return array( 'error' => esc_html__( 'Font Name Cannot be Empty and Cannot Contain Special Characters', 'et_builder' ) );
@@ -3401,7 +3415,7 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 
 	// set the upload Directory for builder font files
 	add_filter( 'upload_dir', 'et_pb_set_fonts_upload_dir' );
-	
+
 	$uploaded_files_error = '';
 	$uploaded_files = array(
 		'font_file' => array(),

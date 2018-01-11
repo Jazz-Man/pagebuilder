@@ -135,6 +135,7 @@ class ET_Builder_Element {
 
 		$this->process_whitelisted_fields();
 		$this->set_fields();
+		$this->set_factory_objects();
 
 		$this->_additional_fields_options = array();
 		$this->_add_additional_fields();
@@ -347,6 +348,16 @@ class ET_Builder_Element {
 		}
 
 		$this->whitelisted_fields = $fields;
+	}
+
+	/**
+	 * Create Factory objects
+	 *
+	 * @return void
+	 */
+	function set_factory_objects() {
+		// Load features fields.
+		$this->text_shadow = ET_Builder_Module_Fields_Factory::get( 'TextShadow' );
 	}
 
 	/**
@@ -1311,6 +1322,9 @@ class ET_Builder_Element {
 		$this->_add_additional_animation_fields();
 		$this->_add_additional_shadow_fields();
 
+		// Add text shadow fields to all modules
+		$this->_add_additional_text_shadow_fields();
+
 		if ( ! isset( $this->_additional_fields_options ) ) {
 			return false;
 		}
@@ -1623,6 +1637,20 @@ class ET_Builder_Element {
 				);
 			}
 
+			// Add text-shadow to font options
+			if ( ! isset( $option_settings['hide_text_shadow'] ) || ! $option_settings['hide_text_shadow'] ) {
+				$option = $this->text_shadow->get_fields(array(
+					// Don't use an additional label for 'text' or else we'll end up with 'Text Text Shadow....'
+					'label'           => 'text' === $option_name ? '' : $option_settings['label'],
+					'prefix'          => $option_name,
+					'option_category' => 'font_option',
+					'tab_slug'        => $tab_slug,
+					'toggle_slug'     => $toggle_slug,
+					'sub_toggle'      => $sub_toggle,
+				));
+				$additional_options = array_merge( $additional_options, $option );
+			};
+
 			// The below option is obsolete. This code is for backward compatibility
 			if ( isset( $option_settings['use_all_caps'] ) && $option_settings['use_all_caps'] ) {
 				$additional_options["{$option_name}_all_caps"] = array(
@@ -1728,6 +1756,12 @@ class ET_Builder_Element {
 		$sub_toggle   = isset( $text_settings['sub_toggle'] ) ? $text_settings['sub_toggle'] : '';
 		$orientation_exclude_options = isset( $text_settings['text_orientation'] ) && isset( $text_settings['text_orientation']['exclude_options'] ) ? $text_settings['text_orientation']['exclude_options'] : array();
 
+		// Make sure we can exclude text_orientation from Advanced/Text
+		$setting_defaults   = array(
+			'use_text_orientation' => true,
+		);
+		$text_settings = wp_parse_args( $text_settings, $setting_defaults );
+
 		$this->_add_option_toggles( $tab_slug, array(
 			$toggle_slug => array(
 				'title'    => esc_html__( 'Text', 'et_builder' ),
@@ -1735,19 +1769,22 @@ class ET_Builder_Element {
 			),
 		) );
 
-		$additional_options = array(
-			'text_orientation' => array(
-				'label'           => esc_html__( 'Text Orientation', 'et_builder' ),
-				'type'            => 'text_align',
-				'option_category' => 'layout',
-				'options'         => et_builder_get_text_orientation_options( $orientation_exclude_options ),
-				'tab_slug'        => $tab_slug,
-				'toggle_slug'     => $toggle_slug,
-				'description'     => esc_html__( 'This controls how your text is aligned within the module.', 'et_builder' ),
-				'advanced_options'=> true,
-				'default'         => isset( $this->fields_defaults['text_orientation'] ) && isset( $this->fields_defaults['text_orientation'][0] ) ? $this->fields_defaults['text_orientation'][0] : '',
-			),
-		);
+		$additional_options = array();
+		if ( $text_settings['use_text_orientation'] ) {
+			$additional_options = array(
+				'text_orientation' => array(
+					'label'            => esc_html__( 'Text Orientation', 'et_builder' ),
+					'type'             => 'text_align',
+					'option_category'  => 'layout',
+					'options'          => et_builder_get_text_orientation_options( $orientation_exclude_options ),
+					'tab_slug'         => $tab_slug,
+					'toggle_slug'      => $toggle_slug,
+					'description'      => esc_html__( 'This controls how your text is aligned within the module.', 'et_builder' ),
+					'advanced_options' => true,
+					'default'          => isset( $this->fields_defaults['text_orientation'] ) && isset( $this->fields_defaults['text_orientation'][0] ) ? $this->fields_defaults['text_orientation'][0] : '',
+				),
+			);
+		}
 
 		if ( '' !== $sub_toggle ) {
 			$additional_options['text_orientation']['sub_toggle'] = $sub_toggle;
@@ -2140,6 +2177,7 @@ class ET_Builder_Element {
 					"{$option_name}_border_color_hover",
 					"{$option_name}_border_radius_hover",
 					"{$option_name}_letter_spacing_hover",
+					"{$option_name}_text_shadow_style", // Add Text Shadow to button options
 					"box_shadow_style_{$option_name}",
 				),
 				'shortcode_default' => 'off',
@@ -2454,6 +2492,17 @@ class ET_Builder_Element {
 				);
 			}
 
+			// Add text-shadow to button options
+			$option = $this->text_shadow->get_fields(array(
+				'label'           => $option_settings['label'],
+				'prefix'          => $option_name,
+				'option_category' => 'font_option',
+				'tab_slug'        => $tab_slug,
+				'toggle_slug'     => $toggle_slug,
+				'depends_default' => true,
+			));
+
+			$additional_options = array_merge( $additional_options, $option );
 			$additional_options = $this->_add_button_box_shadow_fields(
 				$additional_options,
 				$option_name,
@@ -2969,6 +3018,24 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
+	/**
+	 * Add additional Text Shadow fields to all modules
+	 *
+	 * @return array
+	 */
+	protected function _add_additional_text_shadow_fields() {
+		// If no Advanced/Text toggle, do nothing.
+		if ( empty( $this->options_toggles['advanced']['toggles']['text'] ) ) {
+			return;
+		}
+
+		// Fetch the additional fields and add them.
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			$this->text_shadow->get_fields()
+		);
+	}
+
 	protected function _add_additional_shadow_fields() {
 		$this->options_toggles['advanced']['toggles']['box_shadow'] = array(
 			'title'    => esc_html__( 'Box Shadow', 'et_builder' ),
@@ -3152,6 +3219,11 @@ class ET_Builder_Element {
 	 */
 	function get_fields() { return array(); }
 
+	/**
+	 * Returns module style priority.
+	 *
+	 * @return int
+	 */
 	function get_style_priority() {
 		return $this->_style_priority;
 	}
@@ -4138,7 +4210,7 @@ class ET_Builder_Element {
 			$field['class'] .= ' et-pb-font-select';
 		}
 
-		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups', 'select_animation', 'presets', 'select_box_shadow' ) ) && ! $only_options ) {
+		if ( in_array( $field['type'], array( 'font', 'hidden', 'multiple_checkboxes', 'select_with_option_groups', 'select_animation', 'presets', 'presets_shadow', 'select_box_shadow' ) ) && ! $only_options ) {
 			$hidden_field = sprintf(
 				'<input type="hidden" name="%1$s" id="%2$s" class="et-pb-main-setting %3$s" data-default="%4$s" %5$s %6$s/>',
 				esc_attr( $field['name'] ),
@@ -4409,6 +4481,7 @@ class ET_Builder_Element {
 					$hidden_field
 				);
 				break;
+			case 'presets_shadow':
 			case 'select_box_shadow':
 			case 'presets':
 				$presets         = $field['presets'];
@@ -5584,6 +5657,9 @@ class ET_Builder_Element {
 
 		$this->process_advanced_fonts_options( $function_name );
 
+		// Process Text Shadow CSS
+		$this->text_shadow->process_advanced_css( $this, $function_name );
+
 		$this->process_advanced_background_options( $function_name );
 
 		$this->process_advanced_text_options( $function_name );
@@ -6119,7 +6195,7 @@ class ET_Builder_Element {
 
 		if ( isset( $text_options['css'] ) && is_array( $text_options['css'] ) ) {
 			$text_css                 = $text_options['css'];
-			$text_orientation_default = $this->fields_unprocessed['text_orientation']['default'];
+			$text_orientation_default = isset( $this->fields_unprocessed['text_orientation']['default'] ) ? $this->fields_unprocessed['text_orientation']['default'] : '';
 			$text_orientation         = $this->shortcode_atts['text_orientation'] !== $text_orientation_default ? $this->shortcode_atts['text_orientation'] : '';
 
 			// Normally, text orientation attr adds et_pb_text_align_* class name to its module wrapper

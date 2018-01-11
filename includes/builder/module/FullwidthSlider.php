@@ -122,6 +122,7 @@ class ET_Builder_Module_Fullwidth_Slider extends ET_Builder_Module {
 			'text'      => array(
 				'css'   => array(
 					'text_orientation' => '%%order_class%% .et_pb_slide .et_pb_slide_description',
+					'text_shadow'      => '%%order_class%% .et_pb_slide .et_pb_slide_description',
 				),
 			),
 		);

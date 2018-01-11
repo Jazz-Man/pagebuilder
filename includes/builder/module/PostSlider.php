@@ -172,6 +172,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 			'text'      => array(
 				'css'   => array(
 					'text_orientation' => '%%order_class%% .et_pb_slide .et_pb_slide_description',
+					'text_shadow'      => '%%order_class%% .et_pb_slide .et_pb_slide_description',
 				),
 			),
 		);

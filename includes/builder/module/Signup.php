@@ -76,6 +76,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'css'   => array(
 						'main'        => "{$this->main_css_element} .et_pb_newsletter_description, {$this->main_css_element} .et_pb_newsletter_form",
 						'line_height' => "{$this->main_css_element} p",
+						'text_shadow' => "{$this->main_css_element} .et_pb_newsletter_description",
 					),
 				),
 				'result_message' => array(
@@ -103,7 +104,16 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 				'use_background_color' => false,
 			),
 			'max_width'             => array(),
-			'text'                  => array(),
+			'text'                  => array(
+				'css' => array(
+					'text_shadow' => '%%order_class%% .et_pb_newsletter_description',
+				),
+			),
+			'fields'                => array(
+				'css' => array(
+					'text_shadow' => "{$this->main_css_element} input",
+				),
+			)
 		);
 
 		$this->custom_css_options = array(
@@ -780,6 +790,28 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		}
 
 		return self::$_providers;
+	}
+
+	/**
+	 * Add additional Text Shadow fields to this module
+	 *
+	 * @return array
+	 */
+	protected function _add_additional_text_shadow_fields() {
+		// Add to Text (done in the parent)
+		parent::_add_additional_text_shadow_fields();
+
+		// Add to Fields
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			$this->text_shadow->get_fields(array(
+				'label'           => esc_html__( 'Fields', 'et_builder' ),
+				'prefix'          => 'fields',
+				'option_category' => 'layout',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'fields',
+			))
+		);
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {

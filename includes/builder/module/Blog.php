@@ -135,7 +135,11 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 			'max_width' => array(),
-			'text'      => array(),
+			'text'      => array(
+				'css' => array(
+					'text_shadow' => '%%order_class%%',
+				),
+			),
 		);
 		$this->custom_css_options = array(
 			'title' => array(

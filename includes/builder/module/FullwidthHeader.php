@@ -172,6 +172,12 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 					'important' => 'all',
 				),
 			),
+			'text' => array(
+				'use_text_orientation' => false,
+				'css' => array(
+					'text_shadow' => '%%order_class%% .header-content',
+				),
+			),
 		);
 
 		$this->custom_css_options = array(

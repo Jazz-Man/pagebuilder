@@ -77,7 +77,8 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'line_height' => "{$this->main_css_element} p",
-						'font' => "{$this->main_css_element}, {$this->main_css_element} .et_pb_newsletter_description_content, {$this->main_css_element} p, {$this->main_css_element} span",
+						'font'        => "{$this->main_css_element}, {$this->main_css_element} .et_pb_newsletter_description_content, {$this->main_css_element} p, {$this->main_css_element} span",
+						'text_shadow' => "{$this->main_css_element}, {$this->main_css_element} .et_pb_newsletter_description_content, {$this->main_css_element} p, {$this->main_css_element} span",
 					),
 				),
 			),
@@ -101,6 +102,11 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			),
 			'max_width' => array(),
 			'text'      => array(),
+			'fields'    => array(
+				'css' => array(
+					'text_shadow' => "{$this->main_css_element} input",
+				),
+			)
 		);
 		$this->custom_css_options = array(
 			'newsletter_description' => array(
@@ -283,6 +289,28 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		);
 
 		return $fields;
+	}
+
+	/**
+	 * Add additional Text Shadow fields to this module
+	 *
+	 * @return array
+	 */
+	protected function _add_additional_text_shadow_fields() {
+		// Add to Text (done in the parent)
+		parent::_add_additional_text_shadow_fields();
+
+		// Add to Fields
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			$this->text_shadow->get_fields(array(
+				'label'           => esc_html__( 'Fields', 'et_builder' ),
+				'prefix'          => 'fields',
+				'option_category' => 'layout',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'fields',
+			))
+		);
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {

@@ -64,6 +64,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 						'main'        => "{$this->main_css_element}",
 						'plugin_main' => "{$this->main_css_element}, {$this->main_css_element} p",
 						'line_height' => "{$this->main_css_element} p",
+						'text_shadow' => "{$this->main_css_element} .et_pb_toggle_content",
 					),
 				),
 			),

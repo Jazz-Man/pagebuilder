@@ -127,7 +127,11 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 					'module_alignment' => '%%order_class%%.et_pb_gallery.et_pb_module',
 				),
 			),
-			'text'      => array(),
+			'text'      => array(
+				'css'   => array(
+					'text_shadow' => "{$this->main_css_element}.et_pb_gallery_grid",
+				),
+			),
 		);
 
 		$this->custom_css_options = array(

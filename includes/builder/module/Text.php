@@ -442,6 +442,9 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		return $fields;
 	}
 
+	// Don't add text-shadow fields since they already are via font-options
+	protected function _add_additional_text_shadow_fields() {}
+
 	function shortcode_callback( $atts, $content = null, $function_name ) {
 		$module_id            = $this->shortcode_atts['module_id'];
 		$module_class         = $this->shortcode_atts['module_class'];
