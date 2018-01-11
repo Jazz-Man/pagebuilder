@@ -209,6 +209,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 					),
 				),
 			),
+			'border' => array(),
 		);
 
 		$this->fields_defaults = array(
@@ -1326,6 +1327,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 					'important' => 'all',
 				),
 			),
+			'border' => array(),
 		);
 
 		$this->options_toggles = array(

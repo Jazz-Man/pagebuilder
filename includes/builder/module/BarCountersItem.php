@@ -22,11 +22,16 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		$this->advanced_setting_title_text = esc_html__( 'New Bar Counter', 'et_builder' );
 		$this->settings_text               = esc_html__( 'Bar Counter Settings', 'et_builder' );
 		$this->main_css_element            = '%%order_class%%';
-		$this->defaults                    = array(
-			'border_radius' => '0',
-		);
 
 		$this->advanced_options = array(
+			'border' => array(
+				'css' => array(
+					'main' => array(
+						'border_radii'  => "{$this->main_css_element} span.et_pb_counter_container, {$this->main_css_element} span.et_pb_counter_amount",
+						'border_styles' => "{$this->main_css_element} span.et_pb_counter_container",
+					),
+				),
+			),
 			'fonts'                 => array(
 				'title'   => array(
 					'label' => esc_html__( 'Title', 'et_builder' ),
@@ -235,16 +240,6 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 
 		if ( '' === $bar_background_color && isset( $et_pb_counters_settings['bar_bg_color'] ) && '' !== $et_pb_counters_settings['bar_bg_color'] ) {
 			$bar_bg_color_style = sprintf( ' background-color: %1$s;', esc_attr( $et_pb_counters_settings['bar_bg_color'] ) );
-		}
-
-		if ( ! empty( $et_pb_counters_settings['border_radius'] ) && $this->defaults['border_radius'] !== $et_pb_counters_settings['border_radius'] ) {
-			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%% .et_pb_counter_container, %%order_class%% .et_pb_counter_amount',
-				'declaration' => sprintf(
-					'-moz-border-radius: %1$s; -webkit-border-radius: %1$s; border-radius: %1$s;',
-					esc_html( et_builder_process_range_value( $et_pb_counters_settings['border_radius'] ) )
-				),
-			) );
 		}
 
 		if ( '' !== $background_color ) {

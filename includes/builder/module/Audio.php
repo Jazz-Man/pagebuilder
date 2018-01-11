@@ -74,7 +74,6 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					'important' => true,
 				),
 			),
-			'border' => array(),
 			'custom_margin_padding' => array(
 				'css' => array(
 					'important' => 'all',

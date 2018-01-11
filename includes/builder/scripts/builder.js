@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.86';
+window.et_builder_version = '3.0.87';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -388,6 +388,78 @@ window.et_builder_product_name = 'Divi';
 			escape     : /<%-([\s\S]+?)%>/g
 		};
 
+		//Helpers
+		ET_PageBuilder.Helpers = {};
+		ET_PageBuilder.Helpers.getSettingValue = function($setting) {
+			var	setting_value;
+			var checked_values = [];
+			var custom_css_option_value;
+			var name = $setting.is('#et_pb_content_main') ? 'et_pb_content_new' : $setting.attr('id');
+
+			// Process all checkboxex for the current setting at once
+			if ($setting.is(':checkbox')) {
+				// name attribute is used in normal html checkboxes, use it instead of ID
+				name = $setting.attr('name');
+
+				$setting.closest('.et-pb-option-container').find('[name="' + name + '"]:checked').each(function () {
+					checked_values.push($(this).val());
+				});
+
+				setting_value = checked_values.join(",");
+			} else if ($setting.is('#et_pb_content_main')) {
+
+				// Process main content
+				setting_value = $setting.html();
+
+				// Replace temporary ^^ signs with double quotes
+				setting_value = setting_value.replace( /\^\^/g, '%22' );
+
+			} else if ( $setting.closest( '.et-pb-custom-css-option' ).length ) {
+				// Custom CSS settings content should be modified before it is added to the shortcode attribute
+
+				custom_css_option_value = $setting.val();
+
+				// replace new lines with || and backlash \ with %92 in Custom CSS settings
+				setting_value = '' !== custom_css_option_value ? custom_css_option_value.replace( /(?:\r\n|\r|\n)/g, '\|\|' ).replace( /\\/g, '%92' ) : '';
+			} else if ( $setting.hasClass( 'et-pb-range-input' ) ) {
+				// Get range input value
+				setting_value = et_pb_get_range_input_value($setting);
+
+				if ($setting.hasClass('et-pb-validate-unit')) {
+					setting_value = et_pb_sanitize_input_unit_value(setting_value.toString(), false, 'no_default_unit');
+				}
+			} else if ($setting.hasClass('et-pb-range')) {
+				var $real_setting = $setting.siblings('.et-pb-range-input');
+				setting_value = et_pb_get_range_input_value($real_setting);
+
+				if ($real_setting.hasClass('et-pb-validate-unit')) {
+					setting_value = et_pb_sanitize_input_unit_value(setting_value.toString(), false, 'no_default_unit');
+				}
+			} else if ( $setting.hasClass( 'et-pb-validate-unit' ) ) {
+				// Process validated unit
+				setting_value = et_pb_sanitize_input_unit_value( $setting.val(), false, '' );
+			} else if ( $setting.hasClass( 'et-pb-text-align-select') ) {
+				// Process text alignment option. Check for button's et_text_align_active class name to ensure that an option is selected.
+				// This prevents the builder unwantedly treats first option as selected option
+				if ( $setting.closest( '.et-pb-option-container' ).find( '.et_text_align_active' ).length ) {
+					setting_value = $setting.val();
+				}
+			} else if ( ! $setting.is( ':checkbox' ) ) {
+				// Process all other settings: inputs, textarea#et_pb_content_new, range sliders etc.
+
+				setting_value = $setting.is('textarea#et_pb_content_new')
+					? et_pb_get_content( 'et_pb_content_new' )
+					: $setting.val();
+
+				if ( $setting.hasClass( 'et-pb-range-input' ) && setting_value === 'px' ) {
+					setting_value = '';
+				}
+			}
+			if (_.isNull(setting_value)) {
+				setting_value = '';
+			}
+			return setting_value;
+		};
 		// Models
 
 		ET_PageBuilder.Module = Backbone.Model.extend( {
@@ -2894,17 +2966,14 @@ window.et_builder_product_name = 'Divi';
 				ET_PageBuilder.Events.trigger( 'et-modal-settings:save', this );
 
 				this.$( options_selector ).each( function() {
-					var $this_el = $(this),
-						setting_value,
-						checked_values = [],
-						name = $this_el.is('#et_pb_content_main') ? 'et_pb_content_new' : $this_el.attr('id'),
-						default_value = et_pb_get_default_setting_value($this_el) || '',
-						custom_css_option_value,
-						isEqualToDefault = function (v1, v2) {
-							return $this_el.hasClass('et-pb-range-input')
-								? _.isEqual(parseFloat(v1), parseFloat(v2))
-								: _.isEqual(v1, v2);
-						};
+					var $this_el = $(this);
+					var default_value = et_pb_get_default_setting_value($this_el) || '';
+					var name = $this_el.is('#et_pb_content_main') ? 'et_pb_content_new' : $this_el.attr('id');
+					var isEqualToDefault = function (v1, v2) {
+						return $this_el.hasClass('et-pb-range-input')
+							? _.isEqual(parseFloat(v1), parseFloat(v2))
+							: _.isEqual(v1, v2);
+					};
 
 					// name attribute is used in normal html checkboxes, use it instead of ID
 					if ( $this_el.is( ':checkbox' ) ) {
@@ -2932,61 +3001,15 @@ window.et_builder_product_name = 'Divi';
 						$this_el.val( $this_el.data( 'selected-value') );
 					}
 
-					// Process all checkboxex for the current setting at once
-					if ( $this_el.is( ':checkbox' ) && typeof attributes[name] === 'undefined' ) {
-						$this_el.closest( '.et-pb-option-container' ).find( '[name="' + name + '"]:checked' ).each( function() {
-							checked_values.push( $(this).val() );
-						} );
-
-						setting_value = checked_values.join( "," );
-					} else if ( $this_el.is( '#et_pb_content_main' ) ) {
-						// Process main content
-
-						setting_value = $this_el.html();
-
-						// Replace temporary ^^ signs with double quotes
-						setting_value = setting_value.replace( /\^\^/g, '%22' );
-					} else if ( $this_el.closest( '.et-pb-custom-css-option' ).length ) {
-						// Custom CSS settings content should be modified before it is added to the shortcode attribute
-
-						custom_css_option_value = $this_el.val();
-
-						// replace new lines with || and backlash \ with %92 in Custom CSS settings
-						setting_value = '' !== custom_css_option_value ? custom_css_option_value.replace( /(?:\r\n|\r|\n)/g, '\|\|' ).replace( /\\/g, '%92' ) : '';
-					} else if ( $this_el.hasClass( 'et-pb-range-input' ) ) {
-						// Get range input value
-						setting_value = et_pb_get_range_input_value( $this_el );
-
-						if ( $this_el.hasClass( 'et-pb-validate-unit' ) ) {
-							setting_value = et_pb_sanitize_input_unit_value( setting_value.toString(), false, 'no_default_unit' );
-						}
-					} else if ( $this_el.hasClass( 'et-pb-validate-unit' ) ) {
-						// Process validated unit
-						setting_value = et_pb_sanitize_input_unit_value( $this_el.val(), false, '' );
-					} else if ( $this_el.hasClass( 'et-pb-text-align-select') ) {
-						// Process text alignment option. Check for button's et_text_align_active class name to ensure that an option is selected.
-						// This prevents the builder unwantedly treats first option as selected option
-						if ( $this_el.closest( '.et-pb-option-container' ).find( '.et_text_align_active' ).length ) {
-							setting_value = $this_el.val();
-						}
-					} else if ( ! $this_el.is( ':checkbox' ) ) {
-						// Process all other settings: inputs, textarea#et_pb_content_new, range sliders etc.
-
-						setting_value = $this_el.is('textarea#et_pb_content_new')
-							? et_pb_get_content( 'et_pb_content_new' )
-							: $this_el.val();
-
-						if ( $this_el.hasClass( 'et-pb-range-input' ) && setting_value === 'px' ) {
-							setting_value = '';
-						}
-					}
-
+					// convert default value to string to make sure current and default values have the same type
+					default_value = default_value + '';
 					// if default value is set, add it to the defaults object
 					if ( default_value !== '' ) {
 						defaults[ name ] = default_value;
 					}
 
 					// save the attribute value
+					var setting_value = ET_PageBuilder.Helpers.getSettingValue($this_el);
 					if ( ! isEqualToDefault(setting_value, default_value) ) {
 						attributes[name] = setting_value;
 					} else {
@@ -4008,10 +4031,11 @@ window.et_builder_product_name = 'Divi';
 								}
 								//Since this event is triggered before the input value is changed we can't use 'et_pb_setting:change'
 								$this_el.trigger('et_pb_setting:color_picker:change', [current_value]);
-              },
+							},
 							clear: function() {
 								$(this).val( et_pb_options.invalid_color );
 								$(this).closest( '.et-pb-option-container' ).find( '.et-pb-main-setting' ).val( '' );
+								$(this).siblings('.et-pb-color-picker-hex').trigger('et_pb_setting:color_picker:change', ['']);
 							},
 							width        : $this.closest( '.et-pb-option--background' ).length ? 660 : 300,
 							height       : 190,
@@ -4043,8 +4067,8 @@ window.et_builder_product_name = 'Divi';
 						if ( ! $reset_button.length ) {
 							return true;
 						}
-
-						if ( default_color.toLowerCase() !== $this.val().toLowerCase() ) {
+						var value = $this.val() + '';
+						if ( default_color.toLowerCase() !== value.toLowerCase() ) {
 							$reset_button.addClass( 'et-pb-reset-icon-visible' );
 						}
 					} );
@@ -5269,9 +5293,18 @@ window.et_builder_product_name = 'Divi';
 					}
 
 					// do not save the default values into module attributes
-					if ( '' !== this_model_defaults && typeof this_model_defaults[id] !== 'undefined' && this_model_defaults[id] === setting_value ) {
-						this_view.model.unset( id );
-						return true;
+
+					//if 'check_attr_default' flag presented use 'default' html data attribute to compare
+					if (!_.isEmpty($this_el.data('check_attr_default')) && ($this_el.data('check_attr_default') === 'yes')) {
+						if (et_pb_is_setting_value_default($this_el)) {
+							this_view.model.unset( id );
+							return true;
+						}
+					} else {
+						if ( '' !== this_model_defaults && typeof this_model_defaults[id] !== 'undefined' && this_model_defaults[id] === setting_value ) {
+							this_view.model.unset( id );
+							return true;
+						}
 					}
 
 					if ( $this_el.closest( '.et-pb-custom-css-option' ).length ) {
@@ -8732,6 +8765,585 @@ window.et_builder_product_name = 'Divi';
 				}
 			}
 		} );
+
+		ET_PageBuilder.Controls = {};
+		ET_PageBuilder.Controls.BorderRadiusControl = function (container) {
+
+			this.initialize(container);
+
+		};
+
+		$.extend(ET_PageBuilder.Controls.BorderRadiusControl.prototype, {
+
+			initialize: function(container) {
+				this._container = container;
+				this._setting_field = container.siblings('.et-pb-main-setting');
+
+				if (!this._setting_field.length) {
+					return false;
+				}
+
+				this._link_button = container.find('.et-pb-border-radius-wrap-link-button > a');
+				this._radius_fields = container.find('.et-pb-border-radius-option-input');
+				this._radius_preview = container.find('.et-pb-border-radius-preview');
+				this._defalut_value = _.isUndefined(this._setting_field.data('default_inherited')) ? this._setting_field.data('default') : this._setting_field.data('default_inherited');
+
+				var setting_value = this._setting_field.val();
+				if (_.isEmpty(setting_value)) {
+					setting_value = this._defalut_value;
+					this._setting_field.val(this._defalut_value);
+				}
+				var combined_value = setting_value;
+				this._values = this._splitValue(combined_value);
+				this._lastValue = '';
+
+				this._setting_field.change(this._onSettingChange.bind(this));
+				this._radius_fields.change(this._onFieldChange.bind(this));
+				this._link_button.click(this._onClickLink.bind(this));
+
+				this._render();
+			},
+
+			_onClickLink: function(e) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				var currentLinkState = this._getSettingValue('border-link');
+				//if the user clicks on the link icon in the middle, all values will become the last modified value
+				if (!currentLinkState) {
+					//if that is not traceable, change all four the to the upper left corner value
+					if (this._lastValue === '') {
+						this._lastValue = this._getSettingValue('top-left');
+					}
+					var spreadValues = this._spreadValue(this._lastValue);
+					this._onChange(this._combineValues(spreadValues));
+				} else {
+					var currentValues = this._getValues();
+					currentValues['border-link'] = false;
+					this._onChange(this._combineValues(currentValues));
+				}
+			},
+
+			_onSettingChange: function(e) {
+				var combinedValue = !_.isUndefined(e.target.value) && e.target.value !== '' ? e.target.value : this._getDefaultValue();
+				this._values = this._splitValue(combinedValue);
+				this._render();
+			},
+
+
+			_onChange: function(value) {
+				var combinedValue = _.isUndefined(value) ? this._getDefaultValue() : value;
+				jQuery(this._setting_field).val(combinedValue);
+				this._values = this._splitValue(combinedValue);
+				jQuery(this._setting_field).trigger('et_pb_setting:change');
+				this._render();
+			},
+
+			_isOn: function(value) {
+				return value === 'on';
+			},
+
+			_isLinkedMode: function() {
+				return this._getSettingValue('border-link');
+			},
+
+			_spreadValue: function(value) {
+				return {
+					'border-link': true,
+					'top-left': value,
+					'top-right': value,
+					'bottom-right': value,
+					'bottom-left': value
+				};
+			},
+
+			_onFieldChange: function(e) {
+				var sanitizedValue = et_pb_sanitize_input_unit_value(e.target.value, false);
+				this._lastValue = sanitizedValue;
+
+				var values;
+				if (this._isLinkedMode()) {
+					values = this._spreadValue(sanitizedValue);
+				} else {
+					var corner = e.target.getAttribute('data-corner');;
+					values = this._getValues();
+					values[corner] = sanitizedValue;
+				}
+
+				this._onChange(this._combineValues(values));
+			},
+
+			_getDefaultValue: function() {
+				return !_.isUndefined(this._defalut_value) &&
+				(this._defalut_value !== '') ? this._setting_field.val() : 'on||||';
+			},
+
+			_getValues: function() {
+				return this._values;
+			},
+
+			_getSettingValue: function(valueName) {
+				var values = this._getValues();
+
+				return values[valueName];
+			},
+
+			_splitValue: function(combinedValue) {
+				var values = combinedValue.split('|');
+
+				return {
+					'border-link': !_.isUndefined(values[0]) ? this._isOn(values[0]) : true,
+					'top-left': !_.isUndefined(values[1]) && values[1] !== '' ? values[1] : '0px',
+					'top-right': !_.isUndefined(values[2]) && values[2] !== '' ? values[2] : '0px',
+					'bottom-right': !_.isUndefined(values[3]) && values[3] !== '' ? values[3] : '0px',
+					'bottom-left': !_.isUndefined(values[4]) && values[4] !== '' ? values[4] : '0px'
+				};
+			},
+
+			_combineValues: function(values) {
+				return (values['border-link'] ? 'on' : '') + '|' + values['top-left'] + '|' +
+					values['top-right'] + '|' + values['bottom-right'] + '|' + values['bottom-left'];
+			},
+
+			_render: function() {
+				var $ = jQuery;
+				//render fields
+				_.each(this._radius_fields, function(field) {
+					$(field).val(this._getSettingValue($(field).data('corner')));
+				}, this);
+
+				//render link button
+				$(this._link_button).toggleClass('active', this._getSettingValue('border-link'));
+
+				//render preview area
+				$(this._radius_preview).css('border-top-left-radius', this._getSettingValue('top-left'));
+				$(this._radius_preview).css('border-top-right-radius', this._getSettingValue('top-right'));
+				$(this._radius_preview).css('border-bottom-right-radius', this._getSettingValue('bottom-right'));
+				$(this._radius_preview).css('border-bottom-left-radius', this._getSettingValue('bottom-left'));
+			},
+		});
+
+		ET_PageBuilder.Controls.BorderRadius = function (container) {
+			var tabbed_controls = container.find('.et-pb-border-radius-wrap');
+			if (tabbed_controls.length) {
+				tabbed_controls.each(function() {
+					new ET_PageBuilder.Controls.BorderRadiusControl($(this));
+				});
+			}
+		};
+
+
+		ET_PageBuilder.Controls.TabbedControl = function (container) {
+
+			this.initialize(container);
+
+		};
+
+		$.extend(ET_PageBuilder.Controls.TabbedControl.prototype, {
+			_getByPath: function(object, path) {
+				return _.reduce(path.split('.'), function(prevObj, currObj) {
+					return prevObj ? prevObj[currObj] : undefined
+				}, object);
+			},
+
+			initialize: function(container) {
+				var _tabs = container.find('.et-pb-settings-tab');
+				var _content_divs = container.find('.et-pb-settings-tab-content');
+
+				if (!_tabs.length || !_content_divs.length) {
+					return false;
+				}
+
+				var $ = jQuery;
+				var thisClass = this;
+				this._$container = container;
+				this._suffix = container.data('attr-suffix');
+				this._tabs = {};
+				this._tab_content = {};
+				this._first_tab = null;
+				this._active_tab = null;
+				this._tab_settings_map = null;
+				this._outside_preview = container.find('.et-pb-outside-preview-container');
+				this._reset_button = container.closest('.et-pb-composite-tabbed-wrapper').siblings('.et-pb-composite-tabbed-reset-setting');
+
+				_tabs.each(function() {
+					var tab = $(this).find('.et-pb-settings-tab-title');
+					thisClass._tabs[$(tab).data('tab')] = tab;
+					if (tab.length) {
+						tab.click(thisClass._onClickTab.bind(thisClass));
+					}
+				});
+
+				_content_divs.each(function(index, element) {
+					var tabIndex = $(element).data('tab')
+					thisClass._tab_content[tabIndex] = {
+						'content' : this,
+						'preview-area': $(element).find('.et-pb-tab-preview-container'),
+					};
+					if (index === 0) {
+						thisClass._first_tab  = tabIndex;
+						thisClass._active_tab = tabIndex;
+					}
+				});
+
+				this._buildTabSettingsMap();
+
+				$(_content_divs).on('et_pb_setting:change et_pb_setting:color_picker:change', this._onChangeHandler.bind(this));
+				$(_content_divs).on('change', 'select',this._onChangeHandler.bind(this));
+				$(this._reset_button).on('click', this._onClickReset.bind(this));
+
+				this._render();
+			},
+
+			_buildTabSettingsMap: function() {
+				var $ = jQuery;
+				var result = {};
+				_.map(this._tab_content, function(tab, tabIndex) {
+					result[tabIndex] = {};
+					var isTabSettingModified = false;
+					$(tab['content']).find('.et-pb-main-setting').each(function(index, element) {
+						var defaultValue = et_pb_get_default_setting_value($(element));
+						var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
+						result[tabIndex][controlIndex] = {};
+						result[tabIndex][controlIndex]['default'] = defaultValue;
+						result[tabIndex][controlIndex]['value'] = ET_PageBuilder.Helpers.getSettingValue($(element));
+						isTabSettingModified = isTabSettingModified || !et_pb_is_setting_value_default($(element));
+					});
+					result[tabIndex]['modified'] = isTabSettingModified;
+				});
+				this._tab_settings_map = result;
+			},
+
+			_isAnySettingModified: function() {
+				let result = false;
+				_.map(this._tab_settings_map, function(tab) {
+					if (this._getByPath(tab, 'modified')) {
+						result = true;
+					}
+				}, this);
+
+				return result;
+			},
+
+			_onChangeHandler: function(e) {
+				//Workaround for handling color picker changes
+				setTimeout(this._onSettingChange.bind(this), 100);
+			},
+
+			_onSettingChange: function() {
+				this._buildTabSettingsMap();
+				this._render();
+			},
+
+			_onClickTab: function(e) {
+				e.preventDefault();
+				var tab = e.target.getAttribute('data-tab');
+				this._makeTabActive(tab);
+				this._render();
+			},
+
+			_onClickReset: function() {
+				var that = this;
+				_.map(this._tab_settings_map, function(tab) {
+					_.map(tab, function(value, setting) {
+						$control = that._$container.find('[data-control-index="' + setting + '"]');
+						$control.find('.et-pb-reset-setting').trigger('click');
+					}, this);
+				});
+				this._active_tab  = this._first_tab;
+			},
+
+			_makeTabActive: function(tab) {
+				this._active_tab = tab;
+			},
+
+			_showTab: function(tab) {
+				jQuery(this._tabs[tab]).closest('.et-pb-settings-tab').addClass('active');
+				jQuery(this._tab_content[tab]['content']).show();
+			},
+
+			_hideTab: function(tab) {
+				jQuery(this._tabs[tab]).closest('.et-pb-settings-tab').removeClass('active');
+				jQuery(this._tab_content[tab]['content']).hide();
+			},
+
+			_renderOutsidePreviewArea: function(previewContainer) {
+				return false;
+			},
+
+			_renderTabPreviewArea: function(tab, previewContainer) {
+				return false;
+			},
+
+			_render: function() {
+				this._renderOutsidePreviewArea(this._outside_preview);
+				this._renderTabPreviewArea(this._active_tab, this._tab_content[this._active_tab]['preview-area']);
+				_.map(this._tabs, function (tab, tabIndex) {
+					if (tabIndex === this._active_tab) {
+						this._showTab(tabIndex);
+					} else {
+						this._hideTab(tabIndex);
+					}
+
+					if (this._tab_settings_map[tabIndex]['modified']) {
+						jQuery(this._tabs[tabIndex]).closest('.et-pb-settings-tab').addClass('modified');
+					} else {
+						jQuery(this._tabs[tabIndex]).closest('.et-pb-settings-tab').removeClass('modified');
+					}
+				}, this);
+				if (this._isAnySettingModified()) {
+					jQuery(this._reset_button).addClass('et-pb-reset-icon-visible');
+				} else {
+					jQuery(this._reset_button).removeClass('et-pb-reset-icon-visible');
+				}
+			},
+		});
+
+		ET_PageBuilder.Controls.Tabbed = function (container) {
+			var tabbed_controls = container.find('.et-pb-composite-tabbed');
+			if (tabbed_controls.length) {
+				tabbed_controls.each(function() {
+					new ET_PageBuilder.Controls.TabbedControl($(this));
+				});
+			}
+		};
+
+		ET_PageBuilder.Controls.BorderStylesControl = function (container) {
+
+			this.initialize(container);
+
+		};
+
+		$.extend(ET_PageBuilder.Controls.BorderStylesControl.prototype, ET_PageBuilder.Controls.TabbedControl.prototype, {
+			_getDefaultBorderStyle: function() {
+				var width = this._processWidth(this._getByPath(this._tab_settings_map, 'border_all.border_width_all' + this._suffix + '.value').toString(), false, 'px');
+				return width + ' ' + this._getByPath(this._tab_settings_map, 'border_all.border_style_all' + this._suffix + '.value') + ' ' + this._getByPath(this._tab_settings_map, 'border_all.border_color_all' + this._suffix + '.value');
+			},
+
+			_processWidth: function(value) {
+				let width = parseInt(value);
+				if (width > 50) {
+					width = 50;
+				}
+				return et_pb_sanitize_input_unit_value(width.toString(), false, 'px');
+			},
+
+			_onChangeHandler: function(e, param) {
+				if (!_.isUndefined(param) && param === 'from_all_tab') {
+					return;
+				}
+
+				//Workaround for handling color picker changes
+				setTimeout(this._onSettingChange.bind(this), 100);
+			},
+
+			_updateControl: function($element, value, defaultValue) {
+				var defaultKey = et_pb_get_default_key($element);
+				var isRange = $element.hasClass( 'et-pb-range' );
+				var rangeInput = null;
+
+				if (isRange) {
+					rangeInput = $element.siblings( '.et-pb-range-input' );
+				}
+
+				if (defaultValue) {
+					if (isRange) {
+						rangeInput.data(defaultKey, defaultValue);
+						$element.data(defaultKey, parseFloat(defaultValue) || 0);
+					} else {
+						$element.data(defaultKey, defaultValue);
+					}
+				}
+
+				if (value) {
+					if (isRange) {
+						$element.val(parseFloat(value) || 0);
+						$element = rangeInput;
+					}
+
+					if ($element.hasClass('wp-color-picker')) {
+						$element.val(value).trigger('change', ['from_all_tab']);
+					} else {
+						$element.val(value).trigger('change et_pb_setting:change', ['from_all_tab']);
+					}
+				}
+			},
+
+			_buildTabSettingsMap: function() {
+				var $ = jQuery;
+				var that = this;
+
+				var result = {};
+				_.map(this._tab_content, function(tab, tabIndex) {
+					result[tabIndex] = {};
+
+					// is update initiated from "all" tab
+					var isFromAllTab = this._active_tab.lastIndexOf('_all' + that._suffix) !== -1;
+
+					//on first run save settings values and inherited defaults.
+					if (this._tab_settings_map === null) {
+						$(tab['content']).find('.et-pb-main-setting').each(function (index, element) {
+							var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
+							var saved_value = $(element).data('saved_value');
+							var value = $(element).val();
+							var defaultKey = et_pb_get_default_key($(element));
+							var defaultValue = $(element).data(defaultKey);
+							var parentDefault = $(element).data('default_inherited');
+
+							result[tabIndex][controlIndex] = {};
+
+							//assign special flag for checking 'default' data attribute instead of backbone
+							//model defaults array while saving child setting
+							$(element).data('check_attr_default', 'yes');
+							if ($(element).hasClass('et-pb-range')) {
+								var $range_input = $(element).siblings('.et-pb-range-input');
+
+								defaultValue = $range_input.data(defaultKey);
+								parentDefault = $range_input.data('default_inherited');
+								value = $range_input.val();
+								//assign special flag for checking 'default' data attribute instead of backbone
+								//model defaults array while saving child setting
+								$range_input.data('check_attr_default', 'yes');
+							}
+							if (!_.isUndefined(saved_value)) {//check for combo box saved value
+								value = saved_value;
+							}
+							if (!_.isUndefined(parentDefault)) {
+								if (value === parentDefault) {
+									that._updateControl($(element), defaultValue, false);
+								} else if (_.isEmpty(value) && (defaultValue !== parentDefault)) {//this settings has been changed in parent
+									that._updateControl($(element), defaultValue, false);
+								}
+							} else {
+								if (!_.isEmpty(value) && (value !== defaultValue)) {
+									$(element).data('initial_saved', value);
+								}
+							}
+						});
+					}
+
+					var isTabSettingModified = false;
+
+					$(tab['content']).find('.et-pb-main-setting').each(function (index, element) {
+						var controlIndex = $(element).parents('.et-pb-composite-tabbed-option').data('control-index');
+						var controlDefault = '';
+						var defaultValue = '';
+						var parentDefault = '';
+						var initialValue = $(element).data('initial_saved');
+
+						//Handle default from parent.
+						if ($(element).hasClass('et-pb-range')) {
+							var $range_input = $(element).siblings('.et-pb-range-input');
+							parentDefault = $range_input.data('default_inherited');
+							controlDefault = et_pb_get_default_setting_value($range_input);
+						} else {
+							parentDefault = $(element).data('default_inherited');
+							controlDefault = et_pb_get_default_setting_value($(element));
+						}
+
+						var isAllTab = false;
+						//if control is related to any edge tab then assign setting value from All tab
+						if (controlIndex.lastIndexOf('_all' + that._suffix) === -1) {
+							var lastUnderscoreIndex = controlIndex.replace(that._suffix, '').lastIndexOf('_');
+							var optionName = controlIndex.substr(0, lastUnderscoreIndex);
+
+							var valueFromAllTab = that._getByPath(result, 'border_all.' + optionName + '_all' + that._suffix + '.value');
+							if (_.isUndefined(parentDefault)) {
+								defaultValue = valueFromAllTab;
+							} else {
+								if (parentDefault === controlDefault) {
+									defaultValue = valueFromAllTab;
+								} else {
+									defaultValue = controlDefault;
+								}
+							}
+						} else { //control from All tab
+							isAllTab = true;
+
+							defaultValue = controlDefault;
+						}
+
+						var settingValue = ET_PageBuilder.Helpers.getSettingValue($(element));
+						var saved_value = $(element).data('saved_value');
+						if (!_.isUndefined(saved_value)) {//check for combo box saved value
+							settingValue = saved_value;
+						}
+
+						// if update initiated from All tab, adjust values for non-all tabs.
+						if (isFromAllTab && ! isAllTab) {
+							if (!_.isUndefined(parentDefault)) {//child element
+								if (_.isEmpty(settingValue) || (parentDefault === controlDefault)) {
+									that._updateControl($(element), defaultValue, controlDefault);
+								}
+							} else {
+								if (settingValue === controlDefault || '' === settingValue) {
+									that._updateControl($(element), defaultValue, defaultValue);
+								} else {
+									that._updateControl($(element), false, defaultValue);
+								}
+							}
+						}
+
+						settingValue = ET_PageBuilder.Helpers.getSettingValue($(element));
+
+						if (_.isUndefined(result[tabIndex][controlIndex])) {
+							result[tabIndex][controlIndex] = {};
+						}
+
+						result[tabIndex][controlIndex]['default'] = defaultValue;
+						result[tabIndex][controlIndex]['value'] = settingValue;
+						isTabSettingModified = isTabSettingModified || (settingValue !== defaultValue);
+					});
+
+					result[tabIndex]['modified'] = isTabSettingModified;
+
+				}, this);
+
+				this._tab_settings_map = result;
+			},
+
+			_renderTabPreviewArea: function(tab, previewContainer) {
+				var borderEdges = [
+					'top',
+					'right',
+					'bottom',
+					'left'
+				];
+
+				var properties = [
+					'width',
+					'style',
+					'color'
+				];
+
+				var previewBorderStyles = {};
+				_.forEach(borderEdges, function(edge) {
+					var edgeCSS = '';
+					_.forEach(properties, function(property) {
+						var path = 'border_' + edge + '.border_' + property + '_' + edge + this._suffix;
+						var value = this._getByPath(this._tab_settings_map, path + '.value');
+						if (property == 'width') {
+							value = this._processWidth(value);
+						}
+						edgeCSS += ' ' + value;
+					}, this);
+					previewBorderStyles['border-' + edge] = edgeCSS;
+				}, this);
+
+				_.map(previewBorderStyles, function(value, property){
+					previewContainer.find('.et-pb-tab-preview-container-preview').css(property, value);
+				}, this);
+			},
+		});
+
+		ET_PageBuilder.Controls.BorderStyles = function (container) {
+			var tabbed_controls = container.find('.et-pb-composite-tabbed-border-style');
+			if (tabbed_controls.length) {
+				tabbed_controls.each(function() {
+					new ET_PageBuilder.Controls.BorderStylesControl($(this));
+				});
+			}
+		};
 
 		// Close and remove right click options
 		function et_pb_close_all_right_click_options() {
@@ -12377,13 +12989,15 @@ window.et_builder_product_name = 'Divi';
 
 			if ( $advanced_tab.length ) {
 				$advanced_tab_settings.each( function() {
-					var $this_option = $( this ),
-						$option_main_input,
-						option_id;
+					var $this_option = $( this );
+					var $option_main_input;
+					var defaultKey = '';
+					var parentDefault = '';
 
 					// process range options
 					if ( $this_option.hasClass( 'et-pb-range' ) ) {
 						$option_main_input = $this_option.siblings( '.et-pb-range-input' );
+						parentDefault = $option_main_input.data(defaultKey) || "";
 
 						$option_main_input.each( function() {
 							var $current_option = $( this ),
@@ -12403,7 +13017,9 @@ window.et_builder_product_name = 'Divi';
 									$mobile_option.data( 'default_inherited', option_parent.val() );
 									$mobile_option.data( 'default', option_parent.val() );
 								}
-								$current_option.data( 'default_inherited', option_parent.val() );
+								defaultKey = et_pb_get_default_key(option_parent);
+								parentDefault = option_parent.data(defaultKey) || "";
+								$current_option.data( 'default_inherited', parentDefault );
 								$current_option.data( 'default', option_parent.val() );
 							}
 						} );
@@ -12419,8 +13035,10 @@ window.et_builder_product_name = 'Divi';
 							// update 'module_defaults' to avoid saving the default values into database
 							current_module.attributes['module_defaults'][ option_id ] = parent_value;
 
-							$this_option.data( 'default_inherited', parent_value );
-							$this_option.data( 'default', parent_value );
+							defaultKey = et_pb_get_default_key(option_parent);
+							parentDefault = option_parent.data(defaultKey) || "";
+							$this_option.data( 'default_inherited', parentDefault );
+							$this_option.data( defaultKey, parent_value );
 						}
 					}
 				} );
@@ -12428,68 +13046,71 @@ window.et_builder_product_name = 'Divi';
 		}
 
 		function et_pb_init_main_settings( $container, this_module_cid ) {
-			var module                      = ET_PageBuilder_Modules.findWhere( { cid : this_module_cid } );
-			var $main_tabs                  = $container.find( '.et-pb-options-tabs-links' );
-			var $settings_tab               = $container.find( '.et-pb-options-tab' );
+			var module                       = ET_PageBuilder_Modules.findWhere( { cid : this_module_cid } );
+			var $main_tabs                   = $container.find( '.et-pb-options-tabs-links' );
+			var $settings_tab                = $container.find( '.et-pb-options-tab' );
 
-			var $et_affect_fields           = $container.find( '.et-pb-affects' );
+			var $et_affect_fields            = $container.find( '.et-pb-affects' );
 			var $et_responsive_affect_fields = $container.find( '.et-pb-responsive-affects' );
 
-			var $main_custom_margin_field   = $container.find( '.et_custom_margin_main' );
-			var $custom_margin_fields       = $container.find( '.et_custom_margin' );
+			var $main_custom_margin_field    = $container.find( '.et_custom_margin_main' );
+			var $custom_margin_fields        = $container.find( '.et_custom_margin' );
 
-			var $font_select                = $container.find( '.et-pb-option--font' );
-			var $font_style_fields          = $container.find( '.et_builder_font_style' );
-			var $font_styles_selects        = $container.find( '.et_builder_font_weight, .et_pb_font_line_style_select, .et-pb-font-line-color-value' );
-			var $font_select_placeholder    = $container.find( '.et_pb_select_placeholder' );
+			var $font_select                 = $container.find( '.et-pb-option--font' );
+			var $font_style_fields           = $container.find( '.et_builder_font_style' );
+			var $font_styles_selects         = $container.find( '.et_builder_font_weight, .et_pb_font_line_style_select, .et-pb-font-line-color-value' );
+			var $font_select_placeholder     = $container.find( '.et_pb_select_placeholder' );
 
 			var $text_align_selects          = $container.find( 'select.et-pb-text-align-select' );
 			var $text_align_button           = $container.find( '.et_builder_text_align' );
 
-			var $multiple_buttons_select	 = $container.find( '.et_pb_multiple_buttons_wrapper select' );
+			var $multiple_buttons_select     = $container.find( '.et_pb_multiple_buttons_wrapper select' );
 			var $multiple_buttons_button     = $container.find( '.et_builder_multiple_buttons_button' );
 
-			var $range_field                = $container.find( '.et-pb-range' );
-			var $range_input                = $container.find( '.et-pb-range-input' );
+			var $range_field                 = $container.find( '.et-pb-range' );
+			var $range_input                 = $container.find( '.et-pb-range-input' );
 
-			var $advanced_tab               = $container.find( '.et-pb-options-tab-advanced' );
-			var $advanced_tab_settings      = $advanced_tab.find( '.et-pb-main-setting' );
+			var $advanced_tab                = $container.find( '.et-pb-options-tab-advanced' );
+			var $advanced_tab_settings       = $advanced_tab.find( '.et-pb-main-setting' );
 
-			var $custom_color_picker        = $container.find( '.et-pb-custom-color-picker' );
-			var $custom_color_choose_button = $container.find( '.et-pb-choose-custom-color-button' );
+			var $custom_color_picker         = $container.find( '.et-pb-custom-color-picker' );
+			var $custom_color_choose_button  = $container.find( '.et-pb-choose-custom-color-button' );
 
-			var $select_with_option_groups  = $container.find( '.et-pb-option-container--select_with_option_groups select' );
+			var $select_with_option_groups   = $container.find( '.et-pb-option-container--select_with_option_groups select' );
 
-			var $yes_no_button_wrapper      = $container.find( '.et_pb_yes_no_button_wrapper' );
-			var $yes_no_button              = $container.find( '.et_pb_yes_no_button' );
-			var $yes_no_select              = $container.find( '.et_pb_yes_no_button_wrapper select' );
-			var $validate_unit_field        = $container.find( '.et-pb-validate-unit' );
-			var $options_wrapper            = $container.find( '.et_options_list:not(.et_conditional_logic)' );
-			var $conditional_logic          = $container.find( '.et_conditional_logic' );
-			var $select_animation           = $container.find( '.et_select_animation' );
-			var $presets                    = $container.find( '.et-preset-container' );
-			var $background_fields          = $container.find( '.et-pb-option--background, .et-pb-option--background-field' );
-			var $regular_input              = $container.find( 'input.regular-text.et_pb_setting_mobile' );
-			var hidden_class                = 'et_pb_hidden';
+			var $yes_no_button_wrapper       = $container.find( '.et_pb_yes_no_button_wrapper' );
+			var $yes_no_button               = $container.find( '.et_pb_yes_no_button' );
+			var $yes_no_select               = $container.find( '.et_pb_yes_no_button_wrapper select' );
+			var $validate_unit_field         = $container.find( '.et-pb-validate-unit' );
+			var $options_wrapper             = $container.find( '.et_options_list:not(.et_conditional_logic)' );
+			var $conditional_logic           = $container.find( '.et_conditional_logic' );
+			var $select_animation            = $container.find( '.et_select_animation' );
+			var $presets                     = $container.find( '.et-preset-container' );
+			var $background_fields           = $container.find( '.et-pb-option--background, .et-pb-option--background-field' );
+			var $regular_input               = $container.find( 'input.regular-text.et_pb_setting_mobile' );
+			var hidden_class                 = 'et_pb_hidden';
 
-			var $custom_css_option          = $container.find( '.et-pb-options-tab-custom_css .et-pb-option' );
+			var $custom_css_option           = $container.find( '.et-pb-options-tab-custom_css .et-pb-option' );
 
-			var $mobile_settings_toggle     = $container.find( '.et-pb-mobile-settings-toggle' );
-			var $mobile_settings_tabs       = $container.find( '.et_pb_mobile_settings_tabs' );
+			var $mobile_settings_toggle      = $container.find( '.et-pb-mobile-settings-toggle' );
+			var $mobile_settings_tabs        = $container.find( '.et_pb_mobile_settings_tabs' );
 
-			var $checkboxes_set             = $container.find( '.et_pb_checkboxes_wrapper' );
-			var $checkbox                   = $checkboxes_set.find( 'input[type="checkbox"]' );
+			var $checkboxes_set              = $container.find( '.et_pb_checkboxes_wrapper' );
+			var $checkbox                    = $checkboxes_set.find( 'input[type="checkbox"]' );
 
-			var $section_bg_color_option    = 'section' === $container.data( 'module_type' ) ? $container.find( '#et_pb_background_color' ) : '';
+			var $section_bg_color_option     = 'section' === $container.data( 'module_type' ) ? $container.find( '#et_pb_background_color' ) : '';
 
-			var $gutter_width_option        = $container.find( '#et_pb_gutter_width' );
+			var $gutter_width_option         = $container.find( '#et_pb_gutter_width' );
 
-			var $google_maps_api_option     = $container.find( '#et_pb_google_api_key' );
-			var $google_maps_api_button     = $container.find( '.et_pb_update_google_key' );
+			var $google_maps_api_option      = $container.find( '#et_pb_google_api_key' );
+			var $google_maps_api_button      = $container.find( '.et_pb_update_google_key' );
 
-			var $id_field                   = $container.find('#et_pb_field_id');
+			var $id_field                    = $container.find('#et_pb_field_id');
 
-			var $tabbed_subtoggles          = $container.find('.et_pb_contains_tabbed_subtoggle');
+			var $tabbed_subtoggles           = $container.find('.et_pb_contains_tabbed_subtoggle');
+
+			new ET_PageBuilder.Controls.BorderRadius($container);
+			new ET_PageBuilder.Controls.BorderStyles($container);
 
 			if ( $google_maps_api_option.length ) {
 				$google_maps_api_button.attr( 'href', et_pb_options.options_page_url );
@@ -13957,7 +14578,6 @@ window.et_builder_product_name = 'Divi';
 
 			$multiple_buttons_select.each( function() {
 				var $select_el = $(this);
-
 				$select_el.trigger( 'et_pb_setting:change' );
 			} );
 
@@ -14118,7 +14738,8 @@ window.et_builder_product_name = 'Divi';
 					$current_element = is_range_option && 'all' !== this_device ? $this_el.siblings( '.et-pb-range-input.et_pb_setting_mobile_' + this_device ) : $current_element;
 
 					var default_value    = et_pb_get_default_setting_value( $current_element ).toLowerCase();
-					var current_value    = $current_element.val().toLowerCase();
+					var current_value    = $current_element.val() + '';
+					current_value = current_value.toLowerCase();
 					var $mobile_toggle   = $option_container.find( '.et-pb-mobile-settings-toggle' );
 
 					// specific actions required for reset buttons in Font option
@@ -14155,14 +14776,8 @@ window.et_builder_product_name = 'Divi';
 						return;
 					}
 
-					if ( $current_element.is( 'select' ) && default_value === '' && $current_element.prop( 'selectedIndex' ) === 0 ) {
-						$reset_button.removeClass( 'et-pb-reset-icon-visible' );
-
-						return;
-					}
-
 					// range option default value can be defined without units, so compare current value with default and default + 'px' for range option
-					if ( ( ! _.isNull( current_value ) && current_value !== default_value && ! is_range_option ) || ( is_range_option && current_value !== default_value + 'px' && current_value !== default_value ) ) {
+					if ( !et_pb_is_setting_value_default( $current_element, is_range_option) ) {
 						setTimeout( function() {
 							$reset_button.addClass( 'et-pb-reset-icon-visible' );
 						}, 50 );
@@ -14185,7 +14800,7 @@ window.et_builder_product_name = 'Divi';
 				} );
 			}
 
-			$container.find( '.et-pb-reset-setting' ).on( 'click', function() {
+			$container.find( '.et-pb-reset-setting' ).not('.et-pb-reset-skip').on( 'click', function() {
 				et_pb_reset_element_settings( $(this) );
 			} );
 
@@ -14682,6 +15297,22 @@ window.et_builder_product_name = 'Divi';
 			default_value = default_value + '';
 
 			return default_value;
+		}
+
+		function et_pb_is_setting_value_default ($element) {
+			var default_value = et_pb_get_default_setting_value($element).toLowerCase();
+			var current_value = _.isUndefined(ET_PageBuilder.Helpers.getSettingValue($element)) ? '' : ET_PageBuilder.Helpers.getSettingValue($element).toString().toLowerCase();
+			var is_range_option  = $element.hasClass('et-pb-range');
+
+			if ($element.is('select')  && default_value === '' && $element.prop('selectedIndex') === 0) {
+				return true;
+			}
+
+			if ((!_.isNull(current_value) && current_value !== default_value && ! is_range_option) || (is_range_option && current_value !== default_value + 'px' && current_value !== default_value)) {
+				return false;
+			} else {
+				return true;
+			}
 		}
 
 		function et_pb_update_gradient_preview( $this ) {

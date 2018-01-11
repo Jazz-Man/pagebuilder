@@ -53,7 +53,7 @@ class ET_Builder_Element {
 	private static $_shop_shortcode_callback_num = 0;
 
 	// priority number, applied to some CSS rules
-	private $_style_priority;
+	protected $_style_priority;
 
 	/**
 	 * Holds module styles for the current request.
@@ -675,7 +675,7 @@ class ET_Builder_Element {
 		}
 
 		// Resolve conditional defaults for the FE
-		$resolved = $this->get_shortcode_fields();
+		$resolved = $this->get_shortcode_fields( $values );
 		foreach ( $resolved as $field_name => $field_default ) {
 			if ( is_array( $field_default ) && ! empty( $field_default[0] ) && is_array( $field_default[1] ) ) {
 				// Looks like we have a conditional default
@@ -850,6 +850,17 @@ class ET_Builder_Element {
 		}
 
 		$output = $this->{$shortcode_callback}( $atts, $content, $function_name, $parent_address, $global_parent, $global_parent_type );
+
+		/**
+		 * Filters builder module shortcode output. The dynamic portion of the filter name, `$function_name`,
+		 * refers to the slug of the module for which the shortcode output was generated.
+		 *
+		 * @since 3.0.87
+		 *
+		 * @param string $output
+		 * @param string $module_slug
+		 */
+		$output = apply_filters( "{$function_name}_shortcode_output", $output, $function_name );
 
 		$this->_shortcode_callback_num++;
 
@@ -1828,84 +1839,44 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
-	private function _add_additional_border_fields () {
+	/**
+	 * Adds Rounded Corners and Border Styles options to each module
+	 * By default uses the Border toggle.
+	 * Can be overridden in child classes to add more border options. For example for the entire module
+	 * container and for the image within the module.
+	 */
+	protected function _add_additional_border_fields() {
+		$tab_slug      = 'advanced';
+		$toggle_slug   = 'border';
+		$border_toggle = array(
+			$toggle_slug => array(
+				'title'    => esc_html__( 'Border', 'et_builder' ),
+				'priority' => 95,
+			),
+		);
+
+		$this->_add_option_toggles( $tab_slug, $border_toggle );
+
 		if ( ! isset( $this->advanced_options['border'] ) ) {
-			return;
+			$this->advanced_options['border'] = array();
 		}
 
-		$additional_options = array();
-		$toggle_disabled = isset( $this->advanced_options['border']['settings']['disable_toggle'] ) && $this->advanced_options['border']['settings']['disable_toggle'];
-		$color_type = isset( $this->advanced_options['border']['settings']['color'] ) && 'alpha' === $this->advanced_options['border']['settings']['color'] ? 'color-alpha' : 'color';
-		$tab_slug = isset( $this->advanced_options['border']['settings']['tab_slug'] ) ? $this->advanced_options['border']['settings']['tab_slug'] : 'advanced';
-		$toggle_slug = '';
+		$factory      = ET_Builder_Module_Fields_Factory::get( 'Border' );
+		$factory_args = array_merge( $this->advanced_options['border'], array(
+			'suffix'      => '',
+			'tab_slug'    => $tab_slug,
+			'toggle_slug' => $toggle_slug,
+		) );
 
-		if ( ! $toggle_disabled ) {
-			$toggle_slug = isset( $this->advanced_options['border']['settings']['toggle_slug'] ) ? $this->advanced_options['border']['settings']['toggle_slug'] : 'border';
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $factory->get_fields( $factory_args ) );
 
-			$border_toggle = array(
-				'border' => array(
-					'title'    => esc_html__( 'Border', 'et_builder' ),
-					'priority' => 60,
-				),
-			);
+		foreach ( array( 'border_radii', 'border_styles' ) as $border_key ) {
+			if ( ! isset( $this->advanced_options['border'][ $border_key ] ) ) {
+				$this->advanced_options['border'][ $border_key ] = array();
+			}
 
-			$this->_add_option_toggles( $tab_slug, $border_toggle );
+			$this->advanced_options['border'][ $border_key ] = array_merge( $this->advanced_options['border'][ $border_key ], $this->_additional_fields_options[ $border_key ] );
 		}
-
-		$additional_options['use_border_color'] = array(
-			'label'             => esc_html__( 'Use Border', 'et_builder' ),
-			'type'              => 'yes_no_button',
-			'option_category'   => 'layout',
-			'options'           => array(
-				'off' => esc_html__( 'No', 'et_builder' ),
-				'on'  => esc_html__( 'Yes', 'et_builder' ),
-			),
-			'default'           => 'off',
-			'affects' => array(
-				'border_color',
-				'border_width',
-				'border_style',
-			),
-			'shortcode_default' => 'off',
-			'tab_slug'          => $tab_slug,
-			'toggle_slug'       => $toggle_slug,
-		);
-
-		$additional_options['border_color'] = array(
-			'label'             => esc_html__( 'Border Color', 'et_builder' ),
-			'type'              => $color_type,
-			'option_category'   => 'layout',
-			'default'           => '#ffffff',
-			'shortcode_default' => '#ffffff',
-			'tab_slug'          => $tab_slug,
-			'toggle_slug'       => $toggle_slug,
-			'depends_default'   => true,
-		);
-
-		$additional_options['border_width'] = array(
-			'label'             => esc_html__( 'Border Width', 'et_builder' ),
-			'type'              => 'range',
-			'option_category'   => 'layout',
-			'default'           => '1px',
-			'shortcode_default' => '1px',
-			'tab_slug'          => $tab_slug,
-			'toggle_slug'       => $toggle_slug,
-			'depends_default'   => true,
-		);
-
-		$additional_options['border_style'] = array(
-			'label'             => esc_html__( 'Border Style', 'et_builder' ),
-			'type'              => 'select',
-			'option_category'   => 'layout',
-			'options'           => et_builder_get_border_styles(),
-			'default'           => 'solid',
-			'shortcode_default' => 'solid',
-			'tab_slug'          => $tab_slug,
-			'toggle_slug'       => $toggle_slug,
-			'depends_default'   => true,
-		);
-
-		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
 	private function _add_additional_max_width_fields() {
@@ -2556,7 +2527,7 @@ class ET_Builder_Element {
 
 		$this->options_toggles['advanced']['toggles']['animation'] = array(
 			'title'    => esc_html__( 'Animation', 'et_builder' ),
-			'priority' => 100,
+			'priority' => 110,
 		);
 
 		$additional_options          = array();
@@ -3152,7 +3123,7 @@ class ET_Builder_Element {
 		$this->_add_option_toggles( 'custom_css', $default_custom_css_toggles );
 	}
 
-	private function _add_option_toggles( $tab_slug, $toggles_array ) {
+	protected function _add_option_toggles( $tab_slug, $toggles_array ) {
 		if ( ! isset( $this->options_toggles[ $tab_slug ] ) ) {
 			$this->options_toggles[ $tab_slug ] = array();
 		}
@@ -3288,10 +3259,10 @@ class ET_Builder_Element {
 	function get_post_type() {
 		global $post, $et_builder_post_type;
 
-		if ( is_admin() ) {
+		if ( is_a( $post, 'WP_POST' ) && ( is_admin() || ! isset( $et_builder_post_type ) ) ) {
 			return $post->post_type;
 		} else {
-			return $et_builder_post_type;
+			return isset( $et_builder_post_type ) ? $et_builder_post_type : 'post';
 		}
 	}
 
@@ -3393,10 +3364,40 @@ class ET_Builder_Element {
 		return self::get_unique_bb_key($output);
 	}
 
-	function wrap_settings_option_field( $field ) {
+	/**
+	 * Prepare module field (option) for use within BB microtemplates.
+	 * The own field renderer can be used.
+	 * @param $field Module field
+	 *
+	 * @return mixed|string Html code of the field
+	 */
+	public function wrap_settings_option_field( $field ) {
 		$use_container_wrapper = isset( $field['use_container_wrapper'] ) && ! $field['use_container_wrapper'] ? false : true;
 
-		if ( ! empty( $field['renderer'] ) ) {
+		if ( ! empty( $field['renderer'] ) && is_array( $field['renderer'] ) ) {
+			if ( ! empty( $field['renderer']['class'] ) ) {
+				//cut off 'ET_Builder_Module_Field_Template_' part from renderer definition
+				$class_name_without_prefix = strtolower ( str_replace ("ET_Builder_Module_Field_Template_", "", $field['renderer']['class'] ) );
+
+				//split class name string by underscore symbol
+				$file_name_parts = explode( '_', $class_name_without_prefix );
+
+				if ( ! empty( $file_name_parts ) ) {
+					//the first symbol of class name must be uppercase
+					$last_index = count( $file_name_parts ) - 1;
+					$file_name_parts[$last_index] = ucwords( $file_name_parts[$last_index] );
+
+					//load renderer class from 'module/field/template/' directory accordingly class name and class directory hierarchy
+					require_once ET_BUILDER_DIR . 'module/field/template/' . implode( DIRECTORY_SEPARATOR, $file_name_parts ) . '.php';
+					$renderer = new $field['renderer']['class'];
+
+					//before calling the 'render' method make sure the instantiated class is child of 'ET_Builder_Module_Field_Template_Base'
+					if ( is_subclass_of( $field['renderer']['class'], "ET_Builder_Module_Field_Template_Base" ) ) {
+						$field_el = call_user_func( array( $renderer, "render" ), $field, $this );
+					}
+				}
+			}
+		} else if ( ! empty( $field['renderer'] ) ) {
 			$renderer_options = isset( $field['renderer_options'] ) ? $field['renderer_options'] : $field;
 
 			$field_el = is_callable( $field['renderer'] ) ? call_user_func( $field['renderer'], $renderer_options ) : $field['renderer'];
@@ -5503,18 +5504,36 @@ class ET_Builder_Element {
 		return '<form class="et-builder-main-settings-form validate">' . $output . '</form>';
 	}
 
-	function get_shortcode_fields() {
+	/**
+	 * Get this module's shortcode fields mapped to their default values.
+	 *
+	 * @since 1.0
+	 *
+	 * @param array $values Optional. Shortcode fields mapped to custom values to be considered
+	 *                      when determining default values of fields that have a `default_from`
+	 *                      path defined.
+	 *
+	 * @return array
+	 */
+	function get_shortcode_fields( $values = array() ) {
 		$fields = array();
 
 		foreach( $this->process_fields( $this->fields_unprocessed ) as $field_name => $field ) {
 			$value = '';
-			if ( isset( $field['shortcode_default'] ) ) {
-				$value = $field['shortcode_default'];
-			} else if( isset( $field['default'] ) ) {
-				$value = $field['default'];
-			}
 
-			$fields[ $field_name ] = $value;
+			if ( isset( $field['composite_type'], $field['composite_structure'] ) ) {
+				require_once ET_BUILDER_DIR . 'module/field/attribute/composite/Parser.php';
+				$composite_atts = ET_Builder_Module_Field_Attribute_Composite_Parser::parse( $field['composite_type'], $field['composite_structure'] );
+				$fields         = array_merge( $fields, $composite_atts );
+			} else {
+				if ( isset( $field['shortcode_default'] ) ) {
+					$value = $field['shortcode_default'];
+				} else if( isset( $field['default'] ) ) {
+					$value = $field['default'];
+				}
+
+				$fields[ $field_name ] = $value;
+			}
 		}
 
 		$fields['disabled'] = 'off';
@@ -5701,6 +5720,13 @@ class ET_Builder_Element {
 	// intended to be overridden as needed
 	function get_max_width_additional_css() {
 		return '';
+	}
+
+	/**
+	 * Get type of element
+	 */
+	public function get_type() {
+		return $this->type;
 	}
 
 	/**
@@ -6282,72 +6308,40 @@ class ET_Builder_Element {
 		}
 	}
 
+	/**
+	 * Adds Rounded Corners and Border Styles styles to the page custom css code
+	 * Can be overridden in child classes to add more css code from multiple border options. For example for the entire module
+	 * container and for the image within the module.
+	 */
 	function process_advanced_border_options( $function_name ) {
-		if ( ! isset( $this->advanced_options['border'] ) ) {
-			return;
+		global $et_fb_processing_shortcode_object;
+
+		$border_field   = ET_Builder_Module_Fields_Factory::get( 'Border' );
+		$border_options = self::$data_utils->array_get( $this->advanced_options, 'border', array() );
+
+		if ( $this->slug !== $function_name ) {
+			// This module's shortcode callback is being used to render another module (like accordion item uses toggle ) so we need to make
+			// sure border option overrides are taken from the other module instead of this one.
+			$fields         = self::get_advanced_fields( $this->get_post_type(), 'all', $function_name );
+			$border_options = self::$data_utils->array_get( $fields, 'advanced_common.border', array() );
 		}
 
-		$style = '';
-		$settings = $this->advanced_options['border'];
+		// Do not add overflow:hidden for some modules.
+		$overflow = ! in_array( $function_name, array( 'et_pb_social_media_follow', 'et_pb_social_media_follow_network' ) );
+		self::set_style( $function_name, array(
+			'selector'    => self::$data_utils->array_get( $border_options, 'css.main.border_radii', $this->main_css_element ),
+			'declaration' => $border_field->get_radii_style( $this->shortcode_atts, $this->advanced_options, '', $overflow ),
+			'priority'    => $this->_style_priority,
+		) );
 
-		$use_border_color = $this->shortcode_atts['use_border_color'];
-		$border_style     = isset( $this->shortcode_atts['border_style'] ) && '' !== $this->shortcode_atts['border_style'] ? $this->shortcode_atts['border_style'] : 'solid';
-		$border_color     =	'' !== $this->shortcode_atts['border_color'] ? $this->shortcode_atts['border_color'] : $this->fields_unprocessed['border_color']['default'];
-		$border_width     = '' !== $this->shortcode_atts['border_width'] ? $this->shortcode_atts['border_width'] : $this->fields_unprocessed['border_width']['default'];
-		$important        = '';
+		self::set_style( $function_name, array(
+			'selector'    => self::$data_utils->array_get( $border_options, 'css.main.border_styles', $this->main_css_element ),
+			'declaration' => $border_field->get_borders_style( $this->shortcode_atts, $this->advanced_options ),
+			'priority'    => $this->_style_priority,
+		) );
 
-		if ( isset( $settings['css']['important'] ) ) {
-			if ( 'plugin_only' === $settings['css']['important'] ) {
-				$important = et_is_builder_plugin_active() ? '!important' : '';
-			} else {
-				$important = '!important';
-			}
-		}
-
-		if ( 'on' === $use_border_color ) {
-			$border_declaration_html = sprintf(
-				'%1$s %3$s %2$s %4$s',
-				esc_attr( et_builder_process_range_value( $border_width ) ),
-				esc_attr( $border_color ),
-				esc_attr( $border_style ),
-				esc_attr( $important )
-			);
-
-			$style .= "border: {$border_declaration_html}; ";
-		}
-
-		if ( '' !== $style ) {
-			$css_element = ! empty( $settings['css']['main'] ) ? $settings['css']['main'] : $this->main_css_element;
-
-			self::set_style( $function_name, array(
-				'selector'    => $css_element,
-				'declaration' => rtrim( $style ),
-				'priority'    => $this->_style_priority,
-			) );
-
-			if ( ! empty( $border_declaration_html ) && isset( $settings['additional_elements'] ) && is_array( $settings['additional_elements'] ) ) {
-				foreach ( $settings['additional_elements'] as $selector => $border_type ) {
-					$style = '';
-
-					if ( ! is_array( $border_type ) ) {
-						continue;
-					}
-
-					foreach ( $border_type as $direction ) {
-						$style .= sprintf(
-							'border-%1$s: %2$s; ',
-							( 'all' !== $border_type ? esc_html( $direction ) : '' ),
-							$border_declaration_html
-						);
-					}
-
-					self::set_style( $function_name, array(
-						'selector'    => $selector,
-						'declaration' => rtrim( $style ),
-						'priority'    => $this->_style_priority,
-					) );
-				}
-			}
+		if ( ! $et_fb_processing_shortcode_object && $border_field->needs_border_reset_class( $function_name, $this->shortcode_atts ) ) {
+			add_filter( "{$function_name}_shortcode_output", array( $border_field, 'add_border_reset_class' ), 10, 2 );
 		}
 	}
 
@@ -7783,6 +7777,14 @@ class ET_Builder_Element {
 
 			if ( ! empty( $_module->advanced_options ) ) {
 				$module_fields[ $_module_slug ]['advanced_common'] = $_module->advanced_options;
+
+				if ( isset( $_module->advanced_options['border']['border_styles'] ) ) {
+					$module_fields[ $_module_slug ]['border_styles'] = array_merge( $module_fields[ $_module_slug ]['border_styles'], $_module->advanced_options['border']['border_styles'] );
+				}
+
+				if ( isset( $_module->advanced_options['border']['border_radii'] ) ) {
+					$module_fileds[ $_module_slug ]['border_radii'] = array_merge( $module_fields[ $_module_slug ]['border_radii'], $_module->advanced_options['border']['border_radii'] );
+				}
 			}
 		}
 
@@ -8141,7 +8143,13 @@ class ET_Builder_Element {
 
 		$selector    = str_replace( '%%order_class%%', ".{$order_class_name}", $style['selector'] );
 		$selector    = str_replace( '%order_class%', ".{$order_class_name}", $selector );
-		$selector    = apply_filters( 'et_pb_set_style_selector', $selector, $function_name );
+
+		if ( false !== strpos( $selector, '%%parent_class%%' ) ) {
+			$parent_class = str_replace( '_item', '', $function_name );
+			$selector     = str_replace( '%%parent_class%%', ".{$parent_class}", $selector );
+		}
+
+		$selector = apply_filters( 'et_pb_set_style_selector', $selector, $function_name );
 
 		// Prepend .et_divi_builder class before all CSS rules in the Divi Builder plugin
 		if ( et_is_builder_plugin_active() ) {
