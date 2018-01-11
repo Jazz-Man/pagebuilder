@@ -16,6 +16,7 @@ class ET_Builder_Element {
 	public $child_slug;
 	public $decode_entities;
 	public $fields = array();
+	public $force_unwhitelisted_fields = false;
 	public $whitelisted_fields = array();
 	public $fields_unprocessed = array();
 	public $main_css_element;
@@ -427,6 +428,14 @@ class ET_Builder_Element {
 		$only_whitelisted_fields = is_admin() ? false : ( et_fb_is_enabled() ? false : true );
 
 		$fields = $only_whitelisted_fields ? $this->whitelisted_fields : $this->get_fields();
+
+		/**
+		 * See self::get_all_fields();
+		 */
+
+		if ( $this->force_unwhitelisted_fields ) {
+			$fields = $this->get_fields();
+		}
 
 		# update settings with defaults
 		foreach ( $fields as $key => $settings ) {
@@ -3374,27 +3383,25 @@ class ET_Builder_Element {
 	public function wrap_settings_option_field( $field ) {
 		$use_container_wrapper = isset( $field['use_container_wrapper'] ) && ! $field['use_container_wrapper'] ? false : true;
 
-		if ( ! empty( $field['renderer'] ) && is_array( $field['renderer'] ) ) {
-			if ( ! empty( $field['renderer']['class'] ) ) {
-				//cut off 'ET_Builder_Module_Field_Template_' part from renderer definition
-				$class_name_without_prefix = strtolower ( str_replace ("ET_Builder_Module_Field_Template_", "", $field['renderer']['class'] ) );
+		if ( ! empty( $field['renderer'] ) && is_array( $field['renderer'] ) && ! empty( $field['renderer']['class'] ) ) {
+			//cut off 'ET_Builder_Module_Field_Template_' part from renderer definition
+			$class_name_without_prefix = strtolower ( str_replace ("ET_Builder_Module_Field_Template_", "", $field['renderer']['class'] ) );
 
-				//split class name string by underscore symbol
-				$file_name_parts = explode( '_', $class_name_without_prefix );
+			//split class name string by underscore symbol
+			$file_name_parts = explode( '_', $class_name_without_prefix );
 
-				if ( ! empty( $file_name_parts ) ) {
-					//the first symbol of class name must be uppercase
-					$last_index = count( $file_name_parts ) - 1;
-					$file_name_parts[$last_index] = ucwords( $file_name_parts[$last_index] );
+			if ( ! empty( $file_name_parts ) ) {
+				//the first symbol of class name must be uppercase
+				$last_index = count( $file_name_parts ) - 1;
+				$file_name_parts[$last_index] = ucwords( $file_name_parts[$last_index] );
 
-					//load renderer class from 'module/field/template/' directory accordingly class name and class directory hierarchy
-					require_once ET_BUILDER_DIR . 'module/field/template/' . implode( DIRECTORY_SEPARATOR, $file_name_parts ) . '.php';
-					$renderer = new $field['renderer']['class'];
+				//load renderer class from 'module/field/template/' directory accordingly class name and class directory hierarchy
+				require_once ET_BUILDER_DIR . 'module/field/template/' . implode( DIRECTORY_SEPARATOR, $file_name_parts ) . '.php';
+				$renderer = new $field['renderer']['class'];
 
-					//before calling the 'render' method make sure the instantiated class is child of 'ET_Builder_Module_Field_Template_Base'
-					if ( is_subclass_of( $field['renderer']['class'], "ET_Builder_Module_Field_Template_Base" ) ) {
-						$field_el = call_user_func( array( $renderer, "render" ), $field, $this );
-					}
+				//before calling the 'render' method make sure the instantiated class is child of 'ET_Builder_Module_Field_Template_Base'
+				if ( is_subclass_of( $field['renderer']['class'], "ET_Builder_Module_Field_Template_Base" ) ) {
+					$field_el = call_user_func( array( $renderer, "render" ), $field, $this );
 				}
 			}
 		} else if ( ! empty( $field['renderer'] ) ) {
@@ -4174,6 +4181,7 @@ class ET_Builder_Element {
 		$reset_button_html = '<span class="et-pb-reset-setting"></span>';
 		$need_mobile_options = isset( $field['mobile_options'] ) && $field['mobile_options'] ? true : false;
 		$only_options = isset( $field['only_options'] ) ? $field['only_options'] : false;
+		$is_child = isset( $this->type ) && 'child' === $this->type;
 
 		if ( $need_mobile_options ) {
 			$mobile_settings_tabs = et_pb_generate_mobile_options_tabs();
@@ -4209,7 +4217,7 @@ class ET_Builder_Element {
 
 		$field['name'] = $field_name;
 
-		if ( isset( $this->type ) && 'child' === $this->type ) {
+		if ( $is_child ) {
 			$field_name = "data.{$field_name}";
 		}
 
@@ -4217,10 +4225,11 @@ class ET_Builder_Element {
 
 		if ( is_array( $default_arr ) && isset( $default_arr[1] ) && is_array( $default_arr[1] ) ) {
 			list($default_parent_id, $defaults_list) = $default_arr;
+			$default_parent_id = sprintf( '%1$set_pb_%2$s', $is_child ? 'data.' : '', $default_parent_id );
 			$default = esc_attr( json_encode( $default_arr ) );
 			$default_value = sprintf(
-				'(typeof(%1$s) !== \'undefined\' ? (%2$s)[jQuery(%1$s).val()] : \'\')',
-				"et_pb_$default_parent_id",
+				'(typeof(%1$s) !== \'undefined\' ? ( typeof(%1$s) === \'object\' ? (%2$s)[jQuery(%1$s).val()] : (%2$s)[%1$s] ) : \'\')',
+				$default_parent_id,
 				json_encode( $defaults_list )
 			);
 
@@ -7645,6 +7654,44 @@ class ET_Builder_Element {
 		}
 
 		return $toggles_array;
+	}
+
+	static function get_all_fields( $post_type = '' ) {
+		$parent_modules = self::get_parent_modules( $post_type );
+		$child_modules  = self::get_child_modules( $post_type );
+
+		$_modules = array_merge( $parent_modules, $child_modules );
+
+		$module_fields = array();
+
+		foreach( $_modules as $_module_slug => $_module ) {
+
+			// skip modules without fb support
+			if ( ! $_module->fb_support ) {
+				continue;
+			}
+
+			$dependables = array();
+
+			$_module->force_unwhitelisted_fields = true;
+			$_module->set_fields();
+			$_module->_add_additional_fields();
+			$_module->_add_custom_css_fields();
+
+			$_module->_maybe_add_defaults();
+
+			foreach ( $_module->fields_unprocessed as $field_key => $field ) {
+				// do not add the fields with 'skip' type. These fields used for rendering shortcode on Front End only
+				if ( isset( $field['type'] ) && 'skip' === $field['type'] ) {
+					continue;
+				}
+
+				$field['name'] = $field_key;
+				$module_fields[ $_module_slug ][ $field_key ] = $field;
+			}
+		}
+
+		return $module_fields;
 	}
 
 	static function get_general_fields( $post_type = '', $mode = 'all', $module_type = 'all' ) {

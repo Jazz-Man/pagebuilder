@@ -9,6 +9,13 @@
 
 		boot: function( $instance ) {
 			var $this = this;
+			var $customizeHeader = $( '#customize-header-actions' );
+			var $customizePortability = $( '.et-core-customize-controls-close' );
+
+			// Moved portability button into customizer header
+			if ( $customizeHeader.length && $customizePortability.length ) {
+				$customizeHeader.append( $customizePortability );
+			}
 
 			$( '[data-et-core-portability]' ).each( function() {
 				$this.listen( $( this ) );

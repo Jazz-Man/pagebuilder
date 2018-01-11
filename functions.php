@@ -604,12 +604,25 @@ function et_get_one_font_languages() {
 endif;
 
 function et_divi_customize_register( $wp_customize ) {
+	global $wp_version;
+
+	// Get WP major version
+	$wp_major_version = substr( $wp_version, 0, 3 );
+
 	$wp_customize->remove_section( 'title_tagline' );
 	$wp_customize->remove_section( 'background_image' );
 	$wp_customize->remove_section( 'colors' );
 	$wp_customize->register_control_type( 'ET_Divi_Customize_Color_Alpha_Control' );
 
-	wp_register_script( 'wp-color-picker-alpha', get_template_directory_uri() . '/includes/builder/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ) );
+	if ( version_compare( $wp_major_version, '4.9', '>=' ) ) {
+		wp_register_script( 'wp-color-picker-alpha', get_template_directory_uri() . '/includes/builder/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ) );
+		wp_localize_script( 'wp-color-picker-alpha', 'et_pb_color_picker_strings', apply_filters( 'et_pb_color_picker_strings_builder', array(
+			'legacy_pick'    => esc_html__( 'Select', 'et_builder' ),
+			'legacy_current' => esc_html__( 'Current Color', 'et_builder' ),
+		) ) );
+	} else {
+		wp_register_script( 'wp-color-picker-alpha', get_template_directory_uri() . '/includes/builder/scripts/ext/wp-color-picker-alpha-48.min.js', array( 'jquery', 'wp-color-picker' ) );
+	}
 
 	$option_set_name           = 'et_customizer_option_set';
 	$option_set_allowed_values = apply_filters( 'et_customizer_option_set_allowed_values', array( 'module', 'theme' ) );
@@ -5897,7 +5910,7 @@ function et_divi_add_customizer_css() {
 		}
 
 		$post_id     = et_core_page_resource_get_the_ID();
-		$is_preview  = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+		$is_preview  = is_preview() || isset( $_GET['et_pb_preview_nonce'] ) || is_customize_preview();
 		$is_singular = et_core_page_resource_is_singular();
 
 		$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
@@ -8512,7 +8525,7 @@ function et_divi_sidebar_class( $classes ) {
 	// Set Woo shop and taxonomies layout.
 	if ( class_exists( 'woocommerce' ) && ( is_woocommerce() && ( is_shop() || is_tax() ) ) ) {
 		$page_layout = et_get_option( 'divi_shop_page_sidebar', $default_sidebar_class );
-	} elseif ( ! is_singular() || false === ( $page_layout = get_post_meta( get_queried_object_id(), '_et_pb_page_layout', true ) ) ) {
+	} elseif ( ! is_singular() || ! ( $page_layout = get_post_meta( get_queried_object_id(), '_et_pb_page_layout', true ) ) ) { // check for the falsy value not for boolean `false`
 		// Set post meta layout which will work for all third party plugins.
 		$page_layout = $default_sidebar_class;
 	}
@@ -8911,7 +8924,7 @@ add_action( 'admin_init', 'et_register_updates_component' );
  */
 function et_divi_customizer_link() {
 	if ( is_customize_preview() ) {
-		echo et_core_portability_link( 'et_divi_mods', array( 'class' => 'customize-controls-close' ) );
+		echo et_core_portability_link( 'et_divi_mods', array( 'class' => 'et-core-customize-controls-close' ) );
 	}
 }
 add_action( 'customize_controls_print_footer_scripts', 'et_divi_customizer_link' );

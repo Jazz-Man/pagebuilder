@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.87';
+window.et_builder_version = '3.0.89';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -3111,7 +3111,7 @@ window.et_builder_product_name = 'Divi';
 				}
 			},
 
-			applyFilter : function() {
+			applyFilter : function(event) {
 				var $event_target = $(event.target),
 					all_data = $event_target.data( 'attr' ),
 					selected_category = $event_target.val();
@@ -9178,7 +9178,7 @@ window.et_builder_product_name = 'Divi';
 					result[tabIndex] = {};
 
 					// is update initiated from "all" tab
-					var isFromAllTab = this._active_tab.lastIndexOf('_all' + that._suffix) !== -1;
+					var isFromAllTab = this._active_tab.lastIndexOf('_all') !== -1;
 
 					//on first run save settings values and inherited defaults.
 					if (this._tab_settings_map === null) {

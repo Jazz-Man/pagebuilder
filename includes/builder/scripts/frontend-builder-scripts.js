@@ -4829,6 +4829,9 @@
 				$current_module.fitVids( { customSelector: "iframe[src^='http://www.hulu.com'], iframe[src^='http://www.dailymotion.com'], iframe[src^='http://www.funnyordie.com'], iframe[src^='https://embed-ssl.ted.com'], iframe[src^='http://embed.revision3.com'], iframe[src^='https://flickr.com'], iframe[src^='http://blip.tv'], iframe[src^='http://www.collegehumor.com']"} );
 
 				$current_module.fadeTo( 'slow', 1 );
+				
+				// reinit ET shortcodes.
+				window.et_shortcodes_init($current_module);
 
 				// scroll to the top of the module
 				$( 'html, body' ).animate({

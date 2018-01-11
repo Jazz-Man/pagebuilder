@@ -927,6 +927,9 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		// include easyPieChart which is required for loading Blog module content via ajax correctly
 		wp_enqueue_script( 'easypiechart' );
 
+		// include ET Shortcode scripts
+		wp_enqueue_script( 'et-shortcodes-js' );
+
 		// remove all filters from WP audio shortcode to make sure current theme doesn't add any elements into audio module
 		remove_all_filters( 'wp_audio_shortcode_library' );
 		remove_all_filters( 'wp_audio_shortcode' );

@@ -1,3 +1,48 @@
+version 3.0.89 ( updated 11-15-2017 )
+- Addressed additional WordPress 4.9 compatibility issues in preparation for the new WordPress release scheduled for today.
+- Fixed a bug that caused broken sidebar layouts on custom post types in some situations. 
+- Fixed a bug in border options migration that mistakenly migrated border options that were turned off in some cases.
+- Fixed a bug that caused unwanted borders to appear in some cases when saving the page in the classic Divi Builder.
+	* functions.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/settings/migration/BorderOptions.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/class-et-builder-element.php
+
+version 3.0.88 ( updated 11-14-2017 )
+- Addressed WordPress 4.9 compatibility issues.
+- Fixed a bug that prevented the Use Divi Builder button from being clicked in some versions of IE.
+- Fixed Settings Popup being always visible after pasting a module using keyboard shortcut.
+- Fixed accordion items' titles disappearing in visual builder upon save.
+- Fixed Backend Builder range field and reset icon rendering.
+- Fixed the issue when ET Shortcodes were not loaded correctly on 2 and subsequent pages in Blog module.
+- Fixed Load Layout category menu not working in firefox.
+- Fixed the issue with Choose Font button positioning in some browsers.
+- Fixed the issue with Font Uploader not working in IE11.
+- Fixed a bug that caused an unwanted border to some modules when saving the page in the classic Divi Builder.
+- Added border radius defaults to the testimonial, email optin, login and search modules.
+- Improved module option search results for tabbed border settings.
+	* epanel/shortcodes/js/et_shortcodes_frontend.js
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/Blog.php
+	* includes/builder/modules/Audio.php
+	* includes/builder/modules/Testimonial.php
+	* includes/builder/modules/Login.php
+	* includes/builder/modules/Signup.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/style.css
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/functions.php
+	* includes/builder/scripts/ext/wp-color-picker-alpha-48.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha-48.min.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha.min.js
+	* includes/builder/scripts/builder.js
+	* core/admin/css/portability.css
+
 version 3.0.87 ( updated 11-10-2017 )
 - Added border options to all modules, rows and sections.
 - Added border radius options to all modules, rows and sections.
@@ -12,70 +57,70 @@ version 3.0.87 ( updated 11-10-2017 )
 	* js/custom.js
 	* core/components/data/Utils.php
 	* includes/builder/module/Shop.php
-	* includes/builder/class-et-builder-element.php 
-	* includes/builder/frontend-builder/app/actions/et-builder-actions.js 
-	* includes/builder/frontend-builder/app/app.jsx 
-	* includes/builder/frontend-builder/app/style.scss 
-	* includes/builder/frontend-builder/package.json 
-	* includes/builder/frontend-builder/yarn.lock 
-	* includes/builder/functions.php 
-	* includes/builder/main-structure-elements.php 
-	* includes/builder/module/Accordion.php 
-	* includes/builder/module/AccordionItem.php 
-	* includes/builder/module/Audio.php 
-	* includes/builder/module/BarCounters.php 
-	* includes/builder/module/BarCountersItem.php 
-	* includes/builder/module/Blog.php 
-	* includes/builder/module/Blurb.php 
-	* includes/builder/module/Button.php 
-	* includes/builder/module/Code.php 
-	* includes/builder/module/Comments.php 
-	* includes/builder/module/ContactForm.php 
-	* includes/builder/module/ContactFormItem.php 
-	* includes/builder/module/Cta.php 
-	* includes/builder/module/Divider.php 
-	* includes/builder/module/FilterablePortfolio.php 
-	* includes/builder/module/FullwidthCode.php 
-	* includes/builder/module/FullwidthImage.php 
-	* includes/builder/module/FullwidthPortfolio.php 
-	* includes/builder/module/FullwidthPostTitle.php 
-	* includes/builder/module/Gallery.php 
-	* includes/builder/module/Image.php 
-	* includes/builder/module/Login.php 
-	* includes/builder/module/NumberCounter.php 
-	* includes/builder/module/Portfolio.php 
-	* includes/builder/module/PostTitle.php 
-	* includes/builder/module/PostsNavigation.php 
-	* includes/builder/module/PricingTables.php 
-	* includes/builder/module/PricingTablesItem.php 
-	* includes/builder/module/Search.php 
-	* includes/builder/module/Shop.php 
-	* includes/builder/module/Signup.php 
-	* includes/builder/module/SliderItem.php 
-	* includes/builder/module/SocialMediaFollow.php 
-	* includes/builder/module/SocialMediaFollowItem.php 
-	* includes/builder/module/Tabs.php 
-	* includes/builder/module/TabsItem.php 
-	* includes/builder/module/TeamMember.php 
-	* includes/builder/module/Testimonial.php 
-	* includes/builder/module/Text.php 
-	* includes/builder/module/Toggle.php 
-	* includes/builder/module/VideoSlider.php 
-	* includes/builder/module/VideoSliderItem.php 
-	* includes/builder/module/field/Border.php 
-	* includes/builder/module/field/attribute/composite/Parser.php 
-	* includes/builder/module/field/attribute/composite/type/Tabbed.php 
-	* includes/builder/module/field/template/Base.php 
-	* includes/builder/module/field/template/Tabbed.php 
-	* includes/builder/module/field/template/border/Radius.php 
-	* includes/builder/module/field/template/border/Styles.php 
-	* includes/builder/module/settings/Migration.php 
-	* includes/builder/module/settings/migration/BorderOptions.php 
-	* includes/builder/scripts/builder.js 
-	* includes/builder/scripts/ext/wp-color-picker-alpha.js 
-	* includes/builder/scripts/ext/wp-color-picker-alpha.min.js 
-	* includes/builder/scripts/frontend-builder-scripts.js 
-	* includes/builder/styles/frontend-builder-style.css 
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/app/actions/et-builder-actions.js
+	* includes/builder/frontend-builder/app/app.jsx
+	* includes/builder/frontend-builder/app/style.scss
+	* includes/builder/frontend-builder/package.json
+	* includes/builder/frontend-builder/yarn.lock
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCounters.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/Divider.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthCode.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostTitle.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PostsNavigation.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollow.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/Tabs.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/VideoSlider.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/field/attribute/composite/Parser.php
+	* includes/builder/module/field/attribute/composite/type/Tabbed.php
+	* includes/builder/module/field/template/Base.php
+	* includes/builder/module/field/template/Tabbed.php
+	* includes/builder/module/field/template/border/Radius.php
+	* includes/builder/module/field/template/border/Styles.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/BorderOptions.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha.min.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
 	* includes/builder/styles/style.css
 	* includes/builder/frontend-builder/bundle.js
 	* includes/builder/scripts/frontend-builder-scripts.js

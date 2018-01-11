@@ -508,6 +508,14 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				'label_prefix'    => esc_html__( 'Fields', 'et_builder' ),
 				'tab_slug'        => $tab_slug,
 				'toggle_slug'     => $toggle_slug,
+				'defaults'        => array(
+					'border_radii'  => 'on|3px|3px|3px|3px',
+					'border_styles' => array(
+						'width' => '0px',
+						'color' => '#333333',
+						'style' => 'solid',
+					),
+				),
 			) )
 		);
 

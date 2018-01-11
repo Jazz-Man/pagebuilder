@@ -262,6 +262,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
+		global $wp_version;
 		$module_id         = $this->shortcode_atts['module_id'];
 		$module_class      = $this->shortcode_atts['module_class'];
 		$audio             = $this->shortcode_atts['audio'];
@@ -272,6 +273,8 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		$background_color  = "" !== $this->shortcode_atts['background_color'] ? $this->shortcode_atts['background_color'] : $this->fields_defaults['background_color'][0];
 		$background_layout = $this->shortcode_atts['background_layout'];
 		$header_level      = $this->shortcode_atts['title_level'];
+		$wp_48_or_lower    = version_compare( $wp_version, '4.9' ) === -1 ? 'et_pb_audio_legacy' : '';
+
 
 		$module_class = ET_Builder_Element::add_module_order_class( $module_class, $function_name );
 
@@ -324,7 +327,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		$video_background = $this->video_background();
 
 		$output = sprintf(
-			'<div%8$s class="et_pb_audio_module clearfix%4$s%7$s%9$s%10$s%12$s"%5$s>
+			'<div%8$s class="et_pb_audio_module clearfix%4$s%7$s%9$s%10$s%12$s %14$s"%5$s>
 				%13$s
 				%11$s
 				%6$s
@@ -349,7 +352,8 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
 			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background
+			$parallax_image_background,
+			$wp_48_or_lower
 		);
 
 		return $output;

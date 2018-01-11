@@ -34,6 +34,12 @@ class ET_Builder_Module_Settings_Migration_BorderOptions extends ET_Builder_Modu
 		),
 	);
 
+	public function __construct() {
+		parent::__construct();
+
+		self::$_bb_excluded_name_changes[] = 'use_border_color';
+	}
+
 	public function _get_border_style_default( $module_slug, $field_name ) {
 		$field_name       = str_replace( 'border_', '', $field_name );
 		$default_key      = 'all_modules';
@@ -276,6 +282,8 @@ class ET_Builder_Module_Settings_Migration_BorderOptions extends ET_Builder_Modu
 				}
 
 				return $current_value;
+			} else {
+				return '';
 			}
 		}
 

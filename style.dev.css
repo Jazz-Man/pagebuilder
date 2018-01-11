@@ -1,7 +1,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.87
+Version: 3.0.89
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -6478,7 +6478,7 @@ p.et_pb_gallery_caption {
 .et_pb_with_border .et_pb_contact_form textarea,
 .et_pb_with_border .et_pb_contact_form .input[type="checkbox"] + label i,
 .et_pb_with_border .et_pb_contact_form .input[type="radio"] + label i,
-.et_pb_with_border.et_pb_blog .et_pb_post,
+.et_pb_with_border.et_pb_posts .et_pb_post,
 .et_pb_with_border.et_pb_comments_module textarea,
 .et_pb_with_border.et_pb_comments_module input,
 .et_pb_with_border.et_pb_posts_nav span.nav-previous a,
@@ -6489,6 +6489,16 @@ p.et_pb_gallery_caption {
 	border-width: 0;
 	border-style: solid;
 	border-color: #333;
+}
+
+.et_pb_with_border.et_pb_search {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #ddd;
+}
+
+.et_pb_with_border.et_pb_search .et_pb_s {
+	border-width: 0;
 }
 
 /* Image Module */
@@ -9015,26 +9025,44 @@ h1.et_pb_contact_main_title {
 	background: #999;
 }
 
-.et_audio_container .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current {
-	top: 8px;
-}
-
 .et_audio_container .mejs-controls .mejs-time-rail .mejs-time-handle,
 .et_audio_container .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-handle {
 	display: block;
-	top: -3px;
 	width: 10px;
 	border: none;
 }
 
+.et_pb_audio_legacy .et_audio_container .mejs-controls .mejs-time-rail .mejs-time-handle {
+	top: -3px;
+}
+
+.et_audio_container .mejs-time-rail .mejs-time-handle-content {
+	border-radius: 100%;
+	-webkit-transform: scale(1);
+	-ms-transform: scale(1);
+	transform: scale(1);
+}
+
+.et_audio_container .mejs-time-rail .mejs-time-hovered {
+	height: 4px;
+}
+
 .et_audio_container .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-handle {
 	position: absolute;
-	top: 5px;
+	top: -3px;
 	height: 10px;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	background: #fff;
+}
+
+.et_pb_audio_legacy .et_audio_container .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-handle {
+	top: 5px;
+}
+
+.et_pb_audio_legacy .et_audio_container .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current {
+	top: 8px;
 }
 
 .et_audio_container .mejs-container .mejs-controls .mejs-time span {
@@ -9112,6 +9140,10 @@ h1.et_pb_contact_main_title {
 .et_pb_column_1_4 .et_audio_container .mejs-container .mejs-controls .mejs-time span,
 .et_pb_blog_grid .et_audio_container .mejs-container .mejs-controls .mejs-time span {
 	font-size: 14px;
+}
+
+.et_audio_container .mejs-container .mejs-controls {
+	padding: 0;
 }
 
 /* Gallery Post Format */
@@ -10395,6 +10427,7 @@ ul.et_pb_social_media_follow {
 .et_pb_section_video_bg .mejs-video {
 	position: absolute;
 	left: 50%;
+	max-width: none;
 }
 
 .et_pb_section_video_bg .mejs-overlay-loading {
@@ -14880,6 +14913,7 @@ span.comment_date {
 	.et_pb_column_1_4 .et_pb_audio_module .mejs-container,
 	.et_pb_column_1_3 .et_pb_audio_module .mejs-container,
 	.et_pb_column_3_8 .et_pb_audio_module .mejs-container {
+		min-width: 0 !important;
 		height: 50px !important;
 	}
 
@@ -14923,7 +14957,8 @@ span.comment_date {
 	.et_pb_column_1_3 .et_pb_audio_module .mejs-controls div.mejs-time-rail,
 	.et_pb_column_3_8 .et_pb_audio_module .mejs-controls div.mejs-time-rail {
 		width: 100% !important;
-		padding-left: 30px;
+		margin: 0 3px;
+		padding-left: 35px;
 	}
 
 	.et_pb_column_1_4 .et_pb_audio_module a.mejs-time-total.mejs-time-slider,

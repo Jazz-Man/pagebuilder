@@ -133,7 +133,7 @@ function et_epanel_handle_custom_css_output( $css, $stylesheet ) {
 	}
 
 	$post_id        = et_core_page_resource_get_the_ID();
-	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] );
+	$is_preview     = is_preview() || isset( $_GET['et_pb_preview_nonce'] ) || is_customize_preview();
 	$is_singular    = et_core_page_resource_is_singular();
 
 	$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
@@ -200,7 +200,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) || isset( $_POST['wp_customize'] ) ) {
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
 				$et_theme_options = get_option( $et_theme_options_name );
 			}
 			$option_value = isset( $et_theme_options[$option_name] ) ? $et_theme_options[$option_name] : false;

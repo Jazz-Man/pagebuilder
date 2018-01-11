@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.87' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.89' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -37,6 +37,18 @@ function et_remove_predefined_layouts_from_import( $posts ) {
 	return $processed_posts;
 }
 add_filter( 'wp_import_posts', 'et_remove_predefined_layouts_from_import', 5 );
+
+
+/**
+ * Output all module fields JSON dump.
+ * For dev use only.
+ *
+ * @return void
+ */
+// function et_dev_output_all_fields() {
+// 	die( json_encode( ET_Builder_Element::get_all_fields('page') ) );
+// }
+// add_action('wp', 'et_dev_output_all_fields', 100);
 
 // set the layout_type taxonomy to "layout" for layouts imported from old version of Divi.
 function et_update_old_layouts_taxonomy( $posts ) {
@@ -415,28 +427,28 @@ function et_pb_get_svg_icons_list() {
 			</g>',
 		'border-link'    =>
 			'<g>
- 				<path d="M14.71 17.71a3 3 0 0 1-2.12-.88l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 0 1.41 0l5-4.95a1 1 0 0 0 0-1.41l-1.46-1.42a1 1 0 0 0-1.41 0L16.1 9.07a1 1 0 0 1-1.41-1.41l1.43-1.43a3.07 3.07 0 0 1 4.24 0l1.41 1.41a3 3 0 0 1 0 4.24l-5 4.95a3 3 0 0 1-2.06.88z"/>		
- 				<path d="M9.76 22.66a3 3 0 0 1-2.12-.88l-1.42-1.42a3 3 0 0 1 0-4.24l5-4.95a3.07 3.07 0 0 1 4.24 0l.71.71a1 1 0 0 1-1.41 1.41l-.76-.7a1 1 0 0 0-1.41 0l-5 4.95a1 1 0 0 0 0 1.41L9 20.36a1 1 0 0 0 1.41 0L11.82 19a1 1 0 0 1 1.41 1.41l-1.36 1.36a3 3 0 0 1-2.11.89z"/>		
+ 				<path d="M14.71 17.71a3 3 0 0 1-2.12-.88l-.71-.71a1 1 0 0 1 1.41-1.41l.71.71a1 1 0 0 0 1.41 0l5-4.95a1 1 0 0 0 0-1.41l-1.46-1.42a1 1 0 0 0-1.41 0L16.1 9.07a1 1 0 0 1-1.41-1.41l1.43-1.43a3.07 3.07 0 0 1 4.24 0l1.41 1.41a3 3 0 0 1 0 4.24l-5 4.95a3 3 0 0 1-2.06.88z"/>
+ 				<path d="M9.76 22.66a3 3 0 0 1-2.12-.88l-1.42-1.42a3 3 0 0 1 0-4.24l5-4.95a3.07 3.07 0 0 1 4.24 0l.71.71a1 1 0 0 1-1.41 1.41l-.76-.7a1 1 0 0 0-1.41 0l-5 4.95a1 1 0 0 0 0 1.41L9 20.36a1 1 0 0 0 1.41 0L11.82 19a1 1 0 0 1 1.41 1.41l-1.36 1.36a3 3 0 0 1-2.11.89z"/>
  			</g>',
 		'border-all'     =>
 			'<g>
- 				<path d="M22 5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zm-2 15H8V8h12z"/>		
+ 				<path d="M22 5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zm-2 15H8V8h12z"/>
  			</g>',
 		'border-top'    =>
 			'<g>
- 				<path d="M17 21h2v2h-2zM5 9h2v2H5zM21 17h2v2h-2zM21 9h2v2h-2zM21 13h2v2h-2zM21 23h1a1 1 0 0 0 1-1v-1h-2zM5 17h2v2H5zM5 13h2v2H5zM13 21h2v2h-2zM9 21h2v2H9zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5H6a1 1 0 0 0-1 1v2h18V6a1 1 0 0 0-1-1z"/>		
+ 				<path d="M17 21h2v2h-2zM5 9h2v2H5zM21 17h2v2h-2zM21 9h2v2h-2zM21 13h2v2h-2zM21 23h1a1 1 0 0 0 1-1v-1h-2zM5 17h2v2H5zM5 13h2v2H5zM13 21h2v2h-2zM9 21h2v2H9zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5H6a1 1 0 0 0-1 1v2h18V6a1 1 0 0 0-1-1z"/>
  			</g>',
 		'border-right'  =>
 			'<g>
- 				<path d="M13 5h2v2h-2zM5 9h2v2H5zM9 5h2v2H9zM7 5H6a1 1 0 0 0-1 1v1h2zM5 13h2v2H5zM13 21h2v2h-2zM5 17h2v2H5zM9 21h2v2H9zM17 5h2v2h-2zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5h-2v18h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zM17 21h2v2h-2z"/>		
+ 				<path d="M13 5h2v2h-2zM5 9h2v2H5zM9 5h2v2H9zM7 5H6a1 1 0 0 0-1 1v1h2zM5 13h2v2H5zM13 21h2v2h-2zM5 17h2v2H5zM9 21h2v2H9zM17 5h2v2h-2zM5 21v1a1 1 0 0 0 1 1h1v-2zM22 5h-2v18h2a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1zM17 21h2v2h-2z"/>
  			</g>',
 		'border-bottom' =>
-			'<g>		
- 				<path d="M9 5h2v2H9zM7 20H5v2a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2H7zM17 5h2v2h-2zM5 13h2v2H5zM5 9h2v2H5zM13 5h2v2h-2zM5 17h2v2H5zM21 9h2v2h-2zM21 17h2v2h-2zM22 5h-1v2h2V6a1 1 0 0 0-1-1zM21 13h2v2h-2zM7 5H6a1 1 0 0 0-1 1v1h2z"/>		
+			'<g>
+ 				<path d="M9 5h2v2H9zM7 20H5v2a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-2H7zM17 5h2v2h-2zM5 13h2v2H5zM5 9h2v2H5zM13 5h2v2h-2zM5 17h2v2H5zM21 9h2v2h-2zM21 17h2v2h-2zM22 5h-1v2h2V6a1 1 0 0 0-1-1zM21 13h2v2h-2zM7 5H6a1 1 0 0 0-1 1v1h2z"/>
  			</g>',
 		'border-left'   =>
 			'<g>
- 				<path d="M22 5h-1v2h2V6a1 1 0 0 0-1-1zM9 21h2v2H9zM21 17h2v2h-2zM13 21h2v2h-2zM21 13h2v2h-2zM9 5h2v2H9zM17 21h2v2h-2zM17 5h2v2h-2zM21 9h2v2h-2zM8 7V5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h2V7zM21 23h1a1 1 0 0 0 1-1v-1h-2zM13 5h2v2h-2z"/>		
+ 				<path d="M22 5h-1v2h2V6a1 1 0 0 0-1-1zM9 21h2v2H9zM21 17h2v2h-2zM13 21h2v2h-2zM21 13h2v2h-2zM9 5h2v2H9zM17 21h2v2h-2zM17 5h2v2h-2zM21 9h2v2h-2zM8 7V5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h2V7zM21 23h1a1 1 0 0 0 1-1v-1h-2zM13 5h2v2h-2z"/>
  			</g>',
 	);
 	return $all_icons;
@@ -2606,7 +2618,10 @@ endif;
 
 if ( ! function_exists( 'et_pb_add_builder_page_js_css' ) ) :
 function et_pb_add_builder_page_js_css(){
-	global $typenow, $post;
+	global $typenow, $post, $wp_version;
+
+	// Get WP major version
+	$wp_major_version = substr( $wp_version, 0, 3 );
 
 	// Avoid serving any data from object cache
 	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
@@ -2711,7 +2726,17 @@ function et_pb_add_builder_page_js_css(){
 
 	wp_enqueue_script( 'wp-color-picker' );
 	wp_enqueue_style( 'wp-color-picker' );
-	wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+
+	if ( version_compare( $wp_major_version, '4.9', '>=' ) ) {
+		wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+		wp_localize_script( 'wp-color-picker-alpha', 'et_pb_color_picker_strings', apply_filters( 'et_pb_color_picker_strings_builder', array(
+			'legacy_pick'    => esc_html__( 'Select', 'et_builder' ),
+			'legacy_current' => esc_html__( 'Current Color', 'et_builder' ),
+		) ) );
+	} else {
+		wp_enqueue_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha-48.min.js', array( 'jquery', 'wp-color-picker' ), ET_BUILDER_VERSION, true );
+	}
+
 	wp_register_script( 'chart', ET_BUILDER_URI . '/scripts/ext/chart.min.js', array(), ET_BUILDER_VERSION, true );
 	wp_register_script( 'jquery-tablesorter', ET_BUILDER_URI . '/scripts/ext/jquery.tablesorter.min.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 
