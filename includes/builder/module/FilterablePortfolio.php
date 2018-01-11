@@ -1,6 +1,6 @@
 <?php
 
-class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
+class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Filterable Portfolio', 'et_builder' );
 		$this->slug       = 'et_pb_filterable_portfolio';
@@ -83,9 +83,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 						'main' => "{$this->main_css_element} .et_pb_portofolio_pagination a",
 						'text_align' => "{$this->main_css_element} .et_pb_portofolio_pagination ul",
 					),
-				),
-				'options' => array(
-					'pagination_text_align' => array(
+					'text_align' => array(
 						'options' => et_builder_get_text_orientation_options( array( 'justified' ), array() ),
 					),
 				),
@@ -422,6 +420,9 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 
 				$post_index++;
 			}
+		} else if ( wp_doing_ajax() ) {
+			// This is for the VB
+			$query = array( 'posts' => self::get_no_results_template() );
 		}
 
 		wp_reset_postdata();
@@ -577,27 +578,30 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module {
 
 		wp_reset_postdata();
 
-		$posts = ob_get_clean();
-
-		$categories_included = explode ( ',', $include_categories );
-		$terms_args = array(
-			'include' => $categories_included,
-			'orderby' => 'name',
-			'order' => 'ASC',
-		);
-		$terms = get_terms( 'project_category', $terms_args );
-
-		$category_filters = '<ul class="clearfix">';
-		$category_filters .= sprintf( '<li class="et_pb_portfolio_filter et_pb_portfolio_filter_all"><a href="#" class="active" data-category-slug="all">%1$s</a></li>',
-			esc_html__( 'All', 'et_builder' )
-		);
-		foreach ( $terms as $term  ) {
-			$category_filters .= sprintf( '<li class="et_pb_portfolio_filter"><a href="#" data-category-slug="%1$s">%2$s</a></li>',
-				esc_attr( urldecode( $term->slug ) ),
-				esc_html( $term->name )
+		if ( ! $posts = ob_get_clean() ) {
+			$posts            = self::get_no_results_template();
+			$category_filters = '';
+		} else {
+			$categories_included = explode ( ',', $include_categories );
+			$terms_args = array(
+				'include' => $categories_included,
+				'orderby' => 'name',
+				'order' => 'ASC',
 			);
+			$terms = get_terms( 'project_category', $terms_args );
+
+			$category_filters = '<ul class="clearfix">';
+			$category_filters .= sprintf( '<li class="et_pb_portfolio_filter et_pb_portfolio_filter_all"><a href="#" class="active" data-category-slug="all">%1$s</a></li>',
+				esc_html__( 'All', 'et_builder' )
+			);
+			foreach ( $terms as $term  ) {
+				$category_filters .= sprintf( '<li class="et_pb_portfolio_filter"><a href="#" data-category-slug="%1$s">%2$s</a></li>',
+					esc_attr( urldecode( $term->slug ) ),
+					esc_html( $term->name )
+				);
+			}
+			$category_filters .= '</ul>';
 		}
-		$category_filters .= '</ul>';
 
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();

@@ -1297,13 +1297,6 @@ class ET_Builder_Element {
 
 		$advanced_font_options = $this->advanced_options['fonts'];
 
-		if ( isset( $advanced_font_options['options'] ) ) {
-			$advanced_font_settings = $advanced_font_options['options'];
-			unset( $advanced_font_options['options'] );
-		} else {
-			$advanced_font_settings = array();
-		}
-
 		$additional_options = array();
 		$defaults = array(
 			'all_caps' => 'off',
@@ -1542,19 +1535,6 @@ class ET_Builder_Element {
 					'tab_slug'          => $tab_slug,
 					'toggle_slug'       => $option_name,
 				);
-			}
-		}
-
-		// Allow module to overwrite specific options
-		if ( ! empty( $advanced_font_settings ) ) {
-			foreach ( $advanced_font_settings as $option_slug => $options ) {
-				if ( ! is_array( $options ) ) {
-					continue;
-				}
-
-				foreach ( $options as $option_name => $option_value ) {
-					$additional_options[ $option_slug ][ $option_name ] = $option_value;
-				}
 			}
 		}
 

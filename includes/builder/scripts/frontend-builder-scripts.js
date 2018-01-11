@@ -2834,12 +2834,12 @@
 							// Store the labels of the conditionally hidden fields so that they can be
 							// removed later if a custom message pattern is enabled
 							if ( ! $this_el.is(':visible') && 'hidden' !== $this_el.attr('type') && 'radio' !== $this_el.attr('type') ) {
-								hidden_fields.push( this_label );
+								hidden_fields.push( original_id );
 								return;
 							}
 
 							if ( ( 'hidden' === $this_el.attr('type') || 'radio' === $this_el.attr('type') ) && ! $this_el.parents('.et_pb_contact_field').is(':visible') ) {
-								hidden_fields.push( this_label );
+								hidden_fields.push( original_id );
 								return;
 							}
 

@@ -5,13 +5,14 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.78';
+window.et_builder_version = '3.0.80';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
 	var et_error_modal_shown = window.et_error_modal_shown,
 		et_is_loading_missing_modules = false,
 		et_pb_bulder_loading_attempts = 0,
+		et_ls_prefix = 'et_pb_templates_',
 		et_pb_hovered_item_buffer = {},
 		et_pb_all_unsynced_options = {},
 		et_pb_all_legacy_synced_options = [],
@@ -21,22 +22,50 @@ window.et_builder_product_name = 'Divi';
 			'c' : false
 		};
 
+	function et_builder_maybe_clear_localstorage() {
+		var settings_product_version = et_pb_options.product_version,
+			forced_clear_setting_name,
+			forced_clear;
+
+		forced_clear_setting_name = 'et_forced_localstorage_clear';
+
+		forced_clear = localStorage.getItem( forced_clear_setting_name );
+
+		if ( ! forced_clear ) {
+			forced_clear = wpCookies.get( forced_clear_setting_name );
+		}
+
+		// attempt to clear localStorage only once
+		if ( forced_clear !== settings_product_version ) {
+			localStorage.clear();
+
+			wpCookies.set( forced_clear_setting_name, settings_product_version );
+
+			localStorage.setItem( forced_clear_setting_name, settings_product_version );
+
+			setTimeout( function() {
+				window.location.reload();
+			}, 100 );
+		}
+	}
+
 	function et_builder_load_backbone_templates( reload_template ) {
 
 		// run et_pb_append_templates as many times as needed
 		var et_pb_templates_count = 0,
 			date_now              = new Date(),
 			today_date            = date_now.getYear() + '_' + date_now.getMonth() + '_' + date_now.getDate(),
-			et_ls_prefix          = 'et_pb_templates_',
 			et_ls_all_modules     = ( et_pb_options['et_builder_module_parent_shortcodes'] + '|' + et_pb_options['et_builder_module_child_shortcodes'] ).split( '|' ),
 			product_version       = et_pb_options.product_version,
+			active_plugins        = et_pb_options.active_plugins.join('|'),
 			local_storage_buffer  = '',
 			processed_modules_count = 0,
-			reload_template = _.isUndefined( reload_template ) ? false : reload_template,
 			missing_modules = {
 				missing_modules_array: []
 			},
 			et_pb_templates_interval;
+
+		reload_template = _.isUndefined( reload_template ) ? false : reload_template;
 
 		if ( ! reload_template ) {
 			if ( ! $( 'script[src="' + et_pb_options.builder_js_src + '"]' ).length ) {
@@ -109,6 +138,8 @@ window.et_builder_product_name = 'Divi';
 								localStorage.setItem( et_ls_prefix + data['slug'], LZString.compressToUTF16( data['template'] ) );
 							} catch(e) {
 								// do not use localStorage if it full or any other error occurs
+
+								et_builder_maybe_clear_localstorage();
 							}
 
 							$( 'body' ).append( data.template );
@@ -118,6 +149,8 @@ window.et_builder_product_name = 'Divi';
 										localStorage.setItem( et_ls_prefix + single_module['slug'], LZString.compressToUTF16( single_module['template'] ) );
 									} catch(e) {
 										// do not use localStorage if it full or any other error occurs
+
+										et_builder_maybe_clear_localstorage();
 									}
 
 									$( 'body' ).append( single_module['template'] );
@@ -169,6 +202,8 @@ window.et_builder_product_name = 'Divi';
 				localStorage.setItem( et_ls_prefix + 'settings_date', today_date );
 
 				localStorage.setItem( et_ls_prefix + 'settings_product_version', product_version );
+
+				localStorage.setItem( et_ls_prefix + 'settings_active_plugins', active_plugins );
 			} catch(e) {
 				// do not use localStorage if it full or any other error occurs
 			}
@@ -184,13 +219,18 @@ window.et_builder_product_name = 'Divi';
 			}
 
 			var et_ls_settings_date = localStorage.getItem( et_ls_prefix + 'settings_date' ),
-				et_ls_settings_product_version = localStorage.getItem( et_ls_prefix + 'settings_product_version' );
+				et_ls_settings_product_version = localStorage.getItem( et_ls_prefix + 'settings_product_version' ),
+				et_ls_settings_active_plugins = localStorage.getItem( et_ls_prefix + 'settings_active_plugins' );
 
 			if ( _.isUndefined( et_ls_settings_date ) || _.isNull( et_ls_settings_date ) ) {
 				return false;
 			}
 
 			if ( _.isUndefined( et_ls_settings_product_version ) || _.isNull( et_ls_settings_product_version ) ) {
+				return false;
+			}
+
+			if ( et_ls_settings_active_plugins !== active_plugins ) {
 				return false;
 			}
 
@@ -208,13 +248,11 @@ window.et_builder_product_name = 'Divi';
 				return false;
 			}
 
-			var templates_prefix_re = /et_pb_templates_*/i
-
-			for ( var prop in localStorage ) {
-				if ( found = prop.match( templates_prefix_re ) ) {
-					localStorage.removeItem( prop );
+			_.forEach( _.keys( localStorage ), function( key ) {
+				if ( startsWith( key, 'et_pb_templates_' ) ) {
+					localStorage.removeItem( key );
 				}
-			}
+			} );
 		}
 
 		function et_pb_append_templates( start_from ) {
@@ -246,6 +284,7 @@ window.et_builder_product_name = 'Divi';
 					if ( et_builder_has_storage_support() ) {
 						localStorage.removeItem( et_ls_prefix + 'settings_date' );
 						localStorage.removeItem( et_ls_prefix + 'settings_product_version' );
+						localStorage.removeItem( et_ls_prefix + 'settings_active_plugins' );
 					}
 
 					$( 'body' ).addClass( 'et_pb_stop_scroll' ).append( $failure_notice_template.html() );
@@ -258,6 +297,8 @@ window.et_builder_product_name = 'Divi';
 								localStorage.setItem( 'et_pb_templates_' + name, LZString.compressToUTF16( data.templates[name] ) );
 							} catch(e) {
 								// do not use localStorage if it full or any other error occurs
+
+								et_builder_maybe_clear_localstorage();
 							}
 						}
 
@@ -269,6 +310,64 @@ window.et_builder_product_name = 'Divi';
 
 	}
 	et_builder_load_backbone_templates();
+
+	/**
+	 * Get value from object located at path.
+	 *
+	 * @see https://stackoverflow.com/a/15643385/2639936
+	 *
+	 * @param obj
+	 * @param path
+	 * @return {*}
+	 */
+	function get( obj, path ) {
+		return _.reduce( path.split( '.' ), function ( prev, curr ) {
+			return prev ? prev[curr] : undefined;
+		}, obj );
+	}
+
+	/**
+	 * Check if path exists in object.
+	 *
+	 * @see https://stackoverflow.com/a/42042678/2639936
+	 *
+	 * @param obj
+	 * @param path
+	 * @return {boolean}
+	 */
+	function has( obj, path ) {
+		if ( ! path ) {
+			return true;
+		}
+
+		var path_parts = path.split( '.' );
+		var first_part = _.first( path_parts );
+
+		return _.has( obj, first_part ) && has( obj[first_part], _.rest( path_parts ).join( '.' ) );
+	}
+
+	/**
+	 * Determine whether or not a string ends with another string.
+	 *
+	 * @param string
+	 * @param substring
+	 * @return {boolean}
+	 */
+	function endsWith( string, substring ) {
+		return string.substr( string.length - substring.length, string.length ) === substring;
+	}
+
+	/**
+	 * Determine whether or not a string starts with another string.
+	 *
+	 * @param string
+	 * @param substring
+	 * @return {boolean}
+	 */
+	function startsWith( string, substring ) {
+		return string.substr( 0, string.length ) === substring;
+	}
+
 
 	$( document ).ready( function() {
 
@@ -15595,52 +15694,6 @@ window.et_builder_product_name = 'Divi';
 				is_featured_image_background = _.contains( et_pb_options.et_builder_modules_featured_image_background, module_type ) && option_name === 'background_image' && featured_placement === 'background';
 
 			return is_featured_image_background;
-		}
-
-		/**
-		 * Get value from object located at path.
-		 *
-		 * @see https://stackoverflow.com/a/15643385/2639936
-		 *
-		 * @param obj
-		 * @param path
-		 * @return {*}
-		 */
-		function get( obj, path ) {
-			return _.reduce( path.split( '.' ), function( prev, curr ) {
-				return prev ? prev[curr] : undefined;
-			}, obj );
-		}
-
-		/**
-		 * Check if path exists in object.
-		 *
-		 * @see https://stackoverflow.com/a/42042678/2639936
-		 *
-		 * @param obj
-		 * @param path
-		 * @return {boolean}
-		 */
-		function has( obj, path ) {
-			if( ! path ) {
-				return true;
-			}
-
-			var path_parts = path.split( '.' );
-			var first_part = _.first( path_parts );
-
-			return _.has( obj, first_part ) && has( obj[first_part], _.rest( path_parts ).join( '.' ) );
-		}
-
-		/**
-		 * Determine whether or not a string ends with another string.
-		 *
-		 * @param string
-		 * @param substring
-		 * @return {boolean}
-		 */
-		function endsWith( string, substring ) {
-			return string.substr( string.length - substring.length, string.length ) === substring;
 		}
 
 		/**

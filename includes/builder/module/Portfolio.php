@@ -1,6 +1,6 @@
 <?php
 
-class ET_Builder_Module_Portfolio extends ET_Builder_Module {
+class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Portfolio', 'et_builder' );
 		$this->slug       = 'et_pb_portfolio';
@@ -75,9 +75,7 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 						'text_align' => '%%order_class%% .wp-pagenavi',
 					),
 					'hide_text_align' => ! function_exists( 'wp_pagenavi' ),
-				),
-				'options' => array(
-					'pagination_text_align' => array(
+					'text_align' => array(
 						'options' => et_builder_get_text_orientation_options( array( 'justified' ), array() ),
 					),
 				),
@@ -296,10 +294,11 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 	/**
 	 * Get portfolio objects for portfolio module
 	 *
-	 * @param array  arguments that affect et_pb_portfolio query
-	 * @param array  passed conditional tag for update process
-	 * @param array  passed current page params
-	 * @return array portfolio item data
+	 * @param array $args             arguments that affect et_pb_portfolio query
+	 * @param array $conditional_tags conditional tag for update process
+	 * @param array $current_page     current page params
+	 *
+	 * @return mixed portfolio item data
 	 */
 	static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		global $et_fb_processing_shortcode_object;
@@ -420,6 +419,9 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 				'query' => $query,
 				'echo' => false
 			) ) : false;
+		} else if ( wp_doing_ajax() ) {
+			// This is for the VB
+			$query = array( 'posts' => self::get_no_results_template() );
 		}
 
 		wp_reset_postdata();
@@ -584,20 +586,14 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module {
 					);
 				}
 			}
-		} else {
-			if ( et_is_builder_plugin_active() ) {
-				include( ET_BUILDER_PLUGIN_DIR . 'includes/no-results.php' );
-			} else {
-				get_template_part( 'includes/no-results', 'index' );
-			}
 		}
 
 		// Reset post data
 		wp_reset_postdata();
 
-		$posts = ob_get_contents();
-
-		ob_end_clean();
+		if ( ! $posts = ob_get_clean() ) {
+			$posts = self::get_no_results_template();
+		}
 
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();

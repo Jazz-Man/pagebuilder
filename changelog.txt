@@ -1,14 +1,46 @@
+version 3.0.80 ( updated 10-11-2017 )
+- Fixed a bug that caused the Divi Builder to disappear for some users due to a function scope issue. 
+- Fixed email opt-in module phone preview in VB.
+- Fixed settings window in BB not being translated after switching language.
+	* includes/builder/framework.php
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/scripts/builder.js
+
+version 3.0.79 ( updated 10-09-2017 )
+- Fixed conditionally hidden fields being shown in message pattern.
+- Fixed a bug in the Visual Builder where the selective sync status icon for global modules' settings was not updated properly when the status changed.
+- Ensure that all post-based modules display the "No Results" template when there are no posts to be displayed.
+- Improve clearing backend builder template cache.
+- Updated epanel shortcodes CSS image path.
+- Enable RTL when Disable Translations is enabled.
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/scripts/builder.js
+	* includes/builder/functions.php
+	* includes/builder/frontend-builder/init.php
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/main-modules.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/type/PostBased.php
+	* includes/builder/styles/frontend-builder-style.css
+	* epanel/shortcodes/css/shortcodes.css
+	* epanel/shortcodes/shortcodes.php
+
 version 3.0.78 ( updated 10-5-2017 )
-- Added new interface settings window to the Visual Builder. 
+- Added new interface settings window to the Visual Builder.
 - Added new Click Mode interaction mode for the Visual Builder.
-- Added new Grid Mode interaction mode for the Visual Builder. 
-- Improved hover button overlap and accessibility issues in the Visual Builder. 
+- Added new Grid Mode interaction mode for the Visual Builder.
+- Improved hover button overlap and accessibility issues in the Visual Builder.
 - Added the option to completely hide disabled modules in the Visual Builder.
-- Added the option to open all option groups by default in the Visual Builder. 
-- Added the ability to customize the items in the Visual Builder toolbar. 
-- Added the option to disable Divi Builder interface animations in the Visual Builder. 
+- Added the option to open all option groups by default in the Visual Builder.
+- Added the ability to customize the items in the Visual Builder toolbar.
+- Added the option to disable Divi Builder interface animations in the Visual Builder.
 - Improved Visual Builder rendering performance.
-- Fixed an error that occurred on some PHP 7.1.8 installations when used with non-standard linux configurations that lacked glob_brace support. 
+- Fixed an error that occurred on some PHP 7.1.8 installations when used with non-standard linux configurations that lacked glob_brace support.
 - Fixed a bug that prevented success messages from appearing in the contact form module if animations were applied to the module.
 - Fixed a bug that caused an incorrect amount of items to display in the filterable portfolio module in some cases.
 	* core/components/PageResource.php

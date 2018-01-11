@@ -1,6 +1,6 @@
 <?php
 
-class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
+class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Fullwidth Portfolio', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_portfolio';
@@ -351,6 +351,12 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 
 				$post_index++;
 			}
+		} else if ( wp_doing_ajax() ) {
+			// This is for the VB
+			$posts  = '<div class="et_pb_row et_pb_no_results">';
+			$posts .= self::get_no_results_template();
+			$posts .= '</div>';
+			$query  = array( 'posts' => $posts );
 		}
 
 		wp_reset_postdata();
@@ -477,7 +483,11 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module {
 
 		wp_reset_postdata();
 
-		$posts = ob_get_clean();
+		if ( ! $posts = ob_get_clean() ) {
+			$posts  = '<div class="et_pb_row et_pb_no_results">';
+			$posts .= self::get_no_results_template();
+			$posts .= '</div>';
+		}
 
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();

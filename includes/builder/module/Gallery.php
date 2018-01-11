@@ -95,9 +95,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 						'main'       => "{$this->main_css_element} .et_pb_gallery_pagination a",
 						'text_align' => "{$this->main_css_element} .et_pb_gallery_pagination ul",
 					),
-				),
-				'options' => array(
-					'pagination_text_align' => array(
+					'text_align' => array(
 						'options' => et_builder_get_text_orientation_options( array( 'justified' ), array() ),
 					),
 				),

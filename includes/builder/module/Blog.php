@@ -1,6 +1,6 @@
 <?php
 
-class ET_Builder_Module_Blog extends ET_Builder_Module {
+class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Blog', 'et_builder' );
 		$this->slug       = 'et_pb_blog';
@@ -107,9 +107,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 						'text_align' => '%%order_class%% .wp-pagenavi',
 					),
 					'hide_text_align' => ! function_exists( 'wp_pagenavi' ),
-				),
-				'options' => array(
-					'pagination_text_align' => array(
+					'text_align' => array(
 						'options' => et_builder_get_text_orientation_options( array( 'justified' ), array() ),
 					),
 				),
@@ -835,12 +833,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 			}
 
 			wp_reset_query();
-		} else {
-			if ( $et_is_builder_plugin_active ) {
-				include( ET_BUILDER_PLUGIN_DIR . 'includes/no-results.php' );
-			} else {
-				get_template_part( 'includes/no-results', 'index' );
-			}
 		}
 
 		wp_reset_postdata();
@@ -848,9 +840,9 @@ class ET_Builder_Module_Blog extends ET_Builder_Module {
 		// Reset $wp_query to its origin
 		$wp_query = $wp_query_page;
 
-		$posts = ob_get_contents();
-
-		ob_end_clean();
+		if ( ! $posts = ob_get_clean() ) {
+			$posts = self::get_no_results_template();
+		}
 
 		return $posts;
 	}

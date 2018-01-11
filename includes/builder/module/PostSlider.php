@@ -1,6 +1,6 @@
 <?php
 
-class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
+class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Post Slider', 'et_builder' );
 		$this->slug       = 'et_pb_post_slider';
@@ -693,7 +693,14 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 				$post_index++;
 			} // end while
 			wp_reset_query();
-		} // end if
+		} else if ( wp_doing_ajax() ) {
+			// This is for the VB
+			$query  = '<div class="et_pb_no_results">';
+			$query .= self::get_no_results_template();
+			$query .= '</div>';
+
+			$query = array( 'posts' => $query );
+		}
 
 		return $query;
 	}
@@ -966,12 +973,15 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module {
 			$post_index++;
 
 			} // end while
-			wp_reset_query();
 		} // end if
 
-		$content = ob_get_contents();
+		wp_reset_query();
 
-		ob_end_clean();
+		if ( ! $content = ob_get_clean() ) {
+			$content  = '<div class="et_pb_no_results">';
+			$content .= self::get_no_results_template();
+			$content .= '</div>';
+		}
 
 		$output = sprintf(
 			'<div%3$s class="et_pb_module et_pb_slider et_pb_post_slider%1$s%4$s%5$s%7$s">

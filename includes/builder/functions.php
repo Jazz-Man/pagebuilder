@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.78' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.80' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -491,12 +491,6 @@ endif;
  * @return array
  */
 function et_fb_conditional_tag_params() {
-	$is_rtl = is_rtl();
-
-	if ( 'on' === et_get_option( 'divi_disable_translations', 'off' ) ) {
-		$is_rtl = false;
-	}
-
 	$conditional_tags = array(
 		'is_front_page'               => is_front_page(),
 		'is_home_page'                => is_home() || is_front_page(),
@@ -504,7 +498,7 @@ function et_fb_conditional_tag_params() {
 		'is_single'                   => is_single(),
 		'is_singular'                 => is_singular(),
 		'is_singular_project'         => is_singular( 'project' ),
-		'is_rtl'                      => $is_rtl,
+		'is_rtl'                      => is_rtl(),
 		'et_is_builder_plugin_active' => et_is_builder_plugin_active(),
 		'is_user_logged_in'           => is_user_logged_in(),
 		'et_is_ab_testing_active'     => et_is_ab_testing_active() ? 'yes' : 'no',
@@ -2373,10 +2367,24 @@ function et_pb_is_wp_old_version(){
 }
 endif;
 
+if ( ! function_exists( 'et_builder_theme_or_plugin_updated_cb' ) ):
+function et_builder_theme_or_plugin_updated_cb() {
+	et_update_option( 'et_pb_clear_templates_cache', true );
+}
+add_action( 'after_switch_theme', 'et_builder_theme_or_plugin_updated_cb' );
+add_action( 'activated_plugin', 'et_builder_theme_or_plugin_updated_cb', 10, 0 );
+add_action( 'deactivated_plugin', 'et_builder_theme_or_plugin_updated_cb', 10, 0 );
+add_action( 'upgrader_process_complete', 'et_builder_theme_or_plugin_updated_cb', 10, 0 );
+endif;
+
 if ( ! function_exists( 'et_pb_add_builder_page_js_css' ) ) :
 function et_pb_add_builder_page_js_css(){
 	global $typenow, $post;
 
+	// Avoid serving any data from object cache
+	if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+		define( 'DONOTCACHEPAGE', true );
+	}
 
 	// BEGIN Process shortcodes (for module settings migrations and Yoast SEO compatibility)
 	// Get list of shortcodes that causes issue if being triggered in admin
@@ -2564,6 +2572,7 @@ function et_pb_add_builder_page_js_css(){
 		'page_section_bg_color'                    => get_post_meta( get_the_ID(), '_et_pb_section_background_color', true ),
 		'page_gutter_width'                        => '' !== ( $saved_gutter_width = get_post_meta( get_the_ID(), '_et_pb_gutter_width', true ) ) ? $saved_gutter_width : et_get_option( 'gutter_width', 3 ),
 		'product_version'                          => ET_BUILDER_PRODUCT_VERSION,
+		'active_plugins'                           => et_builder_get_active_plugins(),
 		'force_cache_purge'                        => $force_cache_update ? 'true' : 'false',
 		'memory_limit_increased'                   => esc_html__( 'Your memory limit has been increased', 'et_builder' ),
 		'memory_limit_not_increased'               => esc_html__( "Your memory limit can't be changed automatically", 'et_builder' ),
@@ -7518,5 +7527,40 @@ function et_pb_get_spacing( $spacing, $corner, $default = '' ) {
 	$spacing_array = explode( '|', $spacing );
 
 	return isset( $spacing_array[ $corner_index ] ) && '' !== $spacing_array[ $corner_index ] ? $spacing_array[ $corner_index ] : $default;
+}
+endif;
+
+/**
+ * Get list of all active plugins (single, network active, and mu)
+ *
+ * @return array active plugins
+ */
+if ( ! function_exists( 'et_builder_get_active_plugins' ) ) :
+function et_builder_get_active_plugins() {
+	$active_plugins = get_option( 'active_plugins' );
+
+	// Returned format must be array
+	if ( ! is_array( $active_plugins ) ) {
+		$active_plugins = array();
+	}
+
+	// Get mu-plugins (must-use)
+	// mu-plugins data is returned in array( "plugin/name.php" => array( 'data' => 'value' ) ) format.
+	$mu_plugins = get_mu_plugins();
+	if ( is_array( $mu_plugins ) ) {
+		$active_plugins = array_merge( $active_plugins, array_keys( $mu_plugins ) );
+	}
+
+	// Get network active plugins
+	// Network active plugin data is returned in array( "plugin/name.php" => active_timestamp_int format.
+	if ( is_multisite() ) {
+		$network_active_plugins = get_site_option( 'active_sitewide_plugins' );
+
+		if ( is_array( $network_active_plugins ) ) {
+			$active_plugins = array_merge( $active_plugins, array_keys( $network_active_plugins ) );
+		}
+	}
+
+	return apply_filters( 'et_builder_get_active_plugins', $active_plugins );
 }
 endif;
