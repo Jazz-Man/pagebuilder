@@ -969,7 +969,7 @@ function et_fb_backend_helpers() {
 			'color'          => esc_html__( 'Color', 'et_builder' ),
 			'style'          => esc_html__( 'Style', 'et_builder' ),
 			'all'            => esc_html__( 'All', 'et_builder' ),
-			
+
 		),
 		'app' => array(
 			'modal' => array(
@@ -1102,6 +1102,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Section', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Section To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Section', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Section', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Section', 'et_builder' ),
 			),
@@ -1112,6 +1113,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Row', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Row To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Row', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Row', 'et_builder' ),
 					'update'       => esc_html__( 'Change Column Structure', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Row', 'et_builder' ),
@@ -1124,6 +1126,7 @@ function et_fb_backend_helpers() {
 					'duplicate'    => esc_html__( 'Duplicate Module', 'et_builder' ),
 					'addToLibrary' => esc_html__( 'Save Module To Library', 'et_builder' ),
 					'delete'       => esc_html__( 'Delete Module', 'et_builder' ),
+					'exit'         => esc_html__( 'Exit Module', 'et_builder' ),
 				),
 				'addButton' => esc_html__( 'Add New Module', 'et_builder' ),
 			),

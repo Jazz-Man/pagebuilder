@@ -862,6 +862,7 @@ function et_pb_get_global_module() {
 	}
 
 	$post_id = isset( $_POST['et_global_id'] ) ? $_POST['et_global_id'] : '';
+	$global_autop = isset( $_POST['et_global_autop'] ) ? sanitize_text_field( $_POST['et_global_autop'] ) : 'apply';
 
 	if ( '' !== $post_id ) {
 		$query = new WP_Query( array(
@@ -872,7 +873,7 @@ function et_pb_get_global_module() {
 		wp_reset_postdata();
 
 		if ( !empty( $query->post ) ) {
-			$global_shortcode['shortcode'] = wpautop( $query->post->post_content );
+			$global_shortcode['shortcode'] = 'skip' === $global_autop ? $query->post->post_content : wpautop( $query->post->post_content );
 			$excluded_global_options = get_post_meta( $post_id, '_et_pb_excluded_global_options' );
 			$selective_sync_status = empty( $excluded_global_options ) ? '' : 'updated';
 

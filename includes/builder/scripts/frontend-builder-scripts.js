@@ -384,8 +384,7 @@
 				} );
 
 				$et_slider.et_slider_move_to = function ( direction ) {
-					var $active_slide = $et_slide.eq( et_active_slide ),
-						$next_slide;
+					var $active_slide = $et_slide.eq( et_active_slide );
 
 					$et_slider.et_animation_running = true;
 
@@ -414,7 +413,9 @@
 					if ( typeof et_slider_timer != 'undefined' )
 						clearInterval( et_slider_timer );
 
-					$next_slide	= $et_slide.eq( et_active_slide );
+					var $next_slide	= $et_slide.eq( et_active_slide );
+
+					$et_slider.trigger('slide', {current: $active_slide, next: $next_slide});
 
 					if ( typeof $active_slide.find('video')[0] !== 'undefined' && typeof $active_slide.find('video')[0]['player'] !== 'undefined' ) {
 						$active_slide.find('video')[0].player.pause();
@@ -1166,65 +1167,7 @@
 				return row_class;
 			}
 
-			$et_top_menu.find( 'li' ).hover( function() {
-				if ( ! $(this).closest( 'li.mega-menu' ).length || $(this).hasClass( 'mega-menu' ) ) {
-					$(this).addClass( 'et-show-dropdown' );
-					$(this).removeClass( 'et-hover' ).addClass( 'et-hover' );
-					et_menu_hover_triggered = true;
-				}
-			}, function() {
-				var $this_el = $(this);
-
-				$this_el.removeClass( 'et-show-dropdown' ).addClass( 'et-dropdown-removing' );
-
-				et_menu_hover_triggered = false;
-
-				setTimeout( function() {
-					if ( ! $this_el.hasClass( 'et-show-dropdown' ) ) {
-						$this_el.removeClass( 'et-hover' ).removeClass( 'et-dropdown-removing' );
-					}
-				}, 200 );
-			} );
-
-			// Dropdown menu adjustment for touch screen
-			$et_top_menu.find('.menu-item-has-children > a').on( 'touchstart', function(){
-				et_parent_menu_longpress_start = new Date().getTime();
-			} ).on( 'touchend', function(){
-				var et_parent_menu_longpress_end = new Date().getTime()
-				if ( et_parent_menu_longpress_end  >= et_parent_menu_longpress_start + et_parent_menu_longpress_limit ) {
-					et_parent_menu_click = true;
-				} else {
-					et_parent_menu_click = false;
-
-					// Some devices emulate hover event on touch, so check that hover event was not triggered to avoid extra mouseleave event triggering
-					if ( ! et_menu_hover_triggered ) {
-						// Close sub-menu if toggled
-						var $et_parent_menu = $(this).parent('li');
-						if ( $et_parent_menu.hasClass( 'et-hover') ) {
-							$et_parent_menu.trigger( 'mouseleave' );
-						} else {
-							$et_parent_menu.trigger( 'mouseenter' );
-						}
-					}
-				}
-				et_parent_menu_longpress_start = 0;
-			} ).click(function() {
-				if ( et_parent_menu_click ) {
-					return true;
-				}
-
-				return false;
-			} );
-
-			$et_top_menu.find( 'li.mega-menu' ).each(function(){
-				var $li_mega_menu           = $(this),
-					$li_mega_menu_item      = $li_mega_menu.children( 'ul' ).children( 'li' ),
-					li_mega_menu_item_count = $li_mega_menu_item.length;
-
-				if ( li_mega_menu_item_count < 4 ) {
-					$li_mega_menu.addClass( 'mega-menu-parent mega-menu-parent-' + li_mega_menu_item_count );
-				}
-			});
+			window.et_pb_init_nav_menu( $et_top_menu );
 
 			$et_sticky_image.each( function() {
 				var $this_el            = $(this),
@@ -4755,10 +4698,20 @@
 						window.et_pb_ajax_pagination_cache[ current_href + module_class_processed ] = $current_module.find( '.et_pb_ajax_pagination_container' );
 					}
 
-					$current_module.fadeTo( 'slow', 0.2 ).load( href + ' ' + module_class_processed + ' .et_pb_ajax_pagination_container', function() {
-						et_pb_set_paginated_content( $current_module, false );
-						// update cache for loaded page
-						window.et_pb_ajax_pagination_cache[ href + module_class_processed ] = $current_module.find( '.et_pb_ajax_pagination_container' );
+					$current_module.fadeTo( 'slow', 0.2, function() {
+						jQuery.get( href, function( page ) {
+							var $page = jQuery( page );
+							// Find custom style
+							var $style = $page.filter( '#et-builder-module-design-cached-inline-styles' );
+							// Make sure it's included in the new content
+							var $content = $page.find( module_class_processed + ' .et_pb_ajax_pagination_container' ).prepend( $style );
+							// Remove animations to prevent blocks from not showing
+							et_remove_animation( $content.find( '.et_animated' ) );
+							// Replace current page with new one
+							$current_module.find( '.et_pb_ajax_pagination_container' ).replaceWith( $content );
+							window.et_pb_ajax_pagination_cache[ href + module_class_processed ] = $content;
+							et_pb_set_paginated_content( $current_module, false );
+						});
 					});
 				}
 

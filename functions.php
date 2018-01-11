@@ -130,7 +130,7 @@ function et_theme_epanel_reminder(){
 		et_update_option( $documentation_option_name, 'triggered' );
 	}
 }
-add_action( 'admin_init', 'et_theme_epanel_reminder' );
+add_action( 'admin_notices', 'et_theme_epanel_reminder' );
 
 if ( ! function_exists( 'et_divi_fonts_url' ) ) :
 function et_divi_fonts_url() {
@@ -217,12 +217,12 @@ function et_divi_load_scripts_styles(){
 	}
 
 	$et_gf_enqueue_fonts = array();
-	$et_gf_heading_font = sanitize_text_field( et_get_option( 'heading_font', 'none' ) );
-	$et_gf_body_font = sanitize_text_field( et_get_option( 'body_font', 'none' ) );
-	$et_gf_button_font = sanitize_text_field( et_get_option( 'all_buttons_font', 'none' ) );
-	$et_gf_primary_nav_font = sanitize_text_field( et_get_option( 'primary_nav_font', 'none' ) );
-	$et_gf_secondary_nav_font = sanitize_text_field( et_get_option( 'secondary_nav_font', 'none' ) );
-	$et_gf_slide_nav_font = sanitize_text_field( et_get_option( 'slide_nav_font', 'none' ) );
+	$et_gf_heading_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'heading_font', 'none' ) ) );
+	$et_gf_body_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'body_font', 'none' ) ) );
+	$et_gf_button_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'all_buttons_font', 'none' ) ) );
+	$et_gf_primary_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'primary_nav_font', 'none' ) ) );
+	$et_gf_secondary_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'secondary_nav_font', 'none' ) ) );
+	$et_gf_slide_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'slide_nav_font', 'none' ) ) );
 
 	$site_domain = get_locale();
 	$et_one_font_languages = et_get_one_font_languages();
@@ -238,7 +238,20 @@ function et_divi_load_scripts_styles(){
 		$et_gf_font_name_slug = strtolower( str_replace( ' ', '-', $et_one_font_languages[$site_domain]['language_name'] ) );
 		wp_enqueue_style( 'et-gf-' . $et_gf_font_name_slug, $et_one_font_languages[$site_domain]['google_font_url'], array(), null );
 	} else if ( ! empty( $et_gf_enqueue_fonts ) && function_exists( 'et_builder_enqueue_font' ) ) {
+		$et_old_one_font_languages = et_get_old_one_font_languages();
+
 		foreach ( $et_gf_enqueue_fonts as $single_font ) {
+			if ( isset( $et_old_one_font_languages[$site_domain] ) ) {
+				$font_custom_default_data = $et_old_one_font_languages[$site_domain];
+				
+				// enqueue custom default font if needed
+				if ( $single_font === $font_custom_default_data['font_family'] ) {
+					$et_gf_font_name_slug = strtolower( str_replace( ' ', '-', $font_custom_default_data['language_name'] ) );
+					wp_enqueue_style( 'et-gf-' . $et_gf_font_name_slug, $font_custom_default_data['google_font_url'], array(), null );
+					continue;
+				}
+			}
+
 			et_builder_enqueue_font( $single_font );
 		}
 	}
@@ -559,14 +572,13 @@ function et_divi_post_settings_save_details( $post_id, $post ){
 }
 add_action( 'save_post', 'et_divi_post_settings_save_details', 10, 2 );
 
+/**
+ * Return the list of languages which support one font
+ * @return array
+ */
 if ( ! function_exists( 'et_get_one_font_languages' ) ) :
 function et_get_one_font_languages() {
 	$one_font_languages = array(
-		'he_IL' => array(
-			'language_name'   => 'Hebrew',
-			'google_font_url' => '//fonts.googleapis.com/earlyaccess/alefhebrew.css',
-			'font_family'     => "'Alef Hebrew', serif",
-		),
 		'ja' => array(
 			'language_name'   => 'Japanese',
 			'google_font_url' => '//fonts.googleapis.com/earlyaccess/notosansjapanese.css',
@@ -576,16 +588,6 @@ function et_get_one_font_languages() {
 			'language_name'   => 'Korean',
 			'google_font_url' => '//fonts.googleapis.com/earlyaccess/hanna.css',
 			'font_family'     => "'Hanna', serif",
-		),
-		'ar' => array(
-			'language_name'   => 'Arabic',
-			'google_font_url' => '//fonts.googleapis.com/earlyaccess/lateef.css',
-			'font_family'     => "'Lateef', serif",
-		),
-		'th' => array(
-			'language_name'   => 'Thai',
-			'google_font_url' => '//fonts.googleapis.com/earlyaccess/notosansthai.css',
-			'font_family'     => "'Noto Sans Thai', serif",
 		),
 		'ms_MY' => array(
 			'language_name'   => 'Malay',
@@ -600,6 +602,59 @@ function et_get_one_font_languages() {
 	);
 
 	return $one_font_languages;
+}
+endif;
+
+/**
+ * Return the list of languages which supported one font previously
+ * @return array
+ */
+if ( ! function_exists( 'et_get_old_one_font_languages' ) ) :
+function et_get_old_one_font_languages() {
+	$old_one_font_languages = array(
+		'he_IL' => array(
+			'language_name'   => 'Hebrew',
+			'google_font_url' => '//fonts.googleapis.com/earlyaccess/alefhebrew.css',
+			'font_family'     => 'Alef Hebrew',
+		),
+		'ar' => array(
+			'language_name'   => 'Arabic',
+			'google_font_url' => '//fonts.googleapis.com/earlyaccess/lateef.css',
+			'font_family'     => 'Lateef',
+		),
+		'th' => array(
+			'language_name'   => 'Thai',
+			'google_font_url' => '//fonts.googleapis.com/earlyaccess/notosansthai.css',
+			'font_family'     => 'Noto Sans Thai',
+		),
+	);
+
+	return $old_one_font_languages;
+}
+endif;
+
+/**
+ * Return custom default font-family for the languages which supported one font previously
+ * @param string
+ * @return string
+ */
+if ( ! function_exists( 'et_pb_get_specific_default_font' ) ) :
+function et_pb_get_specific_default_font( $font_family ) {
+	// do nothing if font is not default
+	if ( ! in_array( $font_family, array( 'none', '' ) ) ) {
+		return $font_family;
+	}
+
+	$site_domain = get_locale();
+
+	// array of the languages which were "one font languages" earlier and have specific defaults
+	$specific_defaults = et_get_old_one_font_languages();
+
+	if ( isset( $specific_defaults[ $site_domain ] ) ) {
+		return $specific_defaults[ $site_domain ]['font_family'];
+	}
+
+	return $font_family;
 }
 endif;
 
@@ -683,10 +738,20 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 
 	$et_domain_fonts = array(
 		'ru_RU' => 'cyrillic',
-		'uk' => 'cyrillic',
+		'uk'    => 'cyrillic',
 		'bg_BG' => 'cyrillic',
-		'vi' => 'vietnamese',
-		'el' => 'greek',
+		'vi'    => 'vietnamese',
+		'el'    => 'greek',
+		'ar'    => 'arabic',
+		'he_IL' => 'hebrew',
+		'th'    => 'thai',
+		'si_lk' => 'sinhala',
+		'bn_bd' => 'bengali',
+		'ta_lk' => 'tamil',
+		'te'    => 'telegu',
+		'km'    => 'khmer',
+		'kn'    => 'kannada',
+		'ml_in' => 'malayalam',
 	);
 
 	$et_one_font_languages = et_get_one_font_languages();
@@ -707,9 +772,10 @@ function et_divi_customizer_theme_settings( $wp_customize ) {
 			$use_parent_font = true;
 		}
 
-		if ( '' !== $site_domain && isset( $et_domain_fonts[$site_domain] ) && false === strpos( $google_font_properties['character_set'], $et_domain_fonts[$site_domain] ) ) {
+		if ( '' !== $site_domain && isset( $et_domain_fonts[$site_domain] ) && isset( $google_font_properties['character_set'] ) && false === strpos( $google_font_properties['character_set'], $et_domain_fonts[$site_domain] ) ) {
 			continue;
 		}
+
 		$font_choices[ $google_font_name ] = array(
 			'label' => $google_font_name,
 			'data'  => array(
@@ -6814,12 +6880,12 @@ function et_divi_add_customizer_css() {
 			$css_output[] = ob_get_clean();
 		}
 
-		$et_gf_heading_font = sanitize_text_field( et_get_option( 'heading_font', 'none' ) );
-		$et_gf_body_font = sanitize_text_field( et_get_option( 'body_font', 'none' ) );
-		$et_gf_buttons_font = sanitize_text_field( et_get_option( 'all_buttons_font', 'none' ) );
-		$et_gf_primary_nav_font = sanitize_text_field( et_get_option( 'primary_nav_font', 'none' ) );
-		$et_gf_secondary_nav_font = sanitize_text_field( et_get_option( 'secondary_nav_font', 'none' ) );
-		$et_gf_slide_nav_font = sanitize_text_field( et_get_option( 'slide_nav_font', 'none' ) );
+		$et_gf_heading_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'heading_font', 'none' ) ) );
+		$et_gf_body_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'body_font', 'none' ) ) );
+		$et_gf_buttons_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'all_buttons_font', 'none' ) ) );
+		$et_gf_primary_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'primary_nav_font', 'none' ) ) );
+		$et_gf_secondary_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'secondary_nav_font', 'none' ) ) );
+		$et_gf_slide_nav_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'slide_nav_font', 'none' ) ) );
 		$site_domain = get_locale();
 
 		$et_one_font_languages = et_get_one_font_languages();
@@ -6835,7 +6901,9 @@ function et_divi_add_customizer_css() {
 				sanitize_text_field( $et_one_font_languages[$site_domain]['font_family'] )
 			);
 		} else if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) || ! in_array( $et_gf_body_font, array( '', 'none' ) ) || ! in_array( $et_gf_buttons_font, array( '', 'none' ) ) || ! in_array( $et_gf_primary_nav_font, array( '', 'none' ) ) || ! in_array( $et_gf_secondary_nav_font, array( '', 'none' ) ) || ! in_array( $et_gf_slide_nav_font, array( '', 'none' ) ) ) {
-			if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) ) { ?>
+			if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) ) { 
+
+				?>
 				h1, h2, h3, h4, h5, h6 {
 					<?php echo sanitize_text_field( et_builder_get_font_family( $et_gf_heading_font ) ); ?>
 				}

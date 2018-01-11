@@ -480,6 +480,9 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 
 		do_action( 'et_pb_shop_before_print_shop' );
 
+		// https://github.com/woocommerce/woocommerce/issues/17769
+		$post = $GLOBALS['post'];
+
 		$shop = do_shortcode(
 			sprintf( '[%1$s per_page="%2$s" orderby="%3$s" columns="%4$s" category="%5$s"]',
 				esc_html( $woocommerce_shortcodes_types[$type] ),
@@ -489,6 +492,9 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				esc_attr( $include_categories )
 			)
 		);
+
+		// https://github.com/woocommerce/woocommerce/issues/17769
+		$GLOBALS['post'] = $post;
 
 		do_action( 'et_pb_shop_after_print_shop' );
 

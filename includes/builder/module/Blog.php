@@ -878,6 +878,13 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 	}
 
 	function shortcode_callback( $atts, $content = null, $function_name ) {
+		global $post;
+
+		// Stored current global post as variable so global $post variable can be restored
+		// to its original state when et_pb_blog shortcode ends to avoid incorrect global $post
+		// being used on the page (i.e. blog + shop module in backend builder)
+		$post_cache = $post;
+
 		/**
 		 * Cached $wp_filter so it can be restored at the end of the callback.
 		 * This is needed because this callback uses the_content filter / calls a function
@@ -1244,6 +1251,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		// Restore $wp_filter
 		$wp_filter = $wp_filter_cache;
 		unset($wp_filter_cache);
+
+		// Restore global $post into its original state when et_pb_blog shortcode ends to avoid
+		// the rest of the page uses incorrect global $post variable
+		$post = $post_cache;
 
 		return $output;
 	}

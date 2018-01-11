@@ -3272,7 +3272,8 @@ span.et_pb_disable_on_options { position: absolute; right: -100%; }
     font-weight: 400;
 }
 
-.wp-picker-container, .wp-picker-container:active {
+.colorpalette-colorpicker .wp-picker-container,
+.colorpalette-colorpicker .wp-picker-container:active {
     display: inline-block;
 }
 

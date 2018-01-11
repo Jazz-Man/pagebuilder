@@ -620,6 +620,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			) : '';
 		}
 
+		$image = $image ? sprintf( '<span class="et_pb_image_wrap">%1$s</span>', $image ) : '';
 		$image = $image ? sprintf(
 			'<div class="et_pb_main_blurb_image">%1$s</div>',
 			( '' !== $url
@@ -678,7 +679,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			$this->shortcode_atts['use_icon'] !== 'on'
 		) {
 			self::set_style( $function_name, $boxShadow->get_style(
-				$selector . ' .et_pb_main_blurb_image',
+				$selector . ' .et_pb_main_blurb_image .et_pb_image_wrap',
 				$this->shortcode_atts,
 				array( 'suffix' => '_image' )
 			) );
@@ -711,8 +712,8 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 
 		$this->advanced_options["border_{$suffix}"]['css'] = array(
 			'main' => array(
-				'border_radii' => "%%order_class%% .et_pb_main_blurb_image",
-				'border_styles' => "%%order_class%% .et_pb_main_blurb_image",
+				'border_radii' => "%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap",
+				'border_styles' => "%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap",
 			)
 		);
 	}

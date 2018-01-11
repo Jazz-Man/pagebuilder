@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.89' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.90' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1323,6 +1323,11 @@ function et_fb_disable_product_tour() {
 }
 endif;
 
+/**
+ * Generate output string for `include_categories` option used in backbone template.
+ * @param array
+ * @return string
+ */
 if ( ! function_exists( 'et_builder_include_categories_option' ) ) :
 function et_builder_include_categories_option( $args = array() ) {
 	$defaults = apply_filters( 'et_builder_include_categories_defaults', array (
@@ -1334,7 +1339,7 @@ function et_builder_include_categories_option( $args = array() ) {
 
 	$term_args = apply_filters( 'et_builder_include_categories_option_args', array( 'hide_empty' => false, ) );
 
-	$output = "\t" . "<% var et_pb_include_categories_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
+	$output = "\t" . "<% var et_pb_include_categories_temp = typeof data !== 'undefined' && typeof data.et_pb_include_categories !== 'undefined' ? data.et_pb_include_categories.split( ',' ) : []; et_pb_include_categories_temp = typeof data === 'undefined' && typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : et_pb_include_categories_temp; %>" . "\n";
 
 	if ( $args['use_terms'] ) {
 		$cats_array = get_terms( $args['term_name'], $term_args );
@@ -1367,6 +1372,11 @@ function et_builder_include_categories_option( $args = array() ) {
 }
 endif;
 
+/**
+ * Generate output string for `include_shop_categories` option used in backbone template.
+ * @param array
+ * @return string
+ */
 if ( ! function_exists( 'et_builder_include_categories_shop_option' ) ) :
 function et_builder_include_categories_shop_option( $args = array() ) {
 	if ( ! class_exists( 'WooCommerce' ) ) {
@@ -1382,7 +1392,7 @@ function et_builder_include_categories_shop_option( $args = array() ) {
 
 	$args = wp_parse_args( $args, $defaults );
 
-	$output = "\t" . "<% var et_pb_include_categories_shop_temp = typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : []; %>" . "\n";
+	$output = "\t" . "<% var et_pb_include_categories_shop_temp = typeof data !== 'undefined' && typeof data.et_pb_include_categories !== 'undefined' ? data.et_pb_include_categories.split( ',' ) : []; et_pb_include_categories_shop_temp = typeof data === 'undefined' && typeof et_pb_include_categories !== 'undefined' ? et_pb_include_categories.split( ',' ) : et_pb_include_categories_shop_temp; %>" . "\n";
 
 	$cats_array = $args['use_terms'] ? get_terms( $args['term_name'], $term_args ) : get_categories( apply_filters( 'et_builder_get_categories_shop_args', 'hide_empty=0' ) );
 
@@ -1837,13 +1847,106 @@ function et_builder_print_font() {
 	$subsets        = wp_list_pluck( $et_fonts_queue, 'subset' );
 	$unique_subsets = array_unique( explode(',', implode(',', $subsets ) ) );
 
+	// Get the google fonts for the current page that are stored as an option
+	$post_fonts_data = array();
+
+	$post_id = is_singular() ? get_the_ID() : false;
+
+	if ( false !== $post_id ) {
+		$post_fonts_data = get_post_meta( $post_id, 'et_enqueued_post_fonts', true );
+	}
+
+	if ( ! is_array( $post_fonts_data ) ) {
+		$post_fonts_data = array();
+	}
+
+	if ( empty( $post_fonts_data ) ) {
+		$post_fonts_data = array(
+			'family' => array(),
+			'subset' => array(),
+		);
+	}
+
+	// We only need the difference in the fonts since the subsets might be needed
+	// in cases where a new font is added to the page and it is not yet present
+	// in the option cache
+	$cached_fonts = $post_fonts_data[ 'family'];
+
+	$fonts = array_diff( $fonts, $cached_fonts );
+
+	if ( ! $fonts ) {
+		// The `$fonts` variable stores all the fonts used on the page (cache does not matter)
+		// while the `$cached_fonts` one only stores the fonts that were lastly saved into
+		// the post meta. When we run `array_diff` we would only get a result if there
+		// are new fonts present on the page that are not yet cached. However if some
+		// of the cached fonts are no longer in use this will not be caught by the
+		// `array_diff`. To fix this if the item count in `$fonts` is different
+		// than the one in `$cached_fonts` we update the post meta with the
+		// data from the `$fonts` variable to force unused fonts removal
+		if ( count( $fonts ) !== count( $cached_fonts ) ) {
+			update_post_meta( $post_id, 'et_enqueued_post_fonts', array(
+				'family' => et_sanitized_previously( $fonts ),
+				'subset' => et_sanitized_previously( $unique_subsets ),
+			) );
+		}
+
+		return;
+	}
+
 	// Append combined subset at the end of the URL as different query string
 	wp_enqueue_style( 'et-builder-googlefonts', esc_url( add_query_arg( array(
 		'family' => implode( '|', $fonts ) ,
 		'subset' => implode( ',', $unique_subsets ),
 	), "$protocol://fonts.googleapis.com/css" ) ), array(), null );
+
+	// Create a merge of the existing fonts and subsets in the option and the newly added ones
+	$updated_fonts   = array_merge( $fonts, $post_fonts_data[ 'family'] );
+	$updated_subsets = array_merge( $unique_subsets, $post_fonts_data[ 'subset'] );
+
+	// Update the option for the current page with the new data
+	$post_fonts_data = array(
+		'family' => array_unique( $updated_fonts ),
+		'subset' => array_unique( $updated_subsets ),
+	);
+
+	update_post_meta( $post_id, 'et_enqueued_post_fonts', et_sanitized_previously( $post_fonts_data ) );
 }
 add_action( 'wp_footer', 'et_builder_print_font' );
+
+/**
+ * Enqueue queued Google Fonts into WordPress' wp_enqueue_style as one request (cached version)
+ * @return void
+ */
+function et_builder_preprint_font() {
+	// Return if this is not a post or a page
+	if ( ! is_singular() ) {
+		return;
+	}
+
+	$post_id = get_the_ID();
+
+	$post_fonts_data = get_post_meta( $post_id, 'et_enqueued_post_fonts', true );
+
+	// No need to proceed if the proper data is missing from the cache
+	if ( ! is_array( $post_fonts_data ) || ! isset( $post_fonts_data['family'], $post_fonts_data['subset'] ) ) {
+		return;
+	}
+
+	$fonts = $post_fonts_data[ 'family'];
+
+	if ( ! $fonts ) {
+		return;
+	}
+
+	$unique_subsets = $post_fonts_data[ 'subset'];
+	$protocol       = is_ssl() ? 'https' : 'http';
+
+	wp_enqueue_style( 'et-builder-googlefonts-cached', esc_url( add_query_arg( array(
+		'family' => implode( '|', $fonts ) ,
+		'subset' => implode( ',', $unique_subsets ),
+	), "$protocol://fonts.googleapis.com/css" ) ) );
+}
+add_action( 'wp_enqueue_scripts', 'et_builder_preprint_font' );
 
 if ( ! function_exists( 'et_pb_get_page_custom_css' ) ) :
 function et_pb_get_page_custom_css() {
@@ -6872,6 +6975,17 @@ function et_is_yoast_seo_plugin_active() {
 endif;
 
 /**
+ * Is WP Job Manager plugin active?
+ *
+ * @return bool  True - if the plugin is active
+ */
+if ( ! function_exists( 'et_is_wp_job_manager_plugin_active' ) ) :
+	function et_is_wp_job_manager_plugin_active() {
+		return class_exists( 'WP_Job_Manager' );
+	}
+endif;
+
+/**
  * Modify comment count for preview screen. Somehow WordPress' get_comments_number() doesn't get correct $post_id
  * param and doesn't have proper fallback to global $post if $post_id variable isn't found. This causes incorrect
  * comment count in preview screen
@@ -6906,6 +7020,11 @@ function et_pb_admin_excluded_shortcodes() {
 	// WPL real estate prints unwanted on-page JS that caused an issue on BB
 	if ( class_exists( 'wpl_extensions' ) ) {
 		$shortcodes[] = 'WPL';
+	}
+
+	// [submit_job_form] shortcode prints wp_editor this creating problems post edit page render
+	if ( et_is_wp_job_manager_plugin_active() ) {
+		$shortcodes[] = 'submit_job_form';
 	}
 
 	return apply_filters( 'et_pb_admin_excluded_shortcodes', $shortcodes );

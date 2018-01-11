@@ -326,6 +326,9 @@
 			var $this = this;
 			var errorEvent = document.createEvent( 'Event' );
 
+			window.et_fb_import_progress = 0;
+			window.et_fb_import_estimation = 1;
+
 			errorEvent.initEvent( 'et_fb_layout_import_error', true, true );
 
 			if ( undefined === window.FormData ) {
@@ -364,24 +367,77 @@
 				formData.append( name, value);
 			} );
 
-			$.ajax( {
-				type: 'POST',
-				url: etCore.ajaxurl,
-				processData: false,
-				contentType: false,
-				data: formData,
-				success: function( response ) {
-					var event = document.createEvent( 'Event' );
+			var importFBAjax = function( importData ) {
+				$.ajax( {
+					type: 'POST',
+					url: etCore.ajaxurl,
+					processData: false,
+					contentType: false,
+					data: formData,
+					success: function( response ) {
+						var event = document.createEvent( 'Event' );
 
-					event.initEvent( 'et_fb_layout_import_finished', true, true );
+						event.initEvent( 'et_fb_layout_import_in_progress', true, true );
 
-					// save the data into global variable for later use in FB
-					window.et_fb_import_layout_response = response;
+						// Handle known error
+						if ( ! response.success && 'undefined' !== typeof response.data && 'undefined' !== typeof response.data.message && 'undefined' !== typeof $this.text[ response.data.message ] ) {
+							window.et_fb_import_layout_message = $this.text[ response.data.message ];
+							window.dispatchEvent( errorEvent );
+						}
+						// The error is unknown but most of the time it would be cased by the server max size being exceeded.
+						else if ( 'string' === typeof response && ('0' === response || '' === response) ) {
+							window.et_fb_import_layout_message = $this.text.maxSizeExceeded;
+							window.dispatchEvent( errorEvent );
 
-					// trigger event to communicate with FB
-					window.dispatchEvent( event );
-				}
-			} );
+							return;
+						}
+						// Memory size set on server is exhausted.
+						else if ( 'string' === typeof response && response.toLowerCase().indexOf( 'memory size' ) >= 0 ) {
+							window.et_fb_import_layout_message = $this.text.memoryExhausted;
+							window.dispatchEvent( errorEvent );
+
+							return;
+						}
+						// Pagination
+						else if ( 'undefined' !== typeof response.page && 'undefined' !== typeof response.total_pages ) {
+							// Update progress bar
+							var progress = Math.ceil( ( response.page * 100 ) / response.total_pages );
+							var estimation = Math.ceil( ( ( response.total_pages - response.page ) * 6 ) / 60 );
+
+							window.et_fb_import_progress = progress;
+							window.et_fb_import_estimation = estimation;
+
+							// Import data
+							var nextImportData = importData;
+							nextImportData.append( 'page', ( parseInt(response.page) + 1 ) );
+							nextImportData.append( 'timestamp', response.timestamp );
+							nextImportData.append( 'file', null );
+
+							importFBAjax( nextImportData );
+
+							// trigger event to communicate with FB
+							window.dispatchEvent( event );
+						} else {
+							// Update progress bar
+							window.et_fb_import_progress = 100;
+							window.et_fb_import_estimation = 0;
+
+							// trigger event to communicate with FB
+							window.dispatchEvent( event );
+
+							event.initEvent( 'et_fb_layout_import_finished', true, true );
+
+							// save the data into global variable for later use in FB
+							window.et_fb_import_layout_response = response;
+
+							// trigger event to communicate with FB (again)
+							window.dispatchEvent( event );
+						}
+					}
+				} );
+			}
+
+			importFBAjax(formData)
 		},
 
 		ajaxAction: function( data, callback, fileSupport ) {
@@ -405,7 +461,7 @@
 				url: etCore.ajaxurl,
 				data: data,
 				success: function( response ) {
-					// The error is unknown but most of the time it would be cased by the server max size being exceeded.
+					// The error is unknown but most of the time it would be caused by the server max size being exceeded.
 					if ( 'string' === typeof response && '0' === response ) {
 						etCore.modalContent( '<p>' + $this.text.maxSizeExceeded + '</p>', false, true, '#' + $this.instance( '.ui-tabs-panel:visible' ).attr( 'id' ) );
 

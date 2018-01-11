@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.0.89';
+window.et_builder_version = '3.0.90';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -2905,13 +2905,16 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			performSaving : function( option_tabs_selector ) {
-				var thisClass  = this,
-					attributes = {},
-					unsetAttrs = [],
-					defaults   = {},
-					options_selector = typeof option_tabs_selector !== 'undefined' && '' !== option_tabs_selector ? option_tabs_selector : 'input, select, textarea, #et_pb_content_main';
-
+				var thisClass  = this;
+				var attributes = {};
+				var unsetAttrs = [];
+				var defaults   = {};
+				var options_selector = typeof option_tabs_selector !== 'undefined' && '' !== option_tabs_selector ? option_tabs_selector : 'input, select, textarea, #et_pb_content_main';
+				var shortcode_name = thisClass.model.get( 'module_type' );
 				var $et_form_validation;
+
+				shortcode_name = shortcode_name.indexOf( 'et_pb_' ) === -1 ? ( 'et_pb_' + shortcode_name ) : shortcode_name;
+
 				$et_form_validation = $(this)[0].$el.find('form.validate');
 				if ( $et_form_validation.length ) {
 					validator = $et_form_validation.validate();
@@ -2936,6 +2939,9 @@ window.et_builder_product_name = 'Divi';
 							var $this_el = $( this );
 							var this_option_name = $this_el.data( 'option_name' );
 
+							// transform 'content_new' and 'raw_content' to 'et_pb_content_field'
+							this_option_name = _.includes( ['content_new', 'raw_content'], this_option_name ) ? 'et_pb_content_field' : this_option_name;
+
 							unsynced_options_array.push( this_option_name );
 
 							// unsync mobile options if exist
@@ -2947,7 +2953,7 @@ window.et_builder_product_name = 'Divi';
 					}
 
 					// Automatically sync/unsync gallery_ids and gallery_orderby on gallery module if src is synced/unsynced
-					if ( 'et_pb_gallery' === thisClass.model.get( 'module_type' ) ) {
+					if ( 'et_pb_gallery' === shortcode_name ) {
 						if ( _.contains( unsynced_options_array, 'src' ) ) {
 							unsynced_options_array = _.union( unsynced_options_array, [ 'gallery_ids', 'gallery_orderby' ] );
 						} else {
@@ -2964,6 +2970,17 @@ window.et_builder_product_name = 'Divi';
 				}
 
 				ET_PageBuilder.Events.trigger( 'et-modal-settings:save', this );
+
+				var migrations    = _.isUndefined( et_pb_options.et_pb_module_settings_migrations ) ? false : et_pb_options.et_pb_module_settings_migrations;
+				var name_changes  = _.isUndefined( migrations.name_changes ) ? false : migrations.name_changes;
+
+				// Delete migrated attributes to avoid unwanted value re-assignment
+				// Their values were migrated to new attributes at this point
+				if ( name_changes &&  ! _.isUndefined( name_changes[shortcode_name] ) ) {
+					_.forEach( name_changes[shortcode_name], function( new_name, old_name ) {						
+						unsetAttrs.push( 'et_pb_' + old_name );
+					});
+				}
 
 				this.$( options_selector ).each( function() {
 					var $this_el = $(this);
@@ -3010,6 +3027,7 @@ window.et_builder_product_name = 'Divi';
 
 					// save the attribute value
 					var setting_value = ET_PageBuilder.Helpers.getSettingValue($this_el);
+
 					if ( ! isEqualToDefault(setting_value, default_value) ) {
 						attributes[name] = setting_value;
 					} else {
@@ -5270,16 +5288,28 @@ window.et_builder_product_name = 'Divi';
 				this.$( 'input, select, textarea' ).each( function() {
 					var $this_el = $(this),
 						id = $this_el.attr('id'),
-						setting_value;
-						/*checked_values = [],
-						name = $this_el.is('#et_pb_content_main') ? 'et_pb_content_new' : $this_el.attr('id');*/
+						setting_value,
+						checked_values = [];
+
+					// name attribute is used in normal html checkboxes, use it instead of ID
+					if ( $this_el.is( ':checkbox' ) ) {
+						id = $this_el.attr('name');
+					}
 
 					if ( typeof id === 'undefined' || ( -1 !== id.indexOf( 'qt_' ) && 'button' === $this_el.attr( 'type' ) ) ) {
 						// settings should have an ID and shouldn't be a Quick Tag button from the tinyMCE in order to be saved
 						return true;
 					}
 
-					id = $this_el.attr('id').replace( 'data.', '' );
+					if ( ! $this_el.is( ':checkbox' ) ) {
+						id = $this_el.attr('id').replace( 'data.', '' );
+					}
+
+					// All checkbox values are saved at once on the next step, so if the attribute name
+					// already exists, do nothing
+					if ( $this_el.is( ':checkbox' ) && typeof attributes[id] !== 'undefined' ) {
+						return true;
+					}
 
 					setting_value = $this_el.is('#et_pb_content_new')
 						? et_pb_get_content( 'et_pb_content_new' )
@@ -5305,6 +5335,15 @@ window.et_builder_product_name = 'Divi';
 							this_view.model.unset( id );
 							return true;
 						}
+					}
+
+					// Process all checkboxex for the current setting at once
+					if ( $this_el.is( ':checkbox' ) && typeof attributes[id] === 'undefined' ) {
+						$this_el.closest( '.et-pb-option-container' ).find( '[name="' + id + '"]:checked' ).each( function() {
+							checked_values.push( $(this).val() );
+						} );
+
+						setting_value = checked_values.join( "," );
 					}
 
 					if ( $this_el.closest( '.et-pb-custom-css-option' ).length ) {
@@ -9015,7 +9054,7 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			_isAnySettingModified: function() {
-				let result = false;
+				var result = false;
 				_.map(this._tab_settings_map, function(tab) {
 					if (this._getByPath(tab, 'modified')) {
 						result = true;
@@ -9121,7 +9160,7 @@ window.et_builder_product_name = 'Divi';
 			},
 
 			_processWidth: function(value) {
-				let width = parseInt(value);
+				var width = parseInt(value);
 				if (width > 50) {
 					width = 50;
 				}
@@ -11741,7 +11780,7 @@ window.et_builder_product_name = 'Divi';
 
 					if ( ! _.isEmpty( files ) ) {
 						_.each( files, function( file_data ) {
-							var file_name = file_data['name'];
+							var file_name = !_.isUndefined( file_data['name'] ) ? file_data['name'].toLowerCase() : '';
 
 							// check selected file format.
 							_.each(supported_file_formats, function( file_ext ) {
@@ -12547,7 +12586,7 @@ window.et_builder_product_name = 'Divi';
 
 			_.each( font_data.font_files, function(single_font, index) {
 				// process only font files which were not removed from the list by user
-				var $selected_font_el = $( '.et-font-uploader-selected-fonts' ).find("[data-file_name='" + single_font.name + "']");
+				var $selected_font_el = $( '.et-font-uploader-selected-fonts' ).find("[data-file_name='" + single_font.name.toLowerCase() + "']");
 
 				if ( $selected_font_el.length > 0 ) {
 					var font_ext = $selected_font_el.data('file_format');
@@ -16762,9 +16801,11 @@ window.et_builder_product_name = 'Divi';
 		}
 
 		function et_builder_get_global_module( view_settings ) {
-			var modal_view,
-				shortcode_atts,
-				global_module_id = view_settings.model.get( 'et_pb_global_module' );
+			var modal_view;
+			var shortcode_atts;
+			var global_module_id = view_settings.model.get( 'et_pb_global_module' );
+			// autop shouldn't be applied if editor is in text mode
+			var et_global_autop = 'html' === et_get_editor_mode() ? 'skip' : 'apply';
 
 			$.ajax( {
 				type: "POST",
@@ -16774,7 +16815,8 @@ window.et_builder_product_name = 'Divi';
 				{
 					action : 'et_pb_get_global_module',
 					et_admin_load_nonce : et_pb_options.et_admin_load_nonce,
-					et_global_id : global_module_id
+					et_global_id : global_module_id,
+					et_global_autop: et_global_autop
 				},
 				beforeSend : function() {
 					ET_PageBuilder_Events.trigger( 'et-pb-loading:started' );
@@ -16885,6 +16927,9 @@ window.et_builder_product_name = 'Divi';
 			if ( ! $( 'body' ).find( '.et_pb_global_loading_overlay' ).length ) {
 				$( 'body' ).append( '<div class="et_pb_global_loading_overlay"></div>' );
 			}
+			// autop shouldn't be applied if editor is in text mode
+			var et_global_autop = 'html' === et_get_editor_mode() ? 'skip' : 'apply';
+			
 			$.ajax( {
 				type: "POST",
 				url: et_pb_options.ajaxurl,
@@ -16893,7 +16938,8 @@ window.et_builder_product_name = 'Divi';
 				{
 					action : 'et_pb_get_global_module',
 					et_admin_load_nonce : et_pb_options.et_admin_load_nonce,
-					et_global_id : post_id
+					et_global_id : post_id,
+					et_global_autop : et_global_autop
 				},
 				success: function( data ){
 					var global_content_is_different = false;
@@ -17107,7 +17153,7 @@ window.et_builder_product_name = 'Divi';
 			}
 
 			_.each( $options_array, function( $single_option ) {
-				var option_name = 'content_new' === $( $single_option ).data( 'option_name' ) ? 'et_pb_content_field' : $( $single_option ).data( 'option_name' );
+				var option_name = _.includes( ['content_new', 'raw_content'], $( $single_option ).data( 'option_name' ) ) ? 'et_pb_content_field' : $( $single_option ).data( 'option_name' );
 				var disabled_class = et_pb_is_option_unsynced( option_name, global_id ) ? ' et_pb_global_unsynced' : '';
 				var additional_options = $( $single_option ).find( '.et_pb_mobile_settings_tabs' ).length !== 0 ? 'mobile' : 'none';
 

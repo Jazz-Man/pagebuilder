@@ -782,8 +782,22 @@ class ET_Builder_Element {
 				$global_content_processed = false !== $global_shortcode_content ? str_replace( $global_shortcode_content, '', $global_content ) : $global_content;
 				$global_atts = shortcode_parse_atts( et_pb_remove_shortcode_content( $global_content_processed, $this->slug ) );
 
-				//migrate global module attributes
-				$global_atts = apply_filters( 'et_pb_module_shortcode_attributes', $global_atts, $global_atts, $this->slug, $this->_get_current_shortcode_address() );
+				// reset module addresses because global items will be processed once again and address will be incremented wrongly
+				if ( false !== strpos( $this->slug, '_section' ) ) {
+					self::$_current_section_index--;
+					self::$_current_row_index    = -1;
+					self::$_current_column_index = -1;
+					self::$_current_module_index = -1;
+					self::$_current_module_item_index = -1;
+				} else if ( false !== strpos( $this->slug, '_row' ) ) {
+					self::$_current_row_index--;
+					self::$_current_column_index = -1;
+					self::$_current_module_index = -1;
+					self::$_current_module_item_index = -1;
+				} else {
+					self::$_current_module_index--;
+					self::$_current_module_item_index = -1;
+				}
 
 				foreach( $this->shortcode_atts as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
@@ -5849,10 +5863,11 @@ class ET_Builder_Element {
 			$field_key = "{$option_name}_{$slugs[0]}";
 			$global_setting_name  = $this->get_global_setting_name( $field_key );
 			$global_setting_value = ET_Global_Settings::get_value( $global_setting_name );
+			$field_option_value = isset( $font_options[ $field_key ] ) ? $font_options[ $field_key ] : '';
 
-			if ( '' !== $font_options["{$option_name}_{$slugs[0]}"] || ! $global_setting_value ) {
+			if ( '' !== $field_option_value || ! $global_setting_value ) {
 				$important = in_array( 'font', $important_options ) || $use_global_important ? ' !important' : '';
-				$font_styles = et_builder_set_element_font( $font_options["{$option_name}_{$slugs[0]}"], ( '' !== $important ), $global_setting_value );
+				$font_styles = et_builder_set_element_font( $field_option_value, ( '' !== $important ), $global_setting_value );
 
 				if ( isset( $option_settings['css']['font'] ) ) {
 					self::set_style( $function_name, array(
@@ -5868,7 +5883,7 @@ class ET_Builder_Element {
 			$size_option_name = "{$option_name}_{$slugs[1]}";
 			$default_size     = isset( $this->fields_unprocessed[ $size_option_name ]['default'] ) ? $this->fields_unprocessed[ $size_option_name ]['default'] : '';
 
-			if ( ! in_array( trim( $font_options[ $size_option_name ] ), array( '', 'px', $default_size ) ) ) {
+			if ( isset( $font_options[ $size_option_name ] ) && ! in_array( trim( $font_options[ $size_option_name ] ), array( '', 'px', $default_size ) ) ) {
 				$important = in_array( 'size', $important_options ) || $use_global_important ? ' !important' : '';
 
 				$style .= sprintf(

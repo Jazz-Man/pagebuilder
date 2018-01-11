@@ -1,6 +1,78 @@
+version 3.0.90 ( updated 11-29-2017 )
+- Improved google fonts loading logic to prevent font flickering on page load.
+- Fixed wrong button icon with uppercase text enabled in Button module.
+- Fixed the issue when it was not possible to upload font files with uppercase extension.
+- Fixed AJAX pagination breaking custom styles under certain circumstances.
+- Fixed incorrect exit tooltip usage in Click Mode.
+- Fixed the issue when the global Code Module content was not unsynced properly in BB.
+- Fixed inline editor close icon.
+- Improved the Top and Secondary menu behavior on touch screens.
+- Fix position of radio buttons in theme customizer.
+- Improved the One Font Language fonts for customizer.
+- Added support of google fonts for hebrew and others.
+- Fixed the issue when warning was displayed on activation of Divi theme for the first time.
+- Fixed some issues in Fullwidth Menu on touch screens.
+- Fixed Person module description view for 1/4 columns.
+- Fixed Contact Form Module fields not showing custom borders.
+- Improved Font Options output code to avoid PHP Notices in 3rd party plugins.
+- Fixed console error when resizing inline editor.
+- Fixed missed 'Use Focus Border' options group in Backend Builder for Login and Email Option modules.
+- Fixed a console warning that could happen when quickly closing the settings modal.
+- Fixed last column bottom margin in tablet preview / 4 cols layout.
+- Improved Visual Builder slider functionality.
+- Fixed the issue when Settings Modal didn't reflect the module settings update on History state change ( undo/redo ).
+- Improved Categories Select option support in Child Modules.
+- Fixed compatibility of Divi and WP Job Manager plugin.
+- Fixed layout import in Visual Builder for large layouts.
+- Fixed incorrect Filterable Portfolio's filter positioning on mobile devices if alignment has been modified.
+- Fixed Blog / Gallery Modules not showing content in the VB under some circumstances.
+- Fixed borders appearance for the Blurb image when image align is set to left.
+- Fixed missing add button in modal while Grid Mode is active.
+- Fixed the issue when Open/Close Toggle text color was not applied to non-default header levels.
+- Prevent parallax background from covering the comments in comment module.
+- Image module fix, prevent the overlay to overflow image size.
+- Fixed the issue when line-breaks saved in Text mode of editor were not rendered in VB.
+- Fixed the issue when unwanted extra line-breaks added in tinyMCE editor in Visual Builder.
+- Fixed the issue when unwanted paragraphs were added to the content of Global Modules if editor is in Text mode.
+- Removed pricing table top margin if there is no featured table.
+- Fixed unwanted scroll to top when using the Visual Builder to edit posts with a featured image.
+- Fixed the issue when migration was misapplied in Backend Builder on pages with global modules.
+- Fixed incorrect responsive tab behaviour on input range & input margin.
+- Fixed incorrect content rendering in BB when blog and shop modules are used on the same layout.
+- Fixed giggling gradient end's colorpicker button when being clicked.
+- Fixed the issues with Fullwidth Header Text & Logo Orientation + Image Vertical Alignment options in IE11.
+- Moved browser class detection mechanism to js side to avoid issues on cached pages.
+- Fixed the Builder Cache Warning issue in Safari 9.1
+- Fixed a visual issue in the Visual Builder when applying rounded borders to a Video Module.
+	* core/admin/js/portability.js
+	* core/functions.php
+	* core/js/common.js
+	* css/main-styles.css
+	* css/theme-customizer-controls-styles.css
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-global-functions.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/style.css
+	* includes/builder/styles/frontend-builder-style.css
+	* js/custom.js
+
 version 3.0.89 ( updated 11-15-2017 )
 - Addressed additional WordPress 4.9 compatibility issues in preparation for the new WordPress release scheduled for today.
-- Fixed a bug that caused broken sidebar layouts on custom post types in some situations. 
+- Fixed a bug that caused broken sidebar layouts on custom post types in some situations.
 - Fixed a bug in border options migration that mistakenly migrated border options that were turned off in some cases.
 - Fixed a bug that caused unwanted borders to appear in some cases when saving the page in the classic Divi Builder.
 	* functions.php
