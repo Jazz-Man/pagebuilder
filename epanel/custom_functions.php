@@ -252,7 +252,9 @@ if ( ! function_exists( 'et_update_option' ) ) {
 		} else if ( et_options_stored_in_one_row() ) {
 			$et_theme_options_name = 'et_' . $shortname;
 
-			if ( ! isset( $et_theme_options ) ) $et_theme_options = get_option( $et_theme_options_name );
+			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
+				$et_theme_options = get_option( $et_theme_options_name );
+			}
 			$et_theme_options[$option_name] = $new_value;
 
 			$option_name = $et_theme_options_name;

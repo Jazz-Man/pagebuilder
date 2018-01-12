@@ -566,7 +566,9 @@ class ET_Builder_Element {
 			$this->ab_tests_processed[ $test_id ] = true;
 		}
 
-		if ( false === $saved_module_id ) {
+		// Only log a stat if this is opened on actual frontend
+		if ( false === $saved_module_id && ! is_admin() && ! et_fb_enabled() ) {
+
 			// log the view_page event right away
 			et_pb_add_stats_record( array(
 					'test_id'     => $test_id,
@@ -6012,6 +6014,9 @@ class ET_Builder_Element {
 		$fields['disabled'] = 'off';
 		$fields['disabled_on'] = '';
 		$fields['global_module'] = '';
+		$fields['temp_global_module'] = '';
+		$fields['global_parent'] = '';
+		$fields['temp_global_parent'] = '';
 		$fields['saved_tabs'] = '';
 		$fields['ab_subject'] = '';
 		$fields['ab_subject_id'] = '';
@@ -8863,8 +8868,11 @@ class ET_Builder_Element {
 			return;
 		}
 
-		// Sanitize `$selectors` and convert to array
-		$selectors_prepared = is_array($selectors) ? $selectors : explode( ',', esc_attr( $selectors ) );
+		// If `$selectors` is a string, convert to an array before we continue
+		$selectors_prepared = $selectors;
+		if ( ! is_array( $selectors ) ) {
+			$selectors_prepared = explode( ',', et_intentionally_unescaped( $selectors, 'fixed_string' ) );
+		}
 
 		// If we don't have a target selector, get out now
 		if ( ! $selectors_prepared ) {

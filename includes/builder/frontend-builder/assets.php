@@ -120,6 +120,10 @@ function et_fb_enqueue_assets() {
 
 	wp_register_script( 'wp-shortcode', includes_url() . 'js/shortcode.js', array(), $wp_version );
 
+	wp_register_script( 'jquery-tablesorter', ET_BUILDER_URI . '/scripts/ext/jquery.tablesorter.min.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
+
+	wp_register_script( 'chart', ET_BUILDER_URI . '/scripts/ext/chart.min.js', array(), ET_BUILDER_VERSION, true );
+
 	$dependencies_list = array(
 		'jquery',
 		'jquery-ui-core',
@@ -136,9 +140,11 @@ function et_fb_enqueue_assets() {
 		'wp-shortcode',
 		'heartbeat',
 		'wp-mediaelement',
+		'jquery-tablesorter',
+		'chart',
 	);
 
-	//add dependency on et-shortcode-js only if Divi Theme is used or ET Shortcodes plugin activated
+	// Add dependency on et-shortcode-js only if Divi Theme is used or ET Shortcodes plugin activated
 	if ( ! et_is_builder_plugin_active() || et_is_shortcodes_plugin_active() ) {
 		$dependencies_list[] = 'et-shortcodes-js';
 	}

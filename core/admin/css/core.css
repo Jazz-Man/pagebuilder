@@ -437,6 +437,11 @@ body.rtl button.et-core-button {
 	right: 0;
 }
 
+.rtl .et-core-modal-two-buttons .et-core-modal-action:last-child {
+	right: auto;
+	left: 0;
+}
+
 .et-core-modal-temp-content h3,
 .et-core-modal-content h3 {
 	color: #32373c;
