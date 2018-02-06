@@ -1048,6 +1048,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			while ( have_posts() ) {
 				the_post();
 
+				global $post;
+
 				$post_format = et_pb_post_format();
 
 				$thumb = '';
@@ -1074,7 +1076,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			<?php
 				et_divi_post_format_content();
 
-				if ( ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) ) {
+				if ( ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) || post_password_required( $post ) ) {
 					if ( 'video' === $post_format && false !== ( $first_video = et_get_first_video() ) ) :
 						$video_overlay = has_post_thumbnail() ? sprintf(
 							'<div class="et_pb_video_overlay" style="background-image: url(%1$s); background-size: cover;">
@@ -1111,8 +1113,8 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 					endif;
 				} ?>
 
-			<?php if ( 'off' === $fullwidth || ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) ) { ?>
-				<?php if ( ! in_array( $post_format, array( 'link', 'audio' ) ) ) { ?>
+			<?php if ( 'off' === $fullwidth || ! in_array( $post_format, array( 'link', 'audio', 'quote' ) ) || post_password_required( $post ) ) { ?>
+				<?php if ( ! in_array( $post_format, array( 'link', 'audio' ) ) || post_password_required( $post ) ) { ?>
 					<<?php echo $processed_header_level; ?> class="entry-title"><a href="<?php esc_url( the_permalink() ); ?>"><?php the_title(); ?></a></<?php echo $processed_header_level; ?>>
 				<?php } ?>
 

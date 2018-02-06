@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.95' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.98' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -5781,6 +5781,12 @@ function et_divi_post_format_content() {
 	$text_color_class = et_divi_get_post_text_color();
 
 	$inline_style = et_divi_get_post_bg_inline_style();
+
+	global $post;
+
+	if ( post_password_required( $post ) ) {
+		return;
+	}
 
 	switch ( $post_format ) {
 		case 'audio' :

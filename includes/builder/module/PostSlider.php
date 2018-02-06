@@ -868,7 +868,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		if ( '' !== $text_border_radius ) {
 			$border_radius_value = et_builder_process_range_value( $text_border_radius );
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%.et_pb_slider_with_text_overlay h2.et_pb_slide_title',
+				'selector'    => '%%order_class%%.et_pb_slider_with_text_overlay h2.et_pb_slide_title, %%order_class%%.et_pb_slider_with_text_overlay .et_pb_slide_title',
 				'declaration' => sprintf(
 					'-webkit-border-top-left-radius: %1$s;
 					-webkit-border-top-right-radius: %1$s;
