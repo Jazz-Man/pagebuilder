@@ -1,8 +1,23 @@
+version 3.0.101 ( updated 02-8-2018 )
+- Added new Shape Divider options to sections.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/field/attribute/composite/Parser.php
+	* includes/builder/module/field/template/Tabbed.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-global-functions.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/style.css
+
 version 3.0.100 ( updated 02-1-2018 )
 - Fixed Core :: Data_Utils :: Possible usort() warning that occurred in some situations when loading the Visual Builder.
 - Updated saved layout wording in the Backend Builder to match the Visual Builder.
 - Fixed some inconsistent styling with the modal close icon in the Visual Builder.
-- FIxed a bug that caused layout pack thumbnails to be unclickable in Edge in some situations based on mouse movement during page load.
+- Fixed a bug that caused layout pack thumbnails to be unclickable in Edge in some situations based on mouse movement during page load.
 - Fixed an error that occurred when loading layouts using Safari.
 - Fixed "Error Unexpected char" error that prevented the Load Layout modal from working for some customers.
 - Fixed an error that occurred when loading layouts in the Visual Builder on websites that force SSL over admin but use http on the website front end.

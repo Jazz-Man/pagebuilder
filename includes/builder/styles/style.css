@@ -2001,7 +2001,7 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 /* Tabbed control */
 .et-pb-option-container--composite .et-pb-composite-tabbed-wrapper {
 	float: left;
-	width: 634px;
+	width: 651px;
 }
 
 .rtl .et-pb-option-container--composite .et-pb-composite-tabbed-wrapper {
@@ -2066,11 +2066,16 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 .et-pb-option-container--composite .et-pb-settings-tab.active .et-pb-settings-tab-title {
 	background: #FFFFFF;
 	border-color: #F1F5F9;
+	color: #2B87DA;
  }
 
 .et-pb-option-container--composite .et-pb-settings-tab.active .et-pb-icon,
 .et-pb-option-container--composite .et-pb-settings-tab.modified .et-pb-icon {
 	fill: #2B87DA;
+}
+
+.et-pb-option-container--composite .et-pb-settings-tab.modified a {
+	color: #2B87DA;
 }
 
 .et-pb-option-container--composite .et-pb-settings-tab-content {
@@ -2144,6 +2149,7 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 .et-pb-option-container .button.et_pb_update_google_key.et_pb_no_field_visible { margin-left: 0 !important; }
 
 span.et-pb-reset-setting, span.et-pb-reset-settings { width: 13px; height: 16px; margin-left: 10px; top: 0; display: inline-block; position: relative; cursor: pointer; }
+span.et-pb-reset-setting.et-pb-composite-tabbed-reset-setting { margin-top: 10px; }
 span.et-pb-reset-setting { opacity: 0; position: relative; z-index: -1; }
 span.et-pb-reset-settings { margin-left: 12px; top: 0px; }
 span.et-pb-mobile-settings-toggle:after { font-family: 'etbuilder'; content: '\6f'; font-size: 16px; line-height: 1em; opacity: 0.9; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; -moz-transition: opacity 0.6s; -webkit-transition: opacity 0.6s; transition: opacity 0.6s; }

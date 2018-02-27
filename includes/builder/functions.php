@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.100' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.0.101' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -8202,9 +8202,9 @@ endif;
 if ( ! function_exists( 'et_sanitize_input_unit' ) ) :
 function et_sanitize_input_unit( $value = '', $auto_important = false, $default_unit = false ) {
 	$value                   = (string) $value;
-	$valid_one_char_units    = array( '%' );
+	$valid_one_char_units    = array( '%', 'x' );
 	$valid_two_chars_units   = array( 'em', 'px', 'cm', 'mm', 'in', 'pt', 'pc', 'ex', 'vh', 'vw', 'ms' );
-	$valid_three_chars_units = array( 'deg' );
+	$valid_three_chars_units = array( 'deg', 'rem' );
 	$important               = '!important';
 	$important_length        = strlen( $important );
 	$has_important           = false;

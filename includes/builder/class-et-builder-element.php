@@ -9,6 +9,11 @@ add_action( 'init', array( 'ET_Builder_Element', 'set_media_queries' ), 11 );
 
 require_once 'module/field/Factory.php';
 
+/**
+ * Main class used for modules.
+ *
+ * @since [version]
+ */
 class ET_Builder_Element {
 	public $name;
 	public $slug;
@@ -633,18 +638,18 @@ class ET_Builder_Element {
 		// Yuck! :-/
 		if ( false !== strpos( $this->slug, '_section' ) ) {
 			self::$_current_section_index++;
-			self::$_current_row_index    = -1;
-			self::$_current_column_index = -1;
-			self::$_current_module_index = -1;
+			self::$_current_row_index         = -1;
+			self::$_current_column_index      = -1;
+			self::$_current_module_index      = -1;
 			self::$_current_module_item_index = -1;
 		} else if ( false !== strpos( $this->slug, '_row' ) ) {
 			self::$_current_row_index++;
-			self::$_current_column_index = -1;
-			self::$_current_module_index = -1;
+			self::$_current_column_index      = -1;
+			self::$_current_module_index      = -1;
 			self::$_current_module_item_index = -1;
 		} else if ( false !== strpos( $this->slug, '_column' ) ) {
 			self::$_current_column_index++;
-			self::$_current_module_index = -1;
+			self::$_current_module_index      = -1;
 			self::$_current_module_item_index = -1;
 		} else if ( 'child' === $this->type ) {
 			self::$_current_module_item_index++;
@@ -702,6 +707,16 @@ class ET_Builder_Element {
 		return $resolved;
 	}
 
+	/**
+	 * Callback function used for WordPress when registering the shortcode.
+	 * @param  array $atts               List of attributes
+	 * @param  string $content            Content being processed.
+	 * @param  string $function_name      Shortcode name.
+	 * @param  string $parent_address     [description]
+	 * @param  string $global_parent      [description]
+	 * @param  string $global_parent_type [description]
+	 * @return string                     The output of the shortcode.
+	 */
 	function _shortcode_callback( $atts, $content = null, $function_name, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
 		global $et_fb_processing_shortcode_object;
 
@@ -1376,6 +1391,9 @@ class ET_Builder_Element {
 
 			// Add filter fields to modules if requested
 			$this->_add_additional_filter_fields();
+
+			// Add divider fields to section modules.
+			$this->_add_additional_divider_fields();
 		}
 
 		// Add animation fields to all modules
@@ -3478,6 +3496,40 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Add the divider options to the additional_fields_options array.
+	 */
+	protected function _add_additional_divider_fields() {
+		// Make sure we only add this to sections.
+		if ( 'et_pb_section' !== $this->slug ) {
+			return;
+		}
+
+		$tab_slug       = 'advanced';
+		$toggle_slug    = 'dividers';
+		$divider_toggle = array(
+			$toggle_slug => array(
+				'title'    => esc_html__( 'Dividers', 'et_builder' ),
+				'priority' => 65,
+			),
+		);
+
+		// Add the toggle sections.
+		$this->_add_option_toggles( $tab_slug, $divider_toggle );
+
+		if ( ! isset( $this->advanced_options['dividers'] ) ) {
+			$this->advanced_options['dividers'] = array();
+		}
+
+		$additional_options = ET_Builder_Module_Fields_Factory::get( 'Divider' )->get_fields( array(
+			'tab_slug'    => $tab_slug,
+			'toggle_slug' => $toggle_slug,
+		) );
+
+		// Return our merged options and toggles.
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
+	/**
 	 * Add additional Text Shadow fields to all modules
 	 *
 	 * @return array
@@ -4650,6 +4702,38 @@ class ET_Builder_Element {
 		}
 	}
 
+	/**
+	 * Returns an underscore template for the options settings.
+	 * @param  array $field Associative array.
+	 * array(
+			'id'                  => (int),
+			'label'               => (string),
+			'description'         => (string),
+			'class'               => (string),
+			'type'                => (string),
+			'validate_input'      => (bool),
+			'name'                => (string),
+			'default'             => (string),
+			'defaults'            => (array),
+			'options'             => (array),
+			'option_category'     => (string),
+			'attributes'          => (string),
+			'affects'             => (string),
+			'before'              => (string),
+			'after'               => (string),
+			'display_if'          => (string),
+			'depends_to'          => (string),
+			'depends_show_if'     => (string),
+			'depends_show_if_not' => (string),
+			'show_if'             => (string),
+			'show_if_not'         => (string),
+			'tab_slug'            => (string),
+			'toggle_slug'         => (string),
+			'composite_type'      => (string),
+			'composite_structure' => (array),
+			)
+	 * @return string        HTML underscore template.
+	 */
 	function render_field( $field ) {
 		$utils = ET_Core_Data_Utils::instance();
 		$classes = array();
@@ -4935,6 +5019,7 @@ class ET_Builder_Element {
 				break;
 			case 'text_align':
 			case 'select':
+			case 'divider':
 			case 'yes_no_button':
 			case 'multiple_buttons':
 			case 'font':
@@ -4967,6 +5052,15 @@ class ET_Builder_Element {
 				if ( 'font' === $field['type'] ) {
 					$group_label = isset( $field['group_label'] ) ? $field['group_label'] : '';
 					$select = $this->render_font_select( $field_name, $field['id'], $group_label );
+				} else if ( 'multiple_buttons' === $field['type'] ) {
+					if ( $field['toggleable'] ) {
+						$attributes .= ' data-toggleable="yes"';
+					}
+					if ( $field['multi_selection'] ) {
+						$attributes .= ' data-multi="yes"';
+					}
+					
+					$select = $this->render_multiple_buttons( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $value, $default_value );					
 				} else {
 					$select = $this->render_select( $field_name, $field['options'], $field['id'], $field['class'], $attributes, $field['type'], $button_options, $select_default, $only_options );
 				}
@@ -5575,15 +5669,6 @@ class ET_Builder_Element {
 		$options_output = '';
 		$processed_options = $options;
 
-		// options format is different for multiple_buttons. Prepare it for further processing
-		if ( 'multiple_buttons' === $field_type ) {
-			$processed_options = array();
-
-			foreach ( $options as $option_name => $option_data ) {
-				$processed_options[ $option_name ] = $option_data['title'];
-			}
-		}
-
 		if ( 'select_with_option_groups' === $field_type ) {
 			foreach ( $processed_options as $option_group_name => $option_group ) {
 				$option_group_name = esc_attr( $option_group_name );
@@ -5617,8 +5702,7 @@ class ET_Builder_Element {
 
 		$output = sprintf(
 			'%6$s
-			%8$s
-				<select name="%1$s"%2$s%3$s%4$s class="%3$s %9$s"%10$s>%5$s</select>
+				<select name="%1$s"%2$s%3$s%4$s class="%3$s %8$s"%9$s>%5$s</select>
 			%7$s',
 			esc_attr( $name ),
 			( ! empty( $id ) ? sprintf(' id="%s"', esc_attr( $id ) ) : '' ),
@@ -5637,18 +5721,37 @@ class ET_Builder_Element {
 					),
 					( ! empty( $button_options['button_type'] ) && 'equal' === $button_options['button_type'] ? ' et_pb_button_equal_sides' : '' )
 				) : '',
-			'yes_no_button' === $field_type || 'multiple_buttons' === $field_type ? '</div>' : '',
-			'multiple_buttons' === $field_type ?
-				sprintf(
-					'<div class="et_pb_multiple_buttons_wrapper">
-					<%%= window.et_builder.options_template_output("multiple_buttons",%1$s) %%>',
-					json_encode( $options )
-				) : '',
+			'yes_no_button' === $field_type ? '</div>' : '',
 			esc_attr( $field_type ),
 			'' !== $name ? sprintf( ' data-saved_value="<%%= typeof( %1$s ) !== \'undefined\' ? %1$s : \'\' %%>"', esc_attr(  $name ) ) : ''
 		);
 
 		return $only_options ? $options_output : $output;
+	}
+
+	function render_multiple_buttons( $name, $options, $id = '', $class = '', $attributes = '', $value = '', $default = '' ) {
+		$class = rtrim( 'et-pb-main-setting ' . $class );
+
+		$output = sprintf(
+			'<div class="et_pb_multiple_buttons_wrapper">
+				<input id="%1$s" name="%7$s" type="hidden" class="%2$s" %3$s%5$s %4$s/>
+				%6$s
+			</div>',
+			esc_attr( $id ),
+			esc_attr( $class ),
+			$value,
+			$attributes,
+			( '' !== $default
+				? sprintf( ' data-default=%1$s', esc_attr( $default ) )
+				: ''
+			),
+			sprintf( '<%%= window.et_builder.options_template_output("multiple_buttons",%1$s) %%>',
+				json_encode( $options )
+			),
+			esc_attr( $name )
+		);
+
+		return $output;
 	}
 
 	function get_main_tabs() {
@@ -6235,6 +6338,11 @@ class ET_Builder_Element {
 		return implode( $separator, $stringAsArray );
 	}
 
+	/**
+	 * process the fields.
+	 * @param  string $function_name String of the function_name
+	 * @return void
+	 */
 	function process_additional_options( $function_name ) {
 		if ( ! isset( $this->advanced_options ) ) {
 			return false;
@@ -7724,8 +7832,8 @@ class ET_Builder_Element {
 
 	static function get_modules_count( $post_type ) {
 		$parent_modules = self::get_parent_modules( $post_type );
-		$child_modules = self::get_child_modules( $post_type );
-		$overall_count = count( $parent_modules ) + count( $child_modules );
+		$child_modules  = self::get_child_modules( $post_type );
+		$overall_count  = count( $parent_modules ) + count( $child_modules );
 
 		return $overall_count;
 	}
@@ -8605,6 +8713,43 @@ class ET_Builder_Element {
 		self::$internal_modules_counter = rand( 10000, 99999 );
 	}
 
+	/**
+	 * Set the field dependencies based on the `show_if` or `show_if_not` key from the
+	 * field.
+	 * @param string $slug       The module's slug. ie `et_pb_section`
+	 * @param string $field_id   The field id. id `background_color`
+	 * @param array $field_info  Associative array of the field's data.
+	 */
+	protected static function set_field_dependencies( $slug, $field_id, $field_info ) {
+		// bail if the field_info is not an array.
+		if ( ! is_array( $field_info ) ) {
+			return;
+		}
+
+		// otherwise we keep going.
+		foreach ( array( 'show_if', 'show_if_not' ) as $dependency_type ) {
+			if ( ! isset( $field_info[ $dependency_type ] ) ) {
+				continue;
+			}
+
+			if ( ! self::$data_utils->is_assoc_array( $field_info[ $dependency_type ] ) ) {
+				continue;
+			}
+
+			foreach ( $field_info[ $dependency_type ] as $dependency => $value ) {
+				// dependency -> dependent (eg. et_pb_signup.provider.affects.first_name_field.show_if: mailchimp)
+				$address = array( $slug, $dependency, 'affects', $field_id, $dependency_type );
+
+				self::$data_utils->array_set( self::$field_dependencies, $address, $value );
+
+				// dependent -> dependency (eg. et_pb_signup.first_name_field.show_if.provider: mailchimp)
+				$address = array( $slug, $field_id, $dependency_type, $dependency );
+
+				self::$data_utils->array_set( self::$field_dependencies, $address, $value );
+			}
+		}
+	}
+
 	public static function get_field_dependencies( $post_type ) {
 		if ( self::$field_dependencies ) {
 			return self::$field_dependencies;
@@ -8615,30 +8760,17 @@ class ET_Builder_Element {
 		$all_modules    = array_merge( $parent_modules, $child_modules );
 
 		foreach ( $all_modules as $module_slug => $module ) {
+			// Get all the fields.
 			$all_fields = $module->sort_fields( $module->_get_fields() );
-
 			foreach ( $all_fields as $field_id => $field_info ) {
-				foreach ( array( 'show_if', 'show_if_not' ) as $dependency_type ) {
-					if ( ! isset( $field_info[ $dependency_type ] ) ) {
-						continue;
-					}
-
-					if ( ! self::$data_utils->is_assoc_array( $field_info[ $dependency_type ] ) ) {
-						continue;
-					}
-
-					foreach ( $field_info[ $dependency_type ] as $dependency => $value ) {
-						// dependency -> dependent (eg. et_pb_signup.provider.affects.first_name_field.show_if: mailchimp)
-						$address = array( $module_slug, $dependency, 'affects', $field_id, $dependency_type );
-
-						self::$data_utils->array_set( self::$field_dependencies, $address, $value );
-
-						// dependent -> dependency (eg. et_pb_signup.first_name_field.show_if.provider: mailchimp)
-						$address = array( $module_slug, $field_id, $dependency_type, $dependency );
-
-						self::$data_utils->array_set( self::$field_dependencies, $address, $value );
+				if ( isset( $field_info['type'] ) && 'composite' === $field_info['type'] ) {
+					foreach ( $field_info['composite_structure'] as $field ) {
+						foreach ( $field['controls'] as $control => $data ) {
+							self::set_field_dependencies( $module_slug, $control, $data );
+						}
 					}
 				}
+				self::set_field_dependencies( $module_slug, $field_id, $field_info );
 			}
 		}
 
@@ -8757,7 +8889,6 @@ class ET_Builder_Element {
 		$shortcode_order_num = $get_inner_module_class ? self::$inner_modules_order[ $function_name ] : self::$modules_order[ $function_name ];
 
 		$order_class_name = sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
-
 
 		return $order_class_name;
 	}

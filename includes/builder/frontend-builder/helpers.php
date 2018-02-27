@@ -172,6 +172,7 @@ function et_fb_backend_helpers() {
 		),
 		'et_account'                   => $et_account,
 		'productTourStatus'            => et_builder_is_product_tour_enabled() ? 'on' : 'off',
+		'dividers'                     => ET_Builder_Module_Fields_Factory::get( 'Divider' )->dividers,
 		'moduleParentShortcodes'       => ET_Builder_Element::get_parent_shortcodes( $post_type ),
 		'moduleChildShortcodes'        => ET_Builder_Element::get_child_shortcodes( $post_type ),
 		'moduleChildSlugs'             => ET_Builder_Element::get_child_slugs( $post_type ),

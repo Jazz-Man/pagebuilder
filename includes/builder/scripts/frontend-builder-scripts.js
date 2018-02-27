@@ -1212,33 +1212,7 @@
 			window.et_pb_init_nav_menu( $et_top_menu );
 
 			$et_sticky_image.each( function() {
-				var $this_el            = $(this),
-					$row                = $this_el.closest('.et_pb_row'),
-					$section            = $row.closest('.et_pb_section'),
-					$column             = $this_el.closest( '.et_pb_column' ),
-					sticky_class        = 'et_pb_section_sticky',
-					sticky_mobile_class = 'et_pb_section_sticky_mobile';
-
-				// If it is not in the last row, continue
-				if ( ! $row.is( ':last-child' ) ) {
-					return true;
-				}
-
-				// Make sure sticky image is the last element in the column
-				if ( ! $this_el.is( ':last-child' ) ) {
-					return true;
-				}
-
-				// If it is in the last row, find the parent section and attach new class to it
-				if ( ! $section.hasClass( sticky_class ) ) {
-					$section.addClass( sticky_class );
-				}
-
-				$column.addClass( 'et_pb_row_sticky' );
-
-				if ( ! $section.hasClass( sticky_mobile_class ) && $column.is( ':last-child' ) ) {
-					$section.addClass( sticky_mobile_class );
-				}
+				window.et_pb_apply_sticky_image_effect($(this));
 			} );
 
 			if ( et_is_mobile_device ) {

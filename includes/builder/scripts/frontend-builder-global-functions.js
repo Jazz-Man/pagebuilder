@@ -346,4 +346,38 @@
 			}, closeDelay );
 		}
 	}
+
+	window.et_pb_apply_sticky_image_effect = function($sticky_image_el) {
+		var $row                = $sticky_image_el.closest('.et_pb_row');
+		var $section            = $row.closest('.et_pb_section');
+		var $column             = $sticky_image_el.closest('.et_pb_column');
+		var sticky_class        = 'et_pb_section_sticky';
+		var sticky_mobile_class = 'et_pb_section_sticky_mobile';
+		var $lastRowInSection   = $section.children('.et_pb_row').last();
+		var $lastColumnInRow    = $row.children('.et_pb_column').last();
+		var $lastModuleInColumn = $column.children('.et_pb_module').last();
+
+		// If it is not in the last row, continue
+		if (! $row.is($lastRowInSection)) {
+			return true;
+		}
+
+		$lastRowInSection.addClass('et-last-child');
+
+		// Make sure sticky image is the last element in the column
+		if (! $sticky_image_el.is($lastModuleInColumn)) {
+			return true;
+		}
+
+		// If it is in the last row, find the parent section and attach new class to it
+		if (! $section.hasClass(sticky_class)) {
+			$section.addClass(sticky_class);
+		}
+
+		$column.addClass('et_pb_row_sticky');
+
+		if (! $section.hasClass(sticky_mobile_class) && $column.is($lastColumnInRow)) {
+			$section.addClass(sticky_mobile_class);
+		}
+	}
 })(jQuery);
