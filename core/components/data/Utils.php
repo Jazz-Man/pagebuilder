@@ -211,7 +211,7 @@ class ET_Core_Data_Utils {
 
 		while ( $key = array_shift( $keys ) ) {
 			if ( '[' === $key[0] && is_numeric( substr( $key, 1, -1 ) ) ) {
-				$key = (int) $key;
+				$key = (int) substr( $key, 1, -1 );
 			}
 
 			if ( ! isset( $value[ $key ] ) ) {

@@ -1,3 +1,159 @@
+version 3.1.1 ( updated 04-19-2018 )
+- Fixed a logic error in the backwards compatibility system for third party module settings defaults that caused many third party module defaults to return empty values which resulted in broken modules on the front end. 
+- Fixed PHP 5.2 compatibility issues.
+- Fixed  Undefined index: skip_background_ui notice that occurred in some situations.
+- Fixed some design inconsistencies between the Visual Builder and the front end related to using box shadows on certain modules.
+	* includes/builder/class-et-builder-element.php
+
+version 3.1 ( updated 04-19-2018 )
+- Added the Divi Developer API, allowing for the creation of custom Visual Builder modules.
+- Added automatic limited support for current third party modules in the Visual Builder.
+- Reworked and greatly optimized the Divi default settings system.
+- Added new inline documentation to various parts of Divi's code.
+- Added new theme hooks and filters.
+- Fixed the broken appearance of some hover icons.
+- Fixed broken custom button icon caused by missing variable on slide item.
+- Fixed missing inner box shadow on modules with video background.
+- Fixed logic error of toggle assignment for background options in case of module customization by 3RD Party developers.
+- Fixed inconsistencies in the default settings appearance of section divider options.
+- Fixed a JavaScript error in Visual Builder when using IE11.
+- Added support for live updating cart items while on WooCommerce cart page
+- Fixed several issues and bugs with the Map Module.
+- Fixed a problem where editing CSS sometimes caused animations to restart too frequently.
+- Undo keyboard shortcut is now working for range controls more consistently.
+- Fixed incorrect rendering of Filter & Blend Mode settings in some browsers.
+- Fixed a bug where portfolio carousel height was incorrectly computed when adding borders.
+- Fixed WooCommerce product images not displaying for a specific versions of Safari.
+- Fixed inline editor behavior when editing pricing table content.
+- Removed space between pricing table and container shadow.
+- Fixed reset icon positioning on the backend builder for consistency
+- Fixed "add new element button" still being rendered when parent section or row is locked in wireframe view.
+- Fixed incorrect default divider colors in global sections.
+- Fixed section divider rendering and incorrect white space occurring in some situations.
+- Fixed issue where default widget area was empty when adding new sidebar module.
+- Fixed contact form module conditional logic being applied too late, which resulted in erratic appearances.
+- Fixed [shop_messages] WooCommerce shortcode error.
+- Fixed wireframe section titles in Internet Explorer.
+- Update automatic adjacent section divider color logic so fallback color only appears if prev/next section is identical to current section and current section has no gradient, image, or video background.
+- Fixed "Additional CSS" not being exported when exporting Customizer settings.
+- Fixed "Gutter Width" field showing an incorrect default value in builder.
+- Fixed broken responsive default value inheritance in range control in Visual Builder.
+- Fixed "Save & Exit" button publishing draft posts.
+- Fixed column css field description showing incorrect class name.
+- Fixed Portfolio module pagination issue for 3rd page and the subsequent pages on the front page.
+- Prevented inline text editor from converting URLs to relative URLs when they matched the site domain.
+- Fixed an edge-case error with Fullwidth Portfolio modules when interacting with category options.
+- Fixed missing pin marker in Visual Builder map preview when title and description were defined.
+- Fixed animation fade effect issue on number counter preview in the Visual Builder.
+- Fixed error in console when saving module setting if app modal is opened before click module settings button.
+- Fixed a bug that caused the tooltip modal to remain open when certain buttons were clicked.
+- Fixed spacing changes on hover for the testimonial module in the Visual Builder.
+- Fixed a bug where input control values weren't being correctly updated in some circumstances.
+- Fixed a bug that caused the title text decoration color in blog module to not take effect.
+- Fixed a bug that prevented scrolling in TinyMCE when using Safari.
+- Fixed broken page settings toggles that occurred when disabling the "display all options in closed toggles" setting.
+- Fixed text field color option not getting applied in the frontend builder for the email optin module.
+- Fixed range fields showing the reset button in cases when it was not needed.
+- Fixed a PHP notice that appeared when using custom button icons in the fullwidth slider module.
+- Fixed some blog module blend mode inconsistencies that existed when comparing the Visual Builder to the front end.
+- Fixed some pricing table inconsistencies that existed when comparing the Visual Builder to the front end.
+	* core/components/Logger.php
+	* core/components/Portability.php
+	* core/components/data/Utils.php
+	* core/components/data/init.php
+	* core/components/init.php
+	* footer.php
+	* functions.php
+	* header.php
+	* includes/builder/api/DiviExtension.php
+	* includes/builder/api/DiviExtensions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/class-et-global-settings.php
+	* includes/builder/core.php
+	* includes/builder/deprecations.php
+	* includes/builder/feature/Library.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/assets/scripts/react-dom.production.min.js
+	* includes/builder/frontend-builder/assets/scripts/react.production.min.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/webpack.config.js
+	* includes/builder/frontend-builder/webpack.production.config.js
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCounters.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/Divider.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthCode.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthMap.php
+	* includes/builder/module/FullwidthMenu.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/FullwidthPostTitle.php
+	* includes/builder/module/FullwidthSlider.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/Map.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PostsNavigation.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Sidebar.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Slider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollow.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/Tabs.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/Video.php
+	* includes/builder/module/VideoSlider.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/field/BoxShadow.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/field/TextShadow.php
+	* includes/builder/module/field/attribute/composite/type/Tabbed.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/post/type/Layout.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-preview.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/style.css
+	* includes/builder/template-preview.php
+	* js/custom.js
+	* js/html5.js
+	
 version 3.0.106 ( updated 03-06-2018 )
 - Disabled modal snap to top shortcut until further notice.
 - Fixed Optin Module Success message not being applied custom CSS.

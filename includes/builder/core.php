@@ -38,7 +38,9 @@ function et_builder_should_load_framework() {
 	 *
 	 * @param bool $should_load
 	 */
-	return apply_filters( 'et_builder_should_load_framework', $should_load );
+	$should_load = apply_filters( 'et_builder_should_load_framework', $should_load );
+
+	return $should_load;
 }
 endif;
 
@@ -466,6 +468,8 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 	$templates_data         = array();
 	$suppress_filters       = false;
 	$extra_layout_post_type = 'layout';
+	$module_icons           = ET_Builder_Element::get_module_icons();
+	$utils                  = ET_Core_Data_Utils::instance();
 
 	// need specific query for the layouts
 	if ( 'layout' === $layout_type ) {
@@ -604,7 +608,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 					$unsynced_options = get_post_meta( $single_post->ID, '_et_pb_excluded_global_options' );
 				}
 
-				$templates_data[] = array(
+				$templates_datum = array(
 					'ID'               => $single_post->ID,
 					'title'            => esc_html( $single_post->post_title ),
 					'shortcode'        => $single_post->post_content,
@@ -617,6 +621,18 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 					'row_layout'       => $row_layout,
 					'unsynced_options' => ! empty( $unsynced_options ) ? json_decode( $unsynced_options[0], true ) : array(),
 				);
+
+				// Append icon if there's any
+				if ( $module_type && $template_icon = $utils->array_get( $module_icons, "{$module_type}.icon", false ) ) {
+					$templates_datum['icon'] = $template_icon;
+				}
+
+				// Append svg icon if there's any
+				if ( $module_type && $template_icon_svg = $utils->array_get( $module_icons, "{$module_type}.icon_svg", false ) ) {
+					$templates_datum['icon_svg'] = $template_icon_svg;
+				}
+
+				$templates_data[] = $templates_datum;
 			}
 		}
 	}
@@ -1941,8 +1957,14 @@ function et_pb_save_role_settings() {
 
 	// convert settings string for each role into array and save it into et_pb_role_settings option
 	if ( ! empty( $data ) ) {
+		$role_capabilities = array();
 		foreach( $data as $role => $settings ) {
-			parse_str( $data[ $role ], $processed_options[ $role ] );
+			parse_str( $data[ $role ], $role_capabilities );
+			foreach ( $role_capabilities as $capability => $value ) {
+				if ( $value !== 'on' ) {
+					$processed_options[ $role ][ $capability ] = $value;
+				}
+			}
 		}
 	}
 
@@ -2022,6 +2044,7 @@ function et_pb_register_posttypes() {
 		'add_new_item'      => esc_html__( 'Add New Category', 'et_builder' ),
 		'new_item_name'     => esc_html__( 'New Category Name', 'et_builder' ),
 		'menu_name'         => esc_html__( 'Categories', 'et_builder' ),
+		'not_found'         => esc_html__( "You currently don't have any project categories.", 'et_builder' ),
 	);
 
 	register_taxonomy( 'project_category', array( 'project' ), array(
@@ -3575,7 +3598,7 @@ function et_pb_get_unsynced_legacy_options( $post_type, $shortcode_data ) {
 	$saved_fields = array_keys( $shortcode_data['attrs'] );
 
 	// content fields should never be included into unsynced options. We use different key for the content options.
-	$saved_fields[] = 'content_new';
+	$saved_fields[] = 'content';
 	$saved_fields[] = 'raw_content';
 
 	$all_fields = array_merge( array_keys( $general_fields ), array_keys( $advanced_fields ), array_keys( $css_fields ) );

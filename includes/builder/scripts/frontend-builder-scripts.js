@@ -654,6 +654,10 @@
 				var carousel_items_width = $the_carousel_items.width(),
 					carousel_items_height = $the_carousel_items.height();
 
+				// Account for borders when needed
+				if ($the_carousel.parent().hasClass('et_pb_with_border')) {
+					carousel_items_height = $the_carousel_items.outerHeight();
+				}
 				$carousel_items.css('height', carousel_items_height + 'px' );
 			}
 
@@ -4933,11 +4937,15 @@
 
 			$('.et_pb_contact_form_container').each( function() {
 				var $form = $(this);
+				var subjects_selector = 'input, textarea, select';
+				var condition_check = function() {
+					et_conditional_check( $form );
+				};
+				var debounced_condition_check = et_pb_debounce( condition_check, 250 );
 
 				// Listen for any field change
-				$form.on( 'change', 'input, textarea, select', function() {
-					et_conditional_check( $form );
-				} );
+				$form.on( 'change', subjects_selector, condition_check );
+				$form.on( 'keydown', subjects_selector, debounced_condition_check );
 
 				// Conditions may be satisfied on default form state
 				et_conditional_check( $form );
@@ -5224,7 +5232,7 @@
 		window.et_pb_init_modules();
 	}
 
-	$(document).ready(function(){
+	$(document).ready(function() {
 		( et_pb_box_shadow_elements||[] ).map(et_pb_box_shadow_apply_overlay);
 	});
 
@@ -5232,7 +5240,7 @@
 		var $body = $('body');
 		// fix Safari letter-spacing bug when styles applied in `head`
 		// Trigger styles redraw by changing body display property to differentvalue and reverting it back to original.
-		if ($body.hasClass('safari')){
+		if ($body.hasClass('safari')) {
 			var original_display_value = $body.css('display');
 			var different_display_value = 'initial' === original_display_value ? 'block' : 'initial';
 
@@ -5241,6 +5249,29 @@
 			setTimeout(function() {
 				$body.css({ 'display': original_display_value });
 			}, 0);
+
+			// Keep this script here, as it needs to be executed only if the script from above is executed
+			// As the script from above somehow affects WooCommerce single product image rendering.
+			// https://github.com/elegantthemes/Divi/issues/7454
+			if ($body.hasClass('woocommerce-page') && $body.hasClass('single-product')) {
+                var $wc = $('.woocommerce div.product div.images.woocommerce-product-gallery');
+
+                if ($wc.length === 0) {
+                    return;
+                }
+
+                // Don't use jQuery to get element opacity, as it may return an outdated value.
+                var opacity = parseInt($wc[0].style.opacity);
+
+                if (!opacity) {
+                    return;
+                }
+
+                $wc.css({opacity: opacity - .09});
+                setTimeout(function() {
+                    $wc.css({opacity: opacity});
+                }, 0);
+			}
 		}
 	});
 })(jQuery);

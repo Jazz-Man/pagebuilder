@@ -411,18 +411,136 @@ class ET_Builder_Library {
 			$index++;
 		}
 
-		return array(
+		/**
+		 * Filters data for the 'My Saved Layouts' tab.
+		 *
+		 * @since 3.1
+		 *
+		 * @param array[] $saved_layouts_data {
+		 *     Saved Layouts Data
+		 *
+		 *     @type array[]  $categories {
+		 *         Layout Categories
+		 *
+		 *         @type $id mixed[] {
+		 *             Category
+		 *
+		 *             @type int    $id      Id.
+		 *             @type int[]  $layouts Id's of layouts in category.
+		 *             @type string $name    Name.
+		 *             @type string $slug    Slug.
+		 *          }
+		 *          ...
+		 *     }
+		 *     @type array[]  $packs {
+		 *         Layout Packs
+		 *
+		 *         @type $id mixed[] {
+		 *             Pack
+		 *
+		 *             @type string $category_ids  Category ids.
+		 *             @type string $category_slug Primary category slug.
+		 *             @type string $date          Published date.
+		 *             @type string $description   Description.
+		 *             @type int    $id            Id.
+		 *             @type int[]  $layouts       Id's of layouts in pack.
+		 *             @type string $name          Name.
+		 *             @type string $screenshot    Screenshot URL.
+		 *             @type string $slug          Slug.
+		 *             @type string $thumbnail     Thumbnail URL.
+		 *          }
+		 *          ...
+		 *     }
+		 *     @type object[] $layouts {
+		 *         Layouts
+		 *
+		 *         @type object {
+		 *             Layout
+		 *
+		 *             @type int      $id ID
+		 *             @type string[] $categories
+		 *             @type int[]    $category_ids
+		 *             @type string   $category_slug
+		 *             @type int      $date
+		 *             @type string   $description
+		 *             @type int      $index
+		 *             @type bool     $is_global
+		 *             @type bool     $is_landing
+		 *             @type string   $name
+		 *             @type string   $screenshot
+		 *             @type string   $short_name
+		 *             @type string   $slug
+		 *             @type string   $thumbnail
+		 *             @type string   $thumbnail_small
+		 *             @type string   $type
+		 *             @type string   $url
+		 *         }
+		 *         ...
+		 *     }
+		 *     @type array[]  $sorted {
+		 *         Sorted Ids
+		 *
+		 *         @type int[] $categories
+		 *         @type int[] $packs
+		 *     }
+		 * }
+		 */
+		$saved_layouts_data = apply_filters( 'et_builder_library_saved_layouts', array(
 			'categories' => $layout_categories,
 			'packs'      => $layout_packs,
 			'layouts'    => $layouts,
 			'sorted'     => self::_sort_builder_library_data( $layout_categories, $layout_packs ),
+		) );
+
+		/**
+		 * Filters custom tabs layout data for the library modal. Custom tabs must be registered
+		 * via the {@see 'et_builder_library_modal_custom_tabs'} filter.
+		 *
+		 * @since 3.1
+		 *
+		 * @param array[] $custom_layouts_data {
+		 *     Custom Layouts Data Organized By Modal Tab
+		 *
+		 *     @type array[] $tab_slug See {@see 'et_builder_library_saved_layouts'} for array structure.
+		 *     ...
+		 * }
+		 * @param array[] $saved_layouts_data {@see 'et_builder_library_saved_layouts'} for array structure.
+		 */
+		$custom_layouts_data = apply_filters( 'et_builder_library_custom_layouts', array(), $saved_layouts_data );
+
+		return array(
+			'layouts_data'        => $saved_layouts_data,
+			'custom_layouts_data' => $custom_layouts_data,
 		);
+	}
+
+	/**
+	 * Get custom tabs for the library modal.
+	 *
+	 * @param string $post_type
+	 *
+	 * @return array[] {
+	 *     Custom Tabs
+	 *
+	 *     @type string $tab_slug Tab display name.
+	 *     ...
+	 * }
+	 */
+	public static function builder_library_modal_custom_tabs( $post_type ) {
+		/**
+		 * Filters custom tabs for the library modal.
+		 *
+		 * @since 3.1
+		 *
+		 * @param array[] $custom_tabs See {@self::builder_library_modal_custom_tabs()} return value.
+		 */
+		return apply_filters( 'et_builder_library_modal_custom_tabs', array(), $post_type );
 	}
 
 	/**
 	 * Gets the post types that have existing layouts built for them.
 	 *
-	 * @since ??  Supersedes {@see et_pb_get_standard_post_types()}
+	 * @since 3.1  Supersedes {@see et_pb_get_standard_post_types()}
 	 *            Supersedes {@see et_pb_get_used_built_for_post_types()}
 	 * @since 2.0
 	 *
@@ -468,7 +586,7 @@ class ET_Builder_Library {
 	 * Performs one-time maintenance tasks on library layouts in the database.
 	 * {@see 'admin_init'}
 	 *
-	 * @since ??  Relocated from `builder/layouts.php`. New task: create 'Legacy Layouts' category.
+	 * @since 3.1  Relocated from `builder/layouts.php`. New task: create 'Legacy Layouts' category.
 	 * @since 2.0
 	 */
 	public static function update_old_layouts() {

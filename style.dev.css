@@ -1,7 +1,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.0.106
+Version: 3.1.1
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -6308,6 +6308,11 @@ ul.et_pb_side_nav .side_nav_item a.active {
 	mix-blend-mode: unset !important;
 }
 
+/* Module */
+.et_pb_module_inner {
+	position: relative;
+}
+
 /* Button Styles */
 .et_pb_button {
 	position: relative;
@@ -6687,19 +6692,39 @@ body.iphone .et_pb_contact_form select {
 }
 
 /* Pricing Tables Module*/
-.et_pb_pricing > .box-shadow-overlay {
-	z-index: 11;
+.et_pb_pricing_table_wrap {
+	display: block;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	flex-direction: row;
+
+	align-items: flex-start;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	-webkit-flex-wrap: wrap;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
 }
 
 .et_pb_pricing_table {
 	float: left;
 	position: relative;
 	width: 33.33%;
+	max-width: 34%;
 	margin: 30px -1px 0 0;
 	padding-bottom: 30px;
 	border: 1px solid #bebebe;
 	background-color: #fcfcfc;
 	text-align: center;
+
+	-webkit-flex: 1 1 auto;
+	-ms-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+
+.et_pb_pricing > .box-shadow-overlay {
+	z-index: 11;
 }
 
 .et_pb_featured_table {
@@ -6719,16 +6744,19 @@ body.iphone .et_pb_contact_form select {
 /* Column Adjustments */
 .et_pb_column_4_4 .et_pb_pricing_table {
 	width: 25%;
+	max-width: 25.5%;
 }
 
 .et_pb_column_4_4 .et_pb_pricing_3 .et_pb_pricing_table {
 	width: 33.33%;
+	max-width: 34%;
 }
 
 .et_pb_pricing_2 .et_pb_pricing_table,
 .et_pb_column_2_3 .et_pb_pricing_table,
 .et_pb_column_1_2 .et_pb_pricing_table {
 	width: 50%;
+	max-width: 50.5%;
 }
 
 .et_pb_pricing_1 .et_pb_pricing_table,
@@ -6736,6 +6764,7 @@ body.iphone .et_pb_contact_form select {
 .et_pb_column_1_3 .et_pb_pricing_table,
 .et_pb_column_1_4 .et_pb_pricing_table {
 	width: 100%;
+	max-width: none;
 	margin: 0 0 30px;
 }
 
@@ -15825,10 +15854,12 @@ span.comment_date {
 /* Pricing Tables Module */
 	.et_pb_column .et_pb_pricing_table {
 		width: 50% !important;
+		max-width: 50.5% !important;
 	}
 
 	.et_pb_column .et_pb_pricing_1 .et_pb_pricing_table {
 		width: 100% !important;
+		max-width: none !important;
 	}
 
 	.et_pb_column .et_pb_pricing_table:nth-child(2n+1) {
@@ -16456,6 +16487,7 @@ span.comment_date {
 /* Pricing Tables Module */
 	.et_pb_column .et_pb_pricing_table {
 		width: 100% !important;
+		max-width: 100% !important;
 		margin: 0 0 30px !important;
 	}
 
@@ -18251,6 +18283,14 @@ span.comment_date {
 	width: 100%;
 	height: 100%;
 	pointer-events: none;
+}
+
+.et_pb_section > .box-shadow-overlay ~ .et_pb_row {
+	z-index: 11;
+}
+
+.et_pb_row > .box-shadow-overlay {
+	z-index: 8;
 }
 
 .has-box-shadow-overlay {

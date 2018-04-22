@@ -16,7 +16,7 @@ class ET_Core_API_Email_Ontraport extends ET_Core_API_Email_Provider {
 	/**
 	 * @inheritDoc
 	 */
-	public $SUBSCRIBE_URL = 'https://api.ontraport.com/1/objects';
+	public $SUBSCRIBE_URL = 'https://api.ontraport.com/1';
 
 	/**
 	 * @inheritDoc
@@ -78,7 +78,6 @@ class ET_Core_API_Email_Ontraport extends ET_Core_API_Email_Provider {
 				'name'      => 'firstname',
 				'last_name' => 'lastname',
 				'email'     => 'email',
-				'list_id'   => 'updateSequence',
 			),
 		);
 
@@ -101,48 +100,50 @@ class ET_Core_API_Email_Ontraport extends ET_Core_API_Email_Provider {
 	}
 
 	public function get_subscriber( $email ) {
-		$query     = sprintf( '[{ "field":{"field":"email"}, "op":"=", "value":{"value":"%1$s"} }]', $email );
-		$query_url = sprintf( '%1$s?objectID=0&condition=%2$s&listFields=id',
-			$this->SUBSCRIBE_URL,
-			rawurlencode( $query )
+		$args = array(
+			'objectID' => '0',
+			'email' => rawurlencode( $email ),
 		);
 
-		$this->prepare_request( $query_url, 'GET', false );
+		$url = add_query_arg( $args, $this->SUBSCRIBE_URL . '/object/getByEmail' );
+
+		$this->prepare_request( $url );
 		$this->make_remote_request();
 
-		$data_received = $this->response->DATA;
-
-		if ( $data_received && ! empty( $data_received['data'] ) ) {
-			return $data_received['data'][0]['id'];
-		}
-
-		return false;
+		return $this->data_utils->array_get( $this->response->DATA, 'data.id', false );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function subscribe( $args, $url = '' ) {
-		$args                = $this->transform_data_to_provider_format( $args, 'subscriber' );
-		$request_method      = 'POST';
-		$existing_subscriber = $this->get_subscriber( $args['email'] );
-
-		// update the `sequence` for existing subscriber using PUT method
-		if ( false !== $existing_subscriber ) {
-			$request_method = 'PUT';
-			$sequence_id    = $args['updateSequence'];
-			$args           = array(
-				'id'             => $existing_subscriber,
-				'updateSequence' => $sequence_id
-			);
+		if ( empty( $this->data['api_key'] ) || empty( $this->data['client_id'] ) ) {
+			return $this->API_KEY_REQUIRED;
 		}
 
+		$list_id          = $args['list_id'];
+		$args             = $this->transform_data_to_provider_format( $args, 'subscriber' );
 		$args['objectID'] = 0;
+		$url              = $this->SUBSCRIBE_URL . '/Contacts/saveorupdate';
 
-		$this->prepare_request( $this->SUBSCRIBE_URL, $request_method, false, $args );
-		$this->request->HEADERS['Api-Appid'] = sanitize_text_field( $this->data['client_id'] );
-		$this->request->HEADERS['Api-Key'] = sanitize_text_field( $this->data['api_key'] );
+		// Create or update contact
+		$this->prepare_request( $url, 'POST', false, $args );
+		$this->make_remote_request();
 
-		return parent::subscribe( $args, $this->SUBSCRIBE_URL );
+		if ( $this->response->ERROR ) {
+			return $this->get_error_message();
+		}
+
+		// Subscribe contact to sequence
+		$url  = $this->SUBSCRIBE_URL . '/objects/sequence';
+		$args = array(
+			'ids'      => $this->response->DATA['data']['attrs']['id'],
+			'add_list' => $list_id,
+			'objectID' => 0,
+		);
+
+		$this->prepare_request( $url, 'PUT', false, $args );
+
+		return parent::subscribe( $args, $url );
 	}
 }

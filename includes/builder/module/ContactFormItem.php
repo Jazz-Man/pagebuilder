@@ -4,49 +4,14 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Field', 'et_builder' );
 		$this->slug            = 'et_pb_contact_field';
-		$this->fb_support      = true;
+		$this->vb_support      = 'on';
 		$this->type            = 'child';
 		$this->child_title_var = 'field_id';
-
-		$this->whitelisted_fields = array(
-			'field_title',
-			'field_type',
-			'field_id',
-			'required_mark',
-			'fullwidth_field',
-			'input_border_radius',
-			'field_background_color',
-			'checkbox_checked',
-			'checkbox_options',
-			'radio_options',
-			'select_options',
-			'conditional_logic',
-			'conditional_logic_relation',
-			'conditional_logic_rules',
-			'min_length',
-			'max_length',
-			'allowed_symbols',
-		);
-
-		$this->fields_defaults = array(
-			'field_title'                => array( esc_html__( 'New Field', 'et_builder' ) ),
-			'field_type'                 => array( 'input' ),
-			'field_id'                   => array( '' ),
-			'fullwidth_field'            => array( 'off' ),
-			'required_mark'              => array( 'on' ),
-			'checkbox_checked'           => array( 'off' ),
-			'conditional_logic'          => array( 'off' ),
-			'conditional_logic_relation' => array( 'off' ),
-			'min_length'                 => array( '0' ),
-			'max_length'                 => array( '0' ),
-			'allowed_symbols'            => array( 'all' ),
-		);
-
 		$this->advanced_setting_title_text = esc_html__( 'New Field', 'et_builder' );
 		$this->settings_text               = esc_html__( 'Field Settings', 'et_builder' );
 		$this->main_css_element = '.et_pb_contact_form_container %%order_class%%.et_pb_contact_field';
 
-		$this->options_toggles = array(
+		$this->settings_modal_toggles = array(
 			'general'  => array(
 				'toggles' => array(
 					'main_content'      => esc_html__( 'Text', 'et_builder' ),
@@ -62,18 +27,33 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			),
 		);
 
-		$this->advanced_options = array(
-			'border' => array(
-				'css'          => array(
-					'main'      => array(
-						'border_radii'  => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
-						'border_styles' => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+		$this->advanced_fields = array(
+			'borders'               => array(
+				'default' => array(
+					'css'          => array(
+						'main'      => array(
+							'border_radii'  => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+							'border_styles' => sprintf( '%1$s .input, %1$s .input[type="checkbox"] + label i, %1$s .input[type="radio"] + label i', $this->main_css_element ),
+						),
+						'important' => 'plugin_only',
 					),
-					'important' => 'plugin_only',
+					'label_prefix' => esc_html__( 'Input', 'et_builder' ),
 				),
-				'label_prefix' => esc_html__( 'Input', 'et_builder' ),
 			),
-			'fonts' => array(
+			'box_shadow'            => array(
+				'default' => array(
+					'css' => array(
+						'main' => implode( ', ', array(
+							'%%order_class%% input',
+							'%%order_class%% select',
+							'%%order_class%% textarea',
+							'%%order_class%% .et_pb_contact_field_options_list label > i',
+						) ),
+						'important' => true,
+					),
+				),
+			),
+			'fonts'                 => array(
 				'form_field'   => array(
 					'label'    => esc_html__( 'Field', 'et_builder' ),
 					'css'      => array(
@@ -90,24 +70,27 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 					),
 				),
 			),
-			'background' => array(
+			'background'            => array(
 				'css' => array(
 					'main' => '%%order_class%%',
 				),
 			),
-			'custom_margin_padding' => array(
+			'margin_padding' => array(
 				'css' => array(
 					'padding' => 'p%%order_class%%',
 					'important' => array( 'custom_margin' ), // needed to overwrite last module margin-bottom styling
 				),
 			),
-			'max_width' => array(),
-			'text'      => array(
+			'text'                  => array(
 				'css' => array(
 					'text_orientation' => '%%order_class%% input, %%order_class%% textarea, %%order_class%% label',
 				),
 			),
-			'filters' => array(
+			'text_shadow'           => array(
+				// Don't add text-shadow fields since they already are via font-options
+				'default' => false,
+			),
+			'filters'               => array(
 				'css' => array(
 					'main' => array(
 						'%%order_class%% input',
@@ -116,6 +99,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 					),
 				),
 			),
+			'button'                => false,
 		);
 	}
 
@@ -126,12 +110,14 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'type'        => 'text',
 				'description' => esc_html__( 'Define the unique ID of this field. You should use only English characters without special characters and spaces.', 'et_builder' ),
 				'toggle_slug' => 'main_content',
+				'default_on_front' => '',
 			),
 			'field_title' => array(
 				'label'       => esc_html__( 'Title', 'et_builder' ),
 				'type'        => 'text',
 				'description' => esc_html__( 'Here you can define the content that will be placed within the current tab.', 'et_builder' ),
 				'toggle_slug' => 'main_content',
+				'default_on_front' => esc_html__( 'New Field', 'et_builder' ),
 			),
 			'field_type' => array(
 				'label'       => esc_html__( 'Type', 'et_builder' ),
@@ -193,7 +179,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'description'    => esc_html__( 'Leave at 0 to remove restriction', 'et_builder' ),
 				'type'           => 'range',
 				'default'        => '0',
-				'fixed_unit'     => null,
+				'unitless'       => true,
 				'range_settings' => array(
 					'min'  => '0',
 					'max'  => '255',
@@ -208,7 +194,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'description'    => esc_html__( 'Leave at 0 to remove restriction', 'et_builder' ),
 				'type'           => 'range',
 				'default'        => '0',
-				'fixed_unit'     => null,
+				'unitless'       => true,
 				'range_settings' => array(
 					'min'  => '0',
 					'max'  => '255',
@@ -255,6 +241,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'layout',
 				'description'     => esc_html__( 'If enabled, the field will take 100% of the width of the content area, otherwise it will take 50%', 'et_builder' ),
+				'default_on_front' => 'off',
 			),
 			'conditional_logic' => array(
 				'label'           => esc_html__( 'Enable', 'et_builder' ),
@@ -307,27 +294,24 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	// Don't add text-shadow fields since they already are via font-options
-	protected function _add_additional_text_shadow_fields() {}
-
-	function shortcode_callback( $atts, $content = null, $function_name ) {
-		$field_title                = $this->shortcode_atts['field_title'];
-		$field_type                 = $this->shortcode_atts['field_type'];
-		$field_id                   = $this->shortcode_atts['field_id'];
-		$required_mark              = $this->shortcode_atts['required_mark'];
-		$fullwidth_field            = $this->shortcode_atts['fullwidth_field'];
-		$form_field_text_color      = $this->shortcode_atts['form_field_text_color'];
-		$field_background_color     = $this->shortcode_atts['field_background_color'];
-		$checkbox_checked           = $this->shortcode_atts['checkbox_checked'];
-		$checkbox_options           = $this->shortcode_atts['checkbox_options'];
-		$radio_options              = $this->shortcode_atts['radio_options'];
-		$select_options             = $this->shortcode_atts['select_options'];
-		$min_length                 = $this->shortcode_atts['min_length'];
-		$max_length                 = $this->shortcode_atts['max_length'];
-		$conditional_logic          = $this->shortcode_atts['conditional_logic'];
-		$conditional_logic_relation = $this->shortcode_atts['conditional_logic_relation'];
-		$conditional_logic_rules    = $this->shortcode_atts['conditional_logic_rules'];
-		$allowed_symbols            = $this->shortcode_atts['allowed_symbols'];
+	function render( $attrs, $content = null, $render_slug ) {
+		$field_title                = $this->props['field_title'];
+		$field_type                 = $this->props['field_type'];
+		$field_id                   = $this->props['field_id'];
+		$required_mark              = $this->props['required_mark'];
+		$fullwidth_field            = $this->props['fullwidth_field'];
+		$form_field_text_color      = $this->props['form_field_text_color'];
+		$field_background_color     = $this->props['field_background_color'];
+		$checkbox_checked           = $this->props['checkbox_checked'];
+		$checkbox_options           = $this->props['checkbox_options'];
+		$radio_options              = $this->props['radio_options'];
+		$select_options             = $this->props['select_options'];
+		$min_length                 = $this->props['min_length'];
+		$max_length                 = $this->props['max_length'];
+		$conditional_logic          = $this->props['conditional_logic'];
+		$conditional_logic_relation = $this->props['conditional_logic_relation'];
+		$conditional_logic_rules    = $this->props['conditional_logic_rules'];
+		$allowed_symbols            = $this->props['allowed_symbols'];
 
 		global $et_pb_contact_form_num;
 
@@ -340,10 +324,9 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		$current_module_num = '' === $et_pb_contact_form_num ? 0 : intval( $et_pb_contact_form_num ) + 1;
 
-		$module_class              = ET_Builder_Element::add_module_order_class( '', $function_name );
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
-		$shortcode_callback_num    = $this->shortcode_callback_num();
+		$render_count    = $this->render_count();
 
 		$this->half_width_counter = ! isset( $this->half_width_counter ) ? 0 : $this->half_width_counter;
 
@@ -358,7 +341,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		if ( '' !== $form_field_text_color ) {
 			if ( 'checkbox' === $field_type ) {
-				ET_Builder_Element::set_style( $function_name, array(
+				ET_Builder_Element::set_style( $render_slug, array(
 					'selector'    => '%%order_class%% .input + label, %%order_class%% .input + label i:before',
 					'declaration' => sprintf(
 						'color: %1$s !important;',
@@ -368,7 +351,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			}
 
 			if ( 'radio' === $field_type ) {
-				ET_Builder_Element::set_style( $function_name, array(
+				ET_Builder_Element::set_style( $render_slug, array(
 					'selector'    => '%%order_class%% .input + label',
 					'declaration' => sprintf(
 						'color: %1$s !important;',
@@ -376,7 +359,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 					),
 				) );
 
-				ET_Builder_Element::set_style( $function_name, array(
+				ET_Builder_Element::set_style( $render_slug, array(
 					'selector'    => '%%order_class%% .input + label i:before',
 					'declaration' => sprintf(
 						'background-color: %1$s !important;',
@@ -393,7 +376,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				$input_selector = '%%order_class%% .input + label i';
 			}
 
-			ET_Builder_Element::set_style( $function_name, array(
+			ET_Builder_Element::set_style( $render_slug, array(
 				'selector'    => $input_selector,
 				'declaration' => sprintf(
 					'background-color: %1$s !important;',
@@ -573,7 +556,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 						esc_attr( $option_value ),
 						esc_attr( $index ),
 						$is_checked ? ' checked="checked"' : '',
-						esc_attr( $shortcode_callback_num )
+						esc_attr( $render_count )
 					);
 				}
 
@@ -618,7 +601,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 							esc_attr( $index ),
 							wp_strip_all_tags( $option->value ),
 							checked( $is_checked, true, false ),
-							esc_attr( $shortcode_callback_num ) // #10
+							esc_attr( $render_count ) // #10
 						);
 					}
 				} else {
@@ -671,10 +654,26 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				break;
 		}
 
+		// Module classnames
+		$this->add_classname( array(
+			$this->get_text_orientation_classname(),
+		) );
+
+		if ( 'off' === $fullwidth_field ) {
+			$this->add_classname( 'et_pb_contact_field_half' );
+		}
+
+		if ( 0 === $this->half_width_counter % 2 ) {
+			$this->add_classname( 'et_pb_contact_field_last' );
+		}
+
+		// Remove automatically added classname
+		$this->remove_classname( 'et_pb_module' );
+
 		$output = sprintf(
-			'<p class="et_pb_contact_field%5$s%6$s%7$s%10$s%12$s%14$s"%8$s data-id="%3$s" data-type="%9$s">
-				%13$s
-				%11$s
+			'<p class="%5$s"%6$s data-id="%3$s" data-type="%7$s">
+				%9$s
+				%8$s
 				<label for="et_pb_contact_%3$s_%2$s" class="et_pb_contact_form_label">%1$s</label>
 				%4$s
 			</p>',
@@ -682,35 +681,14 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			esc_attr( $current_module_num ),
 			esc_attr( $field_id ),
 			$input_field,
-			esc_attr( $module_class ),
-			'off' === $fullwidth_field ? ' et_pb_contact_field_half' : '',
-			0 === $this->half_width_counter % 2 ? ' et_pb_contact_field_last' : '',
+			$this->module_classname( $render_slug ),
 			$conditional_logic_attr,
 			$field_type,
-			'' !== $video_background ? ' et_pb_section_video et_pb_preload' : '',
 			$video_background,
-			'' !== $parallax_image_background ? ' et_pb_section_parallax' : '',
-			$parallax_image_background,
-			$this->get_text_orientation_classname()
+			$parallax_image_background
 		);
 
 		return $output;
-	}
-
-	public function process_box_shadow( $function_name ) {
-		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
-
-		$selectors = array(
-			'%%order_class%% input',
-			'%%order_class%% select',
-			'%%order_class%% textarea',
-			'%%order_class%% .et_pb_contact_field_options_list label > i',
-		);
-		self::set_style( $function_name, array(
-				'selector'    => implode( ', ', $selectors ),
-				'declaration' => $boxShadow->get_value( $this->shortcode_atts, array( 'important' => true ) )
-			)
-		);
 	}
 }
 

@@ -38,9 +38,9 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 		 * @param array $dividers Array list of available dividers.
 		 */
 		$this->dividers = apply_filters( 'et_section_dividers', array(
-			'arrow-bottom'       => '<path d="M640 140L0 0v140h1280V0L640 140z"/>',
+			'arrow-bottom'       => '<path d="M640 139L0 0v140h1280V0L640 139z"/>',
 			'arrow-top'          => '<path d="M640 140L1280 0H0z"/>',
-			'arrow2-bottom'      => '<path d="M640 140L0 0v140h1280V0L640 140z" fill-opacity=".5"/><path d="M640 140L0 42v98h1280V42l-640 98z"/>',
+			'arrow2-bottom'      => '<path d="M640 139L0 0v140h1280V0L640 139z" fill-opacity=".5"/><path d="M640 139L0 42v98h1280V42l-640 97z"/>',
 			'arrow2-top'         => '<path d="M640 140L1280 0H0z" fill-opacity=".5"/><path d="M640 98l640-98H0z"/>',
 			'arrow3-bottom'      => '<path d="M0 140l640-70 640 70V0L640 70 0 0v140z" fill-opacity=".5"/><path d="M0 140h1280L640 70 0 140z"/>',
 			'arrow3-top'         => '<path d="M1280 0L640 70 0 0v140l640-70 640 70V0z" fill-opacity=".5"/><path d="M1280 0H0l640 70 640-70z"/>',
@@ -169,6 +169,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 							'step' => 1,
 						),
 						'default'        => '100px',
+						'default_unit'   => 'px',
 						'show_if_not'    => array(
 							"{$placement}_divider_style" => 'none',
 						),
@@ -263,9 +264,6 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 			'type'                => 'composite',
 			'composite_type'      => 'default',
 			'composite_structure' => $structure,
-			'renderer'            => array(
-				'class' => 'ET_Builder_Module_Field_Template_Tabbed', // use default rendering.
-			),
 		);
 
 		return $additional_options;

@@ -31,7 +31,8 @@
 		$et_top_navigation = $('#et-top-navigation'),
 		$logo = $('#logo'),
 		$et_pb_first_row = $( 'body.et_pb_pagebuilder_layout .et_pb_section:visible:first' ),
-		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints;
+		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints,
+		$et_top_cart = $('#et-secondary-menu a.et-cart-info');
 
 	// We need to check first to see if we are on a woocommerce single product.
 	if ( $("body").hasClass("woocommerce") && $("body").hasClass("single-product") && $(".woocommerce-product-gallery").length > 0 ) {
@@ -44,6 +45,27 @@
 
 		// finally we re-insert.
 		gal.outerHTML = newstr;
+	}
+
+	// update the cart item on the secondary menu.
+	if ( $et_top_cart.length > 0 && $('.shop_table.cart').length > 0 ) {
+		$( document.body ).on( 'updated_wc_div', function(){
+			var new_total = 0;
+			var new_text;
+			$('.shop_table.cart').find('.product-quantity input').each(function(){
+				new_total = new_total + parseInt( $(this).val() );
+			});
+
+			if ( new_total === 1 ) {
+				new_text  = DIVI.item_count;
+			} else {
+				new_text  = DIVI.items_count;
+			}
+
+			new_text = new_text.replace('%d', new_total);
+
+			$et_top_cart.find('span').text(new_text);
+		});
 	}
 
 	$(document).ready( function(){

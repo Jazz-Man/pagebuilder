@@ -211,6 +211,10 @@ function et_divi_load_scripts_styles(){
 	}
 
 	wp_enqueue_script( 'divi-custom-script', $template_dir . '/js/custom' . $script_suffix . '.js', $dependencies_array , $theme_version, true );
+	wp_localize_script( 'divi-custom-script', 'DIVI', array(
+		'item_count'  => esc_html__( '%d Item', 'divi' ),
+		'items_count' => esc_html__( '%d Items', 'divi' ),
+	) );
 
 	if ( 'on' === et_get_option( 'divi_smooth_scroll', false ) ) {
 		wp_enqueue_script( 'smooth-scroll', $template_dir . '/js/smoothscroll.js', array( 'jquery' ), $theme_version, true );
@@ -243,7 +247,7 @@ function et_divi_load_scripts_styles(){
 		foreach ( $et_gf_enqueue_fonts as $single_font ) {
 			if ( isset( $et_old_one_font_languages[$site_domain] ) ) {
 				$font_custom_default_data = $et_old_one_font_languages[$site_domain];
-				
+
 				// enqueue custom default font if needed
 				if ( $single_font === $font_custom_default_data['font_family'] ) {
 					$et_gf_font_name_slug = strtolower( str_replace( ' ', '-', $font_custom_default_data['language_name'] ) );
