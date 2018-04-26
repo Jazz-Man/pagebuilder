@@ -36,6 +36,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 			'save_epanel',                      // ePanel (global builder settings)
 			'et_builder_library_get_layout',
 			'et_builder_library_get_layouts_data',
+			'et_fb_fetch_attachments',
 			'et_pb_get_saved_templates',
 		),
 	);

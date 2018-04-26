@@ -128,7 +128,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 						),
 					),
 					'font_size' => array(
-						'default' => '14px',
+						'default' => absint( et_get_option( 'body_font_size', '14' ) ) . 'px',
 					),
 					'letter_spacing' => array(
 						'default' => '0px',

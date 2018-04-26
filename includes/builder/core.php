@@ -1551,6 +1551,7 @@ function et_fb_get_nonces() {
 		'libraryLayoutsData'            => wp_create_nonce( 'et_builder_library_get_layouts_data' ),
 		'libraryGetLayout'              => wp_create_nonce( 'et_builder_library_get_layout' ),
 		'libraryUpdateAccount'          => wp_create_nonce( 'et_builder_library_update_account' ),
+		'fetchAttachments'              => wp_create_nonce( 'et_fb_fetch_attachments' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );

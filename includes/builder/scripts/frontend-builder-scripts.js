@@ -472,7 +472,7 @@
 					if ( settings.use_controls )
 						$et_slider_controls.removeClass( settings.control_active_class ).eq( et_active_slide ).addClass( settings.control_active_class );
 
-					if ( settings.use_carousel )
+					if ( settings.use_carousel && $et_slider_carousel_controls )
 						$et_slider_carousel_controls.removeClass( settings.control_active_class ).eq( et_active_slide ).addClass( settings.control_active_class );
 
 					if ( ! settings.tabs_animation ) {

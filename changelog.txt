@@ -1,10 +1,60 @@
-version 3.1.1 ( updated 04-19-2018 )
-- Fixed a logic error in the backwards compatibility system for third party module settings defaults that caused many third party module defaults to return empty values which resulted in broken modules on the front end. 
-- Fixed PHP 5.2 compatibility issues.
-- Fixed  Undefined index: skip_background_ui notice that occurred in some situations.
-- Fixed some design inconsistencies between the Visual Builder and the front end related to using box shadows on certain modules.
+version 3.2 ( updated 04-26-2018 )
+- Arrow keys can now be used to adjust numerical values in the Visual Builder.
+- Added new up/down buttons to numerical inputs that can be used to make precise value adjustments. 
+- Added the ability to link module spacing values together. 
+- Improved the color option interface in the Visual Builder.
+- Modules added in the Visual Builder will now contain a minimal amount of pre-filled content, allowing the module to be fully rendered on the page automatically.
+- Added an option to the Visual Builder interface settings to disable the above mentioned pre-filled content.
+- Added new gesture based interface to numerical spacing options that allow valued to be adjusted using a smooth sliding motion.
+- Added option clarification text to various media inputs.
+- Greatly improved the gallery management interface in the Visual Builder. You can now add, remove and re-arrange images in the Visual Builder without entering the media library.
+- Media inputs will now render live previews of videos and images in the Visual Builder settings modal.
+- Added browser spell check to the Visual Builder settings modal and in the inline editor.
+- Fixed various reset and responsive input behaviors on range and margin inputs in the Visual Builder.
+- Fixed TinyMCE bug that preventing scrolling in some situations.
+- Fixed incorrect styling of the inline editor text color option.
+- Fixed hover artifact on fullwidth header when using parallax background when Click/Grid mode is active.
+- Fixed tooltip modal remaining open when builder settings modal button was clicked.
+- Fixed pricing table module having incorrect default body font size.
+- Fixed a bug that caused spacing changes to occur when hovering over the testimonial module in the Visual Builder.
+- Fixed modules not being saved correctly when they were a child of a global row inside a specialty section.
+- Fixed an email optin module error that occurred when fetching a list or removing an account in some situations.
+- Fixed a bug that caused the blog module to remain visible after it was disabled.
+- Fixed incorrect default content alignment in Visual Builder post slider module.
+- Fixed issue where there was missing whitespace in author bylines in the fullwidth post title module.
+- Fixed incorrect percentage font style implementation on bar counter module.
+- Fixed issues with custom options rendering in Backend Builder.
+- Fixes an issue where the section divider color would not reset properly in the Backend Builder.
+- Fixed duplicate backface-visibility:hidden rules that were printed in some cases.
+- Fixed input & textarea being unable to be selected which prevented focus input from being evaluated.
+- Fixed iOS detection when page is being viewed on a mobile browser or an in-app browser, which caused some elements to disappear when browser Divi sites via apps like Facebook.
+- Fixed double opt-in bug when adding new subscribers to a Mailster list.
+- Fixed a bug that caused shop module pagination to malfunction.
+- Fixed a bug that caused code in some code modules to break the Divi Builder.
+	* core/admin/js/common.js
+	* core/components/api/email/Mailster.php
+	* core/components/api/email/Ontraport.php
 	* includes/builder/class-et-builder-element.php
-
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/BarCounters.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/core.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	
 version 3.1 ( updated 04-19-2018 )
 - Added the Divi Developer API, allowing for the creation of custom Visual Builder modules.
 - Added automatic limited support for current third party modules in the Visual Builder.
@@ -153,7 +203,7 @@ version 3.1 ( updated 04-19-2018 )
 	* includes/builder/template-preview.php
 	* js/custom.js
 	* js/html5.js
-	
+
 version 3.0.106 ( updated 03-06-2018 )
 - Disabled modal snap to top shortcut until further notice.
 - Fixed Optin Module Success message not being applied custom CSS.

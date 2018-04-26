@@ -156,6 +156,20 @@ function et_fb_backend_helpers() {
 		'et_pb_social_media_follow',
 	) );
 
+	$modules_defaults = array(
+		'title'    => _x( 'Your Title Goes Here', 'Modules dummy content', 'et_builder' ),
+		'subtitle' => _x( 'Subtitle goes Here', 'et_builder' ),
+		'body'     => _x( 'Your content goes here. Edit or remove this text inline or in the module Content settings. You can also style every aspect of this content in the module Design settings and even apply custom CSS to this text in the module Advanced settings.',
+			'et_builder' ),
+		'number'   => 50,
+		'button'   => _x( 'Click Here', 'Modules dummy content', 'et_builder' ),
+		'image'    => array(
+			'landscape' => 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTA4MCIgaGVpZ2h0PSI1NDAiIHZpZXdCb3g9IjAgMCAxMDgwIDU0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+CiAgICAgICAgPHBhdGggZmlsbD0iI0VCRUJFQiIgZD0iTTAgMGgxMDgwdjU0MEgweiIvPgogICAgICAgIDxwYXRoIGQ9Ik00NDUuNjQ5IDU0MGgtOTguOTk1TDE0NC42NDkgMzM3Ljk5NSAwIDQ4Mi42NDR2LTk4Ljk5NWwxMTYuMzY1LTExNi4zNjVjMTUuNjItMTUuNjIgNDAuOTQ3LTE1LjYyIDU2LjU2OCAwTDQ0NS42NSA1NDB6IiBmaWxsLW9wYWNpdHk9Ii4xIiBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz4KICAgICAgICA8Y2lyY2xlIGZpbGwtb3BhY2l0eT0iLjA1IiBmaWxsPSIjMDAwIiBjeD0iMzMxIiBjeT0iMTQ4IiByPSI3MCIvPgogICAgICAgIDxwYXRoIGQ9Ik0xMDgwIDM3OXYxMTMuMTM3TDcyOC4xNjIgMTQwLjMgMzI4LjQ2MiA1NDBIMjE1LjMyNEw2OTkuODc4IDU1LjQ0NmMxNS42Mi0xNS42MiA0MC45NDgtMTUuNjIgNTYuNTY4IDBMMTA4MCAzNzl6IiBmaWxsLW9wYWNpdHk9Ii4yIiBmaWxsPSIjMDAwIiBmaWxsLXJ1bGU9Im5vbnplcm8iLz4KICAgIDwvZz4KPC9zdmc+Cg==',
+			'portrait'  => 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAwIiBoZWlnaHQ9IjUwMCIgdmlld0JveD0iMCAwIDUwMCA1MDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgICA8ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPgogICAgICAgIDxwYXRoIGZpbGw9IiNFQkVCRUIiIGQ9Ik0wIDBoNTAwdjUwMEgweiIvPgogICAgICAgIDxyZWN0IGZpbGwtb3BhY2l0eT0iLjEiIGZpbGw9IiMwMDAiIHg9IjY4IiB5PSIzMDUiIHdpZHRoPSIzNjQiIGhlaWdodD0iNTY4IiByeD0iMTgyIi8+CiAgICAgICAgPGNpcmNsZSBmaWxsLW9wYWNpdHk9Ii4xIiBmaWxsPSIjMDAwIiBjeD0iMjQ5IiBjeT0iMTcyIiByPSIxMDAiLz4KICAgIDwvZz4KPC9zdmc+Cg==',
+		),
+		'video'    => 'https://www.youtube.com/watch?v=FkQuawiGWUw',
+	);
+
 	$helpers = array(
 		'debug'                        => defined( 'ET_DEBUG' ) && ET_DEBUG,
 		'autosaveInterval'             => et_builder_autosave_interval(),
@@ -207,14 +221,14 @@ function et_fb_backend_helpers() {
 		'serverAutosaveNotification'   => et_builder_get_server_autosave_notification_modal(),
 		'unsavedNotification'          => et_builder_get_unsaved_notification_modal(),
 		'backupLabel'                  => __( 'Backup of %s', 'et_builder' ),
-		
+
 		/**
 		 * Filters taxonomies array.
 		 *
 		 * @param array Array of all registered taxonomies.
 		 */
 		'getTaxonomies'                => apply_filters( 'et_fb_taxonomies', et_fb_get_taxonomy_terms() ),
-		
+
 		/**
 		 * Filters taxonomy labels.
 		 *
@@ -265,6 +279,114 @@ function et_fb_backend_helpers() {
 		'pageSettingsValues'           => ET_Builder_Settings::get_values(),
 		'abTestingSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
 		'defaults'                     => array(
+			'et_pb_accordion_item'    => array(
+				'title'   => $modules_defaults['title'],
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_audio'             => array(
+				'title'       => $modules_defaults['title'],
+				'artist_name' => _x( 'Artist Name', 'Modules dummy content', 'et_builder' ),
+			),
+			'et_pb_counter'           => array(
+				'content' => $modules_defaults['title'],
+				'percent' => $modules_defaults['number'],
+			),
+			'et_pb_blurb'             => array(
+				'title'   => $modules_defaults['title'],
+				'content' => $modules_defaults['body'],
+				'image'   => $modules_defaults['image']['landscape'],
+			),
+			'et_pb_button'            => array(
+				'button_text' => $modules_defaults['button'],
+			),
+			'et_pb_cta'               => array(
+				'title'       => $modules_defaults['title'],
+				'content'     => $modules_defaults['body'],
+				'button_text' => $modules_defaults['button'],
+			),
+			'et_pb_circle_counter'    => array(
+				'title'  => $modules_defaults['title'],
+				'number' => $modules_defaults['number'],
+			),
+			'et_pb_signup'            => array(
+				'title'   => $modules_defaults['title'],
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_image'             => array(
+				'src' => $modules_defaults['image']['landscape'],
+			),
+			'et_pb_fullwidth_image'   => array(
+				'src' => $modules_defaults['image']['landscape'],
+			),
+			'et_pb_login'             => array(
+				'title'   => $modules_defaults['title'],
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_number_counter'    => array(
+				'title'  => $modules_defaults['title'],
+				'number' => $modules_defaults['number'],
+			),
+			'et_pb_team_member'       => array(
+				'name'      => _x( 'Name Goes Here', 'Modules dummy content', 'et_builder' ),
+				'content'   => $modules_defaults['body'],
+				'image_url' => $modules_defaults['image']['portrait'],
+				'position'  => _x( 'Position', 'Modules dummy content', 'et_builder' ),
+			),
+			'et_pb_pricing_table'     => array(
+				'title'    => _x( 'Table Title', 'Modules dummy content', 'et_builder' ),
+				'subtitle' => $modules_defaults['subtitle'],
+				'currency' => _x( '$', 'Modules dummy content', 'et_builder' ),
+				'content'  => _x(
+					"+ This feature is included\n+ This feature is included\n+ This feature is included\n+ This feature is included\n- This feature is not included\n- This feature is not included",
+					'Modules dummy content',
+					'et_builder'
+				),
+				'sum'      => $modules_defaults['number'],
+			),
+			'et_pb_slide'             => array(
+				'heading'     => $modules_defaults['title'],
+				'content'     => $modules_defaults['body'],
+				'button_text' => $modules_defaults['button'],
+			),
+			'et_pb_tab'               => array(
+				'title'   => _x( 'Tab Title', 'Modules dummy content', 'et_builder' ),
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_testimonial'       => array(
+				'author'      => _x( 'Name Goes Here', 'Modules dummy content', 'et_builder' ),
+				'portrait_url' => $modules_defaults['image']['portrait'],
+				'content'      => $modules_defaults['body'],
+			),
+			'et_pb_text'              => array(
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_toggle'            => array(
+				'title'   => $modules_defaults['title'],
+				'content' => $modules_defaults['body'],
+			),
+			'et_pb_countdown_timer'   => array(
+				'title'   => $modules_defaults['title'],
+				'date_time' => gmdate( 'Y-m-d H:i', current_time( 'timestamp' ) + ( 30 * 86400 ) ), // next 30 days from current day
+			),
+			'et_pb_video'             => array(
+				'src' => $modules_defaults['video'],
+			),
+			'et_pb_video_slider_item' => array(
+				'src'                => $modules_defaults['video'],
+				'__is_oembed'        => ET_Builder_Module_Video_Slider_Item::is_oembed( array( 'src' => $modules_defaults['video'] ) ),
+				'__get_oembed'       => ET_Builder_Module_Video_Slider_Item::get_oembed( array( 'src' => $modules_defaults['video'] ) ),
+				'__oembed_thumbnail' => ET_Builder_Module_Video_Slider_Item::get_oembed_thumbnail( array( 'src' => $modules_defaults['video'] ) ),
+			),
+			'et_pb_fullwidth_header'  => array(
+				'title'           => $modules_defaults['title'],
+				'content'         => $modules_defaults['body'],
+				'button_one_text' => $modules_defaults['button'],
+			),
+			'et_pb_social_media_follow_network' => array(
+				'social_network'   => 'facebook',
+				'content'          => 'facebook',
+				'background_color' => '#3b5998',
+			),
 			'contactFormInputs'        => array(),
 			'backgroundOptions'        => array(
 				'type'                 => ET_Global_Settings::get_value( 'all_background_gradient_type' ),
@@ -761,6 +883,72 @@ function et_fb_backend_helpers() {
 		'customModuleCredits' => ET_Builder_Element::get_custom_modules_credits(),
 	);
 
+	$moduolesI10n = ET_Builder_Element::get_modules_i10n( $post_type );
+	$aditionalI10n = array(
+		'audio'    => array(
+			'meta' => _x( 'by <strong>%1$s</strong>', 'Audio Module meta information', 'et_builder' ),
+		),
+		'background' => array(
+			'label'       => __( 'Background', 'et_builder' ),
+			'description' => '',
+		),
+		'column' => array(
+			'backgroundColor' => esc_html__( 'Column %s Background', 'et_builder' ),
+		),
+		'contactForm' => array(
+			'thankYou' => esc_html__( 'Thanks for contacting us', 'et_builder' ),
+			'submit'   => esc_attr__( 'Submit', 'et_builder' ),
+		),
+		'contactFormItem' => array(
+			'noOptions'     => esc_html__( 'No options added.', 'et_builder' ),
+			'selectDefault' => esc_html__( '-- Please Select --', 'et_builder' ),
+		),
+		'countdownTimer' => array(
+			'dayFull'     => esc_html__( 'Day(s)', 'et_builder' ),
+			'dayShort'    => esc_html__( 'Day', 'et_builder' ),
+			'hourFull'    => esc_html__( 'Hour(s)', 'et_builder' ),
+			'hourShort'   => esc_html__( 'Hrs', 'et_builder' ),
+			'minuteFull'  => esc_html__( 'Minute(s)', 'et_builder' ),
+			'minuteShort' => esc_html__( 'Min', 'et_builder' ),
+			'secondFull'  => esc_html__( 'Second(s)', 'et_builder' ),
+			'secondShort' => esc_html__( 'Sec', 'et_builder' ),
+		),
+		'signup' => array(
+			'firstName'    => esc_attr__( 'First Name', 'et_builder' ),
+			'lastName'     => esc_attr__( 'Last Name', 'et_builder' ),
+			'name'         => esc_attr__( 'Name', 'et_builder' ),
+			'email'        => esc_attr__( 'Email', 'et_builder' ),
+		),
+		'filterablePortfolio' => array(
+			'all' => esc_html__( 'All', 'et_builder' ),
+		),
+		'login' => array(
+			'loginAs'         => sprintf( esc_html__( 'Login as %s', 'et_builder' ), $current_user->display_name ),
+			'login'           => esc_html__( 'Login', 'et_builder' ),
+			'logout'          => esc_html__( 'Log out', 'et_builder' ),
+			'forgotPassword'  => esc_html__( 'Forgot your password?', 'et_builder' ),
+			'username'        => esc_html__( 'Username', 'et_builder' ),
+			'password'        => esc_html__( 'Password', 'et_builder' ),
+			'note_autofill'   => esc_attr__( 'Note: this field is used to disable browser autofill during the form editing in VB', 'et_builder' ),
+		),
+		'postTitle' => array(
+			'by' => esc_html__( 'by ', 'et_builder' ),
+		),
+		'search' => array(
+			'submitButtonText' => esc_html__( 'Search', 'et_builder' ),
+			'searchfor' => esc_html__( 'Search for:', 'et_builder' ),
+		),
+		'fullwidthPostSlider' => array(
+			'by' => esc_html__( 'by ', 'et_builder' ),
+		),
+		'socialFollow' => array(
+			'follow' => esc_html__( 'Follow', 'et_builder' ),
+		),
+		'items' => array(
+			'newItemDefaultText' => esc_html__( 'New Item', 'et_builder' ),
+		),
+	);
+
 	// Prepare VB help videos list.
 	$help_videos = array_merge( array(
 		'et_pb_default' => array(
@@ -893,70 +1081,7 @@ function et_fb_backend_helpers() {
 
 	// Internationalization.
 	$helpers['i18n'] = array(
-		'modules'      => array(
-			'audio'    => array(
-				'meta' => _x( 'by <strong>%1$s</strong>', 'Audio Module meta information', 'et_builder' ),
-			),
-			'background' => array(
-				'label'       => __( 'Background', 'et_builder' ),
-				'description' => '',
-			),
-			'column' => array(
-				'backgroundColor' => esc_html__( 'Column %s Background', 'et_builder' ),
-			),
-			'contactForm' => array(
-				'thankYou' => esc_html__( 'Thanks for contacting us', 'et_builder' ),
-				'submit'   => esc_attr__( 'Submit', 'et_builder' ),
-			),
-			'contactFormItem' => array(
-				'noOptions'     => esc_html__( 'No options added.', 'et_builder' ),
-				'selectDefault' => esc_html__( '-- Please Select --', 'et_builder' ),
-			),
-			'countdownTimer' => array(
-				'dayFull'     => esc_html__( 'Day(s)', 'et_builder' ),
-				'dayShort'    => esc_html__( 'Day', 'et_builder' ),
-				'hourFull'    => esc_html__( 'Hour(s)', 'et_builder' ),
-				'hourShort'   => esc_html__( 'Hrs', 'et_builder' ),
-				'minuteFull'  => esc_html__( 'Minute(s)', 'et_builder' ),
-				'minuteShort' => esc_html__( 'Min', 'et_builder' ),
-				'secondFull'  => esc_html__( 'Second(s)', 'et_builder' ),
-				'secondShort' => esc_html__( 'Sec', 'et_builder' ),
-			),
-			'signup' => array(
-				'firstName'    => esc_attr__( 'First Name', 'et_builder' ),
-				'lastName'     => esc_attr__( 'Last Name', 'et_builder' ),
-				'name'         => esc_attr__( 'Name', 'et_builder' ),
-				'email'        => esc_attr__( 'Email', 'et_builder' ),
-			),
-			'filterablePortfolio' => array(
-				'all' => esc_html__( 'All', 'et_builder' ),
-			),
-			'login' => array(
-				'loginAs'         => sprintf( esc_html__( 'Login as %s', 'et_builder' ), $current_user->display_name ),
-				'login'           => esc_html__( 'Login', 'et_builder' ),
-				'logout'          => esc_html__( 'Log out', 'et_builder' ),
-				'forgotPassword'  => esc_html__( 'Forgot your password?', 'et_builder' ),
-				'username'        => esc_html__( 'Username', 'et_builder' ),
-				'password'        => esc_html__( 'Password', 'et_builder' ),
-				'note_autofill'   => esc_attr__( 'Note: this field is used to disable browser autofill during the form editing in VB', 'et_builder' ),
-			),
-			'postTitle' => array(
-				'by' => esc_html__( 'by ', 'et_builder' ),
-			),
-			'search' => array(
-				'submitButtonText' => esc_html__( 'Search', 'et_builder' ),
-				'searchfor' => esc_html__( 'Search for:', 'et_builder' ),
-			),
-			'fullwidthPostSlider' => array(
-				'by' => esc_html__( 'by ', 'et_builder' ),
-			),
-			'socialFollow' => array(
-				'follow' => esc_html__( 'Follow', 'et_builder' ),
-			),
-			'items' => array(
-				'newItemDefaultText' => esc_html__( 'New Item', 'et_builder' ),
-			),
-		),
+		'modules'                      => array_merge( $moduolesI10n, $aditionalI10n ),
 		'saveButtonText'               => esc_attr__( 'Save', 'et_builder' ),
 		'saveDraftButtonText'          => esc_attr__( 'Save Draft', 'et_builder' ),
 		'publishButtonText'            => ( is_page() && ! current_user_can( 'publish_pages' ) ) || ( ! is_page() && ! current_user_can( 'publish_posts' ) ) ? esc_attr__( 'Submit', 'et_builder' ) : esc_attr__( 'Publish', 'et_builder' ),
@@ -970,6 +1095,8 @@ function et_fb_backend_helpers() {
 			),
 			'upload'                   => array(
 				'buttonText'           => esc_html__( 'Upload', 'et_builder' ),
+				'addImage'             => esc_html__( 'Add Image', 'et_builder' ),
+				'addVideo'             => esc_html__( 'Add Video', 'et_builder' ),
 			),
 			'insertMedia'              => array(
 				'buttonText'           => esc_html__( 'Add Media', 'et_builder' ),
@@ -987,6 +1114,7 @@ function et_fb_backend_helpers() {
 			),
 			'uploadGallery'            => array(
 				'uploadButtonText'     => esc_html__( 'Update Gallery', 'et_builder'),
+				'addImages'            => esc_html__( 'Add Gallery Images', 'et_builder'),
 			),
 			'centerMap'                => array(
 				'updateMapButtonText'  => esc_html__( 'Find', 'et_builder'),
@@ -1016,7 +1144,7 @@ function et_fb_backend_helpers() {
 				'isEmpty'              => esc_html__( 'is empty', 'et_builder' ),
 				'isNotEmpty'           => esc_html__( 'is not empty', 'et_builder' ),
 			),
-			'selectAnimation' => array(
+			'selectAnimation'          => array(
 				'none'   => esc_html__( 'None', 'et_builder' ),
 				'fade'   => esc_html__( 'Fade', 'et_builder' ),
 				'slide'  => esc_html__( 'Slide', 'et_builder' ),
@@ -1027,6 +1155,12 @@ function et_fb_backend_helpers() {
 				'roll'   => esc_html__( 'Roll', 'et_builder' ),
 			),
 			'cssText'                  => esc_html__( 'CSS', 'et_builder'),
+			'background'               => array(
+				'addColor'    => esc_html__( 'Add Background Color', 'et_builder' ),
+				'addGradient' => esc_html__( 'Add Background Gradient', 'et_builder' ),
+				'addImage'    => esc_html__( 'Add Background Image', 'et_builder' ),
+				'addVideo'    => esc_html__( 'Add Background Video', 'et_builder' ),
+			),
 			'responsiveTabs' => array(
 				'desktop' => esc_html__( 'Desktop', 'et_builder' ),
 				'tablet'  => esc_html__( 'Tablet', 'et_builder' ),
@@ -1215,8 +1349,9 @@ function et_fb_backend_helpers() {
 					'history'           => esc_html__( 'History State Interval', 'et_builder' ),
 					'modal_position'    => esc_html__( 'Settings Modal Default Position', 'et_builder' ),
 					'animation'         => esc_html__( 'Builder Interface Animations', 'et_builder' ),
-					'disabled_modules'  => esc_html__( 'Show Disabled Modules at 50%', 'et_builder' ),
+					'disabled_modules'  => esc_html__( 'Show Disabled Modules At 50% Opacity', 'et_builder' ),
 					'group_settings'    => esc_html__( 'Group Settings Into Closed Toggles', 'et_builder' ),
+					'dummy_content'     => esc_html__( 'Add Placeholder Content To New Modules', 'et_builder' ),
 				),
 				'view_mode_select' => array(
                     '0' => esc_html__( 'Hover Mode' , 'et_builder' ),
@@ -1249,6 +1384,10 @@ function et_fb_backend_helpers() {
 					'off'  => esc_html__( 'Off', 'et_builder' ),
 				),
 				'display_modal_settings' => array(
+					'on'   => esc_html__( 'On', 'et_builder' ),
+					'off'  => esc_html__( 'Off', 'et_builder' ),
+				),
+				'enable_dummy_content' => array(
 					'on'   => esc_html__( 'On', 'et_builder' ),
 					'off'  => esc_html__( 'Off', 'et_builder' ),
 				),
@@ -1415,7 +1554,7 @@ function et_fb_backend_helpers() {
 				),
 				'partial' => sprintf(
 					esc_html__( 'This third party module is not fully compatible with the latest version of the Divi Builder. You can still edit the module, but it will take longer to update on the page. You can contact the developer of the module to encourage them to update it. <a href="%1$s" target="_blank">Click here</a> for more info.', 'et_builder' ),
-					'https://www.elegantthemes.com/documentation/developer/divi-builder-module-in-depth-levels-of-compatibility'
+					'https://www.elegantthemes.com/documentation/developers/divi-module/compatibility-levels/'
 				),
 			),
 			'unsupportedFieldType' => esc_html__( 'The above custom field is not fully supported and has been rendered as a standard input.' ),

@@ -59,7 +59,8 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 				'percent'   => array(
 					'label'    => esc_html__( 'Percentage', 'et_builder' ),
 					'css'      => array(
-						'main' => "{$this->main_css_element} .et_pb_counter_amount",
+						'main'       => "{$this->main_css_element} .et_pb_counter_amount_number",
+						'text_align' => "{$this->main_css_element} .et_pb_counter_amount",
 					),
 				),
 			),

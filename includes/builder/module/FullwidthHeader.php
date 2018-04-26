@@ -122,6 +122,9 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 					'main' => '.et_pb_fullwidth_header%%order_class%%',
 				),
 				'options' => array(
+					'background_color' => array(
+						'default'          => et_builder_accent_color(),
+					),
 					'parallax_method' => array(
 						'default' => 'off',
 					),
@@ -140,7 +143,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				),
 				'options' => array(
 					'background_layout' => array(
-						'default' => 'light',
+						'default' => 'dark',
 					),
 				),
 			),

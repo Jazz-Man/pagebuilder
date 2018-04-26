@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.1.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.2' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -743,6 +743,10 @@ function _et_fb_get_app_preferences_defaults() {
 			'type'    => 'bool',
 			'default' => false,
 		),
+		'builder_enable_dummy_content' => array(
+			'type'    => 'bool',
+			'default' => true,
+		),
 		'event_mode'             => array(
 			'type'    => 'string',
 			'default' => 'hover',
@@ -1397,6 +1401,26 @@ function et_fb_update_layout() {
 }
 add_action( 'wp_ajax_et_fb_update_layout', 'et_fb_update_layout' );
 
+function et_fb_fetch_attachments() {
+	et_core_security_check( 'edit_posts', 'et_fb_fetch_attachments', 'et_fb_fetch_attachments' );
+
+	$ids = ET_Core_Data_Utils::instance()->array_get( $_POST, 'ids' );
+
+	if ( empty( $ids ) ) {
+		wp_send_json( null );
+	} else {
+		wp_send_json( get_posts( array(
+			'posts_per_page' => - 1,
+			'include'        => $ids,
+			'post_type'      => 'attachment',
+		) ) );
+	}
+
+	die();
+}
+
+add_action( 'wp_ajax_et_fb_fetch_attachments', 'et_fb_fetch_attachments' );
+
 if ( ! function_exists( 'et_fb_disable_product_tour' ) ) :
 function et_fb_disable_product_tour() {
 	do_action( 'et_fb_disable_product_tour' );
@@ -1744,7 +1768,6 @@ function et_builder_get_element_style_css( $value, $property = 'margin', $use_im
 
 	if ( ! empty( $values ) ) {
 		$element_style = '';
-		$i = 0;
 		$values = array_map( 'trim', $values );
 		$positions = array(
 			'top',
@@ -1753,18 +1776,18 @@ function et_builder_get_element_style_css( $value, $property = 'margin', $use_im
 			'left',
 		);
 
-		foreach ( $values as $element_style_value ) {
-			if ( '' !== $element_style_value ) {
-				$element_style .= sprintf(
-					'%3$s-%1$s: %2$s%4$s; ',
-					esc_attr( $positions[ $i ] ),
-					esc_attr( et_builder_process_range_value( $element_style_value, $property ) ),
-					esc_attr( $property ),
-					( $use_important ? ' !important' : '' )
-				);
+		foreach ( $positions as $i => $position ) {
+			if ( ! isset( $values[ $i ] ) || empty( $values[ $i ] ) ) {
+				continue;
 			}
 
-			$i++;
+			$element_style .= sprintf(
+				'%3$s-%1$s: %2$s%4$s; ',
+				esc_attr( $position ),
+				esc_attr( et_builder_process_range_value( $values[ $i ], $property ) ),
+				esc_attr( $property ),
+				( $use_important ? ' !important' : '' )
+			);
 		}
 
 		$style .= rtrim( $element_style );
@@ -3375,17 +3398,17 @@ if ( ! function_exists( 'et_pb_load_global_module' ) ) {
 				}
 			}
 		}
-		
+
 		// Set provided prev_background_color
 		if ( ! empty( $prev_bg ) ) {
 			$global_shortcode = preg_replace( "/prev_background_color=\"(.*?)\"/", 'prev_background_color="' . $prev_bg . '"', $global_shortcode, 1 );
 		}
-		
+
 		// Set provided next_background_color
 		if ( ! empty( $next_bg ) ) {
 			$global_shortcode = preg_replace( "/next_background_color=\"(.*?)\"/", 'next_background_color="' . $next_bg . '"', $global_shortcode, 1 );
 		}
-		
+
 		return $global_shortcode;
 	}
 }

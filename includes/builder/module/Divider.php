@@ -27,9 +27,6 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 
 		if ( ! et_is_builder_plugin_active() && true === et_get_option( 'et_pb_divider-show_divider', false ) ) {
 			$this->show_divider_options = array_reverse( $this->show_divider_options );
-			$this->show_divider_default = 'on';
-		} else {
-			$this->show_divider_default = 'off';
 		}
 
 		$this->settings_modal_toggles = array(
@@ -71,7 +68,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 	function get_fields() {
 		$fields = array(
 			'color' => array(
-				'default'         => '#ffffff',
+				'default'         => et_builder_accent_color(),
 				'label'           => esc_html__( 'Color', 'et_builder' ),
 				'type'            => 'color-alpha',
 				'tab_slug'        => 'advanced',
@@ -80,7 +77,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 				'toggle_slug'     => 'color',
 			),
 			'show_divider' => array(
-				'default'           => $this->show_divider_default,
+				'default'           => 'on',
 				'label'             => esc_html__( 'Show Divider', 'et_builder' ),
 				'type'              => 'yes_no_button',
 				'option_category'   => 'configuration',

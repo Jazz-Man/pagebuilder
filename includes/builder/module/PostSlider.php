@@ -112,6 +112,9 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 					'parallax_method' => array(
 						'default' => 'off',
 					),
+					'background_color' => array(
+						'default'          => et_builder_accent_color(),
+					),
 				),
 			),
 			'borders'               => array(

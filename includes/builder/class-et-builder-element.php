@@ -947,7 +947,7 @@ class ET_Builder_Element {
 
 			// Unset renderer to avoid errors in VB because of errors in 3rd party plugins
 			// BB compat. Still need this data, so leave it for BB
-			if ( ! self::$loading_backbone_templates && ! et_admin_backbone_templates_being_loaded() && isset( $this->fields_unprocessed[ $field_name ]['renderer'] ) ) {
+			if ( self::is_loading_vb_data() && isset( $this->fields_unprocessed[ $field_name ]['renderer'] ) ) {
 				unset( $this->fields_unprocessed[ $field_name ]['renderer'] );
 			}
 		}
@@ -962,6 +962,15 @@ class ET_Builder_Element {
 				$this->fields_unprocessed[ $key ]['vb_support'] = false;
 			}
 		}
+	}
+
+	/**
+	 * Determine if current request is VB Data Request by checking $_POST['action'] value
+	 *
+	 * @return bool
+	 */
+	private function is_loading_vb_data() {
+		return isset( $_POST['action'] ) && 'et_fb_retrieve_builder_data' === $_POST['action'];
 	}
 
 	private function register_post_type( $post_type ) {
@@ -1579,6 +1588,25 @@ class ET_Builder_Element {
 			$this->add_classname( 'et_animated' );
 		}
 
+		// Hide module on specific screens if needed
+		if ( isset( $this->props['disabled_on'] ) && '' !== $this->props['disabled_on'] ) {
+			$disabled_on_array = explode( '|', $this->props['disabled_on'] );
+			$i = 0;
+			$current_media_query = 'max_width_767';
+
+			foreach( $disabled_on_array as $value ) {
+				if ( 'on' === $value ) {
+					ET_Builder_Module::set_style( $render_slug, array(
+						'selector'    => '%%order_class%%',
+						'declaration' => 'display: none !important;',
+						'media_query' => ET_Builder_Element::get_media_query( $current_media_query ),
+					) );
+				}
+				$i++;
+				$current_media_query = 1 === $i ? '768_980' : 'min_width_981';
+			}
+		}
+
 		$render_method = $et_fb_processing_shortcode_object ? 'render_as_builder_data' : 'render';
 		$output        = $this->{$render_method}( $attrs, $content, $render_slug, $parent_address, $global_parent, $global_parent_type );
 
@@ -1611,25 +1639,6 @@ class ET_Builder_Element {
 		$output = apply_filters( "{$render_slug}_shortcode_output", $output, $render_slug );
 
 		$this->_render_count++;
-
-		// Hide module on specific screens if needed
-		if ( isset( $this->props['disabled_on'] ) && '' !== $this->props['disabled_on'] ) {
-			$disabled_on_array = explode( '|', $this->props['disabled_on'] );
-			$i = 0;
-			$current_media_query = 'max_width_767';
-
-			foreach( $disabled_on_array as $value ) {
-				if ( 'on' === $value ) {
-					ET_Builder_Module::set_style( $render_slug, array(
-						'selector'    => '%%order_class%%',
-						'declaration' => 'display: none !important;',
-						'media_query' => ET_Builder_Element::get_media_query( $current_media_query ),
-					) );
-				}
-				$i++;
-				$current_media_query = 1 === $i ? '768_980' : 'min_width_981';
-			}
-		}
 
 		if ( $hide_subject_module ) {
 			$previous_subjects_cache = get_post_meta( $post_id, 'et_pb_subjects_cache', true );
@@ -1867,6 +1876,12 @@ class ET_Builder_Element {
 
 				if ( $content_synced && ! $is_global_template ) {
 					$global_content = et_pb_get_global_module_content( $global_module_data, $function_name_processed );
+
+					// When saving global rows from specialty sections, they get saved as et_pb_row instead of et_pb_row_inner.
+					// Handle this special case when parsing to avoid empty global row content.
+					if ( empty( $global_content ) && 'et_pb_row_inner' === $function_name_processed ) {
+						$global_content = et_pb_get_global_module_content( $global_module_data, 'et_pb_row' );
+					}
 				}
 
 				// remove the shortcode content to avoid conflicts of parent attributes with similar attrs from child modules
@@ -6127,6 +6142,16 @@ class ET_Builder_Element {
 		}
 
 		switch( $field['type'] ) {
+			case 'upload-gallery' :
+				$field_el .= sprintf(
+					'<input type="button" class="button button-upload et-pb-gallery-button" value="%1$s" />' .
+					'<input type="hidden" name="%3$s" id="%4$s" class="et-pb-gallery" %2$s />',
+					esc_attr__( 'Update Gallery', 'et_builder' ),
+					$value,
+					esc_attr( $field['name'] ),
+					esc_attr( $field['id'] )
+				);
+			    break;
 			case 'background-field':
 				$field_el .= $this->wrap_settings_background_fields( $field['background_fields'], $field['base_name'] );
 				break;
@@ -10144,6 +10169,44 @@ class ET_Builder_Element {
 		return $module_fields;
 	}
 
+	static function get_modules_i10n( $post_type = '', $mode = 'all', $module_type = 'all' ) {
+		$parent_modules = self::get_parent_modules( $post_type );
+		$child_modules  = self::get_child_modules( $post_type );
+
+		switch ( $mode ) {
+			case 'parent':
+				$_modules = $parent_modules;
+				break;
+
+			case 'child':
+				$_modules = $child_modules;
+				break;
+
+			default:
+				$_modules = array_merge( $parent_modules, $child_modules );
+				break;
+		}
+
+		$fields = array();
+
+		foreach( $_modules as $_module_slug => $_module ) {
+			// filter modules by slug if needed
+			if ( 'all' !== $module_type && $module_type !== $_module_slug ) {
+				continue;
+			}
+
+			$fields[$_module_slug] = array(
+				'addNew' => $_module->add_new_child_text()
+			);
+		}
+
+		if ( 'all' !== $module_type ) {
+			return $fields[ $module_type ];
+		}
+
+		return $fields;
+	}
+
 	static function get_module_fields( $post_type, $module ) {
 		$_modules = self::get_parent_and_child_modules( $post_type );
 
@@ -10715,6 +10778,7 @@ class ET_Builder_Element {
 		// Some web browser glitches with filters and blend modes can be improved this way
 		// see https://bugs.chromium.org/p/chromium/issues/detail?id=157218 for more info
 		$backfaceVisibility = 'backface-visibility:hidden;';
+		$backfaceVisibilityAdded = array();
 
 		$additional_classes = '';
 
@@ -10747,6 +10811,8 @@ class ET_Builder_Element {
 						esc_html( $mix_blend_mode )
 					) . $backfaceVisibility,
 				) );
+
+				$backfaceVisibilityAdded[] = $selector;
 			}
 			$additional_classes .= ' et_pb_css_mix_blend_mode';
 		} else if ( 'et_pb_column' === $function_name ) {
@@ -10784,12 +10850,13 @@ class ET_Builder_Element {
 		// Append our new CSS rules
 		if ( trim( $css_value ) ) {
 			foreach ( $selectors_prepared as $selector ) {
+				$backfaceVisibilityDeclaration = in_array( $selector, $backfaceVisibilityAdded ) ? '' : $backfaceVisibility;
 				ET_Builder_Element::set_style( $function_name, array(
 					'selector'    => $selector,
 					'declaration' => sprintf(
 						'filter: %1$s;',
 						$css_value
-					) . $backfaceVisibility,
+					) . $backfaceVisibilityDeclaration,
 				) );
 			}
 			$additional_classes .= ' et_pb_css_filters';

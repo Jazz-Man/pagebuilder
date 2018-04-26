@@ -111,7 +111,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 						'default'      => 'left',
 					),
 					'background_layout' => array(
-						'default' => 'dark',
+						'default' => 'light',
 					),
 				),
 			),

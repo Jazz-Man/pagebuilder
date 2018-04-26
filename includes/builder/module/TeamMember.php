@@ -330,7 +330,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'<div class="et_pb_team_member_image et-waypoint%3$s%4$s%5$s">
 					<img src="%1$s" alt="%2$s" />
 				</div>',
-				esc_url( $image_url ),
+				esc_attr( $image_url ),
 				esc_attr( $name ),
 				esc_attr( " et_pb_animation_{$animation}" ),
 				$generate_css_filters_image,

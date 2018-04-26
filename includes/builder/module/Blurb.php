@@ -536,7 +536,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		if ( 'off' === $use_icon ) {
 			$image = ( '' !== trim( $image ) ) ? sprintf(
 				'<img src="%1$s" alt="%2$s" class="et-waypoint%3$s" />',
-				esc_url( $image ),
+				esc_attr( $image ),
 				esc_attr( $alt ),
 				esc_attr( " et_pb_animation_{$animation}" )
 			) : '';

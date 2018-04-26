@@ -252,7 +252,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		$output = sprintf(
 			'<img src="%1$s" alt="%2$s"%3$s />
 			%4$s',
-			esc_url( $src ),
+			esc_attr( $src ),
 			esc_attr( $alt ),
 			( '' !== $title_text ? sprintf( ' title="%1$s"', esc_attr( $title_text ) ) : '' ),
 			'on' === $is_overlay_applied ? $overlay_output : ''
@@ -260,7 +260,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 
 		if ( 'on' === $show_in_lightbox ) {
 			$output = sprintf( '<a href="%1$s" class="et_pb_lightbox_image" title="%3$s">%2$s</a>',
-				esc_url( $src ),
+				esc_attr( $src ),
 				$output,
 				esc_attr( $alt )
 			);

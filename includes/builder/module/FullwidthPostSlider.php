@@ -107,6 +107,9 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					'main' => '%%order_class%%, %%order_class%%.et_pb_bg_layout_dark, %%order_class%%.et_pb_bg_layout_light',
 				),
 				'options' => array(
+					'background_color' => array(
+						'default'      => et_builder_accent_color(),
+					),
 					'background_position' => array(
 						'default'         => 'center',
 					),

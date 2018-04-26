@@ -84,12 +84,12 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 	function get_fields() {
 		$fields = array(
 			'src' => array(
-				'label'              => esc_html__( 'Image URL', 'et_builder' ),
 				'type'               => 'upload',
 				'option_category'    => 'basic_option',
 				'upload_button_text' => esc_attr__( 'Upload an image', 'et_builder' ),
 				'choose_text'        => esc_attr__( 'Choose an Image', 'et_builder' ),
 				'update_text'        => esc_attr__( 'Set As Image', 'et_builder' ),
+				'hide_metadata'      => true,
 				'affects'            => array(
 					'alt',
 					'title_text',
@@ -375,7 +375,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 
 		$output = sprintf(
 			'<span class="et_pb_image_wrap"><img src="%1$s" alt="%2$s"%3$s />%4$s</span>',
-			esc_url( $src ),
+			esc_attr( $src ),
 			esc_attr( $alt ),
 			( '' !== $title_text ? sprintf( ' title="%1$s"', esc_attr( $title_text ) ) : '' ),
 			'on' === $is_overlay_applied ? $overlay_output : ''
@@ -383,7 +383,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 
 		if ( 'on' === $show_in_lightbox ) {
 			$output = sprintf( '<a href="%1$s" class="et_pb_lightbox_image" title="%3$s">%2$s</a>',
-				esc_url( $src ),
+				esc_attr( $src ),
 				$output,
 				esc_attr( $alt )
 			);
@@ -428,5 +428,17 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		return $output;
 	}
 }
+
+// This adds the upload label for Image module
+// TODO: Remove when BB is removed.
+function _et_bb_module_image_add_src_label( $filed ) {
+	if ( ! isset( $filed['label'] ) ) {
+		$filed['label'] = esc_html__( 'Image URL', 'et_builder' );
+	}
+
+	return $filed;
+}
+
+add_filter( 'et_builder_module_fields_et_pb_image_field_src', '_et_bb_module_image_add_src_label' );
 
 new ET_Builder_Module_Image;

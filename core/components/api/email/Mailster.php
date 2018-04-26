@@ -109,7 +109,7 @@ class ET_Core_API_Email_Mailster extends ET_Core_API_Email_Provider {
 
 		$params       = $this->transform_data_to_provider_format( $args, 'subscriber', array( 'dbl_optin' ) );
 		$extra_params = array(
-			'status'   => 'disable' === $args['dbl_optin'] ? 0 : 1,
+			'status'   => 'disable' === $args['dbl_optin'] ? 1 : 0,
 			'referrer' => $this->_get_referrer( $args ),
 		);
 

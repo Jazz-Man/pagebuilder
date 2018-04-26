@@ -238,7 +238,6 @@ class ET_Global_Settings {
 			'et_pb_cta-background_repeat'                            => $background_image_defaults['repeat'],
 			'et_pb_cta-background_blend'                             => $background_image_defaults['blend'],
 			// Module: Divider
-			'et_pb_divider-show_divider'                             => 'off',
 			'et_pb_divider-divider_style'                            => 'solid',
 			'et_pb_divider-divider_weight'                           => '1',
 			'et_pb_divider-height'                                   => '1',

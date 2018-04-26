@@ -106,7 +106,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				),
 				'options' => array(
 					'background_color' => array(
-						'default'          => '#ffffff',
+						'default'          => et_builder_accent_color(),
 						'default_on_child' => true,
 					),
 				),
@@ -289,7 +289,11 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 			),
 			'video_url' => array(
 				'label'           => esc_html__( 'Slide Video', 'et_builder' ),
-				'type'            => 'text',
+				'type'            => 'upload',
+				'data_type'       => 'video',
+				'upload_button_text' => esc_attr__( 'Upload a video', 'et_builder' ),
+				'choose_text'        => esc_attr__( 'Choose a Video WEBM File', 'et_builder' ),
+				'update_text'        => esc_attr__( 'Set As Video', 'et_builder' ),
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'If defined, this video will appear to the left of your slide text. Enter youtube or vimeo page url, or leave blank for a text-only slide.', 'et_builder' ),
 				'toggle_slug'     => 'image_video',
@@ -405,6 +409,10 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		// Inheriting slider attribute
 		global $et_pb_slider;
 
+		// Check if current slide item version is made before Divi v3.2 (UI Improvement release). v3.2 changed default
+		// background color for slide item for usability and inheritance mechanism requires custom treatment on FE and VB
+		$is_prior_v32 = version_compare( self::$_->array_get( $this->props, '_builder_version', '3.0.47' ), '3.2', '<' );
+
 		// Attribute inheritance should be done on front-end / published page only.
 		// Don't run attribute inheritance in VB and Backend to avoid attribute inheritance accidentally being saved on VB / BB
 		if ( ! empty( $et_pb_slider ) && ! is_admin() && ! et_fb_is_enabled() ) {
@@ -424,6 +432,19 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 
 				// Overwrite slider item's empty / default value
 				$this->props[ $slider_attr ] = $slider_attr_value;
+			}
+		}
+
+		// In VB, inheritance is done in VB side. However in migrating changing default that is affected by inheritance, the value
+		// needs to be modified before being set to avoid sudden color change when _builder_version is bumped when settings modal
+		// is opened. This making prior saved value changed but it is the safest option considering old Divi doesn't trim background_color
+		if ( ! empty( $et_pb_slider ) && is_admin() && $is_prior_v32 ) {
+			$slider_background_color           = self::$_->array_get( $et_pb_slider, 'background_color', '' );
+			$is_slide_background_color_empty   = in_array( $this->props['background_color'], array( '', '#ffffff', et_builder_accent_color() ) );
+			$is_slider_background_color_filled = '' !== $slider_background_color;
+
+			if ( $is_slide_background_color_empty && $is_slider_background_color_filled ) {
+				$this->props['background_color'] = '';
 			}
 		}
 	}

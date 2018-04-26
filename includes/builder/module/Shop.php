@@ -409,7 +409,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 	 * Get paged var
 	 */
 	public function get_paged_var() {
-		if ( isset( $this->props['__page'] ) ) {
+		if ( ! empty( $this->props['__page'] ) ) {
 			// For the VB
 			$paged = $this->props['__page'];
 		} else {
