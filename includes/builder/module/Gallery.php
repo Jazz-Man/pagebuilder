@@ -4,46 +4,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Gallery', 'et_builder' );
 		$this->slug       = 'et_pb_gallery';
-		$this->fb_support = true;
 		$this->vb_support = 'on';
-
-		$this->whitelisted_fields = array(
-			'gallery_ids',
-			'gallery_orderby',
-			'gallery_captions',
-			'fullwidth',
-			'posts_number',
-			'show_title_and_caption',
-			'show_pagination',
-			'background_layout',
-			'auto',
-			'auto_speed',
-			'admin_label',
-			'module_id',
-			'module_class',
-			'zoom_icon_color',
-			'hover_overlay_color',
-			'hover_icon',
-			'orientation',
-			'box_shadow_style_image',
-			'box_shadow_horizontal_image',
-			'box_shadow_vertical_image',
-			'box_shadow_blur_image',
-			'box_shadow_spread_image',
-			'box_shadow_color_image',
-			'box_shadow_position_image',
-		);
-
-		$this->fields_defaults = array(
-			'fullwidth'              => array( 'off' ),
-			'posts_number'           => array( 4, 'add_default_setting' ),
-			'show_title_and_caption' => array( 'on' ),
-			'show_pagination'        => array( 'on' ),
-			'background_layout'      => array( 'light' ),
-			'auto'                   => array( 'off' ),
-			'auto_speed'             => array( '7000' ),
-			'orientation'            => array( 'landscape' ),
-		);
 
 		$this->settings_modal_toggles = array(
 			'general'  => array(

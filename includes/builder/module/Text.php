@@ -377,11 +377,11 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 				'type'              => 'select',
 				'option_category'   => 'configuration',
 				'options'           => array(
-					'outside' => esc_html__( 'Outside', 'et_builder' ),
 					'inside'  => esc_html__( 'Inside', 'et_builder' ),
+					'outside' => esc_html__( 'Outside', 'et_builder' ),
 				),
 				'priority'          => 85,
-				'default'           => 'outside',
+				'default'           => 'inside',
 				'default_on_front' => '',
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'text',

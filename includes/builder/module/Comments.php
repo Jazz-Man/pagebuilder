@@ -256,10 +256,16 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		remove_filter( 'comments_open', '__return_false' );
 		remove_filter( 'comments_array', '__return_empty_array' );
 
+		// Custom action before calling comments_template.
+		do_action( 'et_fb_before_comments_template' );
+
 		ob_start();
 		comments_template( '', true );
 		$comments_content = ob_get_contents();
 		ob_end_clean();
+
+		// Custom action after calling comments_template.
+		do_action( 'et_fb_after_comments_template' );
 
 		// Globally flag that comment module has been printed
 		$et_pb_comments_print = false;

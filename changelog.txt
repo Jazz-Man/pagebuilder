@@ -1,7 +1,43 @@
+version 3.2.1 ( updated 05-02-2018 )
+- Fixed missing module credits in the Visual Builder.
+- Fixed missing comment module comment count in Divi Builder plugin.
+- Fixed inability to set blurb module widths to 100% on tablet and smartphone breakpoints.
+- Fixed specialty section row padding inconsistencies in the Visual Builder.
+- Fixed issue with ordered list styles not working correctly in text modules.
+- Updated color palette to match new circle swatch UI.
+- Added tooltips to the new color picker UI.
+- Added checkered background pattern to color palettes to help distinguish between opaque and transparent colors.
+- Fixed "add new element button" still being rendered when parent section or row is locked in Grid Mode.
+- Fixed bug that caused line breaks to be incorrectly encoded in Custom CSS options.
+- Fixed a bug that caused the Divi Builder to fail to load when disabled modules existed on the page.
+- Fixed custom font selection rendering in the Visual Builder settings modal.
+- Fixed issue when a WooCommerce shop page could not be set as a front static page when the page was built with the divi builder.
+- Disabled keyboard shortcuts on input focus that caused unwanted modal snapping.
+- Fixed Javascript error in Divi Builder that occurred when content was empty or didn't contain shortcodes.
+- Fixed a bug that caused legacy padding values of "0" to be ignored as null values on the front end due to a logic error in the PHP validation method.
+- Fixed incorrect preloader icon positioning when loading premade layouts.
+- Fixed responsive heading font sizes for h5 and h6 tags.
+- Fixed a WooCommerce issue where related products didn't clear properly when no description was provided.
+	* epanel/core_functions.php
+	* epanel/css/panel.css
+	* epanel/js/functions-init.js
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/compat/woocommerce.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/plugin-compat/woocommerce.php
+	* includes/builder/scripts/builder.js
+	* js/theme-customizer.js
+
 version 3.2 ( updated 04-26-2018 )
 - Arrow keys can now be used to adjust numerical values in the Visual Builder.
-- Added new up/down buttons to numerical inputs that can be used to make precise value adjustments. 
-- Added the ability to link module spacing values together. 
+- Added new up/down buttons to numerical inputs that can be used to make precise value adjustments.
+- Added the ability to link module spacing values together.
 - Improved the color option interface in the Visual Builder.
 - Modules added in the Visual Builder will now contain a minimal amount of pre-filled content, allowing the module to be fully rendered on the page automatically.
 - Added an option to the Visual Builder interface settings to disable the above mentioned pre-filled content.
@@ -54,7 +90,14 @@ version 3.2 ( updated 04-26-2018 )
 	* includes/builder/module/SliderItem.php
 	* includes/builder/module/TeamMember.php
 	* includes/builder/scripts/frontend-builder-scripts.js
-	
+
+version 3.1.1 ( updated 04-19-2018 )
+- Fixed a logic error in the backwards compatibility system for third party module settings defaults that caused many third party module - defaults to return empty values which resulted in broken modules on the front end.
+- Fixed PHP 5.2 compatibility issues.
+- Fixed  Undefined index: skip_background_ui notice that occurred in some situations.
+- Fixed some design inconsistencies between the Visual Builder and the front end related to using box shadows on certain modules.
+	* includes/builder/class-et-builder-element.php
+
 version 3.1 ( updated 04-19-2018 )
 - Added the Divi Developer API, allowing for the creation of custom Visual Builder modules.
 - Added automatic limited support for current third party modules in the Visual Builder.

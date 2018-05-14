@@ -45,7 +45,7 @@ abstract class ET_Builder_Module_Settings_Migration {
 		$this->modules = $this->get_modules();
 	}
 
-	protected static function _migrate_field_names( $fields, $module_slug ) {
+	protected static function _migrate_field_names( $fields, $module_slug, $version ) {
 		foreach ( self::$field_name_migrations[ $module_slug ] as $new_name => $old_names ) {
 			foreach ( $old_names as $old_name ) {
 				if ( ! isset( $fields[ $old_name ] ) ) {
@@ -55,7 +55,10 @@ abstract class ET_Builder_Module_Settings_Migration {
 
 				// For the BB...
 				if ( ! in_array( $old_name, self::$_bb_excluded_name_changes ) ) {
-					self::$migrated['name_changes'][ $module_slug ][ $old_name ] = $new_name;
+					self::$migrated['field_name_changes'][ $module_slug ][ $old_name ] = array(
+						'new_name' => $new_name,
+						'version'  => $version,
+					);
 				}
 			}
 		}
@@ -116,7 +119,7 @@ abstract class ET_Builder_Module_Settings_Migration {
 		}
 
 		return isset( self::$field_name_migrations[ $module_slug ] )
-			? self::_migrate_field_names( $fields, $module_slug )
+			? self::_migrate_field_names( $fields, $module_slug, $this->version )
 			: $fields;
 	}
 
@@ -157,6 +160,15 @@ abstract class ET_Builder_Module_Settings_Migration {
 		}
 
 		$migrations = self::get_migrations( $attrs['_builder_version'] );
+
+		// Register address-based name module's field name change
+		if ( isset( self::$migrated['field_name_changes'] ) && isset( self::$migrated['field_name_changes'][ $module_slug ] ) ) {
+			foreach ( self::$migrated['field_name_changes'][ $module_slug ] as $old_name => $name_change ) {
+				if ( version_compare( $attrs['_builder_version'], $name_change['version'], '<' ) ) {
+					self::$migrated['name_changes'][ $module_address ][ $old_name ] = $name_change['new_name'];
+				}
+			}
+		}
 
 		foreach ( $migrations as $migration ) {
 			if ( ! in_array( $module_slug, $migration->modules ) ) {

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.2' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.2.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1777,7 +1777,7 @@ function et_builder_get_element_style_css( $value, $property = 'margin', $use_im
 		);
 
 		foreach ( $positions as $i => $position ) {
-			if ( ! isset( $values[ $i ] ) || empty( $values[ $i ] ) ) {
+			if ( ! isset( $values[ $i ] ) || '' == $values[ $i ] ) {
 				continue;
 			}
 

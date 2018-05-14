@@ -2937,6 +2937,7 @@ class ET_Builder_Element {
 					'default_on_child' => true,
 					'validate_unit'    => true,
 					'default'          => '100%',
+					'default_tablet'   => '100%',
 					'default_unit'     => '%',
 					'allow_empty'      => true,
 					'range_settings'   => array(
@@ -8392,6 +8393,9 @@ class ET_Builder_Element {
 			foreach ( array( 'max_width', 'max_width_tablet', 'max_width_phone' ) as $value ) {
 				if ( $$value === $max_width_default ) {
 					$$value = '';
+				} else {
+					// Set current value is smaller breakpoint's default
+					$max_width_default = $$value;
 				}
 			}
 
@@ -8428,7 +8432,7 @@ class ET_Builder_Element {
 						break;
 					}
 
-					if ( ! in_array( $this->props[ $max_width_attr ], array( '', '100%' ) ) ) {
+					if ( ! in_array( $this->props[ $max_width_attr ], array( '', $max_width_default ) ) ) {
 						$is_max_width_customized = true;
 					}
 				}
@@ -10258,24 +10262,22 @@ class ET_Builder_Element {
 	 *
 	 * @return array of credits info by module slug
 	 */
-	public static function get_custom_modules_credits() {
+	public static function get_custom_modules_credits( $post_type = '' ) {
 		$result = array();
 
-		$modules = self::get_parent_and_child_modules();
+		$modules = self::get_parent_and_child_modules( $post_type );
 
-		foreach ( $modules as $post_type => $__module ) {
-			/**
-			 * @var  $module_slug string
-			 * @var  $module ET_Builder_Module
-			 */
-			foreach ( $__module as $module_slug => $module ) {
-				// Include custom module credits for displaying them within VB
-				if ( $module->_is_official_module ) {
-					continue;
-				} else {
-					if ( isset( $module->module_credits ) && is_array( $module->module_credits ) ) {
-						$result[ $module_slug ] = $module->module_credits;
-					}
+		/**
+		 * @var  $module_slug string
+		 * @var  $module ET_Builder_Module
+		 */
+		foreach ( $modules as $module_slug => $module ) {
+			// Include custom module credits for displaying them within VB
+			if ( $module->_is_official_module ) {
+				continue;
+			} else {
+				if ( isset( $module->module_credits ) && is_array( $module->module_credits ) ) {
+					$result[ $module_slug ] = $module->module_credits;
 				}
 			}
 		}
