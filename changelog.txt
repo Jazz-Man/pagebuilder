@@ -1,3 +1,10 @@
+version 3.2.2 ( updated 05-07-2018 )
+- Fixed a bug that caused custom unit types to not be inherited within cascading responsive input tabs. 
+- Fixed a bug that caused range slider inputs to become unusable after switching to tablet or smartphone responsive editing tabs in some situations.
+- Fixed a bug that caused default values to appear in range slider inputs as true values instead of placeholders when resetting a range slider option after having just disabled responsive editing. 
+- Fixed a bug that caused range slider inputs to need to be reset twice after having disabled responsive editing options that included custom tablet and smartphone values.
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.2.1 ( updated 05-02-2018 )
 - Fixed missing module credits in the Visual Builder.
 - Fixed missing comment module comment count in Divi Builder plugin.
