@@ -186,12 +186,20 @@ function et_core_get_ip_address() {
 }
 endif;
 
+if ( ! function_exists( 'et_core_use_google_fonts' ) ) :
+function et_core_use_google_fonts() {
+	$utils              = ET_Core_Data_Utils::instance();
+	$google_api_options = get_option( 'et_google_api_settings' );
+
+	return 'on' === $utils->array_get( $google_api_options, 'use_google_fonts', 'on' );
+}
+endif;
 
 if ( ! function_exists( 'et_core_get_main_fonts' ) ) :
 function et_core_get_main_fonts() {
 	global $wp_version;
 
-	if ( version_compare( $wp_version, '4.6', '<' ) ) {
+	if ( version_compare( $wp_version, '4.6', '<' ) || ( ! is_admin() && ! et_core_use_google_fonts() ) ) {
 		return '';
 	}
 
@@ -668,6 +676,17 @@ function et_new_core_setup() {
 	// Initialize top-level components "group"
 	$hook = did_action( 'plugins_loaded' ) ?  'after_setup_theme' : 'plugins_loaded';
 	add_action( $hook, 'et_core_init', 9999999 );
+}
+endif;
+
+
+if ( ! function_exists( 'et_core_add_crossorigin_attribute' ) ):
+function et_core_add_crossorigin_attribute( $tag, $handle, $src ) {
+	if ( ! $handle || ! in_array( $handle, array( 'react', 'react-dom' ) ) ) {
+		return $tag;
+	}
+
+	return sprintf( '<script src="%1$s" crossorigin></script>', esc_attr( $src ) );
 }
 endif;
 

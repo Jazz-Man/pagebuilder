@@ -8,6 +8,12 @@
  * @package ET\Core\API
  */
 abstract class ET_Core_API_Service {
+
+	/**
+	 * @var ET_Core_Data_Utils
+	 */
+	protected static $_;
+
 	/**
 	 * URL to request an OAuth access token.
 	 *
@@ -225,8 +231,9 @@ abstract class ET_Core_API_Service {
 		$this->data_keys      = $this->get_data_keymap();
 		$this->oauth_verifier = '';
 
-		$this->http       = new ET_Core_HTTPInterface( $this->owner );
-		$this->data_utils = new ET_Core_Data_Utils();
+		$this->http = new ET_Core_HTTPInterface( $this->owner );
+
+		self::$_ = $this->data_utils = new ET_Core_Data_Utils();
 
 		$this->FAILURE_MESSAGE  = esc_html__( 'API request failed, please try again.', 'et_core' );
 		$this->API_KEY_REQUIRED = esc_html__( 'API request failed. API Key is required.', 'et_core' );
@@ -395,8 +402,7 @@ abstract class ET_Core_API_Service {
 	 *
 	 * @since    1.1.0
 	 *
-	 * @param array  $keymap            A mapping of our data key addresses to those of the service, organized by type/category.
-	 * @param string $custom_fields_key The key under which custom fields are stored.
+	 * @param array $keymap A mapping of our data key addresses to those of the service, organized by type/category.
 	 *
 	 * @return array[] {
 	 *
@@ -408,7 +414,7 @@ abstract class ET_Core_API_Service {
 	 *    ...
 	 * }
 	 */
-	abstract public function get_data_keymap( $keymap = array(), $custom_fields_key = '' );
+	abstract public function get_data_keymap( $keymap = array() );
 
 	/**
 	 * Get error message for a response that has an ERROR status. If possible the provider's
@@ -501,9 +507,7 @@ abstract class ET_Core_API_Service {
 			return array();
 		}
 
-		$data_keys_mapping = $this->data_keys[ $key_type ];
-
-		return $this->data_utils->transform_data_to( 'our_data', $data, $data_keys_mapping, $exclude_keys );
+		return self::$_->array_transform( $data, $this->data_keys[ $key_type ], '<-', $exclude_keys );
 	}
 
 	/**
@@ -516,8 +520,10 @@ abstract class ET_Core_API_Service {
 	 * @return array
 	 */
 	public function transform_data_to_provider_format( $data = array(), $key_type, $exclude_keys = array() ) {
-		$data_keys_mapping = $this->data_keys[ $key_type ];
+		if ( ! isset( $this->data_keys[ $key_type ] ) ) {
+			return array();
+		}
 
-		return $this->data_utils->transform_data_to( 'their_data', $data, $data_keys_mapping, $exclude_keys );
+		return self::$_->array_transform( $data, $this->data_keys[ $key_type ], '->', $exclude_keys );
 	}
 }

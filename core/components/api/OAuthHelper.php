@@ -132,7 +132,7 @@ class ET_Core_API_OAuthHelper {
 	protected function _prepare_oauth_request( $request ) {
 		$parameters = array();
 
-		if ( is_array( $request->BODY ) && ! empty( $request->BODY ) ) {
+		if ( is_array( $request->BODY ) && $request->BODY && ! $request->JSON_BODY ) {
 			$parameters = $request->BODY;
 		}
 
@@ -150,7 +150,7 @@ class ET_Core_API_OAuthHelper {
 			$request->URL = $oauth_request->to_url();
 		} else if ( 'POST' === $request->METHOD ) {
 			$request->URL  = $request->JSON_BODY ? $oauth_request->to_url() : $oauth_request->get_normalized_http_url();
-			$request->BODY = $oauth_request->to_post_data( $request->JSON_BODY );
+			$request->BODY = $request->JSON_BODY  ? json_encode( $request->BODY ) : $oauth_request->to_post_data();
 		}
 
 		return $request;

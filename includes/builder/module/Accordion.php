@@ -248,7 +248,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 		$selector = sprintf( '.%1$s .et_pb_toggle', self::get_module_order_class( $function_name ) );
 		self::set_style( $function_name, array(
 			'selector'    => $selector,
-			'declaration' => $boxShadow->get_value( $this->shortcode_atts )
+			'declaration' => $boxShadow->get_value( $this->props )
 		) );
 	}
 }

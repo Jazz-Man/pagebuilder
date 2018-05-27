@@ -35,7 +35,7 @@
 		$et_top_cart = $('#et-secondary-menu a.et-cart-info');
 
 	// We need to check first to see if we are on a woocommerce single product.
-	if ( $("body").hasClass("woocommerce") && $("body").hasClass("single-product") && $(".woocommerce-product-gallery").length > 0 ) {
+	if ( $(".woocommerce .woocommerce-product-gallery").length > 0 ) {
 		// get the gallery container.
 		var gal = $(".woocommerce-product-gallery")[0];
 

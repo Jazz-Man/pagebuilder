@@ -344,18 +344,8 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			'background_position'                        => array(),
 			'background_repeat'                          => array(),
 			'background_blend'                           => array(),
-			'padding_top'                                => array(),
-			'padding_right'                              => array(),
-			'padding_bottom'                             => array(),
-			'padding_left'                               => array(),
-			'padding_%column_index%_tablet'              => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_phone'               => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_last_edited'         => array( 'has_custom_index_location' => true ),
-			'module_id'                                  => array(),
-			'module_class'                               => array(),
-			'custom_css_before'                          => array(),
-			'custom_css_main'                            => array(),
-			'custom_css_after'                           => array(),
+			'padding_top_bottom_link'                    => array(),
+			'padding_left_right_link'                    => array(),
 			'use_background_color_gradient'              => array(),
 			'background_color_gradient_start'            => array(),
 			'background_color_gradient_end'              => array(),
@@ -412,6 +402,29 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 					'background_video_webm',
 				),
 			),
+			'padding_top'                                => array( 'tab_slug' => 'advanced' ),
+			'padding_right'                              => array( 'tab_slug' => 'advanced' ),
+			'padding_bottom'                             => array( 'tab_slug' => 'advanced' ),
+			'padding_left'                               => array( 'tab_slug' => 'advanced' ),
+			'padding_top_bottom_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_left_right_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_%column_index%_tablet'              => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'padding_%column_index%_phone'               => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'padding_%column_index%_last_edited'         => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'module_id'                                  => array( 'tab_slug' => 'custom_css' ),
+			'module_class'                               => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_before'                          => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_main'                            => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_after'                           => array( 'tab_slug' => 'custom_css' ),
 		) );
 
 		return array_merge( $fields, $column_fields );
@@ -1256,8 +1269,9 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'priority'        => 99,
 			),
 			'column_padding_mobile' => array(
-				'label' => esc_html__( 'Keep Column Padding on Mobile', 'et_builder' ),
-				'type'  => 'skip', // Remaining attribute for backward compatibility
+				'label'            => esc_html__( 'Keep Column Padding on Mobile', 'et_builder' ),
+				'tab_slug'         => 'advanced',
+				'type'             => 'skip', // Remaining attribute for backward compatibility
 				'default_on_front' => '',
 			),
 			'columns_css' => array(
@@ -1297,10 +1311,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$column_fields = $this->get_column_fields( 4, array(
 			'background_color'                           => array(),
 			'bg_img'                                     => array(),
-			'padding_top'                                => array(),
-			'padding_right'                              => array(),
-			'padding_bottom'                             => array(),
-			'padding_left'                               => array(),
+			'padding_top_bottom_link'                    => array(),
+			'padding_left_right_link'                    => array(),
 			'parallax'                                   => array(
 				'default_on_front' => 'off',
 			),
@@ -1367,14 +1379,29 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 					'background_video_webm',
 				),
 			),
-			'padding_%column_index%_tablet'              => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_phone'               => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_last_edited'         => array( 'has_custom_index_location' => true ),
-			'module_id'                                  => array(),
-			'module_class'                               => array(),
-			'custom_css_before'                          => array(),
-			'custom_css_main'                            => array(),
-			'custom_css_after'                           => array(),
+			'padding_top'                                => array( 'tab_slug' => 'advanced' ),
+			'padding_right'                              => array( 'tab_slug' => 'advanced' ),
+			'padding_bottom'                             => array( 'tab_slug' => 'advanced' ),
+			'padding_left'                               => array( 'tab_slug' => 'advanced' ),
+			'padding_top_bottom_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_left_right_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_%column_index%_tablet'              => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'padding_%column_index%_phone'               => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'padding_%column_index%_last_edited'         => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'module_id'                                  => array( 'tab_slug' => 'custom_css' ),
+			'module_class'                               => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_before'                          => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_main'                            => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_after'                           => array( 'tab_slug' => 'custom_css' ),
 		) );
 
 		return array_merge( $fields, $column_fields );
@@ -2086,8 +2113,9 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'priority'        => 99,
 			),
 			'column_padding_mobile' => array(
-				'label' => esc_html__( 'Keep Column Padding on Mobile', 'et_builder' ),
-				'type'  => 'skip', // Remaining attribute for backward compatibility
+				'label'    => esc_html__( 'Keep Column Padding on Mobile', 'et_builder' ),
+				'tab_slug' => 'advanced',
+				'type'     => 'skip', // Remaining attribute for backward compatibility
 			),
 			'columns_css' => array(
 				'type'            => 'column_settings_css',
@@ -2112,10 +2140,8 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$column_fields = $this->get_column_fields( 3, array(
 			'background_color'                           => array(),
 			'bg_img'                                     => array(),
-			'padding_top'                                => array(),
-			'padding_right'                              => array(),
-			'padding_bottom'                             => array(),
-			'padding_left'                               => array(),
+			'padding_top_bottom_link'                    => array(),
+			'padding_left_right_link'                    => array(),
 			'parallax'                                   => array(
 				'default_on_front' => 'off',
 			),
@@ -2126,14 +2152,6 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			'background_position'                        => array(),
 			'background_repeat'                          => array(),
 			'background_blend'                           => array(),
-			'padding_%column_index%_tablet'              => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_phone'               => array( 'has_custom_index_location' => true ),
-			'padding_%column_index%_last_edited'         => array( 'has_custom_index_location' => true ),
-			'module_id'                                  => array(),
-			'module_class'                               => array(),
-			'custom_css_before'                          => array(),
-			'custom_css_main'                            => array(),
-			'custom_css_after'                           => array(),
 			'use_background_color_gradient'              => array(),
 			'background_color_gradient_start'            => array(),
 			'background_color_gradient_end'              => array(),
@@ -2190,6 +2208,29 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 					'background_video_webm',
 				),
 			),
+			'padding_top'                                => array( 'tab_slug' => 'advanced' ),
+			'padding_right'                              => array( 'tab_slug' => 'advanced' ),
+			'padding_bottom'                             => array( 'tab_slug' => 'advanced' ),
+			'padding_left'                               => array( 'tab_slug' => 'advanced' ),
+			'padding_top_bottom_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_left_right_link'                    => array( 'tab_slug' => 'advanced' ),
+			'padding_%column_index%_tablet'              => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+			),
+			'padding_%column_index%_phone'               => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+				),
+			'padding_%column_index%_last_edited'         => array(
+				'has_custom_index_location' => true,
+				'tab_slug' => 'advanced',
+				),
+			'module_id'                                  => array( 'tab_slug' => 'custom_css' ),
+			'module_class'                               => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_before'                          => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_main'                            => array( 'tab_slug' => 'custom_css' ),
+			'custom_css_after'                           => array( 'tab_slug' => 'custom_css' ),
 		) );
 
 		return array_merge( $fields, $column_fields );

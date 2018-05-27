@@ -1,3 +1,104 @@
+version 3.4.1 ( updated 05-26-2018 )
+- Fixed a bug that caused unwanted line breaks to be added to the email optin module when saving in the classic Divi Builder.
+- Fixed a bug that caused line breaks to be mistakenly stripped from the email optin module's description field after a successful settings migration occurred. 
+- Fixed a bug that broke content migration when the migrated module existed inside of a specialty section and the migration occurred when using the classic Divi Builder.
+	* includes/builder/scripts/builder.js
+	* includes/builder/class-et-builder-element.php
+
+version 3.4 ( updated 05-25-2018 )
+- Added custom field integration for the email optin module.
+- Added the ability to add links to email optin checkbox fields and contact form checkbox fields.
+- Added an option to disable Google Fonts in the Divi Theme Options.
+- Removed IP Address logging in the Divi Leads split testing system.
+- Fixed a ReactJS warning for video uploads.
+- Fixed an issue where the Help Button would disappear when searching for options in the Visual Builder Settings Modal.
+- Fixed Shop module compatibility issue with WPML.
+- Replaced ip address with cookie-based tracking for split test to comply to GDPR.
+- Fixed issue where inner row styles were unable to be copied in some cases.
+- Fixed Feedburner email optin.
+- Added ability to use keyboard shortcuts with modifiers when the search field of the module settings window is focused.
+- Fixed Javascript error that occurred when saving module settings if app modal was still opened while opening the module settings.
+- Fixed the issue where column padding settings were not reset/copied/pasted in case of working with entire design tab for Sections and Rows.
+- Added a new (Cmd/Ctrl + R) keyboard shortcut for reset styles.
+- Fixed issue with value 'linking' for custom padding on columns.
+- Fixed double quotes error on Contact Form Module checkbox and radio options.
+- Fixed an issue where a person module had extra spacing on the Visual Builder and not on the front-end.
+- Fixed button module custom margin not working in some cases.
+- Customer friendly one liner explaining what was Fixed/Added etc for use in the changelog. Capitalized first word and ending in a period.
+- Fixed issue with adding Email Optin custom fields while the user is in wireframe mode.
+- Fixed undefined error on PHP versions 7.1 and above.
+- Fixed Gallery Module global selective sync.
+- Fixed the rendering of the bottom curve SVG section divider so it will display smooth as intended.
+- Fixed Inline Editor from showing up when right clicking in TinyMCE.
+- Fixed uiwebview class being added when it should not have been on non-mobile devices.
+- Fixed an issue where a WooCommerce shortcode could lead to issues with WooCommerce product gallery not changing the column settings.
+	* core/admin/fonts/modules.eot
+	* core/admin/fonts/modules.svg
+	* core/admin/fonts/modules.ttf
+	* core/admin/fonts/modules.woff
+	* core/admin/js/common.js
+	* core/admin/js/react-dom.production.min.js
+	* core/admin/js/react.production.min.js
+	* core/components/HTTPInterface.php
+	* core/components/api/OAuthHelper.php
+	* core/components/api/Service.php
+	* core/components/api/email/ActiveCampaign.php
+	* core/components/api/email/Aweber.php
+	* core/components/api/email/CampaignMonitor.php
+	* core/components/api/email/ConstantContact.php
+	* core/components/api/email/ConvertKit.php
+	* core/components/api/email/Emma.php
+	* core/components/api/email/Feedblitz.php
+	* core/components/api/email/Fields.php
+	* core/components/api/email/GetResponse.php
+	* core/components/api/email/HubSpot.php
+	* core/components/api/email/Infusionsoft.php
+	* core/components/api/email/MadMimi.php
+	* core/components/api/email/MailChimp.php
+	* core/components/api/email/MailPoet.php
+	* core/components/api/email/MailerLite.php
+	* core/components/api/email/Mailster.php
+	* core/components/api/email/Ontraport.php
+	* core/components/api/email/Provider.php
+	* core/components/api/email/Providers.php
+	* core/components/api/email/SalesForce.php
+	* core/components/api/email/SendinBlue.php
+	* core/components/api/email/_MailPoet2.php
+	* core/components/api/email/_MailPoet3.php
+	* core/components/api/email/iContact.php
+	* core/components/api/email/init.php
+	* core/components/data/Utils.php
+	* core/components/lib/OAuth.php
+	* core/functions.php
+	* epanel/custom_functions.php
+	* functions.php
+	* includes/builder/ab-testing.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/class-et-global-settings.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/assets/scripts/react-dom.production.min.js
+	* includes/builder/frontend-builder/assets/scripts/react.production.min.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/SignupItem.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/settings/Migration.php
+	* includes/builder/module/settings/migration/EmailOptinContent.php
+	* includes/builder/plugin-compat/sitepress-multilingual-cms.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* js/custom.js
+	* options_divi.php
+
 version 3.3.1 ( updated 05-16-2018 )
 - Fixed a bug that caused toggled items in Sliders and Tabs modules to not show up.
 

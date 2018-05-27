@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.3.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.4.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2010,11 +2010,13 @@ function et_builder_print_font() {
 		return;
 	}
 
-	// Append combined subset at the end of the URL as different query string
-	wp_enqueue_style( 'et-builder-googlefonts', esc_url( add_query_arg( array(
-		'family' => implode( '|', $fonts ) ,
-		'subset' => implode( ',', $unique_subsets ),
-	), "$protocol://fonts.googleapis.com/css" ) ), array(), null );
+	if ( et_core_use_google_fonts() ) {
+		// Append combined subset at the end of the URL as different query string
+		wp_enqueue_style( 'et-builder-googlefonts', esc_url( add_query_arg( array(
+			'family' => implode( '|', $fonts ),
+			'subset' => implode( ',', $unique_subsets ),
+		), "$protocol://fonts.googleapis.com/css" ) ), array(), null );
+	}
 
 	// Create a merge of the existing fonts and subsets in the option and the newly added ones
 	$updated_fonts   = array_merge( $fonts, $post_fonts_data[ 'family'] );
@@ -2060,7 +2062,7 @@ add_action( 'shutdown', 'et_builder_update_fonts_cache' );
  */
 function et_builder_preprint_font() {
 	// Return if this is not a post or a page
-	if ( ! is_singular() ) {
+	if ( ! is_singular() || ! et_core_use_google_fonts() ) {
 		return;
 	}
 
@@ -3719,16 +3721,42 @@ function et_pb_pagebuilder_meta_box() {
 	do_action( 'et_pb_before_page_builder' );
 
 	echo '<div id="et_pb_hidden_editor">';
-	wp_editor(
-		'',
-		'et_pb_content',
-		array(
-			'media_buttons' => true,
-			'tinymce' => array(
-				'wp_autoresize_on' => true
+	echo '<div id="et_pb_content_editor">';
+		wp_editor(
+			'',
+			'et_pb_content',
+			array(
+				'media_buttons' => true,
+				'tinymce' => array(
+					'wp_autoresize_on' => true
+				)
 			)
-		)
-	);
+		);
+	echo '</div>';
+	echo '<div id="et_pb_description_editor">';
+		wp_editor(
+			'',
+			'et_pb_description',
+			array(
+				'media_buttons' => true,
+				'tinymce' => array(
+					'wp_autoresize_on' => true
+				)
+			)
+		);
+	echo '</div>';
+	echo '<div id="et_pb_footer_content_editor">';
+		wp_editor(
+			'',
+			'et_pb_footer_content',
+			array(
+				'media_buttons' => true,
+				'tinymce' => array(
+					'wp_autoresize_on' => true
+				)
+			)
+		);
+	echo '</div>';
 	echo '</div>';
 
 	printf(
@@ -7321,6 +7349,7 @@ function et_fb_retrieve_builder_data() {
 	$fields_data['customTabs'] = ET_Builder_Element::get_tabs( $post_type );
 	$fields_data['customTabsFields'] = ET_Builder_Element::get_settings_modal_tabs_fields( $post_type );
 	$fields_data['customLayoutsTabs'] = ET_Builder_Library::builder_library_modal_custom_tabs( $post_type );
+	$fields_data['moduleItemsConfig'] = ET_Builder_Element::get_module_items_configs( $post_type );
 	$fields_data['contact_form_input_defaults'] = et_fb_process_shortcode( sprintf(
 		'[et_pb_contact_field field_title="%1$s" field_type="input" field_id="Name" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%2$s" field_type="email" field_id="Email" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%3$s" field_type="text" field_id="Message" required_mark="on" fullwidth_field="on" /]',
 		esc_attr__( 'Name', 'et_builder' ),

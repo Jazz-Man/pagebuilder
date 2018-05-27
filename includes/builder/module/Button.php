@@ -10,7 +10,6 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		$this->custom_css_fields = array(
 			'main_element' => array(
 				'label'    => esc_html__( 'Main Element', 'et_builder' ),
-				'selector' => '.et_pb_button.et_pb_module',
 				'no_space_before_selector' => true,
 			),
 		);
@@ -42,14 +41,14 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => $this->main_css_element,
-						'plugin_main' => "{$this->main_css_element}.et_pb_module",
 					),
 					'box_shadow' => false,
 				),
 			),
 			'margin_padding' => array(
 				'css' => array(
-					'main' => "{$this->main_css_element}.et_pb_module, .et_pb_module {$this->main_css_element}.et_pb_module:hover",
+					'padding' => "{$this->main_css_element}, {$this->main_css_element}:hover",
+					'margin' => "{$this->main_css_element}_wrapper",
 					'important' => 'all',
 				),
 			),
@@ -146,6 +145,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 
 		// Module classnames
 		$this->add_classname( "et_pb_bg_layout_{$background_layout}" );
+		$this->remove_classname( 'et_pb_module' );
 
 		// Render Button
 		$button = $this->render_button( array(
@@ -162,11 +162,12 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 
 		// Render module output
 		$output = sprintf(
-			'<div class="et_pb_button_module_wrapper et_pb_module%2$s">
+			'<div class="et_pb_button_module_wrapper et_pb_button_%3$s_wrapper %2$s et_pb_module ">
 				%1$s
 			</div>',
 			$button,
-			sprintf( ' et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) )
+			sprintf( 'et_pb_button_alignment_%1$s', esc_attr( $button_alignment ) ),
+			$this->render_count()
 		);
 
 		return $output;

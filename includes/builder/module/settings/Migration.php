@@ -18,20 +18,21 @@ abstract class ET_Builder_Module_Settings_Migration {
 
 	public static $last_hook_checked;
 	public static $last_hook_check_decision;
-	public static $max_version = '3.2';
+	public static $max_version = '3.4';
 	public static $migrated    = array();
-	public static $migrations  = array(
-		'3.0.48' => 'BackgroundUI',
-		'3.0.72' => 'Animation',
-		'3.0.74' => 'OptionsHarmony',
-		'3.0.84' => 'FullwidthHeader',
-		'3.0.87' => 'BorderOptions',
-		'3.0.91' => 'FilterOptions',
-		'3.0.92' => 'ShopModuleSlugs',
-		'3.0.94' => 'DropShadowToBoxShadow',
-		'3.0.99' => 'InnerShadowToBoxShadow',
+	public static $migrations = array(
+		'3.0.48'  => 'BackgroundUI',
+		'3.0.72'  => 'Animation',
+		'3.0.74'  => 'OptionsHarmony',
+		'3.0.84'  => 'FullwidthHeader',
+		'3.0.87'  => 'BorderOptions',
+		'3.0.91'  => 'FilterOptions',
+		'3.0.92'  => 'ShopModuleSlugs',
+		'3.0.94'  => 'DropShadowToBoxShadow',
+		'3.0.99'  => 'InnerShadowToBoxShadow',
 		'3.0.102' => 'FullwidthHeader2',
-		'3.2'  => 'UIImprovements',
+		'3.2'     => 'UIImprovements',
+		'3.4'     => 'EmailOptinContent',
 	);
 
 	public static $migrations_by_version = array();

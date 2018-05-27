@@ -138,6 +138,10 @@ add_action( 'admin_notices', 'et_theme_epanel_reminder' );
 
 if ( ! function_exists( 'et_divi_fonts_url' ) ) :
 function et_divi_fonts_url() {
+	if ( ! et_core_use_google_fonts() ) {
+		return '';
+	}
+
 	$fonts_url = '';
 
 	/* Translators: If there are characters in your language that are not

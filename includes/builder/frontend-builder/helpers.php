@@ -127,7 +127,10 @@ function et_fb_backend_helpers() {
 		$layout_scope = et_fb_get_layout_term_slug( $post_id, 'scope' );
 	}
 
-	$google_fonts = array_merge( array( 'Default' => array() ), et_builder_get_google_fonts() );
+	$use_google_fonts = et_core_use_google_fonts();
+	$websafe_fonts = et_builder_get_websafe_fonts();
+	$default_fonts_set = array_merge( array( 'Default' => array() ), $websafe_fonts );
+	$google_fonts = $use_google_fonts ? array_merge( $default_fonts_set, et_builder_get_google_fonts() ) : $default_fonts_set;
 	$custom_user_fonts = et_builder_get_custom_fonts();
 	$current_user = wp_get_current_user();
 	$current_url  = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -242,8 +245,10 @@ function et_fb_backend_helpers() {
 		 */
 		'getTaxonomyLabels'            => apply_filters( 'et_fb_taxonomy_labels', et_fb_get_taxonomy_labels() ),
 		'googleAPIKey'                 => et_pb_is_allowed( 'theme_options' ) ? get_option( 'et_google_api_settings' ) : '',
+		'useGoogleFonts'               => $use_google_fonts,
 		'googleFontsList'              => array_keys( $google_fonts ),
 		'googleFonts'                  => $google_fonts,
+		'websafeFonts'                 => $websafe_fonts,
 		'customFonts'                  => $custom_user_fonts,
 		'removedFonts'                 => et_builder_old_fonts_mapping(),
 		'allFontWeights'               => et_builder_get_font_weight_list(),
@@ -315,8 +320,8 @@ function et_fb_backend_helpers() {
 				'number' => $modules_defaults['number'],
 			),
 			'et_pb_signup'            => array(
-				'title'   => $modules_defaults['title'],
-				'content' => $modules_defaults['body'],
+				'title'       => $modules_defaults['title'],
+				'description' => $modules_defaults['body'],
 			),
 			'et_pb_image'             => array(
 				'src' => $modules_defaults['image']['landscape'],
@@ -417,6 +422,8 @@ function et_fb_backend_helpers() {
 		),
 		'saveModuleLibraryCategories'  => et_fb_prepare_library_cats(),
 		'emailNameFieldOnlyProviders'  => array_keys( ET_Builder_Module_Signup::providers()->names_by_slug( 'all', 'name_field_only' ) ),
+		'emailPredefinedCustomFields'  => ET_Core_API_Email_Providers::instance()->custom_fields_data(),
+		'emailCustomFieldProviders'    => array_keys( ET_Builder_Module_Signup::providers()->names_by_slug( 'all', 'custom_fields' ) ),
 		'columnSettingFields'          => array(
 			'general' => array(
 				'bg_img_%s' => array(

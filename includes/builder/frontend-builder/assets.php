@@ -35,6 +35,9 @@ function et_fb_enqueue_main_assets() {
 			array( 'et-core-admin', 'wp-color-picker' ),
 			$ver
 		);
+	}
+
+	if ( ! et_core_use_google_fonts() || et_is_builder_plugin_active() ) {
 		et_fb_enqueue_open_sans();
 	}
 
@@ -171,14 +174,16 @@ function et_fb_enqueue_assets() {
 		wp_enqueue_script( 'avada' );
 	}
 
-	$DEBUG = defined( 'ET_DEBUG' ) && ET_DEBUG;
+	$DEBUG        = defined( 'ET_DEBUG' ) && ET_DEBUG;
+	$core_scripts = ET_CORE_URL . '/admin/js';
 
 	if ( $DEBUG || DiviExtensions::is_debugging_extension() ) {
 		wp_enqueue_script( 'react', 'https://cdn.jsdelivr.net/npm/react@16.2/umd/react.development.js', array(), '16.2', true );
 		wp_enqueue_script( 'react-dom', 'https://cdn.jsdelivr.net/npm/react-dom@16.2/umd/react-dom.development.js', array( 'react' ), '16.2', true );
+		add_filter( 'script_loader_tag', 'et_core_add_crossorigin_attribute', 10, 3 );
 	} else {
-		wp_enqueue_script( 'react', "{$assets}/scripts/react.production.min.js", array(), '16.2', true );
-		wp_enqueue_script( 'react-dom', "{$assets}/scripts/react-dom.production.min.js", array( 'react' ), '16.2', true );
+		wp_enqueue_script( 'react', "{$core_scripts}/react.production.min.js", array(), '16.2', true );
+		wp_enqueue_script( 'react-dom', "{$core_scripts}/react-dom.production.min.js", array( 'react' ), '16.2', true );
 	}
 
 	// Enqueue scripts.
