@@ -1,3 +1,6 @@
+version 3.3.1 ( updated 05-16-2018 )
+- Fixed a bug that caused toggled items in Sliders and Tabs modules to not show up.
+
 version 3.3 ( updated 05-16-2018 )
 - Added new Fluid Styles System for the Visual Builder.
 - Added the ability to copy any option or option group.
@@ -8,7 +11,6 @@ version 3.3 ( updated 05-16-2018 )
 - Fixed a visual issue where rounded corners would appear on tabs area of modal when loading a layout from the library modal.
 - Fixed spelling error on section divider option name.
 - Fixed a JavaScript error if TinyMCE was not instantiated.
-- Fixed slider video height for self hosted videos.
 - Fixed a bug that prevented mouse clicks directly below the Inline Editor in the Visual Builder.
 - Improved some styles of the Inline Editor.
 - Fixed Visual Builder RTL look when Disable Translation is enabled.
