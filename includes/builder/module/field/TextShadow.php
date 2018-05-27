@@ -241,6 +241,12 @@ class ET_Builder_Module_Field_TextShadow extends ET_Builder_Module_Field_Base {
 					$text_shadow_blur_strength,
 					$text_shadow_color,
 				),
+				'copy_with' => array(
+					$text_shadow_horizontal_length,
+					$text_shadow_vertical_length,
+					$text_shadow_blur_strength,
+					$text_shadow_color,
+				),
 			),
 			$text_shadow_horizontal_length => array(
 				'label'           => $labels[1],

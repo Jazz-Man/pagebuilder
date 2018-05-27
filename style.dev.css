@@ -1,7 +1,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.2.2
+Version: 3.3
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -9914,13 +9914,19 @@ a.et_pb_more_button:after,
 }
 
 .et_pb_slider .et_pb_slide {
-	display: none;
 	float: left;
 	position: relative;
+	z-index: 1;
 	width: 100%;
 	margin-right: -100%;
+	opacity: 0;
 	text-align: center;
 	list-style: none !important;
+}
+
+.et_pb_slider .et_pb_slide.et-pb-active-slide {
+	z-index: 2;
+	opacity: 1;
 }
 
 .format-gallery .et_pb_slider.gallery-not-found .et_pb_slide {

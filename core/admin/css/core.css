@@ -168,8 +168,8 @@ body button.et-core-button {
 	font-family: 'Open Sans', sans-serif !important;
 }
 
-.rtl .et-core-button,
-body.rtl button.et-core-button {
+.rtl:not(.et-fb-no-rtl) .et-core-button,
+body.rtl:not(.et-fb-no-rtl) button.et-core-button {
 	margin-right: 7px;
 	margin-left: 0;
 }
@@ -304,7 +304,7 @@ body.rtl button.et-core-button {
 	transition: background .5s;
 }
 
-.rtl .et-core-modal-close {
+.rtl:not(.et-fb-no-rtl) .et-core-modal-close {
 	right: auto;
 	left: 0;
 }
@@ -438,11 +438,11 @@ body.rtl button.et-core-button {
 	right: 0;
 }
 
-.rtl .et-core-modal-two-buttons .et-core-modal-action {
+.rtl:not(.et-fb-no-rtl) .et-core-modal-two-buttons .et-core-modal-action {
 	right: 0;
 }
 
-.rtl .et-core-modal-two-buttons .et-core-modal-action:last-child {
+.rtl:not(.et-fb-no-rtl) .et-core-modal-two-buttons .et-core-modal-action:last-child {
 	right: auto;
 	left: 0;
 }
@@ -545,8 +545,8 @@ body.rtl button.et-core-button {
 	background: none;
 }
 
-.rtl .et-core-tabs li,
-.rtl .et-core-tabs li.ui-state-default {
+.rtl:not(.et-fb-no-rtl) .et-core-tabs li,
+.rtl:not(.et-fb-no-rtl) .et-core-tabs li.ui-state-default {
 	float: right;
 }
 

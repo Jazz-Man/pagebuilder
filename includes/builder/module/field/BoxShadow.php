@@ -82,6 +82,7 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 				'className'           => 'box_shadow',
 				'presets'             => $presets,
 				'affects'             => array( $horizontal, $vertical, $blur, $spread, $color, $position, ),
+				'copy_with'           => array( $horizontal, $vertical, $blur, $spread, $color, $position, ),
 				'depends_show_if'     => $arguments['depends_show_if'],
 				'depends_show_if_not' => $arguments['depends_show_if_not'],
 				'depends_on'          => $arguments['depends_on'],

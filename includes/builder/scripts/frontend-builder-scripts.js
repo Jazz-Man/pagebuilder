@@ -73,6 +73,10 @@
 
 				$et_slider.et_animation_running = false;
 
+				$et_slide.each( function(){
+					$(this).css( 'transition', 'opacity ' +  et_fade_speed + "ms");
+				} );
+
 				$.data(el, "et_pb_simple_slider", $et_slider);
 
 				$et_slide.eq(0).addClass( 'et-pb-active-slide' );
@@ -233,13 +237,6 @@
 
 					// Deregister all own existing events
 					$et_slider.off( '.et_pb_simple_slider' );
-
-					// Removing existing style from slide(s)
-					$et_slider.find('.et_pb_slide').css({
-						'z-index': '',
-						'display': '',
-						'opacity': '',
-					});
 
 					// Removing existing classnames from slide(s)
 					$et_slider.find('.et-pb-active-slide').removeClass('et-pb-active-slide');
@@ -458,12 +455,9 @@
 
 					$et_slider.trigger( 'simple_slider_before_move_to', { direction : direction, next_slide : $next_slide });
 
-					$et_slide.each( function(){
-						$(this).css( 'zIndex', 1 );
-					} );
 					// add 'slide-status' data attribute so it can be used to determine active slide in Visual Builder
-					$active_slide.css( 'zIndex', 2 ).removeClass( 'et-pb-active-slide' ).addClass('et-pb-moved-slide').data('slide-status', 'inactive');
-					$next_slide.css( { 'display' : 'block', opacity : 0 } ).addClass( 'et-pb-active-slide' ).data('slide-status', 'active');
+					$active_slide.removeClass( 'et-pb-active-slide' ).data('slide-status', 'inactive');
+					$next_slide.addClass( 'et-pb-active-slide' ).data('slide-status', 'active');
 
 					et_fix_slider_content_images();
 
@@ -478,12 +472,9 @@
 					if ( ! settings.tabs_animation ) {
 						et_maybe_set_controls_color( $next_slide );
 
-						$next_slide.animate( { opacity : 1 }, et_fade_speed );
-						$active_slide.addClass( 'et_slide_transition' ).css( { 'display' : 'list-item', 'opacity' : 1 } ).animate( { opacity : 0 }, et_fade_speed, function(){
-							var active_slide_layout_bg_color = et_get_bg_layout_color( $active_slide ),
-								next_slide_layout_bg_color = et_get_bg_layout_color( $next_slide );
-
-							$(this).css('display', 'none').removeClass( 'et_slide_transition' );
+						setTimeout(function(){
+							var active_slide_layout_bg_color = et_get_bg_layout_color( $active_slide );
+							var next_slide_layout_bg_color = et_get_bg_layout_color( $next_slide );
 
 							et_stop_video( $active_slide );
 
@@ -494,19 +485,13 @@
 							$et_slider.et_animation_running = false;
 
 							$et_slider.trigger( 'simple_slider_after_move_to', { next_slide : $next_slide } );
-						} );
+						}, et_fade_speed);
 					} else {
-						$next_slide.css( { 'display' : 'none', opacity : 0 } );
+						setTimeout( function() {
+							$et_slider.et_animation_running = false;
 
-						$active_slide.addClass( 'et_slide_transition' ).css( { 'display' : 'block', 'opacity' : 1 } ).animate( { opacity : 0 }, et_fade_speed, function(){
-							$(this).css('display', 'none').removeClass( 'et_slide_transition' );
-
-							$next_slide.css( { 'display' : 'block', 'opacity' : 0 } ).animate( { opacity : 1 }, et_fade_speed, function() {
-								$et_slider.et_animation_running = false;
-
-								$et_slider.trigger( 'simple_slider_after_move_to', { next_slide : $next_slide } );
-							} );
-						} );
+							$et_slider.trigger( 'simple_slider_after_move_to', { next_slide : $next_slide } );
+						}, et_fade_speed);
 					}
 
 					if ( $next_slide.find( '.et_parallax_bg' ).length ) {
@@ -3298,7 +3283,7 @@
 					}
 
 					if ( $name.length > 0 && redirect_query.indexOf( 'name' ) > -1 ) {
-						query.name = $name.val();
+						query.first_name = $name.val();
 					}
 
 					if ( $lastname.length > 0 && redirect_query.indexOf( 'last_name' ) > -1 ) {

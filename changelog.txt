@@ -1,7 +1,36 @@
+version 3.3 ( updated 05-16-2018 )
+- Added new Fluid Styles System for the Visual Builder.
+- Added the ability to copy any option or option group.
+- Added the ability to paste options and option groups from one module to another.
+- Added the ability to reset module styles by right clicking on any module, settings tab, option group or option.
+- Fixed a potential 404 error caused by incorrect email optin query parameters.
+- Fixed where right clicking a locked module would cause a JavaScript error in certain scenarios.
+- Fixed a visual issue where rounded corners would appear on tabs area of modal when loading a layout from the library modal.
+- Fixed spelling error on section divider option name.
+- Fixed a JavaScript error if TinyMCE was not instantiated.
+- Fixed slider video height for self hosted videos.
+- Fixed a bug that prevented mouse clicks directly below the Inline Editor in the Visual Builder.
+- Improved some styles of the Inline Editor.
+- Fixed Visual Builder RTL look when Disable Translation is enabled.
+- Fixed wrong VB Testimonial module description position on the phone and tablet preview.
+- Fixed incorrect `et-fixed-header` classname removal when transparent nav is used.
+	* core/admin/css/core.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/field/BoxShadow.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/field/TextShadow.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* js/custom.js
+
 version 3.2.2 ( updated 05-07-2018 )
-- Fixed a bug that caused custom unit types to not be inherited within cascading responsive input tabs. 
+- Fixed a bug that caused custom unit types to not be inherited within cascading responsive input tabs.
 - Fixed a bug that caused range slider inputs to become unusable after switching to tablet or smartphone responsive editing tabs in some situations.
-- Fixed a bug that caused default values to appear in range slider inputs as true values instead of placeholders when resetting a range slider option after having just disabled responsive editing. 
+- Fixed a bug that caused default values to appear in range slider inputs as true values instead of placeholders when resetting a range slider option after having just disabled responsive editing.
 - Fixed a bug that caused range slider inputs to need to be reset twice after having disabled responsive editing options that included custom tablet and smartphone values.
 	* includes/builder/frontend-builder/bundle.js
 

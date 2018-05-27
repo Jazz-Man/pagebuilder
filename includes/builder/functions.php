@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.2.2' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.3' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -3216,29 +3216,31 @@ add_action('admin_init', 'et_pb_set_editor_available_cookie');
 function et_pb_history_localization() {
 	return array(
 		'verb' => array(
-			'did'        => esc_html__( 'Did', 'et_builder' ),
-			'added'      => esc_html__( 'Added', 'et_builder' ),
-			'edited'     => esc_html__( 'Edited', 'et_builder' ),
-			'removed'    => esc_html__( 'Removed', 'et_builder' ),
-			'moved'      => esc_html__( 'Moved', 'et_builder' ),
-			'expanded'   => esc_html__( 'Expanded', 'et_builder' ),
-			'collapsed'  => esc_html__( 'Collapsed', 'et_builder' ),
-			'locked'     => esc_html__( 'Locked', 'et_builder' ),
-			'unlocked'   => esc_html__( 'Unlocked', 'et_builder' ),
-			'cloned'     => esc_html__( 'Cloned', 'et_builder' ),
-			'cleared'    => esc_html__( 'Cleared', 'et_builder' ),
-			'enabled'    => esc_html__( 'Enabled', 'et_builder' ),
-			'disabled'   => esc_html__( 'Disabled', 'et_builder' ),
-			'copied'     => esc_html__( 'Copied', 'et_builder' ),
-			'cut'        => esc_html__( 'Cut', 'et_builder' ),
-			'pasted'     => esc_html__( 'Pasted', 'et_builder' ),
-			'renamed'    => esc_html__( 'Renamed', 'et_builder' ),
-			'loaded'     => esc_html__( 'Loaded', 'et_builder' ),
-			'turnon'     => esc_html__( 'Turned On', 'et_builder' ),
-			'turnoff'    => esc_html__( 'Turned Off', 'et_builder' ),
-			'globalon'   => esc_html__( 'Made Global', 'et_builder' ),
-			'globaloff'  => esc_html__( 'Disabled Global', 'et_builder' ),
-			'configured' => esc_html__( 'Configured', 'et_builder' ),
+			'did'           => esc_html__( 'Did', 'et_builder' ),
+			'added'         => esc_html__( 'Added', 'et_builder' ),
+			'edited'        => esc_html__( 'Edited', 'et_builder' ),
+			'removed'       => esc_html__( 'Removed', 'et_builder' ),
+			'moved'         => esc_html__( 'Moved', 'et_builder' ),
+			'expanded'      => esc_html__( 'Expanded', 'et_builder' ),
+			'collapsed'     => esc_html__( 'Collapsed', 'et_builder' ),
+			'locked'        => esc_html__( 'Locked', 'et_builder' ),
+			'unlocked'      => esc_html__( 'Unlocked', 'et_builder' ),
+			'cloned'        => esc_html__( 'Cloned', 'et_builder' ),
+			'cleared'       => esc_html__( 'Cleared', 'et_builder' ),
+			'enabled'       => esc_html__( 'Enabled', 'et_builder' ),
+			'disabled'      => esc_html__( 'Disabled', 'et_builder' ),
+			'copied'        => esc_html__( 'Copied', 'et_builder' ),
+			'reset'         => esc_html__( 'Reset', 'et_builder' ),
+			'cut'           => esc_html__( 'Cut', 'et_builder' ),
+			'pasted'        => esc_html__( 'Pasted', 'et_builder' ),
+			'pasted_styles' => esc_html__( 'Pasted Styles', 'et_builder' ),
+			'renamed'       => esc_html__( 'Renamed', 'et_builder' ),
+			'loaded'        => esc_html__( 'Loaded', 'et_builder' ),
+			'turnon'        => esc_html__( 'Turned On', 'et_builder' ),
+			'turnoff'       => esc_html__( 'Turned Off', 'et_builder' ),
+			'globalon'      => esc_html__( 'Made Global', 'et_builder' ),
+			'globaloff'     => esc_html__( 'Disabled Global', 'et_builder' ),
+			'configured'    => esc_html__( 'Configured', 'et_builder' ),
 		),
 		'noun' => array(
 			'section'           => esc_html__( 'Section', 'et_builder' ),

@@ -883,9 +883,9 @@
 
 						// Fullscreen section at the first row requires specific adjustment
 						if ( $et_pb_first_row.is( '.et_pb_fullwidth_section' ) ){
-							$waypoint_selector = $et_pb_first_row.children('.et_pb_module');
+							$waypoint_selector = $et_pb_first_row.children('.et_pb_module:visible:first');
 						} else {
-							$waypoint_selector = $et_pb_first_row.find('.et_pb_row');
+							$waypoint_selector = $et_pb_first_row.find('.et_pb_row:visible:first');
 						}
 
 						// Fallback for a less likely but possible scenario: a) fullwidth section
