@@ -365,10 +365,11 @@ abstract class ET_Core_API_Service {
 				return true;
 			}
 		} else if ( '2.0' === $this->oauth_version ) {
-			$args = array(
+			$nonce = wp_create_nonce( 'et_core_api_service_oauth2' );
+			$args  = array(
 				'client_id'     => $this->data['api_key'],
 				'response_type' => 'code',
-				'state'         => rawurlencode( "ET_Core|{$this->name}|{$this->account_name}" ),
+				'state'         => rawurlencode( "ET_Core|{$this->name}|{$this->account_name}|{$nonce}" ),
 				'redirect_uri'  => $this->REDIRECT_URL,
 			);
 

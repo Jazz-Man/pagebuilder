@@ -1,6 +1,38 @@
+version 3.5 ( updated 05-31-2018 )
+- Added feature that enables users to filter the settings modal options in addition to searching.
+- Added new element right click menu option "View Modified Styles".
+- Added new Go To Option item to settings modal right click menu.
+- Fixed the issue where native browser context menu wouldn't display within textarea in settings modal.
+- Fixed an issue where the context menu of the settings modal header displayed wrong menu items.
+- Fixed PHP error occurring when using the module preview in the Classic Divi Builder.
+- Fixed the issue where background colors of Social Media Follow items were not reset correctly during resetting styles.
+- Fixed a bug where column background settings wouldn't reset while resetting entire section or row styles.
+- Fixed the issue where some style options of "Tab Text" options group, within Tabs Module, were not copied correctly.
+- Fixed Image Align Bottom option not working on mobile for Fullwidth Header module.
+- Fixed certain Visual Builder UI elements not working properly when disabling various things in the role editor.
+- Fixed locked specialty sections having wrong color for the Lock and Collapse button.
+- Fixed issue with duplicating checkboxes where link wouldn't properly get duplicated as well.
+- Fixed a compatibility with Easy Forms for MailChimp that prevented section background colors from being changed.
+- Added keyboard shortcut hint into builder helper for reset module styles.
+- Fixed issue with custom margin value working incorrectly for the blog module.
+- Fixed logo preloading failing on Safari 11.
+- Added extra security hardening to the OAuth2 authorization callback.
+	* core/components/api/OAuthHelper.php
+	* core/components/api/Service.php
+	* core/components/api/email/Providers.php
+	* core/ui/components/controls/sortable-list/sortable-list.jsx
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Blog.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/style.css
+	* includes/builder/template-preview.php
+	* js/custom.js
+
 version 3.4.1 ( updated 05-26-2018 )
 - Fixed a bug that caused unwanted line breaks to be added to the email optin module when saving in the classic Divi Builder.
-- Fixed a bug that caused line breaks to be mistakenly stripped from the email optin module's description field after a successful settings migration occurred. 
+- Fixed a bug that caused line breaks to be mistakenly stripped from the email optin module's description field after a successful settings migration occurred.
 - Fixed a bug that broke content migration when the migrated module existed inside of a specialty section and the migration occurred when using the classic Divi Builder.
 	* includes/builder/scripts/builder.js
 	* includes/builder/class-et-builder-element.php

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.4.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.5' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -8014,6 +8014,13 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 			'module_paste_styles' => array(
 				'kbd'  => array( 'super', 'alt', 'v' ),
 				'desc' => esc_html__( 'Paste Module Styles', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
+			'module_reset_styles' => array(
+				'kbd'  => array( 'super', 'alt', 'r' ),
+				'desc' => esc_html__( 'Reset Module Styles', 'et_builder' ),
 				'on' => array(
 					'fb',
 				),

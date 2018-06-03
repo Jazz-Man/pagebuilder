@@ -15,11 +15,6 @@ $container_style = isset($_POST['is_fb_preview']) ? 'max-width: none; padding: 0
 		<meta charset="<?php bloginfo( 'charset' ); ?>" />
 
 		<?php
-
-		elegant_description();
-		elegant_keywords();
-		elegant_canonical();
-
 		/**
 		 * Fires in the head, before {@see wp_head()} is called. This action can be used to
 		 * insert elements into the beginning of the head before any styles are scripts.

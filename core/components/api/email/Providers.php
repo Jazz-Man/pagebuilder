@@ -177,6 +177,10 @@ class ET_Core_API_Email_Providers {
 			return false;
 		}
 
+		if ( ! in_array( $name_or_slug, array_merge( self::names(), self::slugs() ) ) ) {
+			return false;
+		}
+
 		// Make sure we have the component name
 		if ( $is_official ) {
 			$class_name = self::$_metadata[ $name_or_slug ];

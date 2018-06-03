@@ -289,6 +289,14 @@ function et_fb_backend_helpers() {
 		'pageSettingsFields'           => ET_Builder_Settings::get_fields(),
 		'pageSettingsValues'           => ET_Builder_Settings::get_values(),
 		'abTestingSubjects'            => false !== ( $all_subjects_raw = get_post_meta( $post_id, '_et_pb_ab_subjects' , true ) ) ? explode( ',', $all_subjects_raw ) : array(),
+		'searchFilterItems'            => array(
+			'show_only' => array(
+				'styles_modified'   => esc_html__( 'Modified Styles', 'et_builder' ),
+				'styles_responsive' => esc_html__( 'Responsive Styles', 'et_builder' ),
+				// 'styles_hover'      => esc_html__( 'Hover Styles', 'et_builder' ), // TODO Uncomment this once the hover options feature has been released.
+				'active_content'    => esc_html__( 'Active Content', 'et_builder' ),
+			),
+		),
 		'defaults'                     => array(
 			'et_pb_accordion_item'    => array(
 				'title'   => $modules_defaults['title'],
@@ -1210,10 +1218,12 @@ function et_fb_backend_helpers() {
 			'disableGlobal'   => esc_html__( 'Disable Global', 'et_builder' ),
 			'collapse'        => esc_html__( 'Collapse', 'et_builder' ),
 			'expand'          => esc_html__( 'Expand', 'et_builder' ),
+			'stylesModified'  => esc_html__( 'View Modified Style', 'et_builder' ),
 			'toggle'          => esc_html__( 'Toggle', 'et_builder' ),
 			'tab'             => esc_html__( 'Tab', 'et_builder' ),
 			'option'          => esc_html__( 'Option', 'et_builder' ),
 			'item'            => esc_html__( 'Item', 'et_builder' ),
+			'go_to_option'    => esc_html__( 'Go To Option', 'et_builder' ),
 		),
 		'tooltips'            => array(
 			'insertModule'     => esc_html__( 'Insert Module', 'et_builder' ),
@@ -1288,7 +1298,11 @@ function et_fb_backend_helpers() {
 				'tabs'    => ET_Builder_Settings::get_tabs(),
 				'toggles' => ET_Builder_Settings::get_toggles(),
 			),
-			'searchOptions' => esc_html__( 'Search Options', 'et_builder' ),
+			'searchOptions'         => esc_html__( 'Search Options', 'et_builder' ),
+			'filter'                => esc_html__( 'Filter', 'et_builder' ),
+			'show_only'             => esc_html__( 'Show Only', 'et_builder' ),
+			'filterNotice'          => esc_html__( 'No options exist for this search query. Click here to clear your search filters.', 'et_builder' ),
+			'filterNoticeClickable' => esc_html__( 'Click here', 'et_builder' ),
 		),
 		'selectControl' => array(
 			'typeToSearch' => esc_html__( 'Start Typing', 'et_builder' ),

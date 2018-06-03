@@ -34,6 +34,13 @@
 		et_is_touch_device = 'ontouchstart' in window || navigator.maxTouchPoints,
 		$et_top_cart = $('#et-secondary-menu a.et-cart-info');
 
+	function et_preload_image( src, callback ) {
+		var img = new Image();
+		img.onLoad = callback;
+		img.onload = callback;
+		img.src = src;
+	}
+
 	// We need to check first to see if we are on a woocommerce single product.
 	if ( $(".woocommerce .woocommerce-product-gallery").length > 0 ) {
 		// get the gallery container.
@@ -1240,9 +1247,7 @@
 		if ( $('#logo').length ) {
 			// Wait until logo is loaded before performing logo dimension fix
 			// This comes handy when the page is heavy due to the use of images or other assets
-			$('#logo').attr( 'src', $('#logo').attr('src') ).load( function(){
-				et_define_logo_dimension();
-			} );
+			et_preload_image( $('#logo').attr('src'), et_define_logo_dimension );
 		}
 
 		// Set width for adsense in footer widget

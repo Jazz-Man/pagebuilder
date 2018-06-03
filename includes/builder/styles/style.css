@@ -1588,7 +1588,7 @@ span.et-pb-reset-setting.et_pb_reset_weight { top: 10px; }
 
 .et-pb-option--has-preview .wp-picker-container {
 	display: none;
-	position: absolute;
+	position: static;
 	top: 0;
 	right: 0;
 	bottom: 0;

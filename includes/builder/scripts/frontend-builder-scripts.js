@@ -4667,6 +4667,31 @@
 						$header_image.css('align-self', 'flex-end');
 					}
 
+					// Mobile device and small screen handler
+					if ((et_is_mobile_device && !et_is_ipad) || $et_window.width() < 768){
+						// Detect if section height is lower than the content height
+						var headerContentHeight = 0;
+						if ($header_content.length) {
+							headerContentHeight += $header_content.outerHeight();
+						}
+						if ($header_image.length) {
+							headerContentHeight += $header_image.outerHeight();
+						}
+						if (headerContentHeight > sectionHeight ) {
+							$this_section.css('min-height', headerContentHeight + 'px');
+							$header.css('min-height', headerContentHeight + 'px');
+						}
+
+						// Justify the section content
+						if ( $header_image.hasClass('bottom')) {
+							if (headerContentHeight < sectionHeight ) {
+								$this_section.css('min-height', (headerContentHeight + 80) + 'px');
+								$header.css('min-height', (headerContentHeight + 80) + 'px');
+							}
+							$header.css('justify-content', 'flex-end');
+						}
+					}
+
 				}, timeout );
 			}
 

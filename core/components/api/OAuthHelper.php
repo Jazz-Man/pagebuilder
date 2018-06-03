@@ -186,17 +186,24 @@ class ET_Core_API_OAuthHelper {
 			return;
 		}
 
-		list( $_, $name, $account ) = explode( '|', rawurldecode( $_GET['state'] ) );
+		list( $_, $name, $account, $nonce ) = explode( '|', sanitize_text_field( rawurldecode( $_GET['state'] ) ) );
 
-		if ( '' === $name || '' === $account ) {
+		if ( ! $name || ! $account || ! $nonce ) {
 			return;
 		}
 
-		$providers = et_core_api_email_providers();
-		$provider  = $providers->get( $name, $account, 'ET_Core' );
+		$_GET['nonce'] = $nonce;
 
-		if ( false === $provider ) {
-			return;
+		et_core_security_check( 'manage_options', 'et_core_api_service_oauth2', 'nonce', '_GET' );
+
+		$providers = et_core_api_email_providers();
+
+		if ( ! $providers->account_exists( $name, $account ) ) {
+			et_core_die();
+		}
+
+		if ( ! $provider = $providers->get( $name, $account, 'ET_Core' ) ) {
+			et_core_die();
 		}
 
 		$result = $provider->fetch_subscriber_lists();
