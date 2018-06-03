@@ -1,3 +1,12 @@
+version 3.5.1 ( updated 06-01-2018 )
+- Fixed an issue with copying styles of an Accordion Module Item not working correctly.
+- Fixed js error when opening Module Settings while "Add To Library" modal is opened.
+- Fixed an issue where you could no longer close module settings modal with ESC keyboard shortcut.
+- Fixed rendering issue with global Code Module in Visual Builder.
+- Fixed an error that occurred when editing the Social Follow module in the Visual Builder.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.5 ( updated 05-31-2018 )
 - Added feature that enables users to filter the settings modal options in addition to searching.
 - Added new element right click menu option "View Modified Styles".

@@ -2057,10 +2057,13 @@ class ET_Builder_Element {
 
 		$processed_content = false !== $global_content ? $global_content : $this->content;
 		$content = array_key_exists( 'content', $this->fields_unprocessed ) || 'et_pb_code' === $function_name_processed || 'et_pb_fullwidth_code' === $function_name_processed ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type );
-
+		
+		// Global Code module content should be decoded before passing to VB.
+		$is_global_code = in_array( $function_name_processed, array( 'et_pb_code', 'et_pb_fullwidth_code' ) );
+		
 		$prepared_content = $content;
-
-		if ( ! is_array( $content ) && $this->vb_support !== 'on' && ! $this->has_line_breaks( $content ) ) {
+			
+		if ( ( ! is_array( $content ) && $this->vb_support !== 'on' && ! $this->has_line_breaks( $content ) ) || $is_global_code ) {
 			$prepared_content = html_entity_decode( $content, ENT_COMPAT, 'UTF-8' );
 		}
 
