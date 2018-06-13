@@ -361,6 +361,11 @@ body.rtl:not(.et-fb-no-rtl) button.et-core-button {
 	padding-bottom: 107px;
 }
 
+.et-core-modal-actionless.et-core-modal-disabled-scrollbar .et-core-modal-content,
+.et-core-modal-actionless.et-core-modal-disabled-scrollbar .et-core-modal-temp-content {
+	padding-bottom: 40px;
+}
+
 .et-core-modal-content::-webkit-scrollbar {
 	width: 5px !important;
 }

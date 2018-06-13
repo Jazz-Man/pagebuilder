@@ -936,6 +936,8 @@ $options = array (
 				'sub_setting_name'  => 'api_key',
 			),
 
+			et_divi_version_rollback()->get_epanel_option(),
+
 		array( "name" => "updates-1",
 			   "type" => "subcontent-end",),
 

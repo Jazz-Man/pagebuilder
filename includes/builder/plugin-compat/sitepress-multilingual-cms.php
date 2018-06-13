@@ -39,7 +39,7 @@ class ET_Builder_Plugin_Compat_WPML_Multilingual_CMS extends ET_Builder_Plugin_C
 			'et_pb_module_shortcode_attributes',
 			array( $this, '_filter_traslate_shop_module_categories_ids' ),
 			10,
-			4
+			5
 		);
 	}
 

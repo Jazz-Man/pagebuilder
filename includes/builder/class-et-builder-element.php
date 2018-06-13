@@ -1419,8 +1419,9 @@ class ET_Builder_Element {
 		 * @param array $attrs     Array of original shortcode attrs
 		 * @param string $slug     Module slug
 		 * @param string $_address Module Address
+		 * @param string $content  Module content
 		 */
-		$this->props = apply_filters( 'et_pb_module_shortcode_attributes', $this->props, $attrs, $this->slug, $_address );
+		$this->props = apply_filters( 'et_pb_module_shortcode_attributes', $this->props, $attrs, $render_slug, $_address, $content );
 
 		$global_content = false;
 
@@ -1537,8 +1538,6 @@ class ET_Builder_Element {
 		} else {
 			$this->props['content'] = $this->content = ! ( isset( $this->is_structure_element ) && $this->is_structure_element ) ? do_shortcode( et_pb_fix_shortcodes( $content, $this->decode_entities ) ) : '';
 		}
-
-		$content = $this->after_content_processed( $content, $attrs, $_address, $et_fb_processing_shortcode_object );
 
 		// Restart classname on shortcode callback. Module class is only called once, not on every
 		// shortcode module appearance. Thus classname construction need to be restarted on each
@@ -1705,10 +1704,6 @@ class ET_Builder_Element {
 		}
 
 		return $this->output();
-	}
-
-	public function after_content_processed( $unprocessed_content, $attrs, $_address, $is_VB ) {
-		return $unprocessed_content;
 	}
 
 	/**
@@ -1950,7 +1945,7 @@ class ET_Builder_Element {
 				}
 
 				// Run et_pb_module_shortcode_attributes filter to apply migration system on attributes of global module
-				$global_atts = apply_filters( 'et_pb_module_shortcode_attributes', $global_atts, $atts, $this->slug, $this->generate_element_address( $render_slug ) );
+				$global_atts = apply_filters( 'et_pb_module_shortcode_attributes', $global_atts, $atts, $this->slug, $this->generate_element_address( $render_slug ), $content );
 
 				foreach( $this->props as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
@@ -7733,30 +7728,40 @@ class ET_Builder_Element {
 	 * @return void
 	 */
 	function process_additional_options( $function_name ) {
-		if ( ! isset( $this->advanced_fields ) || false === $this->advanced_fields ) {
-			return false;
+		$module = $this;
+
+		if ( $function_name && $function_name !== $this->slug ) {
+			if ( ! $module = self::get_module( $function_name, $this->get_post_type() ) ) {
+				$module = $this;
+			} else {
+				$module->props = $this->props;
+			}
 		}
 
-		$this->process_advanced_fonts_options( $function_name );
+		if ( ! isset( $module->advanced_fields ) || false === $module->advanced_fields ) {
+			return;
+		}
+
+		$module->process_advanced_fonts_options( $function_name );
 
 		// Process Text Shadow CSS
-		$this->text_shadow->process_advanced_css( $this, $function_name );
+		$module->text_shadow->process_advanced_css( $module, $function_name );
 
-		$this->process_advanced_background_options( $function_name );
+		$module->process_advanced_background_options( $function_name );
 
-		$this->process_advanced_text_options( $function_name );
+		$module->process_advanced_text_options( $function_name );
 
-		$this->process_advanced_borders_options( $function_name );
+		$module->process_advanced_borders_options( $function_name );
 
-		$this->process_advanced_filter_options( $function_name );
+		$module->process_advanced_filter_options( $function_name );
 
-		$this->process_max_width_options( $function_name );
+		$module->process_max_width_options( $function_name );
 
-		$this->process_advanced_custom_margin_options( $function_name );
+		$module->process_advanced_custom_margin_options( $function_name );
 
-		$this->process_advanced_button_options( $function_name );
+		$module->process_advanced_button_options( $function_name );
 
-		$this->process_box_shadow( $function_name );
+		$module->process_box_shadow( $function_name );
 	}
 
 	function process_inline_fonts_option( $fonts_list ) {

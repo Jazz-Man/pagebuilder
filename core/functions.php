@@ -691,6 +691,31 @@ function et_core_add_crossorigin_attribute( $tag, $handle, $src ) {
 endif;
 
 
+if ( ! function_exists( 'et_core_get_version_from_filesystem' ) ):
+/**
+ * Get the core version from the filesystem.
+ * This is necessary in cases such as Version Rollback where you cannot use
+ * a constant from memory as it is outdated or you wish to get the version
+ * not from the active (latest) core but from a different one.
+ *
+ * @param string $core_directory
+ *
+ * @return string
+ */
+function et_core_get_version_from_filesystem( $core_directory ) {
+	$version_file = $core_directory . DIRECTORY_SEPARATOR . '_et_core_version.php';
+
+	if ( ! file_exists( $version_file ) ) {
+		return '';
+	}
+
+	include $version_file;
+
+	return $ET_CORE_VERSION;
+}
+endif;
+
+
 if ( ! function_exists( 'et_core_load_component' ) ) :
 /**
  * =============================

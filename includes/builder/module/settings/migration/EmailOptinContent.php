@@ -19,7 +19,15 @@ class ET_Builder_Module_Settings_Migration_EmailOptinContent extends ET_Builder_
 		return array( 'et_pb_signup' );
 	}
 
-	public function migrate( $field_name, $current_value, $module_slug, $saved_value, $saved_field_name, $attrs ) {
+	public function migrate( $field_name, $current_value, $module_slug, $saved_value, $saved_field_name, $attrs, $content ) {
+		if ( '' === $current_value && '' === $saved_value && '' !== $content ) {
+			return $content;
+		}
+
+		if ( '' === $current_value && '' !== $saved_value ) {
+			return $saved_value;
+		}
+
 		return $current_value;
 	}
 }

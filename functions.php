@@ -93,6 +93,8 @@ function et_setup_theme() {
 
 	// Load unminified styles based on selected theme options field
 	add_filter( 'et_load_unminified_styles', 'et_divi_load_unminified_styles' );
+
+	et_divi_version_rollback()->enable();
 }
 add_action( 'after_setup_theme', 'et_setup_theme' );
 
@@ -9049,4 +9051,17 @@ function et_divi_filter_et_core_is_builder_used_on_current_request( $is_builder_
 	return $is_builder_used;
 }
 add_filter( 'et_core_is_builder_used_on_current_request', 'et_divi_filter_et_core_is_builder_used_on_current_request' );
+endif;
+
+if ( ! function_exists( 'et_divi_version_rollback' ) ) :
+	function et_divi_version_rollback() {
+		global $themename, $shortname;
+		static $instance = null;
+
+		if ( null === $instance ) {
+			$instance = new ET_Core_VersionRollback( $themename, $shortname, et_get_theme_version() );
+		}
+
+		return $instance;
+	}
 endif;

@@ -196,6 +196,8 @@ class ET_Core_API_Email_CampaignMonitor extends ET_Core_API_Email_Provider {
 				'checkbox'        => 'MultiSelectMany',
 				// Them => Us
 				'Text'            => 'input',
+				'Number'          => 'input',
+				'Date'            => 'input',
 				'MultiSelectOne'  => 'select',
 				'MultiSelectMany' => 'checkbox',
 			),

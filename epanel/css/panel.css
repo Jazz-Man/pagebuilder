@@ -940,7 +940,7 @@ input.et-checkbox.yes_no_button {
 
 #epanel-content .et-epanel-box .et-upload-image-button,
 #epanel-content .et-epanel-box .et-upload-image-reset,
-#epanel-content .et-epanel-box .et-button{
+#epanel-content .et-epanel-box .et-button {
 	float: left;
 	box-sizing: border-box;
 	color: #FFF;
@@ -966,6 +966,10 @@ input.et-checkbox.yes_no_button {
 	-webkit-transition: background .5s;
 	-moz-transition: background .5s;
 	transition: background .5s;
+}
+
+#epanel-content .et-epanel-box .et-button--simple:first-child {
+	margin-left: 0;
 }
 
 .rtl #epanel-content .et-panel-box .et-upload-image-button,

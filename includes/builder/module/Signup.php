@@ -412,31 +412,6 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		return $fields;
 	}
 
-	public function after_content_processed( $unprocessed_content, $attrs, $_address, $is_VB ) {
-		// Email Optin module's 'content' setting was renamed to 'description' in 3.4. When migration
-		// ran earlier in the _render() method, the content was not set yet so we need to run the migration again.
-		// Also, 'content' is a special case where we need to clear the value after migrating it.
-		if ( $is_VB ) {
-			// Content isn't set on props for the VB. We'll add it to the props so it can
-			// be migrated and then we'll remove it.
-			$this->props['content'] = $this->content;
-		}
-
-		$before_migration = $this->props;
-		$this->props      = apply_filters( 'et_pb_module_shortcode_attributes', $this->props, $attrs, $this->slug, $_address );
-
-		if ( $this->props !== $before_migration ) {
-			// Migration was performed so let's clear the content
-			$this->props['content'] = $this->content = $unprocessed_content = '';
-		}
-
-		if ( $is_VB ) {
-			unset( $this->props['content'] );
-		}
-
-		return $unprocessed_content;
-	}
-
 	function get_fields() {
 		$name_field_only  = array_keys( self::providers()->names_by_slug( 'all', 'name_field_only' ) );
 		$no_custom_fields = array_keys( self::providers()->names_by_slug( 'all', 'no_custom_fields' ) );

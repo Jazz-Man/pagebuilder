@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.5.1';
+window.et_builder_version = '3.6';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -13608,6 +13608,8 @@ window.et_builder_product_name = 'Divi';
 				if (-1 === $.inArray(textarea_id, ['et_pb_content', 'content'])) {
 					// Escape content from secondary editors
 					content = _.escape(content);
+					// Escaped quotes somehow get unescape when the form is sent to the server. Unescape them now and we'll %22 escape them later
+					content = content.replace(/&quot;/g, '"');
 				}
 			} else {
 				content = $( '#' + textarea_id ).val();
@@ -14477,7 +14479,21 @@ window.et_builder_product_name = 'Divi';
 				var $row  = $wrapper.find( '.et_options_list_row:first' );
 				var $rows = $('<div>').addClass('et_options_rows');
 
-				options_value = JSON.parse( options_value );
+				try {
+					options_value = JSON.parse( options_value );
+				} catch (e) {
+					// ContactFormItemOptionsSerialization migration implementation for BB.
+					options_value = options_value.replace(/\{("value":")(.*?)(",)("checked":.,?.*?)\}/gi, function(match, m1, m2, m3, m4) {
+						var escapedContent = m2.replace(/(.)?(")/gi, function(match, m1, m2) {
+							if (m1 !== '\\') {
+								return m1 + '\\' + m2;
+							}
+							return match;
+						} );
+						return '{' + m1 + escapedContent + m3 + m4 + '}';
+					});
+					options_value = JSON.parse(options_value);
+				}
 
 				for ( var i = 0; i < options_value.length; i++ ) {
 					var option    = options_value[i];
