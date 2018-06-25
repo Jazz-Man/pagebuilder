@@ -1,3 +1,45 @@
+version 3.7 ( updated 06-14-2018 )
+- Added new page creation workflow for the Visual Builder
+- Any page can now be duplicated/imported into the builder.
+- Added in ability to copy individual font options across different type of modules.
+- Fixed selector used for custom CSS styles targeting form fields in the Email Optin module.
+- Fixed an issue where the tooltip modal would not align correctly while in wireframe mode on the VB.
+- Fixed an issue when zooming would cause a 1 pixel line when using section dividers.
+- Fixed js error occurring in Blog and Portfolio modules when using pagination in Divi Builder Plugin.
+- Fixed bug CSS selectors syntax when Divi Builder plugin is active.
+- Updated the styling of the error message within the optin module.
+- Fixed a PHP compatibility issue for version 5.2 where a function did not exist.
+- Fixed Mailchimp newsletter subscribe option resulting in double optin even when single optin was chosen.
+- Fixed an issue in the Constant Contact API Wrapper that made it impossible to subscribe an existing subscriber to any additional lists.
+- Fixed a PHP error that was triggered on some AJAX calls when ET_DEBUG constant was set to true.
+	* core/components/Logger.php
+	* core/components/api/email/ConstantContact.php
+	* core/components/api/email/MailChimp.php
+	* core/components/init.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/i18n/library.php
+	* includes/builder/frontend-builder/webpack.config.js
+	* includes/builder/frontend-builder/webpack.production.config.js
+	* includes/builder/functions.php
+	* includes/builder/images/clone.gif
+	* includes/builder/images/clone.png
+	* includes/builder/images/existing.gif
+	* includes/builder/images/existing.png
+	* includes/builder/images/premade.gif
+	* includes/builder/images/premade.png
+	* includes/builder/images/scratch.gif
+	* includes/builder/images/scratch.png
+	* includes/builder/module/Signup.php
+	* includes/builder/module/settings/migration/ContactFormItemOptionsSerialization.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/style.css
+
 version 3.6 ( updated 06-07-2018 )
 - Added rollback feature which allows users to rollback to the version of Divi that they previously had installed before updating.
 - Fixed Javascript error when configuring Global Modules selective sync in Visual Builder.

@@ -502,7 +502,7 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 				'operator' => 'NOT IN',
 			),
 		);
-		$suppress_filters = 'predefined' === $layouts_type;
+		$suppress_filters = 'predefined' === $layout_type;
 	} else {
 		$additional_condition = '' !== $module_width ?
 			array(
@@ -2406,6 +2406,21 @@ function et_builder_get_unsaved_notification_modal() {
 }
 endif;
 
+if ( ! function_exists( 'et_builder_page_creation_modal' ) ) :
+	function et_builder_page_creation_modal() {
+		return '<div class="et-pb-page-creation-card <%= option.className %>" data-action="<%= id %>">
+			<div class="et-pb-page-creation-content">
+				<img src="<%= option.images_uri %>/<%= option.imgSrc %>" data-src="<%= option.images_uri %>/<%= option.imgSrc %>" data-hover="<%= option.images_uri %>/<%= option.imgHover %>" alt="<%= option.titleText %>" />
+				<div class="et-pb-page-creation-text">
+					<h3><%= option.titleText %></h3>
+					<p><%= option.descriptionText %></p>
+				</div>
+			</div>
+			<a href="#" class="et-pb-page-creation-link"><%= option.buttonText %></a>
+		</div>';
+	}
+endif;
+
 if ( ! function_exists( 'et_builder_get_warnings' ) ) :
 function et_builder_get_warnings() {
 	if ( ! current_user_can( 'manage_options' ) ) {
@@ -3079,6 +3094,9 @@ function et_builder_set_content_activation( $post_id = false ) {
 	if ( true !== $activate_builder ) {
 		return false;
 	}
+
+	// Set page creation flow flag to on.
+	update_post_meta( $post_id, '_et_pb_show_page_creation', 'on' );
 
 	// If content already has a section, it means builder is active and activation has to be
 	// skipped to avoid nested and unwanted builder structure

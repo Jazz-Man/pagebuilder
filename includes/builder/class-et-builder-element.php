@@ -10666,7 +10666,7 @@ class ET_Builder_Element {
 			$selector = ".et_divi_builder #et_builder_outer_content $selector";
 
 			// add the prefix for all the selectors in a string.
-			$selector = str_replace( ',', ',.et_divi_builder #et_builder_outer_content ', $selector );
+			$selector = str_replace( ',', ', .et_divi_builder #et_builder_outer_content', $selector );
 		}
 
 		// New lines are saved as || in CSS Custom settings, remove them

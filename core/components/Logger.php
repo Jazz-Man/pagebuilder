@@ -22,9 +22,9 @@ class ET_Core_Logger {
 	 *
 	 * @param mixed $message
 	 * @param int   $bt_index
-	 * @param null  $error_level
+	 * @param boolean $log_ajax Whether or not to log on AJAX calls.
 	 */
-	protected static function _maybe_write_log( $message, $bt_index = 4, $error_level = null, $log_ajax = true ) {
+	protected static function _maybe_write_log( $message, $bt_index = 4, $log_ajax = true ) {
 		if ( ! is_scalar( $message ) ) {
 			$message = print_r( $message, true );
 		}
@@ -39,7 +39,7 @@ class ET_Core_Logger {
 		if ( getenv( 'CI' ) || ! in_array( $hash, self::$HISTORY ) ) {
 			self::$HISTORY[] = $hash;
 
-			self::_write_log( $message, $bt_index, $error_level );
+			self::_write_log( $message, $bt_index );
 		}
 	}
 
@@ -48,9 +48,8 @@ class ET_Core_Logger {
 	 *
 	 * @param string $message
 	 * @param int    $bt_index
-	 * @param null   $error_level
 	 */
-	private static function _write_log( $message, $bt_index = 4, $error_level = null ) {
+	private static function _write_log( $message, $bt_index = 4 ) {
 		$message   = trim( $message );
 		$backtrace = debug_backtrace( 1 );
 		$class     = '';
@@ -87,11 +86,7 @@ class ET_Core_Logger {
 
 		$message = " {$file}:{$line}  {$class}{$function}():\n{$message}\n";
 
-		if ( is_null( $error_level ) || 'on' === @ini_get( 'display_errors' ) ) {
-			error_log( $message );
-		} else {
-			trigger_error( $message, $error_level );
-		}
+		error_log( $message );
 	}
 
 	/**
@@ -101,10 +96,11 @@ class ET_Core_Logger {
 	 *
 	 * @param mixed $message
 	 * @param int   $bt_index
+	 * @param boolean $log_ajax Whether or not to log on AJAX calls.
 	 */
 	public static function debug( $message, $bt_index = 4, $log_ajax = true ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			self::_maybe_write_log( $message, $bt_index, null, $log_ajax );
+			self::_maybe_write_log( $message, $bt_index, $log_ajax );
 		}
 	}
 
@@ -124,10 +120,9 @@ class ET_Core_Logger {
 	 *
 	 * @param mixed $message
 	 * @param int   $bt_index
-	 * @param int   $error_level
 	 */
-	public static function error( $message, $bt_index = 4, $error_level = E_USER_WARNING ) {
-		self::_maybe_write_log( $message, $bt_index, $error_level );
+	public static function error( $message, $bt_index = 4 ) {
+		self::_maybe_write_log( $message, $bt_index );
 	}
 
 	public static function enable_php_notices() {

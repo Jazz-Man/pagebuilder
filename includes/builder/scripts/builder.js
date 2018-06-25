@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.6';
+window.et_builder_version = '3.7';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -12455,6 +12455,8 @@ window.et_builder_product_name = 'Divi';
 				et_pb_hide_layout_settings();
 
 				$et_pb_fb_cta.addClass( 'et_pb_ready' );
+
+				$( 'form#post' ).append( '<input type="hidden" name="et_pb_show_page_creation" value="on" />' );
 			}
 		} );
 
@@ -12529,6 +12531,8 @@ window.et_builder_product_name = 'Divi';
 			if ( ET_PageBuilder_AB_Testing.is_active() ) {
 				ET_PageBuilder_AB_Testing.delete_post_meta();
 			}
+
+			$( 'form#post' ).append( '<input type="hidden" name="et_pb_show_page_creation" value="off" />' );
 
 			//trigger window resize event to trigger tinyMCE editor toolbar sizes recalculation.
 			$( window ).trigger( 'resize' );
@@ -12972,6 +12976,7 @@ window.et_builder_product_name = 'Divi';
 									dataType: 'json',
 									data:     {
 										action: 'et_builder_library_get_layouts_data',
+										postId: et_pb_options.postId,
 										nonce:  et_pb_options.library_get_layouts_data_nonce
 									}
 								} ).then( function( response ) {

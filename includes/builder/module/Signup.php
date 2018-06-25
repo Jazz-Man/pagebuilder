@@ -260,7 +260,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			),
 			'newsletter_fields'      => array(
 				'label'    => esc_html__( 'Opt-in Form Fields', 'et_builder' ),
-				'selector' => '.et_pb_newsletter_form input',
+				'selector' => '%%order_class%% .et_pb_newsletter_form p input[type="text"], %%order_class%% .et_pb_newsletter_form p textarea, %%order_class%% .et_pb_newsletter_form p select, %%order_class%% .et_pb_newsletter_form p .input[type="radio"] + label i, %%order_class%% .et_pb_newsletter_form p .input[type="checkbox"] + label i',
 			),
 			'newsletter_button'      => array(
 				'label'                    => esc_html__( 'Subscribe Button', 'et_builder' ),

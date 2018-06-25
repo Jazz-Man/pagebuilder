@@ -332,7 +332,7 @@ endif;
 
 
 if ( ! function_exists( 'et_error' ) ):
-function et_error( $msg, $bt_index = 4, $error_level = E_USER_WARNING ) {
-	ET_Core_Logger::error( $msg, $bt_index, $error_level );
+function et_error( $msg, $bt_index = 4 ) {
+	ET_Core_Logger::error( $msg, $bt_index );
 }
 endif;

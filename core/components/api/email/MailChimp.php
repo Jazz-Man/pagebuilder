@@ -190,7 +190,7 @@ class ET_Core_API_Email_MailChimp extends ET_Core_API_Email_Provider {
 		 */
 		$max_lists = (int) apply_filters( 'et_core_api_email_mailchimp_max_lists', 250 );
 
-		$url = "{$this->BASE_URL}/lists?count={$max_lists}&fields=lists.name,lists.id,lists.stats";
+		$url = "{$this->BASE_URL}/lists?count={$max_lists}&fields=lists.name,lists.id,lists.stats,lists.double_optin";
 
 		$this->prepare_request( $url );
 
@@ -220,6 +220,7 @@ class ET_Core_API_Email_MailChimp extends ET_Core_API_Email_Provider {
 			'list'              => array(
 				'list_id'           => 'id',
 				'name'              => 'name',
+				'double_optin'      => 'double_optin',
 				'subscribers_count' => 'stats.member_count',
 			),
 			'subscriber'        => array(
@@ -276,12 +277,12 @@ class ET_Core_API_Email_MailChimp extends ET_Core_API_Email_Provider {
 	 * @inheritDoc
 	 */
 	public function subscribe( $args, $url = '' ) {
-		$dbl_optin = empty( $args['dbl_optin'] );
 		$list_id   = $args['list_id'];
 		$args      = $this->transform_data_to_provider_format( $args, 'subscriber' );
 		$url       = "{$this->BASE_URL}/lists/{$list_id}/members";
 		$email     = $args['email_address'];
 		$err       = esc_html__( 'An error occurred, please try later.', 'et_core' );
+		$dbl_optin = self::$_->array_get( $this->data, "lists.{$list_id}.double_optin", true );
 
 		$ip_address = 'true' === self::$_->array_get( $args, 'ip_address', 'true' ) ? et_core_get_ip_address() : '0.0.0.0';
 

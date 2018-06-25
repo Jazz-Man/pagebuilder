@@ -221,13 +221,10 @@ class ET_Core_API_Email_ConstantContact extends ET_Core_API_Email_Provider {
 		$query_args = array( 'api_key' => $this->data['api_key'], 'action_by' => 'ACTION_BY_VISITOR' );
 
 		if ( $subscriber ) {
-			$list   = &$this->_get_list_from_subscriber( $subscriber, $args['list_id'] );
-			$result = 'success';
-
-			if ( ! $list || 'ACTIVE' !== $list['status'] ) {
-				$list
-					? $list['status'] = 'UNCONFIRMED'
-					: $subscriber['lists'][] = array( 'id' => $args['list_id'], 'status' => 'UNCONFIRMED' );
+			if ( $list = $this->_get_list_from_subscriber( $subscriber, $args['list_id'] ) ) {
+				$result = 'success';
+			} else {
+				$subscriber['lists'][] = array( 'id' => $args['list_id'] );
 
 				$this->_subscriber = &$subscriber;
 

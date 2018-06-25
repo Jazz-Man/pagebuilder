@@ -5062,7 +5062,9 @@
 				$current_module.fadeTo( 'slow', 1 );
 
 				// reinit ET shortcodes.
-				window.et_shortcodes_init($current_module);
+				if (typeof window.et_shortcodes_init === 'function') {
+					window.et_shortcodes_init($current_module);
+				}
 
 				// scroll to the top of the module
 				$( 'html, body' ).animate({

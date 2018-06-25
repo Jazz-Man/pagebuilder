@@ -30,10 +30,7 @@ class ET_Builder_Module_Settings_Migration_ContactFormItemOptionsSerialization e
 	}
 
 	public function migrate( $field_name, $current_value, $module_slug, $saved_value, $saved_field_name, $attrs, $content ) {
-		// Trigger a json parse error, if any.
-		json_decode( $saved_value );
-
-		if ( JSON_ERROR_NONE === json_last_error() ) {
+		if ( json_decode( $saved_value ) ) {
 			return $saved_value;
 		}
 
