@@ -1,3 +1,11 @@
+hotfix ( updated 06-22-2018 )
+- Fixed "$ is not a function" error that occurred when editing some layouts in the Visual Builder.
+	* includes/builder/frontend-builder/bundle.js
+
+version 3.8 ( updated 06-21-2018 )
+- Added new Quick Access design system to the Visual Builder.
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.7.1 ( updated 06-20-2018 )
 - Security Update: Added permission checks on all heartbeat callbacks. For more information, please read: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=3b5811b076
 - Separated page fetching into a separate ajax call to reduce peek memory usage during post.php loading.
@@ -12,7 +20,6 @@ version 3.7.1 ( updated 06-20-2018 )
 - Fixed an issue where dragging a section to the very top while in wireframe mode was not easy.
 - Fixed a Javascript error that occurred when changing a value in a numeric input field and clicking out of the field quickly.
 - Fixed tooltip still visible after the module buttons clicked.
-- Fixed the Animation Takes Too Long Time To See The Icons.
 	* includes/builder/core.php
 	* includes/builder/feature/Library.php
 	* includes/builder/frontend-builder/bundle.js
