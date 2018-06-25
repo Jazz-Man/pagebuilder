@@ -47,7 +47,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 			),
 			'margin_padding' => array(
 				'css' => array(
-					'padding' => "{$this->main_css_element}, {$this->main_css_element}:hover",
+					'padding' => "{$this->main_css_element}_wrapper {$this->main_css_element}, {$this->main_css_element}_wrapper {$this->main_css_element}:hover",
 					'margin' => "{$this->main_css_element}_wrapper",
 					'important' => 'all',
 				),

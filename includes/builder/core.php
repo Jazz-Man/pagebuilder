@@ -1071,24 +1071,36 @@ function et_pb_get_backbone_templates() {
 }
 add_action( 'wp_ajax_et_pb_get_backbone_templates', 'et_pb_get_backbone_templates' );
 
-function et_builder_is_builder_built( $post_id = 0, $builder = '' ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-
+/**
+ * Determine if a post is built by a certain builder.
+ *
+ * @param int    $post_id          The post_id to check.
+ * @param string $built_by_builder The builder to check if the post is built by. Allowed values: fb, bb.
+ *
+ * @return bool
+ */
+function et_builder_is_builder_built( $post_id, $built_by_builder ) {
 	$post = get_post( $post_id );
 
-	if ( ! $post_id || ! $post || ! is_object( $post ) ) {
+	// a autosave could be passed as $post_id, and an autosave will not have post_meta and then et_pb_is_pagebuilder_used() will always return false.
+	$parent_post = wp_is_post_autosave( $post_id ) ? get_post( $post->post_parent ) : $post;
+
+	if ( ! $post_id || ! $post || ! is_object( $post ) || ! et_pb_is_pagebuilder_used( $parent_post->ID ) ) {
 		return false;
 	}
 
-	// if no specific builder is passed, just check generically
-	if ( empty( $builder ) ) {
-		return et_pb_is_pagebuilder_used( $post->ID );
-	// if a specific builder has been passed, see if its been used, this can also be used when passed a revision/autosave post
-	} else if ( false !== strpos( $post->post_content, $builder .'_built="1"' ) ) {
-		return true;
-	} else {
+	// ensure this is an allowed builder post_type
+	if ( ! in_array( $parent_post->post_type, et_builder_get_builder_post_types() ) ) {
 		return false;
 	}
+
+	// whitelist the builder slug
+	$built_by_builder = in_array( $built_by_builder, array( 'fb', 'bb' ) ) ? $built_by_builder : '';
+
+	// the built by slug prepended to the first section automatically, in this format: fb_built="1"
+	$pattern = '/^\[et_pb_section ' . $built_by_builder . '_built="1"/s';
+
+	return preg_match( $pattern, $post->post_content );
 }
 
 /**
@@ -1119,6 +1131,10 @@ function et_builder_heartbeat_interval() {
 }
 
 function et_builder_ensure_heartbeat_interval( $response, $screen_id ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
+
 	if ( ! isset( $response['heartbeat_interval'] ) ) {
 		return $response;
 	}
@@ -1138,6 +1154,10 @@ function et_builder_ensure_heartbeat_interval( $response, $screen_id ) {
 add_filter( 'heartbeat_send', 'et_builder_ensure_heartbeat_interval', 100, 2 );
 
 function et_pb_heartbeat_post_modified( $response ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
+
 	if ( empty( $_POST['data'] ) ) {
 		return $response;
 	}
@@ -1148,6 +1168,11 @@ function et_pb_heartbeat_post_modified( $response ) {
 
 	if ( ! empty( $heartbeat_data_et ) ) {
 		$post_id = absint( $heartbeat_data_et['post_id'] );
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return $response;
+		}
+
 		$last_post_modified = sanitize_text_field( $heartbeat_data_et['last_post_modified'] );
 		$built_by = sanitize_text_field( $heartbeat_data_et['built_by'] );
 		$force_check = isset( $heartbeat_data_et['force_check'] ) && 'true' == $heartbeat_data_et['force_check'] ? true : false;
@@ -1196,7 +1221,6 @@ function et_pb_heartbeat_post_modified( $response ) {
 		$post_post_modified = date( 'U', strtotime( $post_modified ) );
 		$response['et']['post_post_modified'] = $post->post_modified;
 
-
 		if ( !empty( $autosave ) ) {
 			$response['et']['autosave_exists'] = true;
 			$autosave_post_modified = date( 'U', strtotime( $autosave->post_modified ) );
@@ -1217,6 +1241,17 @@ function et_pb_heartbeat_post_modified( $response ) {
 		$response['et']['post_id'] = $post_id;
 		$response['et']['last_post_modified'] = $last_post_modified;
 		$response['et']['post_modified'] = $post_modified;
+
+		// security short circuit
+		$post = get_post( $post_id );
+
+		// $post_id could be an autosave
+		$parent_post = wp_is_post_autosave( $post_id ) ? get_post( $post->post_parent ) : $post;
+
+		if ( ! et_pb_is_pagebuilder_used( $parent_post->ID ) || ! in_array( $parent_post->post_type, et_builder_get_builder_post_types() ) ) {
+			return $response;
+		}
+		// end security short circuit
 
 		if ( $last_post_modified != $post_modified ) {
 
@@ -1430,9 +1465,17 @@ function et_pb_autosave_builder_settings( $post_id, $builder_settings ) {
  */
 
 function et_fb_heartbeat_autosave( $response, $data ) {
-	if ( ! empty( $data['et_fb_autosave'] ) ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
 
+	if ( ! empty( $data['et_fb_autosave'] ) ) {
 		$post_id = (int) $data['et_fb_autosave']['post_id'];
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return $response;
+		}
+
 		$has_focus = !empty( $_POST['has_focus'] ) && 'true' === $_POST['has_focus'];
 		$force_autosave = !empty( $data['et'] ) && !empty( $data['et']['force_autosave'] ) && 'true' === $data['et']['force_autosave'];
 
@@ -1449,7 +1492,7 @@ function et_fb_heartbeat_autosave( $response, $data ) {
 
 		$saved = et_fb_autosave( $data['et_fb_autosave'] );
 
-		if ( !empty( $data['et_fb_autosave']['builder_settings'] ) ) {
+		if ( ! is_wp_error( $saved ) && ! empty( $data['et_fb_autosave']['builder_settings'] ) ) {
 			$builder_settings_autosaved = et_pb_autosave_builder_settings( $post_id, $data['et_fb_autosave']['builder_settings'] );
 			$response['et_pb_autosave_builder_settings'] = array( 'success' => $builder_settings_autosaved, 'message' => __( 'Builder settings synced', 'et_builder' ) );
 		}
@@ -1471,6 +1514,10 @@ function et_fb_heartbeat_autosave( $response, $data ) {
 add_filter( 'heartbeat_received', 'et_fb_heartbeat_autosave', 499, 2 );
 
 function et_bb_heartbeat_autosave( $response, $data ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
+
 	if ( ! empty( $data['wp_autosave'] ) ) {
 		$has_focus = !empty( $_POST['has_focus'] ) && 'true' === $_POST['has_focus'];
 		$force_autosave = !empty( $data['et'] ) && !empty( $data['et']['force_autosave'] ) && 'true' === $data['et']['force_autosave'];
@@ -1488,8 +1535,16 @@ function et_bb_heartbeat_autosave( $response, $data ) {
 add_filter( 'heartbeat_received', 'et_bb_heartbeat_autosave', 498, 2 );
 
 function et_bb_heartbeat_builder_settings_autosave( $response, $data ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
+
 	if ( ! empty( $data['wp_autosave'] ) ) {
 		$post_id = (int) $data['wp_autosave']['post_id'];
+
+		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+			return $response;
+		}
 
 		if ( !empty( $data['wp_autosave']['builder_settings'] ) ) {
 			$builder_settings_autosaved = et_pb_autosave_builder_settings( $post_id, $data['wp_autosave']['builder_settings'] );
@@ -1502,6 +1557,10 @@ function et_bb_heartbeat_builder_settings_autosave( $response, $data ) {
 add_filter( 'heartbeat_received', 'et_bb_heartbeat_builder_settings_autosave', 500, 2 );
 
 function et_fb_wp_refresh_nonces( $response, $data, $screen_id ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
+		return $response;
+	}
+
 	if ( ! isset( $data['et']['built_by'] ) || 'fb' !== $data['et']['built_by'] ) {
 		return $response;
 	}

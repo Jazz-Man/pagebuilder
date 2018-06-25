@@ -677,17 +677,25 @@ class ET_Builder_Library {
 
 						$title = html_entity_decode( $post->post_title );
 
-						if ( empty( $title ) || empty( $post->post_name ) ) {
+						$slug  = $post->post_name;
+
+						if ( ! $slug ) {
+							// Generate a slug, if none is available - this is necessary as draft posts
+							// that have never been published will not have a slug by default.
+							$slug = wp_unique_post_slug( $post->post_title . '-' . $post->ID, $post->ID, $post->post_status, $post->post_type, $post->post_parent );
+						}
+
+						if ( empty( $title ) || empty( $slug ) ) {
 							continue;
 						}
 
 						// Make sure we don't have duplicate slugs since we're using them as key in React.
 						// slugs should always be unique but enabling/disabling WPML can break this rule.
-						if ( isset( $seen[ $post->post_name ] ) ) {
+						if ( isset( $seen[ $slug ] ) ) {
 							continue;
 						}
 
-						$seen[ $post->post_name ]   = true;
+						$seen[ $slug ]              = true;
 						$layout                     = new stdClass();
 						$layout->index              = $index;
 						$layout->id                 = $post->ID;
@@ -697,7 +705,7 @@ class ET_Builder_Library {
 						$layout->type               = $post_type;
 						$layout->name               = et_intentionally_unescaped( $title, 'react_jsx' );
 						$layout->short_name         = et_intentionally_unescaped( $title, 'react_jsx' );
-						$layout->slug               = $post->post_name;
+						$layout->slug               = $slug;
 						$layout->url                = esc_url( wp_make_link_relative( get_permalink( $post ) ) );
 
 						$layout->thumbnail          = esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail ) );

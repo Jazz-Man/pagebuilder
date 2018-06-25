@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.7' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.7.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -3154,7 +3154,6 @@ function et_pb_add_builder_page_js_css(){
 		'all_svg_icons'                            => et_pb_get_svg_icons_list(),
 		'library_get_layouts_data_nonce'           => wp_create_nonce( 'et_builder_library_get_layouts_data' ),
 		'library_get_layout_nonce'                 => wp_create_nonce( 'et_builder_library_get_layout' ),
-		'library_local_layouts'                    => ET_Builder_Library::instance()->builder_library_layouts_data(),
 		'library_update_account_nonce'             => wp_create_nonce( 'et_builder_library_update_account' ),
 		'library_custom_tabs'                      => ET_Builder_Library::builder_library_modal_custom_tabs( $post_type ),
 	), et_pb_history_localization() ) ) );

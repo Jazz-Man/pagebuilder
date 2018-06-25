@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.7';
+window.et_builder_version = '3.7.1';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -34,6 +34,25 @@ window.et_builder_product_name = 'Divi';
 		}
 		return template.replace(placeholder, unique);
 	}
+
+	function et_builder_library_get_layouts_data() {
+		return new Promise( function ( resolve, reject ) {
+			$.ajax( {
+				type:     'POST',
+				url:      et_pb_options.ajaxurl,
+				dataType: 'json',
+				data:     {
+					action: 'et_builder_library_get_layouts_data',
+					postId: et_pb_options.postId,
+					nonce:  et_pb_options.library_get_layouts_data_nonce
+				}
+			} ).then( function( response ) {
+				resolve( get( response, 'data', '' ) );
+			} );
+		} );
+	}
+
+	var et_builder_layouts_loaded = et_builder_library_get_layouts_data();
 
 	function et_builder_maybe_clear_localstorage() {
 		var settings_product_version = et_pb_options.product_version,
@@ -3746,8 +3765,6 @@ window.et_builder_product_name = 'Divi';
 
 				this.library_url = 'https://www.elegantthemes.com/layouts';
 
-				this.local_layouts        = et_pb_options.library_local_layouts.layouts_data;
-				this.custom_layouts       = et_pb_options.library_local_layouts.custom_layouts_data;
 				this.back_button_template = _.template( $('#et-builder-library-back-button-template').html() );
 				this.current_page         = {};
 				this.account_status_error = false;
@@ -3799,9 +3816,11 @@ window.et_builder_product_name = 'Divi';
 
 				this.emitLoadingStarted();
 
-				this.loadLibrary().then( _.bind( function( child ) {
-					this.library  = child;
-					this.$library = $( child.frame );
+				Promise.all( [this.loadLibrary(), et_builder_layouts_loaded] ).then( _.bind( function( promises ) {
+					this.library        = promises[0];
+					this.$library       = $( this.library.frame );
+					this.local_layouts  = promises[1].layouts_data;
+					this.custom_layouts = promises[1].custom_layouts_data;
 
 					this.setIFrameSize();
 
@@ -12970,22 +12989,7 @@ window.et_builder_product_name = 'Divi';
 									return;
 								}
 
-								$.ajax( {
-									type:     'POST',
-									url:      et_pb_options.ajaxurl,
-									dataType: 'json',
-									data:     {
-										action: 'et_builder_library_get_layouts_data',
-										postId: et_pb_options.postId,
-										nonce:  et_pb_options.library_get_layouts_data_nonce
-									}
-								} ).then( function( response ) {
-									var local_layouts = get( response, 'data', '' );
-
-									if ( local_layouts ) {
-										et_pb_options.library_local_layouts = local_layouts;
-									}
-								} );
+								et_builder_layouts_loaded = et_builder_library_get_layouts_data();
 							}
 						} );
 
