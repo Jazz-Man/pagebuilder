@@ -298,11 +298,13 @@ class ET_Core_API_Email_MailChimp extends ET_Core_API_Email_Provider {
 			$result = $err;
 
 			if ( $user = $this->get_subscriber( $list_id, $email ) ) {
-				$args['status'] = $user['status'];
+				if ( 'subscribed' === $user['status'] ) {
+					$result = 'success';
+				} else {
+					$this->prepare_request( implode( '/', array( $url, $user['id'] ) ), 'PUT', false, $args, true );
 
-				$this->prepare_request( implode( '/', array( $url, $user['id'] ) ), 'PUT', false, $args, true );
-
-				$result = parent::subscribe( $args, $url );
+					$result = parent::subscribe( $args, $url );
+				}
 			}
 		}
 

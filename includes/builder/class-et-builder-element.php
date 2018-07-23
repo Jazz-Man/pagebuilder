@@ -136,6 +136,7 @@ class ET_Builder_Element {
 	private static $media_queries = array();
 	private static $modules_order;
 	private static $inner_modules_order;
+	private static $modules = array();
 	private static $parent_modules = array();
 	private static $child_modules = array();
 	private static $current_module_index = 0;
@@ -274,6 +275,8 @@ class ET_Builder_Element {
 		$this->main_tabs = $this->get_main_tabs();
 
 		$this->custom_css_tab = isset( $this->custom_css_tab ) ? $this->custom_css_tab : true;
+
+		self::$modules[ $this->slug ] = $this;
 
 		$post_types = ! empty( $this->post_types ) ? $this->post_types : et_builder_get_builder_post_types();
 
@@ -576,6 +579,7 @@ class ET_Builder_Element {
 
 		$resource_owner = $unified_styles ? 'core' : 'builder';
 		$resource_slug  = $unified_styles ? 'unified' : 'module-design';
+		$resource_slug .= $unified_styles && et_builder_post_is_of_custom_post_type( $post_id ) ? '-cpt' : '';
 
 		// If the post is password protected and a password has not been provided yet,
 		// no content (including any custom style) will be printed.
@@ -665,12 +669,18 @@ class ET_Builder_Element {
 	 *
 	 * @since 3.0.85
 	 *
-	 * @param string $post_type Get module slugs for this post type. If falsey, all slugs are returned.
+	 * @param string $post_type Get module slugs for this post type. If falsy, all slugs are returned.
 	 *
 	 * @return array
 	 */
 	public static function get_module_slugs_by_post_type( $post_type = 'post' ) {
-		if ( $post_type && isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+		if ( $post_type ) {
+			if ( ! isset( self::$_module_slugs_by_post_type[ $post_type ] ) ) {
+				// We get all modules when post type is not enabled so that posts that have
+				// had their post type support disabled still load all necessary modules.
+				return array_keys( self::get_modules() );
+			}
+
 			return self::$_module_slugs_by_post_type[ $post_type ];
 		}
 
@@ -1038,7 +1048,7 @@ class ET_Builder_Element {
 	 * Bumps the render count for this module instance and the module instance whose slug is
 	 * set as {@see self::$_bumps_render_count} (if any).
 	 *
-	 * @since ??
+	 * @since 3.10
 	 */
 	protected function _bump_render_count() {
 		$this->_render_count++;
@@ -2052,12 +2062,12 @@ class ET_Builder_Element {
 
 		$processed_content = false !== $global_content ? $global_content : $this->content;
 		$content = array_key_exists( 'content', $this->fields_unprocessed ) || 'et_pb_code' === $function_name_processed || 'et_pb_fullwidth_code' === $function_name_processed ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type );
-		
+
 		// Global Code module content should be decoded before passing to VB.
 		$is_global_code = in_array( $function_name_processed, array( 'et_pb_code', 'et_pb_fullwidth_code' ) );
-		
+
 		$prepared_content = $content;
-			
+
 		if ( ( ! is_array( $content ) && $this->vb_support !== 'on' && ! $this->has_line_breaks( $content ) ) || $is_global_code ) {
 			$prepared_content = html_entity_decode( $content, ENT_COMPAT, 'UTF-8' );
 		}
@@ -8861,15 +8871,17 @@ class ET_Builder_Element {
 				$button_border_radius_hover_processed = '' !== $button_border_radius_hover && 'px' !== $button_border_radius_hover ? et_builder_process_range_value( $button_border_radius_hover ) : '';
 				$button_use_icon = '' === $button_use_icon ? 'on' : $button_use_icon;
 
-				$css_element = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element . ' .et_pb_button';
+				$css_element           = ! empty( $option_settings['css']['main'] ) ? $option_settings['css']['main'] : $this->main_css_element . ' .et_pb_button';
+				$css_element_processed = $css_element;
+				$is_dbp                = et_is_builder_plugin_active();
 
-				if ( et_is_builder_plugin_active() && ! empty( $option_settings['css']['plugin_main'] ) ) {
-					$css_element = $option_settings['css']['plugin_main'];
+				if ( $is_dbp && ! empty( $option_settings['css']['plugin_main'] ) ) {
+					$css_element_processed = $option_settings['css']['plugin_main'];
+				} else if ( ! $is_dbp ) {
+					$css_element_processed = "body #page-container {$css_element}";
 				}
 
-				$css_element_processed = et_is_builder_plugin_active() ? $css_element : 'body #page-container ' . $css_element;
-
-				if ( et_is_builder_plugin_active() ) {
+				if ( $is_dbp ) {
 					$button_bg_color .= '' !== $button_bg_color ? ' !important' : '';
 					$button_border_radius_processed .= '' !== $button_border_radius_processed ? ' !important' : '';
 					$button_border_radius_hover_processed .= '' !== $button_border_radius_hover_processed ? ' !important' : '';
@@ -8965,7 +8977,7 @@ class ET_Builder_Element {
 
 					if ( ! empty( $no_icon_styles ) ) {
 						self::set_style( $function_name, array(
-							'selector'    => $css_element . ',' . $css_element . ':hover',
+							'selector'    => $css_element_processed . ',' . $css_element_processed . ':hover',
 							'declaration' => rtrim( $no_icon_styles ),
 						) );
 					}
@@ -9735,9 +9747,58 @@ class ET_Builder_Element {
 		return self::$structure_modules;
 	}
 
+	/**
+	 * Get a filtered list of modules.
+	 *
+	 * @since 3.10
+	 *
+	 * @param string $post_type Leave empty for any.
+	 * @param string $type 'parent' or 'child'. Leave empty for any.
+	 *
+	 * @return array<string, ET_Builder_Element>
+	 */
+	static function get_modules( $post_type = '', $type = '' ) {
+		$modules = array();
+
+		foreach ( self::$modules as $slug => $module ) {
+			if ( '' !== $post_type && ! in_array( $post_type, $module->post_types ) ) {
+				continue;
+			}
+
+			if ( '' !== $type && ! $module->type !== $type ) {
+				continue;
+			}
+
+			$modules[ $slug ] = $module;
+		}
+
+		return $modules;
+	}
+
+	static function get_custom_post_type_fallback_modules( $type = 'parent' ) {
+		$modules = 'child' === $type ? self::$child_modules : self::$parent_modules;
+
+		// Most of the time, page module is expected to be used as disabled post type fallback
+		if ( isset( $modules['page'] ) ) {
+			return $modules['page'];
+		}
+
+		// Post module is also expected to be used
+		if ( isset( $modules['post'] ) ) {
+			return $modules['post'];
+		}
+
+		// If all else fail, use all modules
+		return self::get_modules();
+	}
+
 	static function get_parent_modules( $post_type = '' ) {
 		if ( ! empty( $post_type ) ) {
-			$parent_modules = ! empty( self::$parent_modules[ $post_type ] ) ? self::$parent_modules[ $post_type ] : array();
+			// We get all modules when post type is not enabled so that posts that have
+			// had their post type support disabled still load all necessary modules.
+			$parent_modules = ! empty( self::$parent_modules[ $post_type ] )
+				? self::$parent_modules[ $post_type ]
+				: self::get_custom_post_type_fallback_modules( 'parent' );
 		} else {
 			$parent_modules = self::$parent_modules;
 		}
@@ -9747,7 +9808,11 @@ class ET_Builder_Element {
 
 	static function get_child_modules( $post_type = '' ) {
 		if ( ! empty( $post_type ) ) {
-			$child_modules = ! empty( self::$child_modules[ $post_type ] ) ? self::$child_modules[ $post_type ] : array();
+			// We get all modules when post type is not enabled so that posts that have
+			// had their post type support disabled still load all necessary modules.
+			$child_modules = ! empty( self::$child_modules[ $post_type ] )
+				? self::$child_modules[ $post_type ]
+				: self::get_custom_post_type_fallback_modules( 'child' );
 		} else {
 			$child_modules = self::$child_modules;
 		}
@@ -9806,7 +9871,7 @@ class ET_Builder_Element {
 	/**
 	 * Get a module instance for provided post type by its slug.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param string $slug
 	 * @param string $post_type
@@ -10659,15 +10724,8 @@ class ET_Builder_Element {
 			$selector     = str_replace( '%%parent_class%%', ".{$parent_class}", $selector );
 		}
 
-		$selector = apply_filters( 'et_pb_set_style_selector', $selector, $function_name );
-
-		// Prepend .et_divi_builder class before all CSS rules in the Divi Builder plugin
-		if ( et_is_builder_plugin_active() ) {
-			$selector = ".et_divi_builder #et_builder_outer_content $selector";
-
-			// add the prefix for all the selectors in a string.
-			$selector = str_replace( ',', ', .et_divi_builder #et_builder_outer_content', $selector );
-		}
+		$selector = strip_tags( apply_filters( 'et_pb_set_style_selector', $selector, $function_name ) );
+		$selector = et_builder_maybe_wrap_css_selectors( $selector, false );
 
 		// New lines are saved as || in CSS Custom settings, remove them
 		$declaration = preg_replace( '/(\|\|)/i', '', $declaration );
@@ -11273,13 +11331,12 @@ class ET_Builder_Element {
 	 * @deprecated
 	 */
 	public static function get_slugs_with_children( $post_type ) {
+		$parent_modules = self::get_parent_modules( $post_type );
 		$slugs = array();
 
-		if ( ! empty( self::$parent_modules[ $post_type ] ) ) {
-			foreach ( self::$parent_modules[ $post_type ] as $module ) {
-				if ( ! empty( $module->child_slug ) ) {
-					$slugs[] = sprintf( '"%1$s":"%2$s"', esc_js( $module->slug ), esc_js( $module->child_slug ) );
-				}
+		foreach ( $parent_modules as $module ) {
+			if ( ! empty( $module->child_slug ) ) {
+				$slugs[] = sprintf( '"%1$s":"%2$s"', esc_js( $module->slug ), esc_js( $module->child_slug ) );
 			}
 		}
 

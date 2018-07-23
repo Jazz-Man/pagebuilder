@@ -18,7 +18,7 @@ class ET_Core_Logger {
 	/**
 	 * Writes a message to the debug log if it hasn't already been written once.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param mixed $message
 	 * @param int   $bt_index

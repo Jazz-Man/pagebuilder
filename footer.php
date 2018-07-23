@@ -2,7 +2,7 @@
 /**
  * Fires after the main content, before the footer is output.
  *
- * @since ??
+ * @since 3.10
  */
 do_action( 'et_after_main_content' );
 

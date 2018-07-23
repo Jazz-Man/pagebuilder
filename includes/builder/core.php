@@ -173,22 +173,268 @@ function et_pb_current_user_can_lock() {
 }
 add_action( 'wp_ajax_et_pb_current_user_can_lock', 'et_pb_current_user_can_lock' );
 
-function et_builder_get_builder_post_types() {
-	return apply_filters( 'et_builder_post_types', array(
+/**
+ * Get the supported post types by default.
+ *
+ * @since 3.10
+ *
+ * @return array<string>
+ */
+function et_builder_get_default_post_types() {
+	return array(
+		// WordPress:
 		'page',
+		'post',
+
+		// Divi/Extra/DBP:
 		'project',
 		'et_pb_layout',
-		'post',
+	);
+}
+
+/**
+ * Get the supported third party post types.
+ *
+ * @since 3.10
+ *
+ * @return array<string>
+ */
+function et_builder_get_third_party_post_types() {
+	/**
+	 * Array of third-party registered post types that should have support enabled by default.
+	 *
+	 * @since 3.10
+	 *
+	 * @param array<string>
+	 */
+	return apply_filters( 'et_builder_third_party_post_types', array(
+		// WooCommerce (https://wordpress.org/plugins/woocommerce/):
+		'product',
+
+		// The Events Calendar (https://wordpress.org/plugins/the-events-calendar/):
+		'tribe_events',
+
+		// Popup Maker (https://wordpress.org/plugins/popup-maker/):
+		'popup',
+
+		// All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/):
+		'ai1ec_event',
+
+		// Events Manager (https://wordpress.org/plugins/events-manager/):
+		'event',
+		'location',
+
+		// Portfolio Post Type (https://wordpress.org/plugins/portfolio-post-type/):
+		'portfolio',
+
+		// LifterLMS (https://wordpress.org/plugins/lifterlms/):
+		'course',
+
+		// LearnDash (https://www.learndash.com/wordpress-course-plugin-features/):
+		'sfwd-courses',
+		'sfwd-lessons',
 	) );
 }
 
-function et_builder_get_fb_post_types() {
-	return apply_filters( 'et_fb_post_types', array(
-		'page',
-		'project',
-		'et_pb_layout',
-		'post',
+/**
+ * Get the list of unsupported Post Types.
+ *
+ * @since 3.10
+ *
+ * @return array
+ */
+function et_builder_get_blacklisted_post_types() {
+	return apply_filters( 'et_builder_post_type_blacklist', array(
+		// LearnDash
+		'sfwd-essays',
+
+		// bbPress:
+		'forum',
+		'topic',
+		'reply',
 	) );
+}
+
+/**
+ * Check whether the supplied post type is a custom post type as far as the builder is concerned.
+ *
+ * @since 3.10
+ *
+ * @param string $post_type
+ *
+ * @return boolean
+ */
+function et_builder_is_post_type_custom( $post_type ) {
+	return ! in_array( $post_type, et_builder_get_default_post_types() );
+}
+
+/**
+ * Check whether the supplied post is of a custom post type as far as the builder is concerned.
+ * If no post id is supplied, checks whether the current page is the singular view of a custom post type.
+ *
+ * @since 3.10
+ *
+ * @param integer $post_id
+ *
+ * @return boolean
+ */
+function et_builder_post_is_of_custom_post_type( $post_id = 0 ) {
+	$post_types = et_builder_get_default_post_types();
+
+	if ( $post_id === 0 ) {
+		return is_singular() && ! in_array( get_post_type( get_the_ID() ), $post_types );
+	}
+
+	return et_builder_is_post_type_custom( get_post_type( $post_id ) );
+}
+
+/**
+ * Get an array of post types the Divi Builder is enabled on.
+ *
+ * @since 3.10
+ *
+ * @return string[]
+ */
+function et_builder_get_enabled_builder_post_types() {
+	$default = array_merge(
+		et_builder_get_default_post_types(),
+		et_builder_get_third_party_post_types()
+	);
+
+	/**
+	 * Filter the array of enabled post type options.
+	 * Allows Divi/Extra/DBP to only supply their option value in order to reduce code duplication.
+	 *
+	 * Schema:
+	 *     array(
+	 *         'post_type_name' => <'on' or 'off'>,
+	 *         // ...
+	 *     )
+	 *
+	 * @since 3.10
+	 *
+	 * @param array<string, string> $options
+	 *
+	 * @return array<string, string>
+	 */
+	$options = apply_filters( 'et_builder_enabled_builder_post_type_options', array() );
+
+	foreach ( $default as $post_type ) {
+		if ( ! isset( $options[ $post_type ] ) ) {
+			$options[ $post_type ] = 'on';
+		}
+	}
+
+	$filtered = array();
+
+	foreach ( $options as $post_type => $state ) {
+		if ( 'on' === $state && ! in_array( $post_type, et_builder_get_blacklisted_post_types() ) ) {
+			$filtered[] = $post_type;
+		}
+	}
+
+	return $filtered;
+}
+
+function et_builder_get_builder_post_types() {
+	/**
+	 * Array of post types which have the builder enabled.
+	 *
+	 * @since 3.10
+	 *
+	 * @param array<string>
+	 */
+	return apply_filters( 'et_builder_post_types', et_builder_get_enabled_builder_post_types() );
+}
+
+function et_builder_get_fb_post_types() {
+	/**
+	 * Array of post types which have the frontend builder enabled.
+	 *
+	 * @since 3.10
+	 *
+	 * @param array<string>
+	 */
+	return apply_filters( 'et_fb_post_types', et_builder_get_enabled_builder_post_types() );
+}
+
+/**
+ * Check whether the specified post can have the builder enabled.
+ *
+ * @since 3.10
+ *
+ * @param integer $post_id
+ *
+ * @return boolean
+ */
+function et_builder_enabled_for_post( $post_id ) {
+	if ( et_pb_is_pagebuilder_used( $post_id ) ) {
+		return true;
+	}
+
+	return et_builder_enabled_for_post_type( get_post_type( $post_id ) );
+}
+
+/**
+ * Check whether the specified post type can have the builder enabled.
+ *
+ * @since 3.10
+ *
+ * @param string $post_type
+ *
+ * @return boolean
+ */
+function et_builder_enabled_for_post_type( $post_type ) {
+	return in_array( $post_type, et_builder_get_builder_post_types() );
+}
+
+/**
+ * Check whether the specified post can have the FB enabled.
+ *
+ * @since 3.10
+ *
+ * @param string $post_type
+ *
+ * @return boolean
+ */
+function et_builder_fb_enabled_for_post( $post_id ) {
+	$post_type            = get_post_type( $post_id );
+	$enabled              = false;
+	$pto                  = get_post_type_object( $post_type );
+	$is_default_post_type = in_array( $post_type, et_builder_get_default_post_types() );
+	$is_public_post_type  = et_builder_is_post_type_public( $post_type );
+
+	if ( $pto && ( $is_default_post_type || $is_public_post_type ) ) {
+		$enabled = et_builder_enabled_for_post( $post_id );
+	}
+
+	/**
+	 * Filter whether the FB is enabled for a given post.
+	 *
+	 * @since 3.10
+	 *
+	 * @param boolean $enabled
+	 * @param integer $post_id
+	 */
+	$enabled = apply_filters( 'et_builder_fb_enabled_for_post', $enabled, $post_id );
+
+	return $enabled;
+}
+
+/**
+ * Check whether the specified post type is public.
+ *
+ * @since 3.10
+ *
+ * @param string $post_type
+ *
+ * @return boolean
+ */
+function et_builder_is_post_type_public( $post_type ) {
+	$pto = get_post_type_object( $post_type );
+
+	// Note: the page post type is not publicly_queryable but we should treat it as such.
+	return ( $pto && ( $pto->publicly_queryable || $pto->name === 'page' ) );
 }
 
 function et_is_extra_library_layout( $post_id ) {
@@ -470,6 +716,10 @@ function et_pb_retrieve_templates( $layout_type = 'layout', $module_width = '', 
 	$extra_layout_post_type = 'layout';
 	$module_icons           = ET_Builder_Element::get_module_icons();
 	$utils                  = ET_Core_Data_Utils::instance();
+	$similar_post_types     = array_keys(ET_Builder_Settings::get_registered_post_type_options());
+
+	// All default and 3rd party post types considered similar and share the same library items, so retrieve all items for any post type from the list
+	$post_type = in_array($post_type, $similar_post_types) ? $similar_post_types : $post_type;
 
 	// need specific query for the layouts
 	if ( 'layout' === $layout_type ) {
@@ -1625,7 +1875,9 @@ function et_builder_is_product_tour_enabled() {
 	}
 
 	if ( ! ( function_exists( 'et_fb_is_enabled' ) && et_fb_is_enabled() ) ) {
-		return $product_tour_enabled = false;
+		// Do not update `$product_tour_enabled` at this point since we can run et_builder_is_product_tour_enabled() check later
+		// when et_fb_is_enabled() will be available.
+		return false;
 	}
 
 	/**
@@ -2336,6 +2588,29 @@ function et_builder_get_failure_notification_modal() {
 		$messages,
 		esc_html__( 'Reload The Builder', 'et_builder' ),
 		esc_html__( 'Oops, it looks like the Divi Builder failed to load. Performing the following actions may help solve the problem.', 'et_builder' )
+	);
+
+	return $output;
+}
+endif;
+
+if ( ! function_exists( 'et_builder_get_no_builder_notification_modal' ) ) :
+function et_builder_get_no_builder_notification_modal() {	
+	$output = sprintf(
+		'<div class="et-core-modal-overlay et-builder-timeout et-core-active">
+			<div class="et-core-modal">
+				<div class="et-core-modal-header">
+					<h3 class="et-core-modal-title">%1$s</h3>
+					<a href="#" class="et-core-modal-close" data-et-core-modal="close"></a>
+				</div>
+
+				<div class="et-core-modal-content">
+					<p><strong>%2$s</strong></p>
+				</div>
+			</div>
+		</div>',
+		esc_html__( 'Incompatible Post Type', 'et_builder' ),
+		esc_html__( 'This post does not show the standard WordPress content area. Unfortunately, that means the Divi Builder cannot be used on this post.', 'et_builder' )
 	);
 
 	return $output;
@@ -3068,7 +3343,11 @@ function is_et_pb_preview() {
 }
 
 if ( ! function_exists( 'et_pb_is_pagebuilder_used' ) ) :
-function et_pb_is_pagebuilder_used( $page_id ) {
+function et_pb_is_pagebuilder_used( $page_id = 0 ) {
+	if ( 0 === $page_id ) {
+		$page_id = et_core_page_resource_get_the_ID();
+	}
+
 	return ( 'on' === get_post_meta( $page_id, '_et_pb_use_builder', true ) );
 }
 endif;
@@ -3878,4 +4157,179 @@ function et_load_unminified_styles() {
 	}
 
 	return $should_load;
+}
+
+/**
+ * Add the divi builder body class.
+ *
+ * @param $classes
+ *
+ * @return array
+ */
+function et_builder_add_body_class( $classes ) {
+	$classes[] = 'et-db';
+
+	return $classes;
+}
+add_filter( 'body_class', 'et_builder_add_body_class' );
+
+/**
+ * Add builder inner content wrapper classes.
+ *
+ * @since 3.10
+ *
+ * @param $classes
+ *
+ * @return array
+ */
+function et_builder_add_builder_inner_content_class( $classes ) {
+	$page_custom_gutter = get_post_meta( get_the_ID(), '_et_pb_gutter_width', true );
+	$valid_gutter_width = array( '1', '2', '3', '4' );
+	$gutter_width       = in_array( $page_custom_gutter, $valid_gutter_width ) ? $page_custom_gutter : '3';
+	$classes[]          = "et_pb_gutters{$gutter_width}";
+
+	return $classes;
+}
+add_filter( 'et_builder_inner_content_class', 'et_builder_add_builder_inner_content_class' );
+
+/**
+ * Wrap post builder content.
+ *
+ * @since 3.10
+ *
+ * @param $content
+ *
+ * @return string
+ */
+function et_builder_add_builder_content_wrapper( $content ) {
+	if ( ! et_pb_is_pagebuilder_used( get_the_ID() ) && ! is_et_pb_preview() ) {
+		return $content;
+	}
+
+	// Divi builder layout should only be used in singular template
+	if ( ! is_singular() ) {
+		return $content;
+	}
+
+	$outer_class   = apply_filters( 'et_builder_outer_content_class', array( 'et-boc' ) );
+	$outer_classes = implode( ' ', $outer_class );
+	$outer_id      = apply_filters( 'et_builder_outer_content_id', 'et-boc' );
+	$inner_class   = apply_filters( 'et_builder_inner_content_class', array( 'et_builder_inner_content' ) );
+	$inner_classes = implode( ' ', $inner_class );
+
+	$is_dbp                   = et_is_builder_plugin_active();
+	$dbp_compat_wrapper_open  = $is_dbp ? '<div id="et_builder_outer_content" class="et_builder_outer_content">' : '';
+	$dbp_compat_wrapper_close = $is_dbp ? '</div>' : '';
+
+	$content = sprintf(
+		'<div id="%1$s" class="%2$s">
+			%3$s
+			<div class="%4$s">
+				%5$s
+			</div>
+			%6$s
+		</div>',
+		esc_attr( $outer_id ),
+		esc_attr( $outer_classes ),
+		et_intentionally_unescaped( $dbp_compat_wrapper_open, 'fixed_string' ),
+		esc_attr( $inner_classes ),
+		$content,
+		et_intentionally_unescaped( $dbp_compat_wrapper_close, 'fixed_string' )
+	);
+
+	return $content;
+}
+add_filter( 'the_content', 'et_builder_add_builder_content_wrapper' );
+
+/**
+ * Wraps a copy of a css selector and then returns both selectors.
+ * Wrapping a copy of a selector instead of the original is necessary for selectors
+ * that target elements both inside AND outside the wrapper element.
+ *
+ * @since 3.10
+ *
+ * @param string  $selector CSS selector to wrap.
+ * @param string  $suffix   Selector partial to add to the wrapped selector after the wrapper (a space will be added first).
+ * @param boolean $clone    Duplicate the selector, wrap the duplicate, and then return both selectors. Default `true`.
+ *
+ * @return string
+ */
+function et_builder_maybe_wrap_css_selector( $selector, $suffix = '', $clone = true ) {
+	static $should_wrap_selectors = null;
+
+	if ( is_null( $should_wrap_selectors ) ) {
+		$should_wrap_selectors = et_pb_is_pagebuilder_used() && ( et_is_builder_plugin_active() || et_builder_post_is_of_custom_post_type() );
+	}
+
+	if ( is_bool( $suffix ) ) {
+		$clone  = $suffix;
+		$suffix = '';
+	}
+
+	if ( ! $should_wrap_selectors ) {
+		return trim( "{$selector} {$suffix}" );
+	}
+
+	$wrapper = '.et-db #et-boc';
+	$result  = '';
+
+	if ( $clone ) {
+		$result .= $suffix ? "{$selector} {$suffix}, " : "{$selector}, ";
+	}
+
+	if ( $suffix ) {
+		// $suffix param allows caller to split selector into two parts (1. outside builder and 2. inside builder)
+		// so that it can be wrapped properly. It was implemented before the regex solution below.
+		if ( preg_match( '/et_fb_preview|et_fb_desktop_mode/', $selector ) ) {
+			// Selector targets html element using a custom class
+			$result .= "{$selector} {$wrapper} {$suffix}";
+		} else {
+			// Selector targets body element either directly or using a custom class
+			$result .= "{$selector}{$wrapper} {$suffix}";
+		}
+
+	} else if ( preg_match('/^(html[^ ]*)?(?: *)(body[^ ]*)?(?: *)(.*?)(?: *)(\.et_pb_.+)/', $selector, $matches ) ) {
+		// The selector includes elements outside builder content so we can't just prepend the wrapper to it.
+		list( $_, $html, $body, $outside_builder, $inside_builder ) = $matches;
+
+		$parts   = array_filter( array( $html, "{$body}.et-db", $outside_builder, '#et-boc', $inside_builder ) );
+		$result .= implode( ' ', $parts );
+
+	} else {
+		$result .= "{$wrapper} {$selector}";
+	}
+
+	return trim( $result );
+}
+
+/**
+ * Wrapper for {@see et_builder_maybe_wrap_css_selector()} to support multiple selectors
+ * at once (eg. selector1, selector2, selector3)
+ *
+ * @since 3.10
+ *
+ * @param string $selector CSS selectors to wrap.
+ * @param bool   $clone    {@see et_builder_maybe_wrap_css_selector()}
+ *
+ * @return string
+ */
+function et_builder_maybe_wrap_css_selectors( $selector, $clone = true ) {
+	static $should_wrap_selectors = null;
+
+	if ( is_null( $should_wrap_selectors ) ) {
+		$should_wrap_selectors = et_pb_is_pagebuilder_used() && ( et_is_builder_plugin_active() || et_builder_post_is_of_custom_post_type() );
+	}
+
+	if ( ! $should_wrap_selectors ) {
+		return $selector;
+	}
+
+	$selectors = explode( ',', $selector );
+	$result    = array();
+
+	foreach ( $selectors as $css_selector ) {
+		$result[] = et_builder_maybe_wrap_css_selector( $css_selector, $clone );
+	}
+
+	return implode( ',', $result );
 }

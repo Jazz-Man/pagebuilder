@@ -8,6 +8,7 @@
 	window.et_is_fixed_nav       = $( 'body' ).hasClass( 'et_fixed_nav' );
 	window.et_is_minified_js     = $( 'body' ).hasClass( 'et_minified_js' );
 	window.et_is_minified_css    = $( 'body' ).hasClass( 'et_minified_css' );
+	window.et_force_width_container_change = false;
 
 	jQuery.fn.reverse = [].reverse;
 
@@ -4741,7 +4742,7 @@
 					set_fullwidth_portfolio_columns( $(this), set_container_height );
 				});
 
-				if ( containerWidthChanged ) {
+				if ( containerWidthChanged || window.et_force_width_container_change ) {
 					$('.container-width-change-notify').trigger('containerWidthChanged');
 
 					setTimeout( function() {
@@ -4776,6 +4777,9 @@
 							et_countdown_timer_labels( timer );
 						} );
 					}
+
+					// Reset to false
+					window.et_force_width_container_change = false;
 				}
 
 				window.et_fix_testimonial_inner_width();
@@ -5518,6 +5522,58 @@
                     $wc.css({opacity: opacity});
                 }, 0);
 			}
+		}
+	});
+
+	// Handle cases where builder modules are not initially visible and produce sizing
+	// issues as a result (e.g. slider module inside popups, accordions etc.).
+	$(document).ready(function() {
+		if (MutationObserver === undefined) {
+			// Bail if MutationObserver is not supported by the user agent.
+			return;
+		}
+
+		var getSectionParents = function($sections) {
+			var filterMethod = $.uniqueSort !== undefined ? $.uniqueSort : $.unique;
+			var $sectionParents = $([]);
+
+			$sections.each(function() {
+				$sectionParents = $sectionParents.add($(this).parents());
+			});
+
+			// Avoid duplicate section parents.
+			return filterMethod($sectionParents.get());
+		};
+
+		var getInvisibleNodes = function($sections) {
+			return $sections.filter(function() {
+				return !$(this).is(':visible');
+			}).length;
+		};
+
+		var $sections = $('.et_pb_section');
+		var sectionParents = getSectionParents($sections);
+		var invisibleSections = getInvisibleNodes($sections);
+		var maybeRefreshSections = function () {
+			var newInvisibleSections = getInvisibleNodes($sections);
+			if (newInvisibleSections < invisibleSections) {
+				// Trigger resize if some previously invisible sections have become visible.
+				$(window).trigger('resize');
+			}
+			invisibleSections = newInvisibleSections;
+		};
+		var observer = new MutationObserver(window.et_pb_debounce(maybeRefreshSections, 200));
+
+		for (var i = 0; i < sectionParents.length; i++) {
+			observer.observe(sectionParents[i], {
+				childList: true,
+				attributes: true,
+				attributeFilter: ['class', 'style'],
+				attributeOldValue: false,
+				characterData: false,
+				characterDataOldValue: false,
+				subtree: false
+			});
 		}
 	});
 })(jQuery);

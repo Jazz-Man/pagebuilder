@@ -20,7 +20,7 @@
 		$et_main_content_first_row_meta_wrapper = $et_main_content_first_row.find('.et_post_meta_wrapper:first'),
 		$et_main_content_first_row_meta_wrapper_title = $et_main_content_first_row_meta_wrapper.find( 'h1.entry-title' ),
 		$et_main_content_first_row_content = $et_main_content_first_row.find('.entry-content:first'),
-		$et_single_post = $( 'body.single-post' ),
+		$et_single_post = $( 'body.single' ),
 		$et_window = $(window),
 		etRecalculateOffset = false,
 		et_header_height,

@@ -534,6 +534,63 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 											<span class="et-box-description"></span>
 										</div> <!-- end epanel-box-small div -->
 
+									<?php } elseif ( 'checkbox_list' == $value['type'] ) { ?>
+
+										<div class="<?php echo esc_attr( 'et-epanel-box et-epanel-box__checkbox-list' . $hidden_option_classname ); ?>">
+											<div class="et-box-title">
+												<h3><?php echo esc_html( $value['name'] ); ?></h3>
+												<div class="et-box-descr">
+													<p>
+														<?php
+														echo wp_kses( $value['desc'],  array(
+															'a' => array(
+																'href'   => array(),
+																'title'  => array(),
+																'target' => array(),
+															),
+														) );
+														?>
+													</p>
+												</div> <!-- end et-box-descr div -->
+											</div> <!-- end div et-box-title -->
+											<div class="et-box-content et-epanel-box-small-2">
+												<div class="et-box-content--list">
+													<?php
+													if ( empty( $value['options'] ) ) {
+														esc_html_e( 'No available options.', $themename );
+													} else {
+														$defaults = ( isset( $value['default'] ) && is_array( $value['default'] ) ) ? $value['default'] : array();
+														$stored_values = et_get_option( $value['id'], array() );
+														$value_options = $value['options'];
+														if ( is_callable( $value_options ) ) {
+															$value_options = call_user_func( $value_options );
+														}
+
+														foreach ( $value_options as $option_key => $option ) {
+															$option_value = isset( $value['et_save_values'] ) && $value['et_save_values'] ? sanitize_text_field( $option_key ) : sanitize_text_field( $option );
+															$option_label = sanitize_text_field( $option );
+															$checked = isset( $defaults[ $option_value ] ) ? $defaults[ $option_value ] : 'off';
+															if ( isset( $stored_values[ $option_value ] ) ) {
+																$checked = $stored_values[ $option_value ];
+															}
+															$checked = 'on' === $checked ? 'checked="checked"' : '';
+															$checkbox_list_id = sanitize_text_field( $value['id'] . '-' . $option_key );
+															?>
+															<div class="et-box-content">
+																<span class="et-panel-box__checkbox-list-label">
+																	<?php echo esc_html( $option_label ); ?>
+																</span>
+																<input type="checkbox" class="et-checkbox yes_no_button" name="<?php echo esc_attr( $value['id'] ); ?>[]" id="<?php echo esc_attr( $checkbox_list_id ); ?>" value="<?php echo esc_attr( $option_value ); ?>" <?php echo $checked; ?> />
+															</div> <!-- end et-box-content div -->
+															<?php
+														}
+													}
+													?>
+												</div>
+											</div>
+											<span class="et-box-description"></span>
+										</div> <!-- end epanel-box-small div -->
+
 									<?php } elseif ( 'support' == $value['type'] ) { ?>
 
 										<div class="inner-content">
@@ -696,7 +753,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 					if ( isset( $value['id'] ) ) {
 						$et_option_name = $value['id'];
 
-						if ( isset( $_POST[ $value['id'] ] ) ) {
+						if ( isset( $_POST[ $value['id'] ] ) || 'checkbox_list' === $value['type'] ) {
 							if ( in_array( $value['type'], array( 'text', 'textlimit', 'password' ) ) ) {
 
 								if( 'password' === $value['type'] && _et_epanel_password_mask() === $_POST[$et_option_name] ) {
@@ -799,6 +856,26 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 								// saves 'author/date/categories/comments' options
 								$et_option_new_value = array_map( 'sanitize_text_field', array_map( 'wp_strip_all_tags', stripslashes_deep( $_POST[$value['id']] ) ) );
 
+							} elseif ( 'checkbox_list' == $value['type'] ) {
+								// saves array of: 'value' => 'on' or 'off'
+								$raw_checked_options = isset( $_POST[ $value['id'] ] ) ? stripslashes_deep( $_POST[ $value['id'] ] ) : array();
+								$checkbox_options    = $value['options'];
+
+								if ( is_callable( $checkbox_options ) ) {
+									$checkbox_options = call_user_func( $checkbox_options );
+								}
+
+								$allowed_values = array_values( $checkbox_options );
+
+								if ( isset( $value['et_save_values'] ) && $value['et_save_values'] ) {
+									$allowed_values = array_keys( $checkbox_options );
+								}
+
+								$et_option_new_value = array();
+
+								foreach ( $allowed_values as $allowed_value ) {
+									$et_option_new_value[ $allowed_value ] = in_array( $allowed_value, $raw_checked_options ) ? 'on' : 'off';
+								}
 							}
 						} else {
 							if ( in_array( $value['type'], array( 'checkbox', 'checkbox2' ) ) ) {

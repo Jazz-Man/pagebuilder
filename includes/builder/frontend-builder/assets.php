@@ -17,6 +17,14 @@ function et_fb_enqueue_main_assets() {
 
 	wp_register_style( 'et_pb_admin_date_css', "{$root}/styles/jquery-ui-1.10.4.custom.css", array(), $ver );
 
+	if ( et_is_builder_plugin_active() || et_builder_post_is_of_custom_post_type() ) {
+		$responsive_preview_styles = 'responsive-preview-wrapped.css';
+	} else {
+		$responsive_preview_styles = 'responsive-preview.css';
+	}
+
+	wp_register_style( 'et-fb-responsive-preview', "{$assets}/css/{$responsive_preview_styles}", array(), $ver );
+
 	// Enqueue styles if the Divi Builder plugin is not active.
 	if ( ! et_is_builder_plugin_active() ) {
 		wp_enqueue_style( 'et-frontend-builder', "{$assets}/css/style.css", array(
@@ -24,6 +32,7 @@ function et_fb_enqueue_main_assets() {
 			'wp-mediaelement',
 			'wp-color-picker',
 			'et-core-admin',
+			'et-fb-responsive-preview',
 		), $ver );
 	}
 
@@ -32,7 +41,7 @@ function et_fb_enqueue_main_assets() {
 		wp_enqueue_style(
 			'et-builder-divi-builder-styles',
 			"{$assets}/css/divi-builder-style.css",
-			array( 'et-core-admin', 'wp-color-picker' ),
+			array( 'et-core-admin', 'wp-color-picker', 'et-fb-responsive-preview' ),
 			$ver
 		);
 	}

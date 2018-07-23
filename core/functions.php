@@ -715,6 +715,44 @@ function et_core_get_version_from_filesystem( $core_directory ) {
 }
 endif;
 
+if ( ! function_exists( 'et_core_replace_enqueued_style' ) ):
+/**
+ * Replace a style's src if it is enqueued.
+ *
+ * @since 3.10
+ *
+ * @param string $old_src
+ * @param string $new_src
+ * @param boolean $regex Use regex to match and replace the style src.
+ *
+ * @return void
+ */
+function et_core_replace_enqueued_style( $old_src, $new_src, $regex = false ) {
+	$styles = wp_styles();
+
+	if ( empty( $styles->registered ) ) {
+		return;
+	}
+
+	foreach ( $styles->registered as $style_handle => $style ) {
+		$match = $regex ? preg_match( $old_src, $style->src ) : $old_src === $style->src;
+		if ( ! $match ) {
+			continue;
+		}
+
+		$style_src   = $regex ? preg_replace( $old_src, $new_src, $style->src ) : $new_src;
+		$style_deps  = isset( $style->deps ) ? $style->deps : array();
+		$style_ver   = isset( $style->ver ) ? $style->ver : false;
+		$style_media = isset( $style->args ) ? $style->args : 'all';
+
+		// Deregister first, so the handle can be re-enqueued.
+		wp_deregister_style( $style_handle );
+
+		// Enqueue the same handle with the new src.
+		wp_enqueue_style( $style_handle, $style_src, $style_deps, $style_ver, $style_media );
+	}
+}
+endif;
 
 if ( ! function_exists( 'et_core_load_component' ) ) :
 /**

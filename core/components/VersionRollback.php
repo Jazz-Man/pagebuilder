@@ -4,7 +4,7 @@ if ( ! class_exists( 'ET_Core_VersionRollback' ) ):
 /**
  * Handles version rollback.
  *
- * @since ??
+ * @since 3.10
  *
  * @private
  *
@@ -56,7 +56,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * ET_Core_VersionRollback constructor.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param string $product_name
 	 * @param string $product_shortname
@@ -78,7 +78,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Enqueue assets.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 */
 	public function assets() {
 		wp_enqueue_style( 'et-core-version-rollback', ET_CORE_URL . 'admin/css/version-rollback.css', array(
@@ -100,7 +100,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Get previous installed version, if any.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return string
 	 */
@@ -111,7 +111,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Set previous installed version.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param string $version
 	 *
@@ -124,7 +124,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Get latest installed version, if any.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return string
 	 */
@@ -135,7 +135,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Set latest installed version.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param string $version
 	 *
@@ -148,7 +148,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Check if the product has already been rolled back.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return bool
 	 */
@@ -159,7 +159,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Get unique ajax action.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return string
 	 */
@@ -170,7 +170,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Enable update rollback.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -194,7 +194,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Handle REST API requests to rollback.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -272,7 +272,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Execute a version rollback.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return bool|WP_Error
 	 */
@@ -314,7 +314,7 @@ class ET_Core_VersionRollback {
 	 *
 	 * @see Theme_Upgrader::install() @ WordPress 4.9.4
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @param string $package
 	 *
@@ -367,7 +367,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Get update documentation url for the product.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return string
 	 */
@@ -378,7 +378,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Return ePanel option.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return array
 	 */
@@ -395,7 +395,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Render ePanel option.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -422,7 +422,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Render ePanel warning modal when no previous supported version has been used.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -456,7 +456,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Render ePanel confirmation modal for rollback.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -513,7 +513,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Render ePanel warning modal when a rollback has already been done.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void
 	 */
@@ -560,7 +560,7 @@ class ET_Core_VersionRollback {
 	/**
 	 * Store latest and previous installed version.
 	 *
-	 * @since ??
+	 * @since 3.10
 	 *
 	 * @return void;
 	 */

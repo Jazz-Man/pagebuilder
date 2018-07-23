@@ -1,3 +1,55 @@
+version 3.10 ( updated 07-12-2018 )
+- Created a system for enabling the Divi Builder on custom post types.
+- Automatically enabled the Divi Builder on popular post types that we have tested.
+- Updated MailChimp API wrapper to properly handle resubscribing a previously unsubscribed and/or deleted subscriber.
+- Fixed the issue where "Use Custom Styles for Button" option was disabled after pasting any button custom style options.
+- Fixed the issue where "Use Custom Styles for Button" option was disabled after resetting any button custom style options.
+- Fixed incorrect ability to add new row/module even when the parent module is locked in VB Click View.
+- Fixed issues with some styles are not working in Divi Builder Plugin because of error in minification function.
+- Removed favicon option from epanel.
+- Added checkerboard pattern to palette and currently selected color swatches in to Divi Color Manager.
+- Reverted back the visual appearance of color picker launcher when no color/default is selected.
+	* core/components/PageResource.php
+	* core/components/api/email/MailChimp.php
+	* core/components/data/Utils.php
+	* core/functions.php
+	* core/ui/components/controls/sortable-list/sortable-list.scss
+	* css/main-styles.css
+	* css/style-header.css
+	* epanel/core_functions.php
+	* epanel/css/panel.css
+	* epanel/js/functions-init.js
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/webpack.config.js
+	* includes/builder/frontend-builder/webpack.production.config.js
+	* includes/builder/functions.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/plugin-compat/easy-digital-downloads.php
+	* includes/builder/plugin-compat/eventon.php
+	* includes/builder/plugin-compat/events-manager.php
+	* includes/builder/plugin-compat/the-events-calendar.php
+	* includes/builder/plugin-compat/woocommerce.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/frontend-builder-shared-conditional-style.css
+	* includes/builder/styles/frontend-builder-shared-style.css
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/preview.css
+	* includes/builder/template-preview.php
+	* js/custom.js
+	* js/theme-customizer.js
+	* options_divi.php
+	* sidebar.php
+	* single-project.php
+	* single.php
+
 version 3.9 ( updated 06-28-2018 )
 - Added new color manager to the Visual Builder, including new recent colors and suggested colors systems.
 	* includes/builder/frontend-builder/helpers.php

@@ -37,9 +37,11 @@ class ET_Builder_Plugin_Compat_WooCommerce extends ET_Builder_Plugin_Compat_Base
 
 		// Hook before calling comments_template function in module.
 		add_action( 'et_fb_before_comments_template', array( $this, 'remove_filter_comments_number_by_woo' ) );
+		add_action( 'et_builder_before_comments_number', array( $this, 'remove_filter_comments_number_by_woo' ) );
 
 		// Hook afer calling comments_template function in module.
 		add_action( 'et_fb_after_comments_template', array( $this, 'restore_filter_comments_number_by_woo' ) );
+		add_action( 'et_builder_after_comments_number', array( $this, 'restore_filter_comments_number_by_woo' ) );
 	}
 
 	/**

@@ -442,6 +442,25 @@ h1#epanel-title {
 	width: 225px;
 }
 
+#epanel-content .et-box-content--list {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+}
+
+#epanel-content .et-box-content .et-box-content--list > * {
+	padding-left: 0;
+	flex-grow: 0;
+	flex-shrink: 0;
+	margin-bottom: 20px;
+}
+
+#epanel-content .et-panel-box__checkbox-list-label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
 #epanel-content .et-epanel-box .et-box-content input,
 #epanel-content .et-epanel-box .et-box-content .et-upload-buttons {
 	vertical-align: top;

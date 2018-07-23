@@ -125,6 +125,11 @@ function et_builder_load_modules_styles() {
 	wp_enqueue_script( 'et-builder-modules-script', ET_BUILDER_URI . '/scripts/frontend-builder-scripts.js', apply_filters( 'et_pb_frontend_builder_scripts_dependencies', array( 'jquery', 'et-jquery-touch-mobile' ) ), ET_BUILDER_VERSION, true );
 	wp_enqueue_style( 'magnific-popup', ET_BUILDER_URI . '/styles/magnific_popup.css', array(), ET_BUILDER_VERSION );
 
+	// Load modules wrapper on CPT
+	if ( et_builder_post_is_of_custom_post_type() ) {
+		wp_enqueue_script( 'et-builder-cpt-modules-wrapper', ET_BUILDER_URI . '/scripts/cpt-modules-wrapper.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
+	}
+
 	if ( et_is_builder_plugin_active() ) {
 		wp_register_script( 'fittext', ET_BUILDER_URI . '/scripts/jquery.fittext.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 	}
@@ -211,7 +216,8 @@ function et_builder_load_modules_styles() {
 add_action( 'wp_enqueue_scripts', 'et_builder_load_modules_styles', 11 );
 
 function et_builder_get_animation_data() {
-	$animation_data      = et_builder_handle_animation_data();
+	// Animaiton shouldn't be loaded in Builder, so always pass an empty array there.
+	$animation_data      = et_fb_enabled() ? array() : et_builder_handle_animation_data();
 	$animation_data_json = json_encode( $animation_data ); ?>
 	<script type="text/javascript">
 		var et_animation_data = <?php echo $animation_data_json; ?>;
@@ -365,41 +371,17 @@ function et_builder_dequeue_minifieds_styles() {
 			wp_register_style( $style, '', array(), ET_BUILDER_VERSION );
 		}
 	} else {
-
 		// Child theme might manually enqueues parent themes' style.css. When combine + minify CSS file is enabled, this isn't an issue.
 		// However, when combine + minify CSS is disabled, child theme should load style.dev.css (source) instead of style.css (minified).
 		// Child theme might not considering this, which causes minified file + other source files are printed. To fix it, deregister any
 		// style handle that contains parent theme's style.css URL, then re-queue new one with the same name handle + URL to parent theme's style.dev.css
 		// This should be done in theme only. Divi-Builder plugin doesn't need this.
 		if ( ! et_is_builder_plugin_active() && is_child_theme() ) {
-			$registered_styles = wp_styles();
+			$template_directory_uri = preg_quote( get_template_directory_uri(), '/' );
+			$optimized_style_src    = '/^(' . $template_directory_uri . '\/style)(-cpt)?(\.css)$/';
+			$unoptimized_style_src  = '$1$2.dev$3';
 
-			if ( ! empty( $registered_styles->registered ) ) {
-				// Get parent theme's optimized & unoptimized CSS file
-				$parent_optimized_style_src   = get_template_directory_uri() . '/style.css';
-				$parent_unoptimized_style_src = get_template_directory_uri() . '/style.dev.css';
-
-				// Pluck registed styles' src
-				$registered_styles_src = wp_list_pluck( $registered_styles->registered, 'src' );
-
-				// Look for style handle name which uses exact same URL as optimized parent theme's style.css
-				foreach ( $registered_styles_src as $style_handle => $style_src ) {
-
-					// Modify enqueued script that uses parent theme's optimized style.css
-					if ( $style_src === $parent_optimized_style_src ) {
-						$style_data  = $registered_styles->registered[ $style_handle ];
-						$style_deps  = isset( $style_data->deps ) ? $style_data->deps : array();
-						$style_ver   = isset( $style_data->ver ) ? $style_data->ver : false;
-						$style_media = isset( $style_data->args ) ? $style_data->args : 'all';
-
-						// Deregister first, so the handle can be re-enqueued
-						wp_deregister_style( $style_handle );
-
-						// Enqueue the same handle with unoptimized style.css src
-						wp_enqueue_style( $style_handle, $parent_unoptimized_style_src, $style_deps, $style_ver, $style_media );
-					}
-				}
-			}
+			et_core_replace_enqueued_style( $optimized_style_src, $unoptimized_style_src, true );
 		}
 	}
 }

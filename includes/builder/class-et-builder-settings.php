@@ -146,7 +146,7 @@ class ET_Builder_Settings {
 				'id'              => 'et_pb_css_in_footer',
 				'index'           => -1,
 				'label'           => esc_html__( 'Output Styles Inline', 'et_builder' ),
-				'description'     => esc_html__( 'With previous versions of the builder, css styles for the modules\' design settings were output inline in the footer. Enable this option to restore that behavior.' ),
+				'description'     => esc_html__( 'With previous versions of the builder, css styles for the modules\' design settings were output inline in the footer. Enable this option to restore that behavior.', 'et_builder' ),
 				'options'         => array(
 					'on'  => __( 'On', 'et_builder' ),
 					'off' => __( 'Off', 'et_builder' ),
@@ -171,6 +171,20 @@ class ET_Builder_Settings {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'product_tour',
 			),
+			'et_pb_post_type_integration' => array(
+				'type'            => 'checkbox_list',
+				'usefor'          => 'custom',
+				'id'              => 'et_pb_post_type_integration',
+				'index'           => -1,
+				'label'           => esc_html__( 'Enable Divi Builder On Post Types', 'et_builder' ),
+				'description'     => esc_html__( 'By default, the Divi Builder is only accessible on standard post types. This option lets you enable the builder on any custom post type currently registered on your website, however the builder may not be compatible with all custom post types.', 'et_builder' ),
+				'options'         => 'ET_Builder_Settings::get_registered_post_type_options',
+				'default'         => self::_get_post_type_options_defaults(),
+				'validation_type' => 'on_off_array',
+				'et_save_values'  => true,
+				'tab_slug'        => 'post_type_integration',
+				'toggle_slug'     => 'performance',
+			),
 		);
 	}
 
@@ -180,15 +194,13 @@ class ET_Builder_Settings {
 		$result = array();
 
 		$result[]    = array( 'name' => 'wrap-builder', 'type' => 'contenttab-wrapstart' );
+		$result[]    = array( 'type' => 'subnavtab-start' );
 		$tab_content = array();
 		$index       = 0;
 
 		foreach ( $tabs as $tab_slug => $tab_name ) {
 			$index++;
 			$tab_content_started = false;
-			$tab_content         = array();
-
-			$result[] = array( 'type' => 'subnavtab-start' );
 
 			foreach ( $fields as $field_name => $field_info ) {
 				if ( $field_info['tab_slug'] !== $tab_slug ) {
@@ -208,14 +220,14 @@ class ET_Builder_Settings {
 					$field_type = 'checkbox2';
 				}
 
-				$tab_content[] = array(
+				$tab_content[] = array_merge( $field_info, array(
 					'name'             => $field_info['label'],
 					'id'               => $field_name,
 					'type'             => $field_type,
 					'std'              => $field_info['default'],
 					'desc'             => $field_info['description'],
 					'is_builder_field' => true,
-				);
+				) );
 			}
 
 			if ( $tab_content_started ) {
@@ -301,6 +313,7 @@ class ET_Builder_Settings {
 				'default'     => 'rgba(255,255,255,0)',
 				'tab_slug'    => 'content',
 				'toggle_slug' => 'background',
+				'depends_on_post_type' => array( 'page' ),
 			),
 			'et_pb_section_background_color'      => array(
 				'type'        => 'color-alpha',
@@ -445,6 +458,60 @@ class ET_Builder_Settings {
 			'tab_slug'        => 'advanced',
 			'toggle_slug'     => 'performance',
 		);
+	}
+
+	protected static function _get_post_type_options_defaults() {
+		$post_types = et_builder_get_enabled_builder_post_types();
+		$post_type_options = array();
+
+		foreach ( $post_types as $post_type ) {
+			$post_type_options[ $post_type ] = 'on';
+		}
+
+		return $post_type_options;
+	}
+
+	public static function get_registered_post_type_options() {
+		$blacklist      = et_builder_get_blacklisted_post_types();
+		
+		// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
+		$blacklist      = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
+		$raw_post_types = get_post_types( array(
+			'show_ui' => true,
+		), 'objects' );
+		$post_types     = array();
+
+		foreach ( $raw_post_types as $post_type ) {
+			$is_explicitly_supported = in_array( $post_type->name, et_builder_get_third_party_post_types() );
+			$is_blacklisted          = in_array( $post_type->name, $blacklist );
+			$supports_editor         = post_type_supports( $post_type->name, 'editor' );
+			$is_public               = et_builder_is_post_type_public( $post_type->name );
+
+			if ( ! $is_explicitly_supported && ( $is_blacklisted || ! $supports_editor || ! $is_public ) ) {
+				continue;
+			}
+
+			$post_types[] = $post_type;
+		}
+
+		usort( $post_types, 'ET_Builder_Settings::sort_post_types' );
+
+		$post_type_options = array_combine(
+			wp_list_pluck( $post_types, 'name' ),
+			wp_list_pluck( $post_types, 'label' )
+		);
+
+		return $post_type_options;
+	}
+
+	public static function sort_post_types( $a, $b ) {
+		// ASCII has a total of 127 characters, so 500 as the interval
+		// should be a sufficiently high number.
+		$rank_priority = array( 'page' => 1500, 'post' => 1000, 'project' => 500 );
+		$a_rank = isset( $rank_priority[ $a->name ] ) ? $rank_priority[ $a->name ] : 0;
+		$b_rank = isset( $rank_priority[ $b->name ] ) ? $rank_priority[ $b->name ] : 0;
+
+		return strcasecmp( $a->label, $b->label ) - $a_rank + $b_rank;
 	}
 
 	protected function _initialize() {
@@ -694,6 +761,7 @@ class ET_Builder_Settings {
 	public static function get_tabs( $scope = 'page' ) {
 		$result   = array();
 		$advanced = esc_html_x( 'Advanced', 'Design Settings', 'et_builder' );
+		$post_type_integration = esc_html_x( 'Post Type Integration', 'Builder Settings', 'et_builder' );
 
 		if ( 'page' === $scope ) {
 			$result = array(
@@ -703,6 +771,7 @@ class ET_Builder_Settings {
 			);
 		} else if ( 'builder' === $scope ) {
 			$result = array(
+				'post_type_integration' => $post_type_integration,
 				'advanced' => $advanced,
 			);
 		}

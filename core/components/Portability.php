@@ -56,7 +56,7 @@ class ET_Core_Portability {
 	/**
 	 * Import a previously exported layout.
 	 *
-	 * @since ??    Return the result of the import instead of dieing.
+	 * @since 3.10    Return the result of the import instead of dieing.
 	 * @since 2.7.0
 	 *
 	 * @param string $file_context Accepts 'upload', 'sideload'. Default 'upload'.

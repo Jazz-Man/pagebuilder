@@ -494,7 +494,7 @@ class ET_Core_Data_Utils {
 	/**
 	 * Transforms an array of data into a new array based on the provided transformation definition.
 	 *
-	 * @since ??     Renamed from `transform_data_to` to `array_transform`.
+	 * @since 3.10     Renamed from `transform_data_to` to `array_transform`.
 	 * @since 3.0.68
 	 *
 	 * @param array  $data         The data to transform.
@@ -613,7 +613,7 @@ EOS;
 EOS;
 
 	$search_patterns  = array( "%{$comments}%", "%{$everything_else}%" );
-	$replace_patterns = array( '$1', '$1$2$3$4$5$6$7' );
+	$replace_patterns = array( '$1', '$1$2$3$4$5$6$7$8' );
 
 	return preg_replace( $search_patterns, $replace_patterns, $string );
 }

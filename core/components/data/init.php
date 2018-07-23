@@ -26,7 +26,7 @@ if ( ! function_exists( 'et_html_attrs' ) ):
 /**
  * Generate properly escaped attributes string
  *
- * @since ??
+ * @since 3.10
  *
  * @param array $attributes Array of attributes
  *

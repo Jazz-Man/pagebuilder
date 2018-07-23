@@ -83,14 +83,6 @@ $options = array (
 				   "desc" => esc_html__( "If you would like to use your own custom logo image click the Upload Image button.", $themename )
 			),
 
-			array( "name" => esc_html__( "Favicon", $themename ),
-				   "id" => $shortname . "_favicon",
-				   "type" => "upload",
-				   "button_text" => esc_html__( "Set As Favicon", $themename ),
-				   "std" => "",
-				   "desc" => esc_html__( "If you would like to use your own custom favicon image click the Upload Image button.", $themename )
-			),
-
 			array( "name" => esc_html__( "Fixed Navigation Bar", $themename ),
 				   "id" => $shortname . "_fixed_nav",
 				   "type" => "checkbox",
