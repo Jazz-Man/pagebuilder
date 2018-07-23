@@ -117,10 +117,10 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		$fields = array(
 			'field_id' => array(
-				'label'       => esc_html__( 'Field ID', 'et_builder' ),
-				'type'        => 'text',
-				'description' => esc_html__( 'Define the unique ID of this field. You should use only English characters without special characters and spaces.', 'et_builder' ),
-				'toggle_slug' => 'main_content',
+				'label'            => esc_html__( 'Field ID', 'et_builder' ),
+				'type'             => 'text',
+				'description'      => esc_html__( 'Define the unique ID of this field. You should use only English characters without special characters and spaces.', 'et_builder' ),
+				'toggle_slug'      => 'main_content',
 				'default_on_front' => '',
 			),
 			'field_title' => array(
@@ -310,7 +310,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		global $et_pb_half_width_counter;
+		global $et_pb_half_width_counter, $et_pb_contact_form_num;
 
 		$field_title                = $this->props['field_title'];
 		$field_type                 = $this->props['field_type'];
@@ -329,12 +329,12 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$conditional_logic_relation = $this->props['conditional_logic_relation'];
 		$conditional_logic_rules    = $this->props['conditional_logic_rules'];
 		$allowed_symbols            = $this->props['allowed_symbols'];
+		$render_count               = $this->render_count();
+		$current_module_num         = '' === $et_pb_contact_form_num ? 0 : intval( $et_pb_contact_form_num ) + 1;
 
-		global $et_pb_contact_form_num;
-
-		// do not output the fields with empty ID
+		// set a field ID.
 		if ( '' === $field_id ) {
-			return '';
+			$field_id = sprintf( 'field_%d_%d', $et_pb_contact_form_num, $render_count );
 		}
 
 		if ( 'et_pb_signup_custom_field' === $render_slug ) {
@@ -343,11 +343,8 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			$field_id = strtolower( $field_id );
 		}
 
-		$current_module_num = '' === $et_pb_contact_form_num ? 0 : intval( $et_pb_contact_form_num ) + 1;
-
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
-		$render_count    = $this->render_count();
 
 		$et_pb_half_width_counter = ! isset( $et_pb_half_width_counter ) ? 0 : $et_pb_half_width_counter;
 
@@ -463,7 +460,6 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				$length_pattern .= ",{$max_length}";
 				$title   .= sprintf( __( 'Maximum length: %1$d characters.', 'et_builder' ), $max_length );
 			}
-
 
 			$length_pattern .= '}';
 		}

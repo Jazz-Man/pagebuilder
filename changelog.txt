@@ -1,6 +1,57 @@
-hotfix ( updated 06-22-2018 )
+version 3.8.1 ( updated 06-26-2018 )
 - Fixed "$ is not a function" error that occurred when editing some layouts in the Visual Builder.
+- Fixed alignment of custom fields when using the half width option inside of the Email optin module.
+- Fixed react warning on contact form module that occurred only in dev environment.
+- Fixed an issue where responsive tabs would get updated randomly when editing a row's column spacing.
+- Fixed an inconsistency where a contact form with an empty field ID would be output on the VB but not on the front end.
+- Fixed no results notice for filtered search still being visible after undoing changes.
+- Fixed Divi shortcuts conflicts with Yoast Snippet Editor.
+- Fixed a compatibility issue where WooCommerce taxonomy pages would not have a sidebar area.
+- Fixed a compatibility issue with GD bbPresss Tools and GD bbPress Toolbox where the forum quote was not using the correct markup.
+- Fixed display issue with Facebook videos when using an overlay.
+- Fixed bug that caused search filters to be cleared on all keyboard keystrokes.
+- Fixed a bug that allowed keyboard shortcuts to fire while using the modal search bar.
+- Fixed a dispatch error that occurred when closing a settings modal using the ESC key while a quick access outline was being rendered on the page.
+	* core/languages/ar.po
+	* core/languages/bg_BG.po
+	* core/languages/cs_CZ.po
+	* core/languages/da_DK.po
+	* core/languages/de_DE.po
+	* core/languages/el.po
+	* core/languages/en_US.po
+	* core/languages/en_US.pot
+	* core/languages/es_ES.po
+	* core/languages/fi.po
+	* core/languages/fr_FR.po
+	* core/languages/he_IL.po
+	* core/languages/hu_HU.po
+	* core/languages/id_ID.po
+	* core/languages/it_IT.po
+	* core/languages/ja.po
+	* core/languages/ko_KR.po
+	* core/languages/ms_MY.po
+	* core/languages/nb_NO.po
+	* core/languages/nl_NL.po
+	* core/languages/pl_PL.po
+	* core/languages/pt_BR.po
+	* core/languages/ro_RO.po
+	* core/languages/ru_RU.po
+	* core/languages/sk_SK.po
+	* core/languages/sr_RS.po
+	* core/languages/sv_SE.po
+	* core/languages/th.po
+	* core/languages/tl.po
+	* core/languages/tr_TR.po
+	* core/languages/uk.po
+	* core/languages/vi.po
+	* core/languages/zh_CN.po
+	* epanel/shortcodes/shortcodes.php
+	* functions.php
 	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
 
 version 3.8 ( updated 06-21-2018 )
 - Added new Quick Access design system to the Visual Builder.

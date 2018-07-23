@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.8';
+window.et_builder_version = '3.8.1';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -18324,9 +18324,10 @@ window.et_builder_product_name = 'Divi';
 				return;
 			}
 
-
-			// do not override default hotkeys inside input fields
-			if ( typeof event.target !== 'undefined' && $( event.target ).is( 'input, textarea' ) ) {
+			var $targetEl = $(event.target);
+			// do not override default hotkeys inside input fields, contenteditable elements and elements with `et_disable_single_key_shortcuts`.
+			// `et_disable_single_key_shortcuts` can be used by 3rd party plugins to disable Divi shortcuts inside their metaboxes
+			if (!_.isUndefined($targetEl) && ($targetEl.is('input, textarea') || $targetEl.attr('contenteditable') || $targetEl.hasClass('et_disable_single_key_shortcuts'))) {
 				return;
 			}
 

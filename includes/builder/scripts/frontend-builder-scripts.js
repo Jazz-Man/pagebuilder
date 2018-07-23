@@ -2976,9 +2976,14 @@
 					is_embedded = $video_iframe.length ? true : false,
 					video_iframe_src,
 					video_iframe_src_splitted,
-					video_iframe_src_autoplay;
+					video_iframe_src_autoplay,
+					is_fb_video = typeof FB !== 'undefined';
 
 				if (is_embedded) {
+					if (is_fb_video) {
+						// Facebook uses three http/https/iframe
+						$video_iframe = $($video_iframe[2]);
+					}
 					// Add autoplay parameter to automatically play embedded content when overlay is clicked
 					video_iframe_src = $video_iframe.attr('src');
 					video_iframe_src_splitted = video_iframe_src.split("?");
