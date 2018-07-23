@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.10
+Version: 3.10.1
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -15990,6 +15990,7 @@ span.comment_date {
 	/* Page Containers */
 	.et_pb_column {
 		width: 100% !important;
+		margin-bottom: 30px;
 	}
 
 /* Rows and Sections */
@@ -16010,13 +16011,9 @@ span.comment_date {
 		padding: 0;
 	}
 
-	.et_pb_column {
-		margin-bottom: 30px;
-	}
-
-	.et_pb_row:last-child .et_pb_column:last-child,
+	.et_pb_row .et_pb_column:last-child,
 	.et_pb_bottom_divider .et_pb_row:nth-last-child(2) .et_pb_column:last-child,
-	.et_pb_row.et-last-child .et_pb_column.et-last-child {
+	.et_pb_row .et_pb_column.et-last-child {
 		margin-bottom: 0;
 	}
 
@@ -16087,8 +16084,14 @@ span.comment_date {
 	}
 
 	.et_pb_row_4col .et_pb_column:nth-last-child(-n+2),
+	.et_pb_row_4col .et_pb_column.et-last-child,
+	.et_pb_row_4col .et_pb_column.et-last-child-2,
 	.et_pb_row_1-4_1-4 .et_pb_column:nth-last-child(-n+2),
-	.et_pb_row_1-2_1-4_1-4 .et_pb_column:nth-last-child(-n+2) {
+	.et_pb_row_1-4_1-4 .et_pb_column.et-last-child,
+	.et_pb_row_1-4_1-4 .et_pb_column.et-last-child-2,
+	.et_pb_row_1-2_1-4_1-4 .et_pb_column:nth-last-child(-n+2),
+	.et_pb_row_1-2_1-4_1-4 .et_pb_column.et-last-child,
+	.et_pb_row_1-2_1-4_1-4 .et_pb_column.et-last-child-2 {
 		margin-bottom: 0;
 	}
 

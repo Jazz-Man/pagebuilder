@@ -4288,7 +4288,7 @@ function et_builder_maybe_wrap_css_selector( $selector, $suffix = '', $clone = t
 			$result .= "{$selector}{$wrapper} {$suffix}";
 		}
 
-	} else if ( preg_match('/^(html[^ ]*)?(?: *)(body[^ ]*)?(?: *)(.*?)(?: *)(\.et_pb_.+)/', $selector, $matches ) ) {
+	} else if ( preg_match('/^(html[^ ]*)?(?: *)(body[^ ]*)?(?: *)(.*?)(?: *)([^ ]*\.et[_-](?:pb|fb)[_-].+)/', $selector, $matches ) ) {
 		// The selector includes elements outside builder content so we can't just prepend the wrapper to it.
 		list( $_, $html, $body, $outside_builder, $inside_builder ) = $matches;
 

@@ -1,3 +1,13 @@
+version 3.10.1 ( updated 07-16-2018 )
+- Fixed Visual Builder responsive preview in the TwentySeventeen theme.
+- Fixed TinyMCE dropdowns not being visible in Visual Builder modals.
+- Fixed section padding not taking effect on custom post types.
+- Fixed column margin regression for pages in Visual Builder.
+- Fixed button hover interaction in Visual Builder.
+- Added in the ability to copy, paste and reset individual Text module heading levels.
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/frontend-builder/bundle.js
+
 version 3.10 ( updated 07-12-2018 )
 - Created a system for enabling the Divi Builder on custom post types.
 - Automatically enabled the Divi Builder on popular post types that we have tested.
