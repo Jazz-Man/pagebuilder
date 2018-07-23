@@ -1171,6 +1171,10 @@ function et_fb_backend_helpers() {
 				'clear'                => esc_html__( 'Clear', 'et_builder' ),
 				'select'               => esc_html__( 'Select', 'et_builder' ),
 			),
+			'colorManager'             => array(
+				'saved'                => esc_html__( 'Saved', 'et_builder' ),
+				'recent'               => esc_html__( 'Recent', 'et_builder' ),
+			),
 			'uploadGallery'            => array(
 				'uploadButtonText'     => esc_html__( 'Update Gallery', 'et_builder'),
 				'addImages'            => esc_html__( 'Add Gallery Images', 'et_builder'),

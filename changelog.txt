@@ -1,3 +1,8 @@
+version 3.9 ( updated 06-28-2018 )
+- Added new color manager to the Visual Builder, including new recent colors and suggested colors systems.
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/images/no-color.png
+
 version 3.8.1 ( updated 06-26-2018 )
 - Fixed "$ is not a function" error that occurred when editing some layouts in the Visual Builder.
 - Fixed alignment of custom fields when using the half width option inside of the Email optin module.
