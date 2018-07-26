@@ -6362,7 +6362,7 @@ function et_divi_add_customizer_css() {
 			.et_fixed_nav.et_boxed_layout #page-container #top-header,
 			.et_fixed_nav.et_boxed_layout #page-container #main-header,
 			.et_boxed_layout #page-container .container,
-			<?php $css( '.et_boxed_layout', '#page-container .et_pb_row', false ); ?> {
+			<?php echo $css( '.et_boxed_layout', '#page-container .et_pb_row', false ); ?> {
 				max-width: <?php echo esc_html( intval( et_get_option( 'content_width', '1080' ) ) + 160 ); ?>px;
 			}
 		<?php } ?>

@@ -291,9 +291,11 @@ class ET_Core_VersionRollback {
 		$download_url = $api->get_download_url( $this->product_name, $previous_version );
 
 		// Buffer and discard output as upgrader classes still output content even if the upgrader skin is silent.
-		ob_start();
+		$buffer_started = ob_start();
 		$result = $this->_install_theme( $download_url );
-		ob_end_clean();
+		if ( $buffer_started ) {
+			ob_end_clean();
+		}
 
 		if ( is_wp_error( $result ) ) {
 			return $result;

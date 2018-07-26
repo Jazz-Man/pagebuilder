@@ -1,3 +1,16 @@
+version 3.10.2 ( updated 07-23-2018 )
+- Fixed a jQuery error that occurred in the VB when various third party plugins were installed.
+- Fixed 1/4 column rows with gutter widths of 1 having unwanted margin bottom on mobile.
+- Fixed the issue where padding was not removed when Use Background Color option was disabled in Login Module.
+- Fixed PHP notice that was occurring since introduction of rollback feature.
+- Fixed custom code color picker not appearing in the Visual Builder settings.
+- Fixed gutter width issues on mobile that occurred due to CSS priority changes in the previous Divi feature release.
+- Fixed website content width option in Customizer not taking effect when boxed layout is enabled.
+    * core/components/VersionRollback.php
+    * includes/builder/frontend-builder/bundle.js
+    * functions.php
+	* style.css
+
 version 3.10.1 ( updated 07-16-2018 )
 - Fixed Visual Builder responsive preview in the TwentySeventeen theme.
 - Fixed TinyMCE dropdowns not being visible in Visual Builder modals.
