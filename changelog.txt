@@ -1,3 +1,9 @@
+version 3.11 ( updated 07-26-2018 )
+- Added a new option, Find & Replace, to right click menus on individual options.
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+
 version 3.10.2 ( updated 07-23-2018 )
 - Fixed a jQuery error that occurred in the VB when various third party plugins were installed.
 - Fixed 1/4 column rows with gutter widths of 1 having unwanted margin bottom on mobile.

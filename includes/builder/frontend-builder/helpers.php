@@ -246,6 +246,35 @@ function et_fb_backend_helpers() {
 				'permission'      => array( 'clone_page' ),
 			),
 		),
+		'findReplace'                  => array(
+			'groups'     => array(
+				'locations' => esc_html__( 'Locations', 'et_builder' ),
+				'elements'  => esc_html__( 'Elements', 'et_builder' ),
+			),
+			'within'     => array(
+				'locations' => array(
+					'this_page'     => esc_html__( 'This Page', 'et_builder' ),
+					'this_section'  => esc_html__( 'This Section', 'et_builder' ),
+					'this_row'      => esc_html__( 'This Row', 'et_builder' ),
+					'this_column'   => esc_html__( 'This Column', 'et_builder' ),
+				),
+				'elements' => array(
+					'this_module'   => esc_html__( 'This %s\'s Settings', 'et_builder' ),
+					'all_modules'   => esc_html__( 'All Modules', 'et_builder' ),
+					'all_rows'      => esc_html__( 'All Rows', 'et_builder' ),
+					'all_same_type' => esc_html__( 'All %s Settings', 'et_builder' ),
+				),
+			),
+			'throughout' => array(
+				'this_page'    => esc_html__( 'This Page', 'et_builder' ),
+				'this_section' => esc_html__( 'This Section', 'et_builder' ),
+				'this_row'     => esc_html__( 'This Row', 'et_builder' ),
+				'this_column'  => esc_html__( 'This Column', 'et_builder' ),
+			),
+			'all'        => array(
+				'on'           => esc_html__( 'Replace all found values within every option type, not limited to %s', 'et_builder' ),
+			),
+		),
 		'dividers'                     => ET_Builder_Module_Fields_Factory::get( 'Divider' )->dividers,
 		'moduleParentShortcodes'       => ET_Builder_Element::get_parent_slugs_regex( $post_type ),
 		'moduleChildShortcodes'        => ET_Builder_Element::get_child_slugs_regex( $post_type ),
@@ -1268,6 +1297,7 @@ function et_fb_backend_helpers() {
 			'option'          => esc_html__( 'Option', 'et_builder' ),
 			'item'            => esc_html__( 'Item', 'et_builder' ),
 			'go_to_option'    => esc_html__( 'Go To Option', 'et_builder' ),
+			'find_replace'    => esc_html__( 'Find & Replace', 'et_builder' ),
 		),
 		'tooltips'            => array(
 			'insertModule'     => esc_html__( 'Insert Module', 'et_builder' ),
@@ -1363,6 +1393,38 @@ function et_fb_backend_helpers() {
 				),
 			),
 			'meta' => et_pb_history_localization(),
+		),
+		'findReplace' => array(
+			'modal' => array(
+				'title'       => esc_html__( 'Find & Replace', 'et_builder' ),
+				'tooltip'     => esc_html__( 'Replace', 'et_builder' ),
+				'find'        => array(
+					'label'       => esc_html__( 'Find This %s', 'et_builder' ),
+					'description' => esc_html__( 'The is the option value that will be replaced throughout your page. Where this option exists, within the defined scope, it will be replaced by the new value configured below.', 'et_builder' ),
+				),
+				'within'      => array(
+					'label'       => esc_html__( 'Within', 'et_builder' ),
+					'description' => esc_html__( 'The value will only be replaced within the confines of the area selected here. You can replace the value across your entire page, or you can replace the value only within specific parts of your page or within specific modules.', 'et_builder' ),
+				),
+				'throughout'  => array(
+					'label'       => esc_html__( 'Throughout', 'et_builder' ),
+					'description' => esc_html__( 'The value will only be replaced inside of modules that exist within the area selected here. You can replace the value across your entire page, or you can replace the value only within specific parts of your page.', 'et_builder' ),
+				),
+				'replaceWith' => array(
+					'label'       => esc_html__( 'Replace With', 'et_builder' ),
+					'description' => esc_html__( 'When the value above is found within your desired area, it will be replaced with the value that you choose here.', 'et_builder' ),
+				),
+				'replaceAll'  => array(
+					'label'       => esc_html__( 'Replace All', 'et_builder' ),
+					'description' => esc_html__( 'By default, values will only be replaced when found within the exact option type selected. If you enable this checkbox, the search will be extended to all options and values will be replaced everywhere. For example, a color will be replaced in all colors options: Text Colors, Background Colors, Border Colors, etc.', 'et_builder' ),
+				),
+				'error'       => array(
+					'field_type_not_match'    => esc_html__( 'Field type is not match', 'et_builder' ),
+					'field_name_not_match'    => esc_html__( 'Field name is not match', 'et_builder' ),
+					'replace_value_not_valid' => esc_html__( 'Replace value is not valid', 'et_builder' ),
+					'replace_value_not_match' => esc_html__( 'Replace value is not match', 'et_builder' ),
+				),
+			),
 		),
 		'help' => array(
 			'modal' => array(
@@ -1559,6 +1621,7 @@ function et_fb_backend_helpers() {
 				'undo'          => esc_html__( 'Undo', 'et_builder' ),
 				'cancel'        => esc_html__( 'Discard All Changes', 'et_builder' ),
 				'save'          => esc_html__( 'Save Changes', 'et_builder' ),
+				'close'         => esc_html__( 'Close', 'et_builder' ),
 			),
 			'inlineEditor' => array(
 				'back'             => esc_html__( 'Go Back', 'et_builder' ),
