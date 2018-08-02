@@ -1,3 +1,17 @@
+version 3.11.1 ( updated 07-30-2018 )
+- Added support for using the Divi Builder when Gutenberg is enabled.
+- Fixed JavaScript Error: "TypeError: E.AllHtmlEntities is not a constructor".
+	* css/meta-box-styles.css
+	* functions.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/plugin-compat/gutenberg.php
+	* includes/builder/scripts/ext/media-library.js
+	* includes/builder/styles/frontend-builder-shared-conditional-style.css
+	* includes/builder/styles/frontend-builder-style.css
+
 version 3.11 ( updated 07-26-2018 )
 - Added a new option, Find & Replace, to right click menus on individual options.
 	* includes/builder/frontend-builder/bundle.js

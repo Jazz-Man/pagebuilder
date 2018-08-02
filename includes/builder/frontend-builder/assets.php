@@ -25,19 +25,18 @@ function et_fb_enqueue_main_assets() {
 
 	wp_register_style( 'et-fb-responsive-preview', "{$assets}/css/{$responsive_preview_styles}", array(), $ver );
 
-	// Enqueue styles if the Divi Builder plugin is not active.
-	if ( ! et_is_builder_plugin_active() ) {
-		wp_enqueue_style( 'et-frontend-builder', "{$assets}/css/style.css", array(
-			'et_pb_admin_date_css',
-			'wp-mediaelement',
-			'wp-color-picker',
-			'et-core-admin',
-			'et-fb-responsive-preview',
-		), $ver );
-	}
+	// Enqueue the appropriate bundle CSS (hot/start/build)
+	et_fb_enqueue_bundle( 'et-frontend-builder', 'bundle.css', array(
+		'et_pb_admin_date_css',
+		'wp-mediaelement',
+		'wp-color-picker',
+		'et-core-admin',
+		'et-fb-responsive-preview',
+	));
 
 	// Load Divi Builder style.css file with hardcore CSS resets and Full Open Sans font if the Divi Builder plugin is active
 	if ( et_is_builder_plugin_active() ) {
+		// `bundle.css` was removed from `divi-builder-style.css` and is now enqueued separately for the DBP as well.
 		wp_enqueue_style(
 			'et-builder-divi-builder-styles',
 			"{$assets}/css/divi-builder-style.css",
@@ -135,7 +134,8 @@ function et_fb_enqueue_assets() {
 
 	wp_register_script( 'et_pb_admin_date_addon_js', "{$root}/scripts/ext/jquery-ui-timepicker-addon.js", array( $jQuery_ui ), $ver, true );
 
-	wp_register_script( 'wp-shortcode', includes_url() . 'js/shortcode.js', array(), $wp_version );
+	// `wp-shortcode` script handle is used by Gutenberg
+	wp_register_script( 'et-wp-shortcode', includes_url() . 'js/shortcode.js', array(), $wp_version );
 
 	wp_register_script( 'jquery-tablesorter', ET_BUILDER_URI . '/scripts/ext/jquery.tablesorter.min.js', array( 'jquery' ), ET_BUILDER_VERSION, true );
 
@@ -154,7 +154,7 @@ function et_fb_enqueue_assets() {
 		'wp-color-picker-alpha',
 		'react-tiny-mce',
 		'et_pb_admin_date_addon_js',
-		'wp-shortcode',
+		'et-wp-shortcode',
 		'heartbeat',
 		'wp-mediaelement',
 		'jquery-tablesorter',
@@ -187,40 +187,26 @@ function et_fb_enqueue_assets() {
 	$core_scripts = ET_CORE_URL . '/admin/js';
 
 	if ( $DEBUG || DiviExtensions::is_debugging_extension() ) {
-		wp_enqueue_script( 'react', 'https://cdn.jsdelivr.net/npm/react@16.2/umd/react.development.js', array(), '16.2', true );
-		wp_enqueue_script( 'react-dom', 'https://cdn.jsdelivr.net/npm/react-dom@16.2/umd/react-dom.development.js', array( 'react' ), '16.2', true );
+		wp_enqueue_script( 'react', 'https://cdn.jsdelivr.net/npm/react@16.3.2/umd/react.development.js', array(), '16.3.2', true );
+		wp_enqueue_script( 'react-dom', 'https://cdn.jsdelivr.net/npm/react-dom@16.3.2/umd/react-dom.development.js', array( 'react' ), '16.3.2', true );
 		add_filter( 'script_loader_tag', 'et_core_add_crossorigin_attribute', 10, 3 );
 	} else {
-		wp_enqueue_script( 'react', "{$core_scripts}/react.production.min.js", array(), '16.2', true );
-		wp_enqueue_script( 'react-dom', "{$core_scripts}/react-dom.production.min.js", array( 'react' ), '16.2', true );
+		wp_enqueue_script( 'react', "{$core_scripts}/react.production.min.js", array(), '16.3.2', true );
+		wp_enqueue_script( 'react-dom', "{$core_scripts}/react-dom.production.min.js", array( 'react' ), '16.3.2', true );
 	}
 
-	// Enqueue scripts.
-	$bundle = "{$app}/bundle.js";
-	if ( $DEBUG ) {
-		$site_url       = wp_parse_url( get_site_url() );
-		$hot_bundle_url = "{$site_url['scheme']}://{$site_url['host']}:31495/bundle.js";
-
-		wp_enqueue_script( 'et-frontend-builder', $hot_bundle_url, $fb_bundle_dependencies, $ver, true );
-
-		// Add the bundle as fallback in case webpack-dev-server is not running
-		wp_add_inline_script(
-			'et-frontend-builder',
-			sprintf( 'window.ET_FB || document.write(\'<script src="%s">\x3C/script>\')', "$bundle?ver={$ver}" ),
-			'after'
-		);
-	} else {
-		wp_enqueue_script( 'et-frontend-builder', $bundle, $fb_bundle_dependencies, $ver, true );
-	}
+	// Enqueue the appropriate bundle js (hot/start/build)
+	et_fb_enqueue_bundle( 'et-frontend-builder', 'bundle.js', $fb_bundle_dependencies );
 
 	// Search for additional bundles
 	$additional_bundles = array();
-	foreach ( glob( ET_BUILDER_DIR . 'frontend-builder/bundle.*.js' ) as $chunk ) {
-		$additional_bundles[] = "{$app}/" . basename( $chunk );
+	// CSS is now splitted as well.
+	foreach ( glob( ET_BUILDER_DIR . 'frontend-builder/build/bundle.*.{css,js}' , GLOB_BRACE ) as $chunk ) {
+		$additional_bundles[] = "{$app}/build/" . basename( $chunk );
 	}
 	// Pass bundle path and additional bundles to preload
 	wp_localize_script( 'et-frontend-builder', 'et_webpack_bundle', array(
-		'path'    => "{$app}/",
+		'path'    => "{$app}/build/",
 		'preload' => $additional_bundles,
 	));
 

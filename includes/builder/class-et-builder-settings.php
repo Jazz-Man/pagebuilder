@@ -306,6 +306,103 @@ class ET_Builder_Settings {
 				'tab_slug'    => 'design',
 				'toggle_slug' => 'text',
 			),
+			'et_pb_post_settings_title' => array(
+				'type'        => 'text',
+				'id'          => 'et_pb_post_settings_title',
+				'show_in_bb'  => false,
+				'post_field'  => 'post_title',
+				'label'       => esc_html__( 'Title', 'et_builder' ),
+				'default'     => '',
+				'tab_slug'    => 'content',
+				'toggle_slug' => 'main_content',
+			),
+			'et_pb_post_settings_excerpt' => array(
+				'type'        => 'textarea',
+				'id'          => 'et_pb_post_settings_excerpt',
+				'show_in_bb'  => false,
+				'post_field'  => 'post_excerpt',
+				'label'       => esc_html__( 'Excerpt', 'et_builder' ),
+				'default'     => '',
+				'tab_slug'    => 'content',
+				'toggle_slug' => 'main_content',
+			),
+			'et_pb_post_settings_image' => array(
+				'type'               => 'upload',
+				'id'                 => 'et_pb_post_settings_image',
+				'show_in_bb'         => false,
+				'meta_key'           => '_thumbnail_id',
+				// This meta must not be updated during save_post or it will overwrite
+				// the value set in the WP edit page....
+				'save_post'          => false,
+				'label'              => esc_html__( 'Featured Image', 'et_builder' ),
+				'embed'              => false,
+				'attachment_id'      => true,
+				'upload_button_text' => esc_attr__( 'Select', 'et_builder' ),
+				'choose_text'        => esc_attr__( 'Set featured image', 'et_builder' ),
+				'update_text'        => esc_attr__( 'Set As Image', 'et_builder' ),
+				'tab_slug'           => 'content',
+				'toggle_slug'        => 'main_content',
+			),
+			'et_pb_post_settings_categories' => array(
+				'id'                   => 'et_pb_post_settings_categories',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Categories', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'post',
+				'taxonomy_name'        => 'category',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'post' ),
+			),
+			'et_pb_post_settings_tags' => array(
+				'id'                   => 'et_pb_post_settings_tags',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Tags', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'post',
+				'taxonomy_name'        => 'post_tag',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'post' ),
+			),
+			'et_pb_post_settings_project_categories' => array(
+				'id'                   => 'et_pb_post_settings_project_categories',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Categories', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'project',
+				'taxonomy_name'        => 'project_category',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'project' ),
+			),
+			'et_pb_post_settings_project_tags' => array(
+				'id'                   => 'et_pb_post_settings_project_tags',
+				'show_in_bb'           => false,
+				'label'                => esc_html__( 'Tags', 'et_builder' ),
+				'type'                 => 'categories',
+				'option_category'      => 'basic_option',
+				'post_type'            => 'project',
+				'taxonomy_name'        => 'project_tag',
+				'renderer_options'     => array(
+					'use_terms'        => false,
+				),
+				'tab_slug'             => 'content',
+				'toggle_slug'          => 'main_content',
+				'depends_on_post_type' => array( 'project' ),
+			),
 			'et_pb_content_area_background_color' => array(
 				'type'        => 'color-alpha',
 				'id'          => 'et_pb_content_area_background_color',
@@ -386,23 +483,30 @@ class ET_Builder_Settings {
 
 		self::$_PAGE_SETTINGS_IS_DEFAULT = $is_default;
 
+		$post = get_post( $post_id );
 		$values = array(
-			'et_pb_enable_ab_testing'             => et_is_ab_testing_active() ? 'on' : 'off',
-			'et_pb_ab_bounce_rate_limit'          => $et_pb_ab_bounce_rate_limit,
-			'et_pb_ab_stats_refresh_interval'     => et_pb_ab_get_refresh_interval( $post_id ),
-			'et_pb_ab_subjects'                   => et_pb_ab_get_subjects( $post_id ),
-			'et_pb_enable_shortcode_tracking'     => get_post_meta( $post_id, '_et_pb_enable_shortcode_tracking', true ),
-			'et_pb_ab_current_shortcode'          => '[et_pb_split_track id="' . $post_id . '" /]',
-			'et_pb_custom_css'                    => get_post_meta( $post_id, '_et_pb_custom_css', true ),
-			'et_pb_color_palette'                 => $et_pb_color_palette,
-			'et_pb_page_gutter_width'             => $et_pb_page_gutter_width,
-			'et_pb_light_text_color'              => strtolower( $et_pb_light_text_color ),
-			'et_pb_dark_text_color'               => strtolower( $et_pb_dark_text_color ),
-			'et_pb_content_area_background_color' => strtolower( $et_pb_content_area_background_color ),
-			'et_pb_section_background_color'      => strtolower( $et_pb_section_background_color ),
-			'et_pb_static_css_file'               => $et_pb_static_css_file,
+			'et_pb_enable_ab_testing'                => et_is_ab_testing_active() ? 'on' : 'off',
+			'et_pb_ab_bounce_rate_limit'             => $et_pb_ab_bounce_rate_limit,
+			'et_pb_ab_stats_refresh_interval'        => et_pb_ab_get_refresh_interval( $post_id ),
+			'et_pb_ab_subjects'                      => et_pb_ab_get_subjects( $post_id ),
+			'et_pb_enable_shortcode_tracking'        => get_post_meta( $post_id, '_et_pb_enable_shortcode_tracking', true ),
+			'et_pb_ab_current_shortcode'             => '[et_pb_split_track id="' . $post_id . '" /]',
+			'et_pb_custom_css'                       => get_post_meta( $post_id, '_et_pb_custom_css', true ),
+			'et_pb_color_palette'                    => $et_pb_color_palette,
+			'et_pb_page_gutter_width'                => $et_pb_page_gutter_width,
+			'et_pb_light_text_color'                 => strtolower( $et_pb_light_text_color ),
+			'et_pb_dark_text_color'                  => strtolower( $et_pb_dark_text_color ),
+			'et_pb_content_area_background_color'    => strtolower( $et_pb_content_area_background_color ),
+			'et_pb_section_background_color'         => strtolower( $et_pb_section_background_color ),
+			'et_pb_static_css_file'                  => $et_pb_static_css_file,
+			'et_pb_post_settings_title'              => $post->post_title,
+			'et_pb_post_settings_excerpt'            => $post->post_excerpt,
+			'et_pb_post_settings_image'              => get_post_thumbnail_id( $post_id ),
+			'et_pb_post_settings_categories'         => self::_get_object_terms( $post_id, 'category' ),
+			'et_pb_post_settings_tags'               => self::_get_object_terms( $post_id, 'post_tag' ),
+			'et_pb_post_settings_project_categories' => self::_get_object_terms( $post_id, 'project_category' ),
+			'et_pb_post_settings_project_tags'       => self::_get_object_terms( $post_id, 'project_tag' ),
 		);
-
 		/**
 		 * Filters Divi Builder page settings values.
 		 *
@@ -471,9 +575,21 @@ class ET_Builder_Settings {
 		return $post_type_options;
 	}
 
+	/**
+	 * Returns all taxonomy terms for a give post.
+	 *
+	 * @param int $post_id Post ID.
+	 * @param string $taxonomy Taxonomy name.
+	 *
+	 * @return array
+	 */
+	protected static function _get_object_terms( $post_id, $taxonomy ) {
+		return implode( ',' , wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) ) );
+	}
+
 	public static function get_registered_post_type_options() {
 		$blacklist      = et_builder_get_blacklisted_post_types();
-		
+
 		// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
 		$blacklist      = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
 		$raw_post_types = get_post_types( array(
@@ -824,7 +940,13 @@ class ET_Builder_Settings {
 	 * }
 	 */
 	public static function get_toggles() {
+
+		// Get current post type singular name and use it as toggle title.
+		$post_type = get_post_type( et_core_page_resource_get_the_ID() );
+		$post_type_obj = get_post_type_object( $post_type );
+
 		$toggles = array(
+			'main_content'  => $post_type_obj->labels->singular_name,
 			'background'    => esc_html__( 'Background', 'et_builder' ),
 			'color_palette' => esc_html__( 'Color Palette', 'et_builder' ),
 			'custom_css'    => esc_html__( 'Custom CSS', 'et_builder' ),

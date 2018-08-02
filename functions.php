@@ -9064,11 +9064,6 @@ function et_divi_post_admin_scripts_styles( $hook ) {
 		wp_enqueue_script( 'wp-color-picker' );
 		wp_enqueue_script( 'et-admin-post-script', get_template_directory_uri() . '/js/admin_post_settings.js', array( 'jquery' ), $theme_version );
 	}
-
-	// Only enqueue on editing screen
-	if ( isset( $current_screen->base ) && 'post' === $current_screen->base ) {
-		wp_enqueue_style( 'et-meta-box-style', get_template_directory_uri() . '/css/meta-box-styles.css', array(), $theme_version );
-	}
 }
 add_action( 'admin_enqueue_scripts', 'et_divi_post_admin_scripts_styles' );
 

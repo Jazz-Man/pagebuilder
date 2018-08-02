@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.11' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.11.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -728,6 +728,7 @@ function et_fb_conditional_tag_params() {
 		'et_is_builder_plugin_active' => et_is_builder_plugin_active(),
 		'is_user_logged_in'           => is_user_logged_in(),
 		'et_is_ab_testing_active'     => et_is_ab_testing_active() ? 'yes' : 'no',
+		'is_gutenberg'                => et_is_gutenberg_active(),
 		'is_custom_post_type'         => et_builder_is_post_type_custom( $post_type ),
 	);
 
@@ -889,6 +890,7 @@ function et_fb_current_page_params() {
 		'id'                       => isset( $post->ID ) ? $post->ID : false,
 		'title'                    => esc_html( get_the_title() ),
 		'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail_size ) ) : '',
+		'thumbnailId'              => isset( $post->ID ) ? get_post_thumbnail_id( $post->ID ) : '',
 		'authorName'               => esc_html( get_the_author() ),
 		'authorUrl'                => isset( $authordata->ID ) && isset( $authordata->user_nicename ) ? esc_html( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ) : false,
 		'authorUrlTitle'           => sprintf( esc_html__( 'Posts by %s', 'et_builder' ), get_the_author() ),
@@ -2674,6 +2676,11 @@ function et_pb_admin_scripts_styles( $hook ) {
 		return;
 	}
 
+	// Do not enqueue BB assets if GB is active on this page
+	if ( et_is_gutenberg_active() && is_gutenberg_page() ) {
+		return;
+	}
+
 	if ( ! in_array( $hook, array( 'post-new.php', 'post.php' ) ) ) return;
 
 	/*
@@ -3328,6 +3335,11 @@ function et_pb_history_localization() {
 }
 
 function et_pb_add_custom_box( $post_type, $post ) {
+	// Do not add BB metabox if GB is active on this page
+	if ( et_is_gutenberg_active() && is_gutenberg_page() ) {
+		return;
+	}
+
 	$post_types = et_builder_get_builder_post_types();
 	$add = in_array( $post_type, $post_types );
 
@@ -5019,6 +5031,15 @@ function et_pb_pagebuilder_meta_box() {
 		esc_html__( 'Save', 'et_builder' )
 	);
 
+	$utils = ET_Core_Data_Utils::instance();
+	$fields = array();
+	// Filter out fields not supposed to show in BB
+	foreach (ET_Builder_Settings::get_fields() as $key => $field) {
+		if ( true === $utils->array_get( $field, 'show_in_bb', true ) ) {
+			$fields[$key] = $field;
+		}
+	}
+
 	// "Open Settings" Modal Content Template
 	printf(
 		'<script type="text/template" id="et-builder-prompt-modal-open_settings-text">
@@ -5028,7 +5049,7 @@ function et_pb_pagebuilder_meta_box() {
 			</div><!-- .et_pb_prompt_fields -->
 		</script>',
 		esc_html__( 'Divi Builder Settings', 'et_builder' ),
-		et_pb_get_builder_settings_fields( ET_Builder_Settings::get_fields() )
+		et_pb_get_builder_settings_fields( $fields )
 	);
 
 	// AB Testing
@@ -5885,6 +5906,8 @@ function et_builder_update_settings( $settings, $post_id = 'global' ) {
 	$is_BB     = null === $settings;
 	$settings  = $is_BB ? $_POST : $settings;
 	$fields    = $is_global ? ET_Builder_Settings::get_fields( 'builder' ) : ET_Builder_Settings::get_fields();
+	$utils     = ET_Core_Data_Utils::instance();
+	$update    = array();
 
 	foreach ( (array) $settings as $setting_key => $setting_value ) {
 		$setting_key = $is_BB ? substr( $setting_key, 1 ) : $setting_key;
@@ -5929,6 +5952,10 @@ function et_builder_update_settings( $settings, $post_id = 'global' ) {
 				$setting_value = sanitize_textarea_field( $setting_value );
 				break;
 
+			case 'categories':
+				$setting_value = array_map( 'intval', explode( ',', $setting_value ) );
+				break;
+
 			default:
 				$setting_value = sanitize_text_field( $setting_value );
 				break;
@@ -5951,9 +5978,40 @@ function et_builder_update_settings( $settings, $post_id = 'global' ) {
 		 */
 		do_action( 'et_builder_settings_update_option', $setting_key, $setting_value, $post_id );
 
-		// Prepare key
+		// If `post_field` is defined, we need to update the post.
+		$post_field = $utils->array_get( $fields [ $setting_key ], 'post_field', false );
+		if ( false !== $post_field ) {
+			// Only allowed in VB
+			if ( ! ( $is_global || $is_BB ) ) {
+				// Save the post field so we can do a single update
+				$update[ $post_field ] = $setting_value;
+			}
+			continue;
+		}
+
+		// If `taxonomy_name` is defined, we need to update the post terms.
+		$taxonomy_name = $utils->array_get( $fields [ $setting_key ], 'taxonomy_name', false );
+		if ( false !== $taxonomy_name ) {
+			// Only allowed in VB
+			if ( ! ( $is_global || $is_BB ) ) {
+				$post_type = $utils->array_get( $fields [ $setting_key ], 'post_type', false );
+				if ( $post_type === get_post_type( $post_id ) ) {
+					// Only update if the post type matches.
+					wp_set_object_terms( $post_id, $setting_value, $taxonomy_name );
+				}
+			}
+			continue;
+		}
+
+		// Save the setting in a post meta.
 		$meta_key = isset( $fields[ $setting_key ]['meta_key'] ) ? $fields[ $setting_key ]['meta_key'] : "_{$setting_key}";
 
+		$save_post = $utils->array_get( $fields [ $setting_key ], 'save_post', true );
+		if ( $is_BB && $save_post === false ) {
+			// This meta key must be ignored during classic-editor / BB save action or it will
+			// overwrite values in the WP edit page.
+			continue;
+		}
 		// remove if value is default
 		if ( $is_default ) {
 			$is_global ? et_delete_option( $setting_key ) : delete_post_meta( $post_id, $meta_key );
@@ -5970,6 +6028,15 @@ function et_builder_update_settings( $settings, $post_id = 'global' ) {
 	$current_user_id = get_current_user_id();
 
 	delete_post_meta( $post_id, "_et_builder_settings_autosave_{$current_user_id}");
+
+	if ( count( $update ) > 0 ) {
+		// This MUST NOT be executed while saving data in the BB or it will generate
+		// an update loop that will end the universe as we know it.
+		if ( ! ( $is_BB || wp_is_post_revision( $post_id ) ) ) {
+			$update['ID'] = $post_id;
+			wp_update_post( $update );
+		}
+	}
 }
 
 /**
@@ -7197,6 +7264,17 @@ endif;
 if ( ! function_exists( 'et_is_woocommerce_plugin_active' ) ) :
 	function et_is_woocommerce_plugin_active() {
 		return class_exists( 'WooCommerce' );
+	}
+endif;
+
+/**
+ * Is Gutenberg active?
+ *
+ * @return bool  True - if the plugin is active
+ */
+if ( ! function_exists( 'et_is_gutenberg_active' ) ) :
+	function et_is_gutenberg_active() {
+		return function_exists( 'is_gutenberg_page' );
 	}
 endif;
 
@@ -8487,6 +8565,50 @@ function et_pb_get_spacing( $spacing, $corner, $default = '0px' ) {
 
 	return isset( $spacing_array[ $corner_index ] ) && '' !== $spacing_array[ $corner_index ] ? $spacing_array[ $corner_index ] : $default;
 }
+endif;
+
+/**
+ * Enqueue a bundle
+ */
+if ( ! function_exists( 'et_fb_enqueue_bundle' ) ) :
+	function et_fb_enqueue_bundle( $id, $resource, $deps ) {
+		$DEBUG  = defined( 'ET_DEBUG' ) && ET_DEBUG;
+		$ver    = ET_BUILDER_VERSION;
+		$build  = 'frontend-builder/build';
+		$bundle = sprintf( '%s/%s/%s', ET_BUILDER_URI, $build, $resource );
+		$type   = pathinfo( $resource, PATHINFO_EXTENSION );
+
+		switch ( $type ) {
+			case 'css':
+				if ( file_exists( sprintf( '%s%s/%s', ET_BUILDER_DIR, $build, $resource ) ) || ! $DEBUG ) {
+					wp_enqueue_style( $id, $bundle, $deps, $ver );
+				} elseif ( $DEBUG ) {
+					// Style is already embedded in the bundle but we still need to enqueue its deps.
+					foreach ( $deps as $dep ) {
+						wp_enqueue_style( $dep );
+					}
+				}
+				break;
+			case 'js':
+				if ( $DEBUG ) {
+					$site_url       = wp_parse_url( get_site_url() );
+					$hot_bundle_url = "{$site_url['scheme']}://{$site_url['host']}:31495/$resource";
+
+					wp_enqueue_script( $id, $hot_bundle_url, $deps, $ver, true );
+
+					// Add the bundle as fallback in case webpack-dev-server is not running
+					wp_add_inline_script(
+						$id,
+						sprintf( 'window.ET_BUNDLES || document.write(\'<script src="%s">\x3C/script>\')', "$bundle?ver={$ver}" ),
+						'after'
+					);
+				} else {
+					wp_enqueue_script( $id , $bundle, $deps , $ver, true );
+				}
+				wp_add_inline_script( $id, 'window.et_gb = window.top || window;', 'before' );
+				break;
+		}
+	}
 endif;
 
 /**
