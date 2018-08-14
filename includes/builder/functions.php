@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.11.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.12' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -4877,7 +4877,7 @@ function et_pb_pagebuilder_meta_box() {
 					<button class="et-core-button">%4$s</button>
 					<input type="file" accept=".ttf, .otf, .eot, .woff2, .woff" multiple>
 					<div class="et-core-clearfix"></div>
-					<p class="et-font-uploader-hint">%7$s: eot, woff, woff2, ttf, otf</p>
+					<p class="et-font-uploader-hint">%7$s: ttf, otf</p>
 					<div class="et-font-uploader-selected-fonts et-font-uploader-hidden-field"><h4>%8$s</h4></div>
 					<h4>%5$s</h4>
 					<p class="et-font-uploader-hint">%9$s</p>

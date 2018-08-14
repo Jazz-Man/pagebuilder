@@ -1861,6 +1861,7 @@ function et_fb_get_nonces() {
 		'libraryGetLayout'              => wp_create_nonce( 'et_builder_library_get_layout' ),
 		'libraryUpdateAccount'          => wp_create_nonce( 'et_builder_library_update_account' ),
 		'fetchAttachments'              => wp_create_nonce( 'et_fb_fetch_attachments' ),
+		'droploaderProcess'             => wp_create_nonce( 'et_builder_droploader_process_nonce' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );
@@ -3820,11 +3821,11 @@ function et_fb_get_saved_templates() {
 add_action( 'wp_ajax_et_fb_get_saved_templates', 'et_fb_get_saved_templates' );
 
 function et_pb_get_supported_font_formats() {
-	return apply_filters( 'et_pb_supported_font_formats', array( 'eot', 'woff2', 'woff', 'ttf', 'otf' ) );
+	return apply_filters( 'et_pb_supported_font_formats', array( 'ttf', 'otf' ) );
 }
 
 function et_pb_process_custom_font() {
-	et_core_security_check( 'edit_posts', 'et_fb_upload_font_nonce' );
+	et_core_security_check( 'upload_files', 'et_fb_upload_font_nonce' );
 
 	// action "add" or "remove"
 	$action = ! empty( $_POST['et_pb_font_action'] ) ? sanitize_text_field( $_POST['et_pb_font_action'] ) : 'save';
@@ -3850,6 +3851,51 @@ function et_pb_process_custom_font() {
 }
 
 add_action( 'wp_ajax_et_pb_process_custom_font', 'et_pb_process_custom_font' );
+
+/**
+ * Drag and Droploader :: Process Media
+ */
+if ( ! function_exists( 'et_builder_droploader_process') ):
+function et_builder_droploader_process() {
+	et_core_security_check( 'upload_files', 'et_builder_droploader_process_nonce' );
+
+	$post_id = ! empty( $_POST['post_id'] ) ? (int) $_POST['post_id'] : '';
+
+	if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		die( -1 );
+	}
+
+	et_core_security_check( 'edit_posts', 'et_builder_droploader_process_nonce' );
+
+	require_once( ABSPATH . 'wp-admin/includes/image.php' );
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+	require_once( ABSPATH . 'wp-admin/includes/media.php' );
+
+	$attachment_id = media_handle_upload( 'file', (int) $_POST['post_id'] );
+
+	if ( is_wp_error( $attachment_id ) ) {
+		wp_send_json_error( $attachment_id->get_error_message() );
+	}
+
+	wp_send_json_success( $attachment_id );
+}
+endif;
+add_action( 'wp_ajax_et_builder_droploader_process', 'et_builder_droploader_process' );
+
+/**
+ * Add allowed mime types and file extensions for font files.
+ *
+ * @return array
+ */
+function et_pb_filter_upload_mimes_custom_fonts() {
+	return array(
+		'otf'        => 'application/x-font-opentype',
+		'ttf'        => 'application/x-font-ttf',
+		'woff'       => 'application/font-woff',
+		'woff2'      => 'application/font-woff2',
+		'eot'        => 'application/vnd.ms-fontobject',
+	);
+}
 
 /*
  * Save the font-file.
@@ -3878,6 +3924,9 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 	// set the upload Directory for builder font files
 	add_filter( 'upload_dir', 'et_pb_set_fonts_upload_dir' );
 
+	// Set the upload_mimes filter before uploading font file.
+	add_filter( 'upload_mimes', 'et_pb_filter_upload_mimes_custom_fonts' );
+
 	$uploaded_files_error = '';
 	$uploaded_files = array(
 		'font_file' => array(),
@@ -3889,13 +3938,7 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 		$upload = wp_handle_upload( $font_file, array(
 			'test_size' => false,
 			'test_form' => false,
-			'mimes'     => array(
-			  'otf'   => 'application/x-font-opentype',
-			  'ttf'   => 'application/x-font-ttf',
-			  'woff'  => 'application/font-woff',
-			  'woff2' => 'application/font-woff2',
-			  'eot'   => 'application/vnd.ms-fontobject',
-			),
+			'mimes'     => et_pb_filter_upload_mimes_custom_fonts(),
 		) );
 
 		// try with different MIME types if uploading .otf file and error occurs
@@ -3923,6 +3966,9 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 
 	// Reset the upload Directory after uploading font file
 	remove_filter( 'upload_dir', 'et_pb_set_fonts_upload_dir' );
+
+	// Reset the upload_mimes filter after uploading font file.
+	remove_filter( 'upload_mimes', 'et_pb_filter_upload_mimes_custom_fonts' );
 
 	// return error if no files were uploaded
 	if ( empty( $uploaded_files['font_file'] ) && '' !== $uploaded_files_error ) {

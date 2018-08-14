@@ -179,6 +179,10 @@ function et_fb_backend_helpers() {
 		'video'    => 'https://www.youtube.com/watch?v=FkQuawiGWUw',
 	);
 
+	/**
+	 * ETBuilderBackend
+	 * @var array $helpers
+	 */
 	$helpers = array(
 		'debug'                        => defined( 'ET_DEBUG' ) && ET_DEBUG,
 		'autosaveInterval'             => et_builder_autosave_interval(),
@@ -1003,6 +1007,9 @@ function et_fb_backend_helpers() {
 			'secondFull'  => esc_html__( 'Second(s)', 'et_builder' ),
 			'secondShort' => esc_html__( 'Sec', 'et_builder' ),
 		),
+		'customCss' => array(
+			'label'       => esc_html__( 'Custom CSS', 'et_builder' ),
+		),
 		'signup' => array(
 			'firstName'    => esc_attr__( 'First Name', 'et_builder' ),
 			'lastName'     => esc_attr__( 'Last Name', 'et_builder' ),
@@ -1485,6 +1492,41 @@ function et_fb_backend_helpers() {
 			'all'            => esc_html__( 'All', 'et_builder' ),
 
 		),
+
+		// Drag and Droploader
+		'droploader' => array(
+			'title' => esc_html__('Drop Files Here To Upload', 'et_builder'),
+			'description' => esc_html__('Drop %s files here to automatically generate website content', 'et_builder'),
+			'allowed_extensions' => esc_html__( 'Only the following file formats are allowed: %s', 'et_builder' ),
+			'errors'             => array(
+				'uploadFailed'          => array(
+					'title'             => esc_html__( 'Upload Failed', 'et_builder' ),
+					'buttonCancelLabel' => esc_html__( 'Close', 'et_builder' ),
+				),
+				'file_name_empty'       => esc_html__( 'Uploaded file name is empty', 'et_builder' ),
+				'file_size_empty'       => esc_html__( 'Uploaded file size is empty: %s', 'et_builder' ),
+				'file_type_empty'       => esc_html__( 'Uploaded file type is empty: %s', 'et_builder' ),
+				'file_extension_empty'  => esc_html__( 'Uploaded file extension is empty: %s', 'et_builder' ),
+				'file_type_not_allowed' => esc_html__( 'Uploaded file type is not allowed: %s', 'et_builder' ),
+				'file_type_unknown'     => esc_html__( 'Uploaded file type is unknown', 'et_builder' ),
+				'file_content_invalid'  => esc_html__( 'Uploaded file content is invalid: %s', 'et_builder' ),
+				'file_untrusted'        => esc_html__( 'File is untrusted: %s', 'et_builder' ),
+				'action_not_allowed'    => esc_html__( 'You are not allowed to perform this action', 'et_builder' ),
+			),
+			'fileTypes'          => array(
+				'names' => array(
+					'audio' => esc_html__( 'Audio', 'et_builder' ),
+					'html'  => esc_html__( 'HTML', 'et_builder' ),
+					'css'   => esc_html__( 'CSS', 'et_builder' ),
+					'font'  => esc_html__( 'Font', 'et_builder' ),
+					'image' => esc_html__( 'Image', 'et_builder' ),
+					'json'  => esc_html__( 'JSON', 'et_builder' ),
+					'text'  => esc_html__( 'Text', 'et_builder' ),
+					'video' => esc_html__( 'Video', 'et_builder' ),
+				),
+			),
+		),
+
 		'app' => array(
 			'modal' => array(
 				'title'  => esc_html__( 'Builder Settings', 'et_builder' ),
