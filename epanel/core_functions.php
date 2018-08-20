@@ -784,6 +784,9 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 									if ( 'nohtml' == $value['validation_type'] ) {
 										$et_option_new_value = stripslashes( wp_filter_nohtml_kses( $_POST[$value['id']] ) );
 									}
+									if ( 'apikey' == $value['validation_type'] ) {
+										$et_option_new_value = stripslashes( sanitize_text_field( $_POST[ $value['id'] ]  ) );
+									}
 								} else {
 									// use html allowed for posts if the validation type isn't provided
 									$et_option_new_value = wp_kses_post( stripslashes( $_POST[ $value['id'] ] ) );

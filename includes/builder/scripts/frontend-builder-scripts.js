@@ -2970,21 +2970,22 @@
 			}
 
 			window.et_pb_play_overlayed_video = function( $play_video ) {
-				var $this        = $play_video,
-					$video_image = $this.closest('.et_pb_video_overlay'),
-					$wrapper     = $this.closest('.et_pb_video, .et_main_video_container, .et_pb_video_wrap'),
-					$video_iframe = $wrapper.find('iframe'),
-					is_embedded = $video_iframe.length ? true : false,
-					video_iframe_src,
-					video_iframe_src_splitted,
-					video_iframe_src_autoplay,
-					is_fb_video = typeof FB !== 'undefined';
+				var $this         = $play_video;
+				var $video_image  = $this.closest('.et_pb_video_overlay');
+				var $wrapper      = $this.closest('.et_pb_video, .et_main_video_container, .et_pb_video_wrap');
+				var $video_iframe = $wrapper.find('iframe');
+				var is_embedded   = $video_iframe.length > 0;
+				var is_fb_video   = $wrapper.find('.fb-video').length;
+				var video_iframe_src;
+				var video_iframe_src_splitted;
+				var video_iframe_src_autoplay;
 
 				if (is_embedded) {
-					if (is_fb_video) {
+					if (is_fb_video && 'undefined' !== typeof $video_iframe[2]) {
 						// Facebook uses three http/https/iframe
 						$video_iframe = $($video_iframe[2]);
 					}
+
 					// Add autoplay parameter to automatically play embedded content when overlay is clicked
 					video_iframe_src = $video_iframe.attr('src');
 					video_iframe_src_splitted = video_iframe_src.split("?");
@@ -3816,6 +3817,15 @@
 				$element.addClass( 'et_animated' );
 				$element.addClass( animation_style );
 				$element.addClass( animation_repeat );
+
+				// Remove the animation after it completes if it is not an infinite one
+				if ( ! animation_repeat ) {
+					var animation_duration_ms = parseInt( animation_duration );
+
+					setTimeout( function() {
+						et_remove_animation( $element );
+					}, animation_duration_ms );
+				}
 			}
 
 			function et_process_animation_data( waypoints_enabled ) {
@@ -4147,7 +4157,7 @@
 
 			function et_get_animation_classes() {
 				return [
-					'et_animated', 'infinite',
+					'et_animated', 'infinite', 'et-waypoint',
 					'fade', 'fadeTop', 'fadeRight', 'fadeBottom', 'fadeLeft',
 					'slide', 'slideTop', 'slideRight', 'slideBottom', 'slideLeft',
 					'bounce', 'bounceTop', 'bounceRight', 'bounceBottom', 'bounceLeft',

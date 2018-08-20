@@ -1,3 +1,95 @@
+version 3.12.1 ( updated 08-13-2018 )
+- Updated translation files.
+- Fixed issue with partial support for modules with child modules.
+- Fixed playback issues of Facebook videos in the Video module.
+- Fixed display issue with Video Module, with animation applied, in when playing the video in fullscreen, in Chrome.
+- Fixed fullwidth mobile menu not working in Visual Builder.
+- Updated Testimonial module so that it doesn't show the "," when Job Title is empty.
+- Fixed ability to find and replace Gutter Width setting.
+- Fixed Visual Builder tooltips and modals from appearing behind the floating navbar on custom post types in certain cases.
+- Fixed the Tabs module from malfunctioning when triple clicked on the Tab module content as soon as it was added on the page using VB.
+- Fixed a bug where the Drag & Dropload interface would process files already being processed by the WP Media Library upload system.
+- Fixed a PHP warning related to Post / Project tag/category.
+- Fixed BB not loading when Gutenberg and Classic Editor plugins were both active.
+- Fixed inconsistency between the front-end and visual builder's button module when using an icon and the margins didn't match.
+- Fixed the issue when Visual Builder was not correctly initiated on WordPress sample pages.
+- Fixed unwanted horizontal scroll when specialty section options are fullwidth and gutter 1 and height equalized.
+- Fixed the background image being covered up when Parallax is enabled when using Fullwidth Slider Module.
+- Corrected German translation of button text in WP Admin.
+- Fixed issue with Google API key not working properly if an extra space was accidentally added the to key.
+	* core/languages/de_DE.mo
+	* core/languages/de_DE.po
+	* epanel/core_functions.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/languages/ar.mo
+	* includes/builder/languages/ar.po
+	* includes/builder/languages/bg_BG.mo
+	* includes/builder/languages/bg_BG.po
+	* includes/builder/languages/cs_CZ.mo
+	* includes/builder/languages/cs_CZ.po
+	* includes/builder/languages/da_DK.mo
+	* includes/builder/languages/da_DK.po
+	* includes/builder/languages/de_DE.mo
+	* includes/builder/languages/de_DE.po
+	* includes/builder/languages/el.mo
+	* includes/builder/languages/el.po
+	* includes/builder/languages/en_US.pot
+	* includes/builder/languages/es_ES.mo
+	* includes/builder/languages/es_ES.po
+	* includes/builder/languages/fi.mo
+	* includes/builder/languages/fi.po
+	* includes/builder/languages/fr_FR.mo
+	* includes/builder/languages/fr_FR.po
+	* includes/builder/languages/he_IL.mo
+	* includes/builder/languages/he_IL.po
+	* includes/builder/languages/hu_HU.mo
+	* includes/builder/languages/hu_HU.po
+	* includes/builder/languages/id_ID.mo
+	* includes/builder/languages/id_ID.po
+	* includes/builder/languages/it_IT.mo
+	* includes/builder/languages/it_IT.po
+	* includes/builder/languages/ja.mo
+	* includes/builder/languages/ja.po
+	* includes/builder/languages/ko_KR.mo
+	* includes/builder/languages/ko_KR.po
+	* includes/builder/languages/ms_MY.mo
+	* includes/builder/languages/ms_MY.po
+	* includes/builder/languages/nb_NO.mo
+	* includes/builder/languages/nb_NO.po
+	* includes/builder/languages/nl_NL.mo
+	* includes/builder/languages/nl_NL.po
+	* includes/builder/languages/pl_PL.mo
+	* includes/builder/languages/pl_PL.po
+	* includes/builder/languages/pt_BR.mo
+	* includes/builder/languages/pt_BR.po
+	* includes/builder/languages/ro_RO.mo
+	* includes/builder/languages/ro_RO.po
+	* includes/builder/languages/ru_RU.mo
+	* includes/builder/languages/ru_RU.po
+	* includes/builder/languages/sk_SK.mo
+	* includes/builder/languages/sk_SK.po
+	* includes/builder/languages/sr_RS.mo
+	* includes/builder/languages/sr_RS.po
+	* includes/builder/languages/sv_SE.mo
+	* includes/builder/languages/sv_SE.po
+	* includes/builder/languages/th.mo
+	* includes/builder/languages/th.po
+	* includes/builder/languages/tl.mo
+	* includes/builder/languages/tl.po
+	* includes/builder/languages/tr_TR.mo
+	* includes/builder/languages/tr_TR.po
+	* includes/builder/languages/uk.mo
+	* includes/builder/languages/uk.po
+	* includes/builder/languages/vi.mo
+	* includes/builder/languages/vi.po
+	* includes/builder/languages/zh_CN.mo
+	* includes/builder/languages/zh_CN.po
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.css
+	* options_divi.php
+
 version 3.12 ( updated 8-9-2018 )
 - Added new Drag & Drop File Upload system to the Divi Builder.
 	* includes/builder/core.php

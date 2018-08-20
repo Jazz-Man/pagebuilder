@@ -576,15 +576,16 @@ class ET_Builder_Settings {
 	}
 
 	/**
-	 * Returns all taxonomy terms for a give post.
+	 * Returns all taxonomy terms for a given post.
 	 *
 	 * @param int $post_id Post ID.
 	 * @param string $taxonomy Taxonomy name.
 	 *
-	 * @return array
+	 * @return string
 	 */
 	protected static function _get_object_terms( $post_id, $taxonomy ) {
-		return implode( ',' , wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) ) );
+		$terms = wp_get_object_terms( $post_id, $taxonomy, array( 'fields' => 'ids' ) );
+		return is_array( $terms ) ? implode( ',', $terms ) : '';
 	}
 
 	public static function get_registered_post_type_options() {

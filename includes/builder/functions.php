@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.12' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.12.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2677,7 +2677,7 @@ function et_pb_admin_scripts_styles( $hook ) {
 	}
 
 	// Do not enqueue BB assets if GB is active on this page
-	if ( et_is_gutenberg_active() && is_gutenberg_page() ) {
+	if ( et_is_gutenberg_enabled() ) {
 		return;
 	}
 
@@ -3336,7 +3336,7 @@ function et_pb_history_localization() {
 
 function et_pb_add_custom_box( $post_type, $post ) {
 	// Do not add BB metabox if GB is active on this page
-	if ( et_is_gutenberg_active() && is_gutenberg_page() ) {
+	if ( et_is_gutenberg_enabled() ) {
 		return;
 	}
 
@@ -7275,6 +7275,17 @@ endif;
 if ( ! function_exists( 'et_is_gutenberg_active' ) ) :
 	function et_is_gutenberg_active() {
 		return function_exists( 'is_gutenberg_page' );
+	}
+endif;
+
+/**
+ * Is Gutenberg active and enabled for the current post
+ *
+ * @return bool  True - if the plugin is active and enabled.
+ */
+if ( ! function_exists( 'et_is_gutenberg_enabled' ) ) :
+	function et_is_gutenberg_enabled() {
+		return et_is_gutenberg_active() && is_gutenberg_page() && has_filter( 'replace_editor', 'gutenberg_init' );
 	}
 endif;
 
