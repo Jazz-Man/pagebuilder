@@ -3821,10 +3821,11 @@
 				// Remove the animation after it completes if it is not an infinite one
 				if ( ! animation_repeat ) {
 					var animation_duration_ms = parseInt( animation_duration );
+					var animation_delay_ms = parseInt( animation_delay );
 
 					setTimeout( function() {
 						et_remove_animation( $element );
-					}, animation_duration_ms );
+					}, animation_duration_ms + animation_delay_ms );
 				}
 			}
 
@@ -4172,7 +4173,13 @@
 				var animation_classes = et_get_animation_classes();
 
 				$element.removeClass( animation_classes.join(' ') );
-				$element.removeAttr('style');
+				$element.css({
+					'animation-delay'           : '',
+					'animation-duration'        : '',
+					'animation-timing-function' : '',
+					'opacity'                   : '',
+					'transform'                 : ''
+				});
 			}
 
 			function et_remove_animation_data( $element ) {

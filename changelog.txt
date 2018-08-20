@@ -1,3 +1,7 @@
+version 3.12.2 ( updated 08-16-2018 )
+- Fixed a bug that caused animations to remove module design styles such as background colors.
+	* includes/builder/scripts/frontend-builder-scripts.js
+
 version 3.12.1 ( updated 08-13-2018 )
 - Updated translation files.
 - Fixed issue with partial support for modules with child modules.
