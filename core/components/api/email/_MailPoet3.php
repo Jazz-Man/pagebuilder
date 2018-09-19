@@ -150,6 +150,7 @@ class ET_Core_API_Email_MailPoet3 extends ET_Core_API_Email_Provider {
 
 		$args            = et_sanitized_previously( $args );
 		$subscriber_data = $this->transform_data_to_provider_format( $args, 'subscriber' );
+		$subscriber_data = $this->_process_custom_fields( $subscriber_data );
 		$subscriber_data = self::$_->array_flatten( $subscriber_data );
 		$result          = 'success';
 		$lists           = array( $args['list_id'] );

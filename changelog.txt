@@ -1,3 +1,36 @@
+version 3.13 ( updated 08-30-2018 )
+- Added new column structures to the Divi Builder.
+- Added new footer column layouts.
+- Improved the Visual Builder tooltip modal automatic sizing and positioning.
+- Fixed a bug that prevented loading premade layouts on some servers.
+- Removed extra space that appeared in the Visual Builder when there was an empty TinyMCE area on the page.
+- Fixed an error that occurred when subscribing to a MailPoet list due to malformed custom fields.
+- Fixed broken accordion module animation in Safari.
+- Removed dashes from contact form field titles in the Visual Builder.
+- Fixed a bug that caused the portability tooltip to open in the wrong location when triggered by drag and drop file upload.
+	* css/theme-customizer-controls-styles.css
+	* functions.php
+	* images/footer-layouts.png
+	* includes/functions/choices.php
+	* includes/functions/sidebars.php
+	* sidebar-footer.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/frontend-builder-grid.less
+	* includes/builder/styles/frontend-builder-shared-conditional-style.css
+	* includes/builder/styles/frontend-builder-shared-conditional-style.less
+	* includes/builder/styles/frontend-builder-style.css
+	* includes/builder/styles/frontend-builder-style.less
+	* includes/builder/styles/style.css
+	* includes/builder/frontend-builder/assets/css/responsive-preview-wrapped.css
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/feature/Library.php
+	* core/components/api/email/_MailPoet3.php
+
 version 3.12.2 ( updated 08-16-2018 )
 - Fixed a bug that caused animations to remove module design styles such as background colors.
 	* includes/builder/scripts/frontend-builder-scripts.js

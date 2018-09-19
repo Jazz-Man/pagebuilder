@@ -1030,6 +1030,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 							'column_2' => array( 'name' => esc_html__( 'Column 2', 'et_builder' ) ),
 							'column_3' => array( 'name' => esc_html__( 'Column 3', 'et_builder' ) ),
 							'column_4' => array( 'name' => esc_html__( 'Column 4', 'et_builder' ) ),
+							'column_5' => array( 'name' => esc_html__( 'Column 5', 'et_builder' ) ),
+							'column_6' => array( 'name' => esc_html__( 'Column 6', 'et_builder' ) ),
 						),
 					),
 				),
@@ -1048,6 +1050,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 							'column_2' => array( 'name' => esc_html__( 'Column 2', 'et_builder' ) ),
 							'column_3' => array( 'name' => esc_html__( 'Column 3', 'et_builder' ) ),
 							'column_4' => array( 'name' => esc_html__( 'Column 4', 'et_builder' ) ),
+							'column_5' => array( 'name' => esc_html__( 'Column 5', 'et_builder' ) ),
+							'column_6' => array( 'name' => esc_html__( 'Column 6', 'et_builder' ) ),
 						),
 						'priority' => 70,
 					),
@@ -1063,6 +1067,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 							'column_2' => array( 'name' => esc_html__( 'Column 2', 'et_builder' ) ),
 							'column_3' => array( 'name' => esc_html__( 'Column 3', 'et_builder' ) ),
 							'column_4' => array( 'name' => esc_html__( 'Column 4', 'et_builder' ) ),
+							'column_5' => array( 'name' => esc_html__( 'Column 5', 'et_builder' ) ),
+							'column_6' => array( 'name' => esc_html__( 'Column 6', 'et_builder' ) ),
 						),
 					),
 					'custom_css' => array(
@@ -1073,6 +1079,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 							'column_2' => array( 'name' => esc_html__( 'Column 2', 'et_builder' ) ),
 							'column_3' => array( 'name' => esc_html__( 'Column 3', 'et_builder' ) ),
 							'column_4' => array( 'name' => esc_html__( 'Column 4', 'et_builder' ) ),
+							'column_5' => array( 'name' => esc_html__( 'Column 5', 'et_builder' ) ),
+							'column_6' => array( 'name' => esc_html__( 'Column 6', 'et_builder' ) ),
 						),
 					),
 				),
@@ -1308,7 +1316,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			),
 		);
 
-		$column_fields = $this->get_column_fields( 4, array(
+		$column_fields = $this->get_column_fields( 6, array(
 			'background_color'                           => array(),
 			'bg_img'                                     => array(),
 			'padding_top_bottom_link'                    => array(),
@@ -1419,26 +1427,38 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$background_color_2      = $this->props['background_color_2'];
 		$background_color_3      = $this->props['background_color_3'];
 		$background_color_4      = $this->props['background_color_4'];
+		$background_color_5      = $this->props['background_color_5'];
+		$background_color_6      = $this->props['background_color_6'];
 		$bg_img_1                = $this->props['bg_img_1'];
 		$bg_img_2                = $this->props['bg_img_2'];
 		$bg_img_3                = $this->props['bg_img_3'];
 		$bg_img_4                = $this->props['bg_img_4'];
+		$bg_img_5                = $this->props['bg_img_5'];
+		$bg_img_6                = $this->props['bg_img_6'];
 		$background_size_1       = $this->props['background_size_1'];
 		$background_size_2       = $this->props['background_size_2'];
 		$background_size_3       = $this->props['background_size_3'];
 		$background_size_4       = $this->props['background_size_4'];
+		$background_size_5       = $this->props['background_size_5'];
+		$background_size_6       = $this->props['background_size_6'];
 		$background_position_1   = $this->props['background_position_1'];
 		$background_position_2   = $this->props['background_position_2'];
 		$background_position_3   = $this->props['background_position_3'];
 		$background_position_4   = $this->props['background_position_4'];
+		$background_position_5   = $this->props['background_position_5'];
+		$background_position_6   = $this->props['background_position_6'];
 		$background_repeat_1     = $this->props['background_repeat_1'];
 		$background_repeat_2     = $this->props['background_repeat_2'];
 		$background_repeat_3     = $this->props['background_repeat_3'];
 		$background_repeat_4     = $this->props['background_repeat_4'];
+		$background_repeat_5     = $this->props['background_repeat_5'];
+		$background_repeat_6     = $this->props['background_repeat_6'];
 		$background_blend_1      = $this->props['background_blend_1'];
 		$background_blend_2      = $this->props['background_blend_2'];
 		$background_blend_3      = $this->props['background_blend_3'];
 		$background_blend_4      = $this->props['background_blend_4'];
+		$background_blend_5      = $this->props['background_blend_5'];
+		$background_blend_6      = $this->props['background_blend_6'];
 		$padding_top_1           = $this->props['padding_top_1'];
 		$padding_right_1         = $this->props['padding_right_1'];
 		$padding_bottom_1        = $this->props['padding_bottom_1'];
@@ -1455,18 +1475,32 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$padding_right_4         = $this->props['padding_right_4'];
 		$padding_bottom_4        = $this->props['padding_bottom_4'];
 		$padding_left_4          = $this->props['padding_left_4'];
+		$padding_top_5           = $this->props['padding_top_5'];
+		$padding_right_5         = $this->props['padding_right_5'];
+		$padding_bottom_5        = $this->props['padding_bottom_5'];
+		$padding_left_5          = $this->props['padding_left_5'];
+		$padding_top_6           = $this->props['padding_top_6'];
+		$padding_right_6         = $this->props['padding_right_6'];
+		$padding_bottom_6        = $this->props['padding_bottom_6'];
+		$padding_left_6          = $this->props['padding_left_6'];
 		$padding_1_tablet        = $this->props['padding_1_tablet'];
 		$padding_2_tablet        = $this->props['padding_2_tablet'];
 		$padding_3_tablet        = $this->props['padding_3_tablet'];
 		$padding_4_tablet        = $this->props['padding_4_tablet'];
+		$padding_5_tablet        = $this->props['padding_5_tablet'];
+		$padding_6_tablet        = $this->props['padding_6_tablet'];
 		$padding_1_phone         = $this->props['padding_1_phone'];
 		$padding_2_phone         = $this->props['padding_2_phone'];
 		$padding_3_phone         = $this->props['padding_3_phone'];
 		$padding_4_phone         = $this->props['padding_4_phone'];
+		$padding_5_phone         = $this->props['padding_5_phone'];
+		$padding_6_phone         = $this->props['padding_6_phone'];
 		$padding_1_last_edited   = $this->props['padding_1_last_edited'];
 		$padding_2_last_edited   = $this->props['padding_2_last_edited'];
 		$padding_3_last_edited   = $this->props['padding_3_last_edited'];
 		$padding_4_last_edited   = $this->props['padding_4_last_edited'];
+		$padding_5_last_edited   = $this->props['padding_5_last_edited'];
+		$padding_6_last_edited   = $this->props['padding_6_last_edited'];
 		$padding_mobile          = $this->props['padding_mobile'];
 		$gutter_width            = $this->props['gutter_width'];
 		$use_custom_width        = $this->props['use_custom_width'];
@@ -1482,87 +1516,131 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$parallax_3              = $this->props['parallax_3'];
 		$parallax_method_3       = $this->props['parallax_method_3'];
 		$parallax_4              = $this->props['parallax_4'];
+		$parallax_5              = $this->props['parallax_5'];
+		$parallax_6              = $this->props['parallax_6'];
 		$parallax_method_4       = $this->props['parallax_method_4'];
+		$parallax_method_5       = $this->props['parallax_method_5'];
+		$parallax_method_6       = $this->props['parallax_method_6'];
 		$module_id_1             = $this->props['module_id_1'];
 		$module_id_2             = $this->props['module_id_2'];
 		$module_id_3             = $this->props['module_id_3'];
 		$module_id_4             = $this->props['module_id_4'];
+		$module_id_5             = $this->props['module_id_5'];
+		$module_id_6             = $this->props['module_id_6'];
 		$module_class_1          = $this->props['module_class_1'];
 		$module_class_2          = $this->props['module_class_2'];
 		$module_class_3          = $this->props['module_class_3'];
 		$module_class_4          = $this->props['module_class_4'];
+		$module_class_5          = $this->props['module_class_5'];
+		$module_class_6          = $this->props['module_class_6'];
 		$custom_css_before_1     = $this->props['custom_css_before_1'];
 		$custom_css_before_2     = $this->props['custom_css_before_2'];
 		$custom_css_before_3     = $this->props['custom_css_before_3'];
 		$custom_css_before_4     = $this->props['custom_css_before_4'];
+		$custom_css_before_5     = $this->props['custom_css_before_5'];
+		$custom_css_before_6     = $this->props['custom_css_before_6'];
 		$custom_css_main_1       = $this->props['custom_css_main_1'];
 		$custom_css_main_2       = $this->props['custom_css_main_2'];
 		$custom_css_main_3       = $this->props['custom_css_main_3'];
 		$custom_css_main_4       = $this->props['custom_css_main_4'];
+		$custom_css_main_5       = $this->props['custom_css_main_5'];
+		$custom_css_main_6       = $this->props['custom_css_main_6'];
 		$custom_css_after_1      = $this->props['custom_css_after_1'];
 		$custom_css_after_2      = $this->props['custom_css_after_2'];
 		$custom_css_after_3      = $this->props['custom_css_after_3'];
 		$custom_css_after_4      = $this->props['custom_css_after_4'];
+		$custom_css_after_5      = $this->props['custom_css_after_5'];
+		$custom_css_after_6      = $this->props['custom_css_after_6'];
 		$use_background_color_gradient_1              = $this->props['use_background_color_gradient_1'];
 		$use_background_color_gradient_2              = $this->props['use_background_color_gradient_2'];
 		$use_background_color_gradient_3              = $this->props['use_background_color_gradient_3'];
 		$use_background_color_gradient_4              = $this->props['use_background_color_gradient_4'];
+		$use_background_color_gradient_5              = $this->props['use_background_color_gradient_5'];
+		$use_background_color_gradient_6              = $this->props['use_background_color_gradient_6'];
 		$background_color_gradient_type_1             = $this->props['background_color_gradient_type_1'];
 		$background_color_gradient_type_2             = $this->props['background_color_gradient_type_2'];
 		$background_color_gradient_type_3             = $this->props['background_color_gradient_type_3'];
 		$background_color_gradient_type_4             = $this->props['background_color_gradient_type_4'];
+		$background_color_gradient_type_5             = $this->props['background_color_gradient_type_5'];
+		$background_color_gradient_type_6             = $this->props['background_color_gradient_type_6'];
 		$background_color_gradient_direction_1        = $this->props['background_color_gradient_direction_1'];
 		$background_color_gradient_direction_2        = $this->props['background_color_gradient_direction_2'];
 		$background_color_gradient_direction_3        = $this->props['background_color_gradient_direction_3'];
 		$background_color_gradient_direction_4        = $this->props['background_color_gradient_direction_4'];
+		$background_color_gradient_direction_5        = $this->props['background_color_gradient_direction_5'];
+		$background_color_gradient_direction_6        = $this->props['background_color_gradient_direction_6'];
 		$background_color_gradient_direction_radial_1 = $this->props['background_color_gradient_direction_radial_1'];
 		$background_color_gradient_direction_radial_2 = $this->props['background_color_gradient_direction_radial_2'];
 		$background_color_gradient_direction_radial_3 = $this->props['background_color_gradient_direction_radial_3'];
 		$background_color_gradient_direction_radial_4 = $this->props['background_color_gradient_direction_radial_4'];
+		$background_color_gradient_direction_radial_5 = $this->props['background_color_gradient_direction_radial_5'];
+		$background_color_gradient_direction_radial_6 = $this->props['background_color_gradient_direction_radial_6'];
 		$background_color_gradient_start_1            = $this->props['background_color_gradient_start_1'];
 		$background_color_gradient_start_2            = $this->props['background_color_gradient_start_2'];
 		$background_color_gradient_start_3            = $this->props['background_color_gradient_start_3'];
 		$background_color_gradient_start_4            = $this->props['background_color_gradient_start_4'];
+		$background_color_gradient_start_5            = $this->props['background_color_gradient_start_5'];
+		$background_color_gradient_start_6            = $this->props['background_color_gradient_start_6'];
 		$background_color_gradient_end_1              = $this->props['background_color_gradient_end_1'];
 		$background_color_gradient_end_2              = $this->props['background_color_gradient_end_2'];
 		$background_color_gradient_end_3              = $this->props['background_color_gradient_end_3'];
 		$background_color_gradient_end_4              = $this->props['background_color_gradient_end_4'];
+		$background_color_gradient_end_5              = $this->props['background_color_gradient_end_5'];
+		$background_color_gradient_end_6              = $this->props['background_color_gradient_end_6'];
 		$background_color_gradient_start_position_1   = $this->props['background_color_gradient_start_position_1'];
 		$background_color_gradient_start_position_2   = $this->props['background_color_gradient_start_position_2'];
 		$background_color_gradient_start_position_3   = $this->props['background_color_gradient_start_position_3'];
 		$background_color_gradient_start_position_4   = $this->props['background_color_gradient_start_position_4'];
+		$background_color_gradient_start_position_5   = $this->props['background_color_gradient_start_position_5'];
+		$background_color_gradient_start_position_6   = $this->props['background_color_gradient_start_position_6'];
 		$background_color_gradient_end_position_1     = $this->props['background_color_gradient_end_position_1'];
 		$background_color_gradient_end_position_2     = $this->props['background_color_gradient_end_position_2'];
 		$background_color_gradient_end_position_3     = $this->props['background_color_gradient_end_position_3'];
 		$background_color_gradient_end_position_4     = $this->props['background_color_gradient_end_position_4'];
+		$background_color_gradient_end_position_5     = $this->props['background_color_gradient_end_position_5'];
+		$background_color_gradient_end_position_6     = $this->props['background_color_gradient_end_position_6'];
 		$background_color_gradient_overlays_image_1   = $this->props['background_color_gradient_overlays_image_1'];
 		$background_color_gradient_overlays_image_2   = $this->props['background_color_gradient_overlays_image_2'];
 		$background_color_gradient_overlays_image_3   = $this->props['background_color_gradient_overlays_image_3'];
 		$background_color_gradient_overlays_image_4   = $this->props['background_color_gradient_overlays_image_4'];
+		$background_color_gradient_overlays_image_5   = $this->props['background_color_gradient_overlays_image_5'];
+		$background_color_gradient_overlays_image_6   = $this->props['background_color_gradient_overlays_image_6'];
 		$background_video_mp4_1     = $this->props['background_video_mp4_1'];
 		$background_video_mp4_2     = $this->props['background_video_mp4_2'];
 		$background_video_mp4_3     = $this->props['background_video_mp4_3'];
 		$background_video_mp4_4     = $this->props['background_video_mp4_4'];
+		$background_video_mp4_5     = $this->props['background_video_mp4_5'];
+		$background_video_mp4_6     = $this->props['background_video_mp4_6'];
 		$background_video_webm_1    = $this->props['background_video_webm_1'];
 		$background_video_webm_2    = $this->props['background_video_webm_2'];
 		$background_video_webm_3    = $this->props['background_video_webm_3'];
 		$background_video_webm_4    = $this->props['background_video_webm_4'];
+		$background_video_webm_5    = $this->props['background_video_webm_5'];
+		$background_video_webm_6    = $this->props['background_video_webm_6'];
 		$background_video_width_1   = $this->props['background_video_width_1'];
 		$background_video_width_2   = $this->props['background_video_width_2'];
 		$background_video_width_3   = $this->props['background_video_width_3'];
 		$background_video_width_4   = $this->props['background_video_width_4'];
+		$background_video_width_5   = $this->props['background_video_width_5'];
+		$background_video_width_6   = $this->props['background_video_width_6'];
 		$background_video_height_1  = $this->props['background_video_height_1'];
 		$background_video_height_2  = $this->props['background_video_height_2'];
 		$background_video_height_3  = $this->props['background_video_height_3'];
 		$background_video_height_4  = $this->props['background_video_height_4'];
+		$background_video_height_5  = $this->props['background_video_height_5'];
+		$background_video_height_6  = $this->props['background_video_height_6'];
 		$allow_player_pause_1       = $this->props['allow_player_pause_1'];
 		$allow_player_pause_2       = $this->props['allow_player_pause_2'];
 		$allow_player_pause_3       = $this->props['allow_player_pause_3'];
 		$allow_player_pause_4       = $this->props['allow_player_pause_4'];
+		$allow_player_pause_5       = $this->props['allow_player_pause_5'];
+		$allow_player_pause_6       = $this->props['allow_player_pause_6'];
 		$background_video_pause_outside_viewport_1 = $this->props['background_video_pause_outside_viewport_1'];
 		$background_video_pause_outside_viewport_2 = $this->props['background_video_pause_outside_viewport_2'];
 		$background_video_pause_outside_viewport_3 = $this->props['background_video_pause_outside_viewport_3'];
 		$background_video_pause_outside_viewport_4 = $this->props['background_video_pause_outside_viewport_4'];
+		$background_video_pause_outside_viewport_5 = $this->props['background_video_pause_outside_viewport_5'];
+		$background_video_pause_outside_viewport_6 = $this->props['background_video_pause_outside_viewport_6'];
 
 		global $et_pb_all_column_settings, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
@@ -1625,6 +1703,22 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'image_repeat'   => $background_repeat_4,
 				'image_blend'    => $background_blend_4,
 			),
+			array(
+				'color'          => $background_color_5,
+				'image'          => $bg_img_5,
+				'image_size'     => $background_size_5,
+				'image_position' => $background_position_5,
+				'image_repeat'   => $background_repeat_5,
+				'image_blend'    => $background_blend_5,
+			),
+			array(
+				'color'          => $background_color_6,
+				'image'          => $bg_img_6,
+				'image_size'     => $background_size_6,
+				'image_position' => $background_position_6,
+				'image_repeat'   => $background_repeat_6,
+				'image_blend'    => $background_blend_6,
+			),
 		);
 
 		$et_pb_column_backgrounds_gradient = array(
@@ -1672,6 +1766,28 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'end_position'     => $background_color_gradient_end_position_4,
 				'overlays_image'   => $background_color_gradient_overlays_image_4,
 			),
+			array(
+				'active'           => $use_background_color_gradient_5,
+				'type'             => $background_color_gradient_type_5,
+				'direction'        => $background_color_gradient_direction_5,
+				'radial_direction' => $background_color_gradient_direction_radial_5,
+				'color_start'      => $background_color_gradient_start_5,
+				'color_end'        => $background_color_gradient_end_5,
+				'start_position'   => $background_color_gradient_start_position_5,
+				'end_position'     => $background_color_gradient_end_position_5,
+				'overlays_image'   => $background_color_gradient_overlays_image_5,
+			),
+			array(
+				'active'           => $use_background_color_gradient_6,
+				'type'             => $background_color_gradient_type_6,
+				'direction'        => $background_color_gradient_direction_6,
+				'radial_direction' => $background_color_gradient_direction_radial_6,
+				'color_start'      => $background_color_gradient_start_6,
+				'color_end'        => $background_color_gradient_end_6,
+				'start_position'   => $background_color_gradient_start_position_6,
+				'end_position'     => $background_color_gradient_end_position_6,
+				'overlays_image'   => $background_color_gradient_overlays_image_6,
+			),
 		);
 
 		$et_pb_column_backgrounds_video = array(
@@ -1707,6 +1823,22 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'background_video_allow_pause' => $allow_player_pause_4,
 				'background_video_pause_outside_viewport' => $background_video_pause_outside_viewport_4,
 			),
+			array(
+				'background_video_mp4'         => $background_video_mp4_5,
+				'background_video_webm'        => $background_video_webm_5,
+				'background_video_width'       => $background_video_width_5,
+				'background_video_height'      => $background_video_height_5,
+				'background_video_allow_pause' => $allow_player_pause_5,
+				'background_video_pause_outside_viewport' => $background_video_pause_outside_viewport_5,
+			),
+			array(
+				'background_video_mp4'         => $background_video_mp4_6,
+				'background_video_webm'        => $background_video_webm_6,
+				'background_video_width'       => $background_video_width_6,
+				'background_video_height'      => $background_video_height_6,
+				'background_video_allow_pause' => $allow_player_pause_6,
+				'background_video_pause_outside_viewport' => $background_video_pause_outside_viewport_6,
+			),
 		);
 
 		$et_pb_column_paddings = array(
@@ -1734,6 +1866,18 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'padding-bottom' => $padding_bottom_4,
 				'padding-left'   => $padding_left_4,
 			),
+			array(
+				'padding-top'    => $padding_top_5,
+				'padding-right'  => $padding_right_5,
+				'padding-bottom' => $padding_bottom_5,
+				'padding-left'   => $padding_left_5,
+			),
+			array(
+				'padding-top'    => $padding_top_6,
+				'padding-right'  => $padding_right_6,
+				'padding-bottom' => $padding_bottom_6,
+				'padding-left'   => $padding_left_6,
+			),
 		);
 
 		$et_pb_column_paddings_mobile = array(
@@ -1757,6 +1901,16 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'phone'  => explode( '|', $padding_4_phone ),
 				'last_edited' => $padding_4_last_edited,
 			),
+			array(
+				'tablet' => explode( '|', $padding_5_tablet ),
+				'phone'  => explode( '|', $padding_5_phone ),
+				'last_edited' => $padding_5_last_edited,
+			),
+			array(
+				'tablet' => explode( '|', $padding_6_tablet ),
+				'phone'  => explode( '|', $padding_6_phone ),
+				'last_edited' => $padding_6_last_edited,
+			),
 		);
 
 		$et_pb_column_parallax = array(
@@ -1764,14 +1918,16 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			array( $parallax_2, $parallax_method_2 ),
 			array( $parallax_3, $parallax_method_3 ),
 			array( $parallax_4, $parallax_method_4 ),
+			array( $parallax_5, $parallax_method_5 ),
+			array( $parallax_6, $parallax_method_6 ),
 		);
 
 		$et_pb_column_css = array(
-			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4 ),
-			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4 ),
-			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4 ),
-			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4 ),
-			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4 ),
+			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4, $module_class_5, $module_class_6 ),
+			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4, $module_id_5, $module_id_6 ),
+			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4, $custom_css_before_5, $custom_css_before_6 ),
+			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4, $custom_css_main_5, $custom_css_main_6 ),
+			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4, $custom_css_after_5, $custom_css_after_6 ),
 		);
 
 		$internal_columns_settings_array = array(
@@ -1973,6 +2129,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 							'column_1' => esc_html__( 'Column 1', 'et_builder' ),
 							'column_2' => esc_html__( 'Column 2', 'et_builder' ),
 							'column_3' => esc_html__( 'Column 3', 'et_builder' ),
+							'column_4' => esc_html__( 'Column 4', 'et_builder' ),
 						),
 					),
 				),
@@ -1990,6 +2147,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 							'column_1' => esc_html__( 'Column 1', 'et_builder' ),
 							'column_2' => esc_html__( 'Column 2', 'et_builder' ),
 							'column_3' => esc_html__( 'Column 3', 'et_builder' ),
+							'column_4' => esc_html__( 'Column 4', 'et_builder' ),
 						),
 						'priority'    => 70,
 					),
@@ -2004,6 +2162,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 							'column_1' => esc_html__( 'Column 1', 'et_builder' ),
 							'column_2' => esc_html__( 'Column 2', 'et_builder' ),
 							'column_3' => esc_html__( 'Column 3', 'et_builder' ),
+							'column_4' => esc_html__( 'Column 4', 'et_builder' ),
 						),
 					),
 					'custom_css' => array(
@@ -2013,6 +2172,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 							'column_1' => esc_html__( 'Column 1', 'et_builder' ),
 							'column_2' => esc_html__( 'Column 2', 'et_builder' ),
 							'column_3' => esc_html__( 'Column 3', 'et_builder' ),
+							'column_4' => esc_html__( 'Column 4', 'et_builder' ),
 						),
 					),
 				),
@@ -2137,7 +2297,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			),
 		);
 
-		$column_fields = $this->get_column_fields( 3, array(
+		$column_fields = $this->get_column_fields( 4, array(
 			'background_color'                           => array(),
 			'bg_img'                                     => array(),
 			'padding_top_bottom_link'                    => array(),
@@ -2240,21 +2400,27 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$background_color_1      = $this->props['background_color_1'];
 		$background_color_2      = $this->props['background_color_2'];
 		$background_color_3      = $this->props['background_color_3'];
+		$background_color_4      = $this->props['background_color_4'];
 		$bg_img_1                = $this->props['bg_img_1'];
 		$bg_img_2                = $this->props['bg_img_2'];
 		$bg_img_3                = $this->props['bg_img_3'];
+		$bg_img_4                = $this->props['bg_img_4'];
 		$background_size_1       = $this->props['background_size_1'];
 		$background_size_2       = $this->props['background_size_2'];
 		$background_size_3       = $this->props['background_size_3'];
+		$background_size_4       = $this->props['background_size_4'];
 		$background_position_1   = $this->props['background_position_1'];
 		$background_position_2   = $this->props['background_position_2'];
 		$background_position_3   = $this->props['background_position_3'];
+		$background_position_4   = $this->props['background_position_4'];
 		$background_repeat_1     = $this->props['background_repeat_1'];
 		$background_repeat_2     = $this->props['background_repeat_2'];
 		$background_repeat_3     = $this->props['background_repeat_3'];
+		$background_repeat_4     = $this->props['background_repeat_4'];
 		$background_blend_1      = $this->props['background_blend_1'];
 		$background_blend_2      = $this->props['background_blend_2'];
 		$background_blend_3      = $this->props['background_blend_3'];
+		$background_blend_4      = $this->props['background_blend_4'];
 		$padding_top_1           = $this->props['padding_top_1'];
 		$padding_right_1         = $this->props['padding_right_1'];
 		$padding_bottom_1        = $this->props['padding_bottom_1'];
@@ -2264,18 +2430,25 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$padding_bottom_2        = $this->props['padding_bottom_2'];
 		$padding_left_2          = $this->props['padding_left_2'];
 		$padding_top_3           = $this->props['padding_top_3'];
+		$padding_top_4           = $this->props['padding_top_4'];
 		$padding_right_3         = $this->props['padding_right_3'];
+		$padding_right_4         = $this->props['padding_right_4'];
 		$padding_bottom_3        = $this->props['padding_bottom_3'];
+		$padding_bottom_4        = $this->props['padding_bottom_4'];
 		$padding_left_3          = $this->props['padding_left_3'];
+		$padding_left_4          = $this->props['padding_left_4'];
 		$padding_1_tablet        = $this->props['padding_1_tablet'];
 		$padding_2_tablet        = $this->props['padding_2_tablet'];
 		$padding_3_tablet        = $this->props['padding_3_tablet'];
+		$padding_4_tablet        = $this->props['padding_4_tablet'];
 		$padding_1_phone         = $this->props['padding_1_phone'];
 		$padding_2_phone         = $this->props['padding_2_phone'];
 		$padding_3_phone         = $this->props['padding_3_phone'];
+		$padding_4_phone         = $this->props['padding_4_phone'];
 		$padding_1_last_edited   = $this->props['padding_1_last_edited'];
 		$padding_2_last_edited   = $this->props['padding_2_last_edited'];
 		$padding_3_last_edited   = $this->props['padding_3_last_edited'];
+		$padding_4_last_edited   = $this->props['padding_4_last_edited'];
 		$gutter_width            = $this->props['gutter_width'];
 		$make_equal              = $this->props['make_equal'];
 		$custom_padding          = $this->props['custom_padding'];
@@ -2291,67 +2464,89 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$parallax_2              = $this->props['parallax_2'];
 		$parallax_method_2       = $this->props['parallax_method_2'];
 		$parallax_3              = $this->props['parallax_3'];
+		$parallax_4              = $this->props['parallax_4'];
 		$parallax_method_3       = $this->props['parallax_method_3'];
+		$parallax_method_4       = $this->props['parallax_method_4'];
 		$module_id_1             = $this->props['module_id_1'];
 		$module_id_2             = $this->props['module_id_2'];
 		$module_id_3             = $this->props['module_id_3'];
+		$module_id_4             = $this->props['module_id_4'];
 		$module_class_1          = $this->props['module_class_1'];
 		$module_class_2          = $this->props['module_class_2'];
 		$module_class_3          = $this->props['module_class_3'];
+		$module_class_4          = $this->props['module_class_4'];
 		$custom_css_before_1     = $this->props['custom_css_before_1'];
 		$custom_css_before_2     = $this->props['custom_css_before_2'];
 		$custom_css_before_3     = $this->props['custom_css_before_3'];
+		$custom_css_before_4     = $this->props['custom_css_before_4'];
 		$custom_css_main_1       = $this->props['custom_css_main_1'];
 		$custom_css_main_2       = $this->props['custom_css_main_2'];
 		$custom_css_main_3       = $this->props['custom_css_main_3'];
+		$custom_css_main_4       = $this->props['custom_css_main_4'];
 		$custom_css_after_1      = $this->props['custom_css_after_1'];
 		$custom_css_after_2      = $this->props['custom_css_after_2'];
 		$custom_css_after_3      = $this->props['custom_css_after_3'];
+		$custom_css_after_4      = $this->props['custom_css_after_4'];
 		$use_background_color_gradient_1              = $this->props['use_background_color_gradient_1'];
 		$use_background_color_gradient_2              = $this->props['use_background_color_gradient_2'];
 		$use_background_color_gradient_3              = $this->props['use_background_color_gradient_3'];
+		$use_background_color_gradient_4              = $this->props['use_background_color_gradient_4'];
 		$background_color_gradient_type_1             = $this->props['background_color_gradient_type_1'];
 		$background_color_gradient_type_2             = $this->props['background_color_gradient_type_2'];
 		$background_color_gradient_type_3             = $this->props['background_color_gradient_type_3'];
+		$background_color_gradient_type_4             = $this->props['background_color_gradient_type_4'];
 		$background_color_gradient_direction_1        = $this->props['background_color_gradient_direction_1'];
 		$background_color_gradient_direction_2        = $this->props['background_color_gradient_direction_2'];
 		$background_color_gradient_direction_3        = $this->props['background_color_gradient_direction_3'];
+		$background_color_gradient_direction_4        = $this->props['background_color_gradient_direction_4'];
 		$background_color_gradient_direction_radial_1 = $this->props['background_color_gradient_direction_radial_1'];
 		$background_color_gradient_direction_radial_2 = $this->props['background_color_gradient_direction_radial_2'];
 		$background_color_gradient_direction_radial_3 = $this->props['background_color_gradient_direction_radial_3'];
+		$background_color_gradient_direction_radial_4 = $this->props['background_color_gradient_direction_radial_4'];
 		$background_color_gradient_start_1            = $this->props['background_color_gradient_start_1'];
 		$background_color_gradient_start_2            = $this->props['background_color_gradient_start_2'];
 		$background_color_gradient_start_3            = $this->props['background_color_gradient_start_3'];
+		$background_color_gradient_start_4            = $this->props['background_color_gradient_start_4'];
 		$background_color_gradient_end_1              = $this->props['background_color_gradient_end_1'];
 		$background_color_gradient_end_2              = $this->props['background_color_gradient_end_2'];
 		$background_color_gradient_end_3              = $this->props['background_color_gradient_end_3'];
+		$background_color_gradient_end_4              = $this->props['background_color_gradient_end_4'];
 		$background_color_gradient_start_position_1   = $this->props['background_color_gradient_start_position_1'];
 		$background_color_gradient_start_position_2   = $this->props['background_color_gradient_start_position_2'];
 		$background_color_gradient_start_position_3   = $this->props['background_color_gradient_start_position_3'];
+		$background_color_gradient_start_position_4   = $this->props['background_color_gradient_start_position_4'];
 		$background_color_gradient_end_position_1     = $this->props['background_color_gradient_end_position_1'];
 		$background_color_gradient_end_position_2     = $this->props['background_color_gradient_end_position_2'];
 		$background_color_gradient_end_position_3     = $this->props['background_color_gradient_end_position_3'];
+		$background_color_gradient_end_position_4     = $this->props['background_color_gradient_end_position_4'];
 		$background_color_gradient_overlays_image_1   = $this->props['background_color_gradient_overlays_image_1'];
 		$background_color_gradient_overlays_image_2   = $this->props['background_color_gradient_overlays_image_2'];
 		$background_color_gradient_overlays_image_3   = $this->props['background_color_gradient_overlays_image_3'];
+		$background_color_gradient_overlays_image_4   = $this->props['background_color_gradient_overlays_image_4'];
 		$background_video_mp4_1     = $this->props['background_video_mp4_1'];
 		$background_video_mp4_2     = $this->props['background_video_mp4_2'];
 		$background_video_mp4_3     = $this->props['background_video_mp4_3'];
+		$background_video_mp4_4     = $this->props['background_video_mp4_4'];
 		$background_video_webm_1    = $this->props['background_video_webm_1'];
 		$background_video_webm_2    = $this->props['background_video_webm_2'];
 		$background_video_webm_3    = $this->props['background_video_webm_3'];
+		$background_video_webm_4    = $this->props['background_video_webm_4'];
 		$background_video_width_1   = $this->props['background_video_width_1'];
 		$background_video_width_2   = $this->props['background_video_width_2'];
 		$background_video_width_3   = $this->props['background_video_width_3'];
+		$background_video_width_4   = $this->props['background_video_width_4'];
 		$background_video_height_1  = $this->props['background_video_height_1'];
 		$background_video_height_2  = $this->props['background_video_height_2'];
 		$background_video_height_3  = $this->props['background_video_height_3'];
+		$background_video_height_4  = $this->props['background_video_height_4'];
 		$allow_player_pause_1       = $this->props['allow_player_pause_1'];
 		$allow_player_pause_2       = $this->props['allow_player_pause_2'];
 		$allow_player_pause_3       = $this->props['allow_player_pause_3'];
+		$allow_player_pause_4       = $this->props['allow_player_pause_4'];
 		$background_video_pause_outside_viewport_1 = $this->props['background_video_pause_outside_viewport_1'];
 		$background_video_pause_outside_viewport_2 = $this->props['background_video_pause_outside_viewport_2'];
 		$background_video_pause_outside_viewport_3 = $this->props['background_video_pause_outside_viewport_3'];
+		$background_video_pause_outside_viewport_4 = $this->props['background_video_pause_outside_viewport_4'];
 
 		global $et_pb_all_column_settings_inner, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
@@ -2405,6 +2600,14 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'image_repeat'   => $background_repeat_3,
 				'image_blend'    => $background_blend_3,
 			),
+			array(
+				'color'          => $background_color_4,
+				'image'          => $bg_img_4,
+				'image_size'     => $background_size_4,
+				'image_position' => $background_position_4,
+				'image_repeat'   => $background_repeat_4,
+				'image_blend'    => $background_blend_4,
+			),
 		);
 
 		$et_pb_column_inner_backgrounds_gradient = array(
@@ -2441,6 +2644,17 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'end_position'     => $background_color_gradient_end_position_3,
 				'overlays_image'   => $background_color_gradient_overlays_image_3,
 			),
+			array(
+				'active'           => $use_background_color_gradient_4,
+				'type'             => $background_color_gradient_type_4,
+				'direction'        => $background_color_gradient_direction_4,
+				'radial_direction' => $background_color_gradient_direction_radial_4,
+				'color_start'      => $background_color_gradient_start_4,
+				'color_end'        => $background_color_gradient_end_4,
+				'start_position'   => $background_color_gradient_start_position_4,
+				'end_position'     => $background_color_gradient_end_position_4,
+				'overlays_image'   => $background_color_gradient_overlays_image_4,
+			),
 		);
 
 		$et_pb_column_inner_backgrounds_video = array(
@@ -2468,6 +2682,14 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'background_video_allow_pause' => $allow_player_pause_3,
 				'background_video_pause_outside_viewport' => $background_video_pause_outside_viewport_3,
 			),
+			array(
+				'background_video_mp4'         => $background_video_mp4_4,
+				'background_video_webm'        => $background_video_webm_4,
+				'background_video_width'       => $background_video_width_4,
+				'background_video_height'      => $background_video_height_4,
+				'background_video_allow_pause' => $allow_player_pause_4,
+				'background_video_pause_outside_viewport' => $background_video_pause_outside_viewport_4,
+			),
 		);
 
 		$et_pb_column_inner_paddings = array(
@@ -2489,12 +2711,19 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'padding-bottom' => $padding_bottom_3,
 				'padding-left'   => $padding_left_3,
 			),
+			array(
+				'padding-top'    => $padding_top_4,
+				'padding-right'  => $padding_right_4,
+				'padding-bottom' => $padding_bottom_4,
+				'padding-left'   => $padding_left_4,
+			),
 		);
 
 		$et_pb_column_parallax = array(
 			array( $parallax_1, $parallax_method_1 ),
 			array( $parallax_2, $parallax_method_2 ),
 			array( $parallax_3, $parallax_method_3 ),
+			array( $parallax_4, $parallax_method_4 ),
 		);
 
 		$et_pb_column_inner_paddings_mobile = array(
@@ -2512,6 +2741,11 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'tablet' => explode( '|', $padding_3_tablet ),
 				'phone'  => explode( '|', $padding_3_phone ),
 				'last_edited' => $padding_3_last_edited,
+			),
+			array(
+				'tablet' => explode( '|', $padding_4_tablet ),
+				'phone'  => explode( '|', $padding_4_phone ),
+				'last_edited' => $padding_4_last_edited,
 			),
 		);
 
@@ -2578,11 +2812,11 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		}
 
 		$et_pb_column_inner_css = array(
-			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3 ),
-			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3 ),
-			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3 ),
-			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3 ),
-			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3 ),
+			'css_class'         => array( $module_class_1, $module_class_2, $module_class_3, $module_class_4 ),
+			'css_id'            => array( $module_id_1, $module_id_2, $module_id_3, $module_id_4 ),
+			'custom_css_before' => array( $custom_css_before_1, $custom_css_before_2, $custom_css_before_3, $custom_css_before_4 ),
+			'custom_css_main'   => array( $custom_css_main_1, $custom_css_main_2, $custom_css_main_3, $custom_css_main_4 ),
+			'custom_css_after'  => array( $custom_css_after_1, $custom_css_after_2, $custom_css_after_3, $custom_css_after_4 ),
 		);
 
 		$internal_columns_settings_array = array(
@@ -2952,11 +3186,18 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 					if ( '1_2' === $type ) {
 						$type = '1_4';
 					}
+					if ( '1_3' === $type ) {
+						$type = '1_6';
+					}
 
 					break;
 				case '2_3':
 					if ( '1_2' === $type ) {
 						$type = '1_3';
+					}
+
+					if ( '1_4' === $type ) {
+						$type = '1_6';
 					}
 
 					break;

@@ -1024,6 +1024,12 @@ class ET_Builder_Element {
 				continue;
 			}
 
+			// Set empty TinyMCE content '&lt;br /&gt;<br />' as empty string.
+			$field_type = self::$_->array_get( $this->fields_unprocessed, "{$attribute_key}.type" );
+			if ( 'tiny_mce' === $field_type && 'ltbrgtbr' === preg_replace( '/[^a-z]/', '', $processed_attr_value ) ) {
+				$processed_attr_value = '';
+			}
+
 			// URLs are weird since they can allow non-ascii characters so we escape those separately.
 			if ( in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
 				$shortcode_attributes[ $attribute_key ] = esc_url_raw( $processed_attr_value );
@@ -1542,6 +1548,11 @@ class ET_Builder_Element {
 		$this->before_render();
 
 		$content = false !== $global_content ? $global_content : $content;
+
+		// Set empty TinyMCE content '&lt;br /&gt;<br />' as empty string.
+		if ( 'ltbrgtbr' === preg_replace( '/[^a-z]/', '', $content ) ) {
+			$content = '';
+		}
 
 		if ( $et_fb_processing_shortcode_object ) {
 			$this->content = et_pb_fix_shortcodes( $content, $this->decode_entities );
@@ -11422,7 +11433,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 
 	function generate_column_vars_css() {
 		$output = '';
-		for ( $i = 1; $i < 5; $i++ ) {
+		for ( $i = 1; $i < 7; $i++ ) {
 			$output .= sprintf(
 				'case %1$s :
 					current_module_id_value = typeof et_pb_module_id_%1$s !== \'undefined\' ? et_pb_module_id_%1$s : \'\',
@@ -11440,7 +11451,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 
 	function generate_column_vars_bg() {
 		$output = '';
-		for ( $i = 1; $i < 5; $i++ ) {
+		for ( $i = 1; $i < 7; $i++ ) {
 			$output .= sprintf(
 				'case %1$s :
 					current_value_bg = typeof et_pb_background_color_%1$s !== \'undefined\' ? et_pb_background_color_%1$s : \'\',
@@ -11519,7 +11530,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 
 	function generate_column_vars_padding() {
 		$output = '';
-		for ( $i = 1; $i < 5; $i++ ) {
+		for ( $i = 1; $i < 7; $i++ ) {
 			$output .= sprintf(
 				'case %1$s :
 					current_value_pt = typeof et_pb_padding_top_%1$s !== \'undefined\' ? et_pb_padding_top_%1$s : \'\',

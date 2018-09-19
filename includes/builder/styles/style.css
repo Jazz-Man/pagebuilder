@@ -246,8 +246,12 @@ a.et-pb-clone.et-pb-advanced-setting-clone { left: 44px; font-size: 33px; top: 9
 .et-pb-column { float: left; margin-left: 2%; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; position: relative; min-height: 40px; }
 .et-pb-column-4_4 { width: 100%; margin-left: 0; }
 .et-pb-column-1_2 { width: 49%; }
+.et-pb-column-3_5 { width: 58.5%; }
 .et-pb-column-1_3 { width: 32%; }
+.et-pb-column-2_5 { width: 38.67%; }
 .et-pb-column-1_4 { width: 23.5%; }
+.et-pb-column-1_5 { width: 18.4%; }
+.et-pb-column-1_6 { width: 15%; }
 .et-pb-column-2_3 { width: 66%; }
 .et-pb-column-3_4 { width: 74.4%; }
 
@@ -2267,10 +2271,18 @@ text-align: center; }
 		.et_pb_column_layout_fullwidth { width: 100%; }
 		.et_pb_column_layout_1_2 { width: 48%;  }
 		.et_pb_column_layout_1_2:before { content: '1/2'; }
+		.et_pb_column_layout_3_5 { width: 58%;  }
+		.et_pb_column_layout_3_5:before { content: '3/5'; }
 		.et_pb_column_layout_1_3 { width: 30.6%; }
 		.et_pb_column_layout_1_3:before { content: '1/3'; }
+		.et_pb_column_layout_2_5 { width: 37.27%; }
+		.et_pb_column_layout_2_5:before { content: '2/5'; }
 		.et_pb_column_layout_1_4 { width: 22%; }
 		.et_pb_column_layout_1_4:before { content: '1/4'; }
+		.et_pb_column_layout_1_5 { width: 16.8%; }
+		.et_pb_column_layout_1_5:before { content: '1/5'; }
+		.et_pb_column_layout_1_6 { width: 13.3%; }
+		.et_pb_column_layout_1_6:before { content: '1/6'; }
 		.et_pb_column_layout_2_3 { width: 65%; }
 		.et_pb_column_layout_2_3:before { content: '2/3'; }
 		.et_pb_column_layout_3_4 { width: 74%; }
@@ -2437,7 +2449,8 @@ text-align: center; }
 .et_pb_variations { background: none; }
 .et_pb_variation_1_2 { width: 46%; }
 .et_pb_variation_1_3 { width: 28%; }
-.et_pb_variation_1_2:last-child, .et_pb_variation_1_3:last-child { margin-right: 0; }
+.et_pb_variation_1_4 { width: 19%; }
+.et_pb_variation_1_2:last-child, .et_pb_variation_1_3:last-child, .et_pb_variation_1_4:last-child { margin-right: 0; }
 .et_pb_specialty_column { background-color: #ff9232; }
 .et_pb_specialty_column:before, .et_pb_variations:before { content: ""; }
 

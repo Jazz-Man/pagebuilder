@@ -973,6 +973,9 @@ class ET_Builder_Library {
 
 		@unlink( $tmp_file );
 
+		// Charset has to be explicitly mentioned when it is other than UTF-8.
+		@header( 'Content-Type: application/json; charset=' . esc_attr( get_option( 'blog_charset' ) ) );
+
 		die( $response );
 	}
 

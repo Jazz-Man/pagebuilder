@@ -450,27 +450,28 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$alignment            = $this->props['alignment'];
-		$heading              = $this->props['heading'];
-		$button_text          = $this->props['button_text'];
-		$button_link          = $this->props['button_link'];
-		$image                = $this->props['image'];
-		$image_alt            = $this->props['image_alt'];
-		$background_layout    = $this->props['background_layout'];
-		$video_url            = $this->props['video_url'];
-		$dot_nav_custom_color = $this->props['dot_nav_custom_color'];
-		$arrows_custom_color  = $this->props['arrows_custom_color'];
-		$custom_icon          = $this->props['button_icon'];
-		$button_custom        = $this->props['custom_button'];
-		$button_rel           = $this->props['button_rel'];
-		$use_bg_overlay       = $this->props['use_bg_overlay'];
-		$bg_overlay_color     = $this->props['bg_overlay_color'];
-		$use_text_overlay     = $this->props['use_text_overlay'];
-		$text_overlay_color   = $this->props['text_overlay_color'];
-		$text_border_radius   = $this->props['text_border_radius'];
-		$header_level         = $this->props['header_level'];
+		$alignment                 = $this->props['alignment'];
+		$heading                   = $this->props['heading'];
+		$button_text               = $this->props['button_text'];
+		$button_link               = $this->props['button_link'];
+		$image                     = $this->props['image'];
+		$image_alt                 = $this->props['image_alt'];
+		$background_layout         = $this->props['background_layout'];
+		$video_url                 = $this->props['video_url'];
+		$dot_nav_custom_color      = $this->props['dot_nav_custom_color'];
+		$arrows_custom_color       = $this->props['arrows_custom_color'];
+		$custom_icon               = $this->props['button_icon'];
+		$button_custom             = $this->props['custom_button'];
+		$button_rel                = $this->props['button_rel'];
+		$use_bg_overlay            = $this->props['use_bg_overlay'];
+		$bg_overlay_color          = $this->props['bg_overlay_color'];
+		$use_text_overlay          = $this->props['use_text_overlay'];
+		$text_overlay_color        = $this->props['text_overlay_color'];
+		$text_border_radius        = $this->props['text_border_radius'];
+		$header_level              = $this->props['header_level'];
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
+		$background_color          = $this->props['background_color'];
 
 		global $et_pb_slider_has_video, $et_pb_slider_parallax, $et_pb_slider_parallax_method, $et_pb_slider_show_mobile, $et_pb_slider_custom_icon, $et_pb_slider_item_num, $et_pb_slider_button_rel;
 
@@ -523,6 +524,16 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s;',
 					esc_html( $bg_overlay_color )
+				),
+			) );
+		}
+
+		if ( ! empty( $background_color ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%%',
+				'declaration' => sprintf(
+					'background-color: %1$s;',
+					esc_html( $background_color )
 				),
 			) );
 		}

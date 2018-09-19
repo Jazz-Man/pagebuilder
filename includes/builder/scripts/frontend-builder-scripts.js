@@ -1051,7 +1051,8 @@
 				et_is_mobile_device = navigator.userAgent.match( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/ ) !== null,
 				et_is_ipad = navigator.userAgent.match( /iPad/ ),
 				et_is_ie9 = navigator.userAgent.match( /MSIE 9.0/ ) !== null,
-				$et_container = ! et_pb_custom.is_builder_plugin_used ? $( '.container' ) : $( '.et_pb_row' ),
+        et_all_rows = $('.et_pb_row'),
+				$et_container = ! et_pb_custom.is_builder_plugin_used ? $( '.container' ) : et_all_rows,
 				et_container_width = $et_container.width(),
 				et_is_vertical_fixed_nav = $( 'body' ).hasClass( 'et_vertical_fixed' ),
 				et_is_rtl = $( 'body' ).hasClass( 'rtl' ),
@@ -1171,48 +1172,65 @@
 				et_pb_init_ab_test();
 			}
 
-			if ( $( '.et_pb_row' ).length ) {
-				$( '.et_pb_row' ).each( function() {
-					var $this_row = $( this ),
-						row_class = '';
+      if (et_all_rows.length) {
+        et_all_rows.each(function () {
+          var $this_row = $(this),
+            row_class = '';
 
-					row_class = et_get_column_types( $this_row.find( '>.et_pb_column' ) );
+          row_class = et_get_column_types($this_row.find('>.et_pb_column'));
 
-					if ( '' !== row_class && ( -1 !== row_class.indexOf( '1-4' ) || '_4col' === row_class ) ) {
-						$this_row.addClass( 'et_pb_row' + row_class );
-					}
+          if ('' !== row_class) {
+            $this_row.addClass(row_class);
+          }
 
-					if ( $this_row.find( '.et_pb_row_inner' ).length ) {
-						$this_row.find( '.et_pb_row_inner' ).each( function() {
-							var $this_row_inner = $( this );
-							row_class = et_get_column_types( $this_row_inner.find( '.et_pb_column' ) );
+          if ($this_row.find('.et_pb_row_inner').length) {
+            $this_row.find('.et_pb_row_inner').each(function () {
+              var $this_row_inner = $(this);
+              row_class = et_get_column_types($this_row_inner.find('.et_pb_column'));
 
-							if ( '' !== row_class && -1 !== row_class.indexOf( '1-4' ) ) {
-								$this_row_inner.addClass( 'et_pb_row' + row_class );
-							}
-						});
-					}
-				});
-			}
+              if ('' !== row_class) {
+                $this_row_inner.addClass(row_class);
+              }
+            });
+          }
+        });
+      }
 
-			function et_get_column_types( $columns ) {
-				var row_class = '';
+      function et_get_column_types($columns) {
+        var row_class = '';
 
-				if ( $columns.length ) {
-					$columns.each( function() {
-						var $this_column = $( this ),
-							column_type = $this_column.attr( 'class' ).split( 'et_pb_column_' )[1],
-							column_type_clean = typeof column_type !== 'undefined' ? column_type.split( ' ', 1 )[0] : '4_4',
-							column_type_updated = column_type_clean.replace( '_', '-' ).trim();
+        if ($columns.length) {
+          $columns.each(function () {
+            var $column = $(this);
+            var column_type = $column.attr('class').split('et_pb_column_')[1];
+            var column_type_clean = typeof column_type !== 'undefined' ? column_type.split(' ', 1)[0] : '4_4';
+            var column_type_updated = column_type_clean.replace('_', '-').trim();
 
-						row_class += '_' + column_type_updated;
-					});
+            row_class += '_' + column_type_updated;
+          });
 
-					row_class = '_1-4_1-4_1-4_1-4' === row_class ? '_4col' : row_class;
-				}
-
-				return row_class;
-			}
+          if ((row_class.indexOf('1-4') !== -1)
+            || (row_class.indexOf('1-5_1-5') !== -1)
+            || (row_class.indexOf('1-6_1-6') !== -1)) {
+            switch (row_class) {
+              case '_1-4_1-4_1-4_1-4':
+                row_class = 'et_pb_row_4col';
+                break;
+              case '_1-5_1-5_1-5_1-5_1-5':
+                row_class = 'et_pb_row_5col';
+                break;
+              case '_1-6_1-6_1-6_1-6_1-6_1-6':
+                row_class = 'et_pb_row_6col';
+                break;
+              default:
+                row_class = 'et_pb_row' + row_class;
+            }
+          } else {
+            row_class = '';
+          }
+        }
+        return row_class;
+      }
 
 			window.et_pb_init_nav_menu( $et_top_menu );
 
@@ -2662,15 +2680,9 @@
 					return;
 				}
 
-				if ( $('body').hasClass('safari') ) {
-					$content.fadeToggle( 700, function() {
-						et_toggle_animation_callback( initial_toggle_state, $module, $section );
-					} );
-				} else {
-					$content.slideToggle( 700, function() {
-						et_toggle_animation_callback( initial_toggle_state, $module, $section );
-					} );
-				}
+				$content.slideToggle(700, function () {
+					et_toggle_animation_callback(initial_toggle_state, $module, $section);
+				});
 
 				if ( is_accordion ) {
 					$accordion_active_toggle.find('.et_pb_toggle_content').slideToggle( 700, function() {
