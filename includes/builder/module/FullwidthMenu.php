@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Fullwidth Menu', 'et_builder' );
+		$this->plural     = esc_html__( 'Fullwidth Menus', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_menu';
 		$this->vb_support = 'on';
 		$this->fullwidth  = true;

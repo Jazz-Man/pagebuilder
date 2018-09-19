@@ -3,6 +3,7 @@
 class ET_Builder_Module_Image extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Image', 'et_builder' );
+		$this->plural     = esc_html__( 'Images', 'et_builder' );
 		$this->slug       = 'et_pb_image';
 		$this->vb_support = 'on';
 

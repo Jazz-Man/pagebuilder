@@ -3,6 +3,7 @@
 class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Testimonial', 'et_builder' );
+		$this->plural     = esc_html__( 'Testimonials', 'et_builder' );
 		$this->slug       = 'et_pb_testimonial';
 		$this->vb_support = 'on';
 		$this->main_css_element = '%%order_class%%.et_pb_testimonial';

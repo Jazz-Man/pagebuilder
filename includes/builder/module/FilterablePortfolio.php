@@ -3,6 +3,7 @@
 class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Filterable Portfolio', 'et_builder' );
+		$this->plural     = esc_html__( 'Filterable Portfolios', 'et_builder' );
 		$this->slug       = 'et_pb_filterable_portfolio';
 		$this->vb_support = 'on';
 

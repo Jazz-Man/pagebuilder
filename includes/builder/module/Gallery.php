@@ -3,6 +3,7 @@
 class ET_Builder_Module_Gallery extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Gallery', 'et_builder' );
+		$this->plural     = esc_html__( 'Galleries', 'et_builder' );
 		$this->slug       = 'et_pb_gallery';
 		$this->vb_support = 'on';
 

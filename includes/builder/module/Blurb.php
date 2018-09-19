@@ -3,6 +3,7 @@
 class ET_Builder_Module_Blurb extends ET_Builder_Module {
 	function init() {
 		$this->name             = esc_html__( 'Blurb', 'et_builder' );
+		$this->plural           = esc_html__( 'Blurbs', 'et_builder' );
 		$this->slug             = 'et_pb_blurb';
 		$this->vb_support       = 'on';
 		$this->main_css_element = '%%order_class%%.et_pb_blurb';

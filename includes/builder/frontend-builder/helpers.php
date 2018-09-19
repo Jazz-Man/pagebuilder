@@ -1305,6 +1305,11 @@ function et_fb_backend_helpers() {
 			'item'            => esc_html__( 'Item', 'et_builder' ),
 			'go_to_option'    => esc_html__( 'Go To Option', 'et_builder' ),
 			'find_replace'    => esc_html__( 'Find & Replace', 'et_builder' ),
+			'extend_styles'   => array(
+				'module'        => esc_html__( 'Extend %s Styles', 'et_builder' ),
+				'options_group' => esc_html__( 'Extend %s Styles', 'et_builder' ),
+				'option'        => esc_html__( 'Extend %s', 'et_builder' ),
+			),
 		),
 		'tooltips'            => array(
 			'insertModule'     => esc_html__( 'Insert Module', 'et_builder' ),
@@ -1384,6 +1389,42 @@ function et_fb_backend_helpers() {
 			'show_only'             => esc_html__( 'Show Only', 'et_builder' ),
 			'filterNotice'          => esc_html__( 'No options exist for this search query. Click here to clear your search filters.', 'et_builder' ),
 			'filterNoticeClickable' => esc_html__( 'Click here', 'et_builder' ),
+			'extend_styles'         => array(
+				'title'   => esc_html__( 'Extend Styles', 'et_builder' ),
+				'button'  => esc_html__( 'Extend', 'et_builder' ),
+				'options' => array(
+					'to'         => array(
+						'containers' => array(),
+						'modules'    => array(
+							'module' => esc_html__( 'All Modules', 'et_builder' ),
+						),
+					),
+					'throughout' => array(
+						'page'    => esc_html__( 'This Page', 'et_builder' ),
+						'section' => esc_html__( 'This Section', 'et_builder' ),
+						'row'     => esc_html__( 'This Row', 'et_builder' ),
+						'column'  => esc_html__( 'This Column', 'et_builder' ),
+					),
+				),
+				'groups' => array(
+					'to' => array(
+						'containers' => esc_html__( 'Containers', 'et_builder' ),
+						'modules'    => esc_html__( 'Modules', 'et_builder' ),
+					),
+				),
+				'labels' => array(
+					'to'                   => esc_html__( 'To', 'et_builder' ),
+					'throughout'           => esc_html__( 'Throughout', 'et_builder' ),
+					// translators: %s is Plural Module Name.
+					'all'                  => esc_html__( 'All %s', 'et_builder' ),
+					// translators: %1$s is Module Name, %2$s is Plural Module Name.
+					'extend_module'        => esc_html__( 'Extend This %1$s\'s Styles To All %2$s', 'et_builder' ),
+					// translators: %s is Options Group Name.
+					'extend_options_group' => esc_html__( 'Extend This %s\'s Styles', 'et_builder' ),
+					// translators: %s is option Field Name.
+					'extend_option'        => esc_html__( 'Extend This %s', 'et_builder' ),
+				),
+			),
 		),
 		'selectControl' => array(
 			'typeToSearch' => esc_html__( 'Start Typing', 'et_builder' ),

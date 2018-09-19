@@ -3,6 +3,7 @@
 class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Video Slider', 'et_builder' );
+		$this->plural          = esc_html__( 'Video Sliders', 'et_builder' );
 		$this->slug            = 'et_pb_video_slider';
 		$this->vb_support 	   = 'on';
 		$this->child_slug      = 'et_pb_video_slider_item';

@@ -3,6 +3,7 @@
 class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 	function init() {
 		$this->name                        = esc_html__( 'Tab', 'et_builder' );
+		$this->plural                      = esc_html__( 'Tabs', 'et_builder' );
 		$this->slug                        = 'et_pb_tab';
 		$this->vb_support                  = 'on';
 		$this->type                        = 'child';

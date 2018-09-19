@@ -3,6 +3,7 @@
 class ET_Builder_Module_Audio extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Audio', 'et_builder' );
+		$this->plural     = esc_html__( 'Audios', 'et_builder' );
 		$this->slug       = 'et_pb_audio';
 		$this->vb_support = 'on';
 

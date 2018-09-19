@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Fullwidth Code', 'et_builder' );
+		$this->plural          = esc_html__( 'Fullwidth Codes', 'et_builder' );
 		$this->slug            = 'et_pb_fullwidth_code';
 		$this->vb_support      = 'on';
 		$this->fullwidth       = true;

@@ -3,6 +3,7 @@
 class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Countdown Timer', 'et_builder' );
+		$this->plural     = esc_html__( 'Countdown Timers', 'et_builder' );
 		$this->slug       = 'et_pb_countdown_timer';
 		$this->vb_support = 'on';
 

@@ -3,6 +3,7 @@
 class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Blog', 'et_builder' );
+		$this->plural     = esc_html__( 'Blogs', 'et_builder' );
 		$this->slug       = 'et_pb_blog';
 		$this->vb_support = 'on';
 		$this->main_css_element = '%%order_class%% .et_pb_post';

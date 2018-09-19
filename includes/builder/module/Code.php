@@ -3,6 +3,7 @@
 class ET_Builder_Module_Code extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Code', 'et_builder' );
+		$this->plural          = esc_html__( 'Codes', 'et_builder' );
 		$this->slug            = 'et_pb_code';
 		$this->vb_support      = 'on';
 		$this->use_row_content = true;

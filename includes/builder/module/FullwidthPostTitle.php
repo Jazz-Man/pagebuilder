@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Post_Title extends ET_Builder_Module {
 	function init() {
 		$this->name             = esc_html__( 'Fullwidth Post Title', 'et_builder' );
+		$this->plural           = esc_html__( 'Fullwidth Post Titles', 'et_builder' );
 		$this->slug             = 'et_pb_fullwidth_post_title';
 		$this->vb_support       = 'on';
 		$this->fullwidth        = true;

@@ -3,6 +3,7 @@
 class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 	function init() {
 		$this->name                 = esc_html__( 'Pricing Tables', 'et_builder' );
+		$this->plural               = esc_html__( 'Pricing Tables', 'et_builder' );
 		$this->slug                 = 'et_pb_pricing_tables';
 		$this->vb_support           = 'on';
 		$this->main_css_element     = '%%order_class%%';

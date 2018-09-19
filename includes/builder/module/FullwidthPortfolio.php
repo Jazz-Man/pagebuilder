@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Fullwidth Portfolio', 'et_builder' );
+		$this->plural     = esc_html__( 'Fullwidth Portfolios', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_portfolio';
 		$this->vb_support = 'on';
 		$this->fullwidth  = true;

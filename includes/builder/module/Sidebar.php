@@ -3,6 +3,7 @@
 class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Sidebar', 'et_builder' );
+		$this->plural     = esc_html__( 'Sidebars', 'et_builder' );
 		$this->slug       = 'et_pb_sidebar';
 		$this->vb_support = 'on';
 

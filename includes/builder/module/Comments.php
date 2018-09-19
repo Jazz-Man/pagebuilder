@@ -3,6 +3,7 @@
 class ET_Builder_Module_Comments extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Comments', 'et_builder' );
+		$this->plural     = esc_html__( 'Comments', 'et_builder' );
 		$this->slug       = 'et_pb_comments';
 		$this->vb_support = 'on';
 

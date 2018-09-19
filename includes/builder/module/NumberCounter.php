@@ -3,6 +3,7 @@
 class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Number Counter', 'et_builder' );
+		$this->plural     = esc_html__( 'Number Counters', 'et_builder' );
 		$this->slug       = 'et_pb_number_counter';
 		$this->vb_support = 'on';
 		$this->custom_css_fields = array(

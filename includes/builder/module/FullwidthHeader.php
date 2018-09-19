@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 	function init() {
 		$this->name             = esc_html__( 'Fullwidth Header', 'et_builder' );
+		$this->plural           = esc_html__( 'Fullwidth Headers', 'et_builder' );
 		$this->slug             = 'et_pb_fullwidth_header';
 		$this->vb_support       = 'on';
 		$this->fullwidth        = true;

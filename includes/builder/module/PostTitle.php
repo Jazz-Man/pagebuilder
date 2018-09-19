@@ -3,6 +3,7 @@
 class ET_Builder_Module_Post_Title extends ET_Builder_Module {
 	function init() {
 		$this->name             = esc_html__( 'Post Title', 'et_builder' );
+		$this->plural           = esc_html__( 'Post Titles', 'et_builder' );
 		$this->slug             = 'et_pb_post_title';
 		$this->vb_support       = 'on';
 		$this->defaults         = array();

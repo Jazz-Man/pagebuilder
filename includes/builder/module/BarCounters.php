@@ -3,6 +3,7 @@
 class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Bar Counters', 'et_builder' );
+		$this->plural          = esc_html__( 'Bar Counters', 'et_builder' );
 		$this->slug            = 'et_pb_counters';
 		$this->vb_support      = 'on';
 		$this->child_slug      = 'et_pb_counter';

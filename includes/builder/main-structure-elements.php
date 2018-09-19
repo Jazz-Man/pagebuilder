@@ -6,8 +6,9 @@
  */
 class ET_Builder_Section extends ET_Builder_Structure_Element {
 	function init() {
-		$this->name = esc_html__( 'Section', 'et_builder' );
-		$this->slug = 'et_pb_section';
+		$this->name       = esc_html__( 'Section', 'et_builder' );
+		$this->plural     = esc_html__( 'Sections', 'et_builder' );
+		$this->slug       = 'et_pb_section';
 		$this->vb_support = 'on';
 
 		$this->settings_modal_toggles = array(
@@ -965,8 +966,9 @@ new ET_Builder_Section;
 
 class ET_Builder_Row extends ET_Builder_Structure_Element {
 	function init() {
-		$this->name = esc_html__( 'Row', 'et_builder' );
-		$this->slug = 'et_pb_row';
+		$this->name       = esc_html__( 'Row', 'et_builder' );
+		$this->plural     = esc_html__( 'Rows', 'et_builder' );
+		$this->slug       = 'et_pb_row';
 		$this->vb_support = 'on';
 
 		$this->advanced_fields = array(
@@ -2086,8 +2088,9 @@ new ET_Builder_Row;
 
 class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 	function init() {
-		$this->name = esc_html__( 'Row', 'et_builder' );
-		$this->slug = 'et_pb_row_inner';
+		$this->name       = esc_html__( 'Row', 'et_builder' );
+		$this->plural     = esc_html__( 'Rows', 'et_builder' );
+		$this->slug       = 'et_pb_row_inner';
 		$this->vb_support = 'on';
 
 		$this->advanced_fields = array(
@@ -2887,6 +2890,7 @@ new ET_Builder_Row_Inner;
 class ET_Builder_Column extends ET_Builder_Structure_Element {
 	function init() {
 		$this->name                       = esc_html__( 'Column', 'et_builder' );
+		$this->plural                     = esc_html__( 'Columns', 'et_builder' );
 		$this->slug                       = 'et_pb_column';
 		$this->additional_shortcode_slugs = array( 'et_pb_column_inner' );
 		$this->vb_support                 = 'on';

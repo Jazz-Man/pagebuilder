@@ -22,6 +22,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 
 	function init() {
 		$this->name       = esc_html__( 'Email Optin', 'et_builder' );
+		$this->plural     = esc_html__( 'Email Optins', 'et_builder' );
 		$this->slug       = 'et_pb_signup';
 		$this->vb_support = 'on';
 

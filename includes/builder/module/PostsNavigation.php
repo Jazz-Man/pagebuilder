@@ -3,6 +3,7 @@
 class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 	function init() {
 		$this->name             = esc_html__( 'Post Navigation', 'et_builder' );
+		$this->plural           = esc_html__( 'Post Navigations', 'et_builder' );
 		$this->slug             = 'et_pb_post_nav';
 		$this->vb_support       = 'on';
 		$this->main_css_element = '.et_pb_posts_nav%%order_class%%';

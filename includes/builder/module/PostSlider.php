@@ -3,6 +3,7 @@
 class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Post Slider', 'et_builder' );
+		$this->plural     = esc_html__( 'Post Sliders', 'et_builder' );
 		$this->slug       = 'et_pb_post_slider';
 		$this->vb_support = 'on';
 

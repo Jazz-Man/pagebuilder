@@ -3,6 +3,7 @@
 class ET_Builder_Module_Map extends ET_Builder_Module {
 	function init() {
 		$this->name            = esc_html__( 'Map', 'et_builder' );
+		$this->plural          = esc_html__( 'Maps', 'et_builder' );
 		$this->slug            = 'et_pb_map';
 		$this->vb_support      = 'on';
 		$this->child_slug      = 'et_pb_map_pin';

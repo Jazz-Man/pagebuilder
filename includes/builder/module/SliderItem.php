@@ -3,6 +3,7 @@
 class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 	function init() {
 		$this->name                        = esc_html__( 'Slide', 'et_builder' );
+		$this->plural                      = esc_html__( 'Slides', 'et_builder' );
 		$this->slug                        = 'et_pb_slide';
 		$this->vb_support                  = 'on';
 		$this->type                        = 'child';

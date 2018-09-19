@@ -6,6 +6,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 	function init() {
 		$this->name            = esc_html__( 'Field', 'et_builder' );
+		$this->plural          = esc_html__( 'Fields', 'et_builder' );
 		$this->slug            = 'et_pb_contact_field';
 		$this->vb_support      = 'on';
 		$this->type            = 'child';

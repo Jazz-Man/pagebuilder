@@ -3,6 +3,7 @@
 class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 	function init() {
 		$this->name                  = esc_html__( 'Accordion', 'et_builder' );
+		$this->plural                = esc_html__( 'Accordions', 'et_builder' );
 		$this->slug                  = 'et_pb_accordion_item';
 		$this->vb_support            = 'on';
 		$this->type                  = 'child';

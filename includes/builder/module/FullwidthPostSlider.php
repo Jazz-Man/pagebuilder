@@ -3,6 +3,7 @@
 class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_PostBased {
 	function init() {
 		$this->name       = esc_html__( 'Fullwidth Post Slider', 'et_builder' );
+		$this->plural     = esc_html__( 'Fullwidth Post Sliders', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_post_slider';
 		$this->vb_support = 'on';
 		$this->fullwidth  = true;

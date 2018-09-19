@@ -3,6 +3,7 @@
 class ET_Builder_Module_Button extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Button', 'et_builder' );
+		$this->plural     = esc_html__( 'Buttons', 'et_builder' );
 		$this->slug       = 'et_pb_button';
 		$this->vb_support = 'on';
 		$this->main_css_element = '%%order_class%%';

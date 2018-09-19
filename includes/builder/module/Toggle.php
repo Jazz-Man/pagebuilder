@@ -3,6 +3,7 @@
 class ET_Builder_Module_Toggle extends ET_Builder_Module {
 	function init() {
 		$this->name                       = esc_html__( 'Toggle', 'et_builder' );
+		$this->plural                     = esc_html__( 'Toggles', 'et_builder' );
 		$this->slug                       = 'et_pb_toggle';
 		$this->vb_support                 = 'on';
 		$this->additional_shortcode_slugs = array( 'et_pb_accordion_item' );

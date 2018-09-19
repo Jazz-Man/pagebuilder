@@ -3,6 +3,7 @@
 class ET_Builder_Module_Search extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Search', 'et_builder' );
+		$this->plural     = esc_html__( 'Searches', 'et_builder' );
 		$this->slug       = 'et_pb_search';
 		$this->vb_support = 'on';
 

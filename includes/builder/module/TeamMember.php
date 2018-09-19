@@ -3,6 +3,7 @@
 class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Person', 'et_builder' );
+		$this->plural     = esc_html__( 'Persons', 'et_builder' );
 		$this->slug       = 'et_pb_team_member';
 		$this->vb_support = 'on';
 

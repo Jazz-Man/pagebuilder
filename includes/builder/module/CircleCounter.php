@@ -3,6 +3,7 @@
 class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Circle Counter', 'et_builder' );
+		$this->plural     = esc_html__( 'Circle Counters', 'et_builder' );
 		$this->slug       = 'et_pb_circle_counter';
 		$this->vb_support = 'on';
 

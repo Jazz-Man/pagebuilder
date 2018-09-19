@@ -3,6 +3,7 @@
 class ET_Builder_Module_Login extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Login', 'et_builder' );
+		$this->plural     = esc_html__( 'Logins', 'et_builder' );
 		$this->slug       = 'et_pb_login';
 		$this->vb_support = 'on';
 

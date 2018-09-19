@@ -3,6 +3,7 @@
 class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 	function init() {
 		$this->name                        = esc_html__( 'Social Network', 'et_builder' );
+		$this->plural                      = esc_html__( 'Social Networks', 'et_builder' );
 		$this->slug                        = 'et_pb_social_media_follow_network';
 		$this->vb_support                  = 'on';
 		$this->type                        = 'child';

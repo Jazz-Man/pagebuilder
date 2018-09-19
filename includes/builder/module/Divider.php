@@ -3,6 +3,7 @@
 class ET_Builder_Module_Divider extends ET_Builder_Module {
 	function init() {
 		$this->name       = esc_html__( 'Divider', 'et_builder' );
+		$this->plural     = esc_html__( 'Dividers', 'et_builder' );
 		$this->slug       = 'et_pb_divider';
 		$this->vb_support = 'on';
 

@@ -2,8 +2,9 @@
 
 class ET_Builder_Module_Video extends ET_Builder_Module {
 	function init() {
-		$this->name = esc_html__( 'Video', 'et_builder' );
-		$this->slug = 'et_pb_video';
+		$this->name       = esc_html__( 'Video', 'et_builder' );
+		$this->plural     = esc_html__( 'Videos', 'et_builder' );
+		$this->slug       = 'et_pb_video';
 		$this->vb_support = 'on';
 
 		$this->settings_modal_toggles = array(

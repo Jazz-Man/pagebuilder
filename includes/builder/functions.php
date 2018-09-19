@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.13' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.14' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -3310,6 +3310,7 @@ function et_pb_history_localization() {
 			'globaloff'     => esc_html__( 'Disabled Global', 'et_builder' ),
 			'configured'    => esc_html__( 'Configured', 'et_builder' ),
 			'find_replace'  => esc_html__( 'Find & Replace', 'et_builder' ),
+			'extend_styles' => esc_html__( 'Extend Styles', 'et_builder' ),
 		),
 		'noun' => array(
 			'section'           => esc_html__( 'Section', 'et_builder' ),
