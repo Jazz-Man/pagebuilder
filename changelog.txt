@@ -1,3 +1,24 @@
+version 3.15 ( updated 09-13-2018 )
+- Added Multiselect and Bulk Editing to the Visual Builder.
+- Fixed missing "Reply To" in Contact Form module email when the email field is not set to required.
+- Fixed Grid Mode UI being shown from hovered section/rows/modules even after it is turned off.
+- Fixed a bug where the wrong information was given in a debug message.
+- Included the missing screen-reader-text class style in Divi.
+- Fixed contact form not accepting 0 (zero) as a valid field value for required fields.
+- Added shift key support for the range control.
+- Fixed a bug where the Drag & Drop File Upload system was rejecting some files that should have been accepted due to file extension not being all lowercase.
+- Fixed issue with inability to set tablet and phone responsive options to their default values.
+- Fixed the font dropdown overlap with the options underneath in VB.
+- Fixed Tooltip Modals animation when opening new modal from Page Settings Bar while another modal is not closed and vice versa.
+- Fixed the inverted view on the Row Builder button group in the VB.
+- Updated custom fields retrieval and processing functions for Mailchimp to make it work with custom field names.
+	* core/components/api/email/MailChimp.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/styles/frontend-builder-style.less
+
 version 3.14 ( updated 09-06-2018 )
 - Added "Extend Styles" right click option to menus for Modules, Option Groups and Individual Options.
 	* includes/builder/class-et-builder-element.php

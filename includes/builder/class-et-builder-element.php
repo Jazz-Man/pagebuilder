@@ -906,8 +906,8 @@ class ET_Builder_Element {
 		if ( strpos( $field_name, '#et_pb_' ) !== false ) {
 			// Truncate field name from the string wherever it's placed
 			$new_field_name = substr( $field_name, strpos( $field_name, '#et_pb_' ) + 7 );
-			$field_name = $new_field_name;
 			$message = "You're Doing It Wrong! You're using wrong name for 'affects' attribute. It should be '" . $new_field_name . "' instead of '" . $field_name . "'";
+			$field_name = $new_field_name;
 			et_debug( $message, 4, false );
 		}
 

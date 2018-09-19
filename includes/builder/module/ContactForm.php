@@ -328,16 +328,19 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				if ( ! empty( $fields_data_array ) ) {
 					foreach( $fields_data_array as $index => $value ) {
 						// check all the required fields, generate error message if required field is empty
-						if ( 'required' === $value['required_mark'] && empty( $_POST[ $value['field_id'] ] ) ) {
+						$field_value = isset( $_POST[ $value['field_id'] ] ) ? trim( $_POST[ $value['field_id'] ] ) : '';
+
+						if ( 'required' === $value['required_mark'] && empty( $field_value ) && ! is_numeric( $field_value ) ) {
 							$et_error_message .= sprintf( '<p class="et_pb_contact_error_text">%1$s</p>', esc_html__( 'Make sure you fill in all required fields.', 'et_builder' ) );
 							$et_contact_error = true;
 							continue;
 						}
 
 						// additional check for email field
-						if ( 'email' === $value['field_type'] && 'required' === $value['required_mark'] && ! empty( $_POST[ $value['field_id'] ] ) ) {
-							$contact_email = sanitize_email( $_POST[ $value['field_id'] ] );
-							if ( ! is_email( $contact_email ) ) {
+						if ( 'email' === $value['field_type'] && 'required' === $value['required_mark'] && ! empty( $field_value ) ) {
+							$contact_email = isset( $_POST[ $value['field_id'] ] ) ? sanitize_email( $_POST[ $value['field_id'] ] ) : '';
+
+							if ( ! empty( $contact_email ) && ! is_email( $contact_email ) ) {
 								$et_error_message .= sprintf( '<p class="et_pb_contact_error_text">%1$s</p>', esc_html__( 'Invalid Email.', 'et_builder' ) );
 								$et_contact_error = true;
 							}
@@ -345,7 +348,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 						// prepare the array of processed field values in convenient format
 						if ( false === $et_contact_error ) {
-							$processed_fields_values[ $value['original_id'] ]['value'] = isset( $_POST[ $value['field_id'] ] ) ? $_POST[ $value['field_id'] ] : '';
+							$processed_fields_values[ $value['original_id'] ]['value'] = $field_value;
 							$processed_fields_values[ $value['original_id'] ]['label'] = $value['field_label'];
 						}
 					}
