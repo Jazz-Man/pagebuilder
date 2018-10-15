@@ -33,12 +33,13 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 				'use_background_layout' => true,
 				'options' => array(
 					'background_layout' => array(
-						'label'           => esc_html__( 'Slider Arrows Color', 'et_builder' ),
-						'option_category' => 'color_option',
-						'toggle_slug' => 'arrows_color',
-						'description' => esc_html__( 'This setting will make your slider arrows either light or dark in color.', 'et_builder' ),
-						'default' => 'dark',
+						'label'            => esc_html__( 'Slider Arrows Color', 'et_builder' ),
+						'option_category'  => 'color_option',
+						'toggle_slug'      => 'arrows_color',
+						'description'      => esc_html__( 'This setting will make your slider arrows either light or dark in color.', 'et_builder' ),
+						'default'          => 'dark',
 						'default_on_child' => true,
+						'hover'            => 'tabs',
 					),
 				),
 			),
@@ -56,6 +57,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 			'max_width'             => false,
 			'margin_padding' => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 	}
 
@@ -148,6 +150,14 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['background_layout'] = array( 'color' => '%%order_class%% .et-pb-arrow-prev, %%order_class%% .et-pb-arrow-next' );
+
+		return $fields;
+	}
+
 	static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
 			'image_src' => '',
@@ -196,11 +206,13 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
  	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$src               = $this->props['src'];
-		$src_webm          = $this->props['src_webm'];
-		$image_src         = $this->props['image_src'];
-		$background_layout = $this->props['background_layout'];
-		$video_src         = '';
+		$src                             = $this->props['src'];
+		$src_webm                        = $this->props['src_webm'];
+		$image_src                       = $this->props['image_src'];
+		$background_layout               = $this->props['background_layout'];
+		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
+		$video_src                       = '';
 
 		global $et_pb_slider_image_overlay;
 
@@ -213,6 +225,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 				add_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
 				// Save thumbnail
 				$thumbnail_track_output = wp_oembed_get( esc_url( $src ) );
+				$image_overlay_output = $thumbnail_track_output; 
 				// Set back to normal
 				remove_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
 			} else {
@@ -272,14 +285,29 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 			$render_slug,
 		) );
 
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+		if ( $background_layout_hover_enabled ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
+
 		$output = sprintf(
-			'<div class="%1$s"%3$s>
+			'<div class="%1$s"%3$s%4$s%5$s>
 				%2$s
 			</div> <!-- .et_pb_slide -->
 			',
 			$this->module_classname( $render_slug ),
 			( '' !== $video_output ? $video_output : '' ),
-			( '' !== $thumbnail_track_output ? sprintf( ' data-image="%1$s"', esc_attr( $thumbnail_track_output ) ) : '' )
+			( '' !== $thumbnail_track_output ? sprintf( ' data-image="%1$s"', esc_attr( $thumbnail_track_output ) ) : '' ),
+			et_esc_previously( $data_background_layout ),
+			et_esc_previously( $data_background_layout_hover ) // #5
 		);
 
 		return $output;

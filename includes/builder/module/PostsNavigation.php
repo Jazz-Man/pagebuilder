@@ -63,13 +63,14 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 				'default' => array(
 					'css' => array(
 						'main'         => '%%order_class%% .nav-previous, %%order_class%% .nav-next',
-						'custom_style' => true,
+						'overlay' => 'inset',
 						'important'    => true,
 					),
 				),
 			),
 			'text'                  => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 
 		$this->custom_css_fields = array(

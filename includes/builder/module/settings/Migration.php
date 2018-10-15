@@ -18,7 +18,7 @@ abstract class ET_Builder_Module_Settings_Migration {
 
 	public static $last_hook_checked;
 	public static $last_hook_check_decision;
-	public static $max_version = '3.6';
+	public static $max_version = '3.16';
 	public static $migrated    = array();
 	public static $migrations = array(
 		'3.0.48'  => 'BackgroundUI',
@@ -34,6 +34,8 @@ abstract class ET_Builder_Module_Settings_Migration {
 		'3.2'     => 'UIImprovements',
 		'3.4'     => 'EmailOptinContent',
 		'3.6'     => 'ContactFormItemOptionsSerialization',
+		'3.12.3'  => 'TeamMemberIconHover',
+		'3.16'    => 'HoverOptions',
 	);
 
 	public static $migrations_by_version = array();

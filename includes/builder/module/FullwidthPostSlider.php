@@ -19,7 +19,6 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					'main_content'   => esc_html__( 'Content', 'et_builder' ),
 					'elements'       => esc_html__( 'Elements', 'et_builder' ),
 					'featured_image' => esc_html__( 'Featured Image', 'et_builder' ),
-					'background'     => esc_html__( 'Background', 'et_builder' ),
 				),
 			),
 			'advanced' => array(
@@ -99,7 +98,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
@@ -129,6 +128,14 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 			'text'                  => array(
 				'use_background_layout' => true,
 				'css'   => array(
+					'main'             => implode( ', ', array(
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_title',
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_title a',
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_content',
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_content .post-meta',
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_content .post-meta a',
+						'%%order_class%% .et_pb_slide .et_pb_slide_description .et_pb_slide_content .et_pb_button',
+					) ),
 					'text_orientation' => '%%order_class%% .et_pb_slide .et_pb_slide_description',
 					'text_shadow'      => '%%order_class%% .et_pb_slide .et_pb_slide_description',
 				),
@@ -138,6 +145,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					),
 					'background_layout' => array(
 						'default' => 'dark',
+						'hover' => 'tabs',
 					),
 				),
 			),
@@ -653,6 +661,16 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		return $fields;
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+		$fields['background_layout'] = array(
+			'background-color' => '%%order_class%% .et_pb_slide_overlay_container, %%order_class%% .et_pb_text_overlay_wrapper',
+			'color' => self::$_->array_get( $this->advanced_fields, 'text.css.main', '%%order_class%%' ),
+		);
+
+		return $fields;
+	}
+
 	function render( $attrs, $content = null, $render_slug ) {
 		/**
 		 * Cached $wp_filter so it can be restored at the end of the callback.
@@ -660,48 +678,49 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		 * which uses the_content filter. WordPress doesn't support nested filter
 		 */
 		global $wp_filter;
-		$wp_filter_cache = $wp_filter;
-
-		$show_arrows             = $this->props['show_arrows'];
-		$show_pagination         = $this->props['show_pagination'];
-		$parallax                = $this->props['parallax'];
-		$parallax_method         = $this->props['parallax_method'];
-		$auto                    = $this->props['auto'];
-		$auto_speed              = $this->props['auto_speed'];
-		$auto_ignore_hover       = $this->props['auto_ignore_hover'];
-		$body_font_size 		 = $this->props['body_font_size'];
-		$show_content_on_mobile  = $this->props['show_content_on_mobile'];
-		$show_cta_on_mobile      = $this->props['show_cta_on_mobile'];
-		$show_image_video_mobile = $this->props['show_image_video_mobile'];
-		$background_position     = $this->props['background_position'];
-		$background_size         = $this->props['background_size'];
-		$posts_number            = $this->props['posts_number'];
-		$include_categories      = $this->props['include_categories'];
-		$show_more_button        = $this->props['show_more_button'];
-		$more_text               = $this->props['more_text'];
-		$content_source          = $this->props['content_source'];
-		$background_color        = $this->props['background_color'];
-		$show_image              = $this->props['show_image'];
-		$image_placement         = $this->props['image_placement'];
-		$background_image        = $this->props['background_image'];
-		$background_layout       = $this->props['background_layout'];
-		$background_repeat       = $this->props['background_repeat'];
-		$background_blend        = $this->props['background_blend'];
-		$use_bg_overlay          = $this->props['use_bg_overlay'];
-		$bg_overlay_color        = $this->props['bg_overlay_color'];
-		$use_text_overlay        = $this->props['use_text_overlay'];
-		$text_overlay_color      = $this->props['text_overlay_color'];
-		$orderby                 = $this->props['orderby'];
-		$show_meta               = $this->props['show_meta'];
-		$button_custom           = $this->props['custom_button'];
-		$button_rel              = $this->props['button_rel'];
-		$custom_icon             = $this->props['button_icon'];
-		$use_manual_excerpt      = $this->props['use_manual_excerpt'];
-		$excerpt_length          = $this->props['excerpt_length'];
-		$text_border_radius      = $this->props['text_border_radius'];
-		$dot_nav_custom_color    = $this->props['dot_nav_custom_color'];
-		$arrows_custom_color     = $this->props['arrows_custom_color'];
-		$header_level            = $this->props['header_level'];
+		$wp_filter_cache                 = $wp_filter;
+		$show_arrows                     = $this->props['show_arrows'];
+		$show_pagination                 = $this->props['show_pagination'];
+		$parallax                        = $this->props['parallax'];
+		$parallax_method                 = $this->props['parallax_method'];
+		$auto                            = $this->props['auto'];
+		$auto_speed                      = $this->props['auto_speed'];
+		$auto_ignore_hover               = $this->props['auto_ignore_hover'];
+		$body_font_size                  = $this->props['body_font_size'];
+		$show_content_on_mobile          = $this->props['show_content_on_mobile'];
+		$show_cta_on_mobile              = $this->props['show_cta_on_mobile'];
+		$show_image_video_mobile         = $this->props['show_image_video_mobile'];
+		$background_position             = $this->props['background_position'];
+		$background_size                 = $this->props['background_size'];
+		$posts_number                    = $this->props['posts_number'];
+		$include_categories              = $this->props['include_categories'];
+		$show_more_button                = $this->props['show_more_button'];
+		$more_text                       = $this->props['more_text'];
+		$content_source                  = $this->props['content_source'];
+		$background_color                = $this->props['background_color'];
+		$show_image                      = $this->props['show_image'];
+		$image_placement                 = $this->props['image_placement'];
+		$background_image                = $this->props['background_image'];
+		$background_layout               = $this->props['background_layout'];
+		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
+		$background_repeat               = $this->props['background_repeat'];
+		$background_blend                = $this->props['background_blend'];
+		$use_bg_overlay                  = $this->props['use_bg_overlay'];
+		$bg_overlay_color                = $this->props['bg_overlay_color'];
+		$use_text_overlay                = $this->props['use_text_overlay'];
+		$text_overlay_color              = $this->props['text_overlay_color'];
+		$orderby                         = $this->props['orderby'];
+		$show_meta                       = $this->props['show_meta'];
+		$button_custom                   = $this->props['custom_button'];
+		$button_rel                      = $this->props['button_rel'];
+		$custom_icon                     = $this->props['button_icon'];
+		$use_manual_excerpt              = $this->props['use_manual_excerpt'];
+		$excerpt_length                  = $this->props['excerpt_length'];
+		$text_border_radius              = $this->props['text_border_radius'];
+		$dot_nav_custom_color            = $this->props['dot_nav_custom_color'];
+		$arrows_custom_color             = $this->props['arrows_custom_color'];
+		$header_level                    = $this->props['header_level'];
 
 		$post_index = 0;
 
@@ -912,6 +931,19 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 			$content .= '</div>';
 		}
 
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+		if ( $background_layout_hover_enabled ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
+
 		// Module classnames
 		$this->add_classname( array(
 			'et_pb_slider',
@@ -962,7 +994,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		$this->remove_classname( 'et_pb_fullwidth_post_slider' );
 
 		$output = sprintf(
-			'<div%3$s class="%1$s">
+			'<div%3$s class="%1$s"%7$s%8$s>
 				%5$s
 				%4$s
 				<div class="et_pb_slides">
@@ -975,8 +1007,10 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 			$content,
 			$this->module_id(),
 			$video_background,
-			$parallax_image_background,
-			$this->inner_shadow_back_compatibility( $render_slug )
+			$parallax_image_background, // #5
+			$this->inner_shadow_back_compatibility( $render_slug ),
+			et_esc_previously( $data_background_layout ),
+			et_esc_previously( $data_background_layout_hover )
 		);
 
 		// Restore $wp_filter

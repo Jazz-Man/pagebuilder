@@ -13,7 +13,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				'toggles' => array(
 					'main_content' => esc_html__( 'Content', 'et_builder' ),
 					'elements'     => esc_html__( 'Elements', 'et_builder' ),
-					'background'   => esc_html__( 'Background', 'et_builder' ),
 				),
 			),
 			'advanced' => array(
@@ -90,6 +89,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 						'main' => array(
 							'border_radii'  => "%%order_class%% .et_pb_blog_grid .et_pb_post",
 							'border_styles' => "%%order_class%% .et_pb_blog_grid .et_pb_post",
+							'border_styles_hover' => "%%order_class%% .et_pb_blog_grid .et_pb_post:hover",
 						),
 					),
 					'depends_on'      => array( 'fullwidth' ),
@@ -137,6 +137,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 					'background_layout' => array(
 						'depends_show_if' => 'on',
 						'default_on_front' => 'light',
+						'hover' => 'tabs',
 					),
 				),
 			),
@@ -151,11 +152,11 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			),
 			'image'                 => array(
 				'css' => array(
-					'main' => array(
+					'main' => implode(', ', array(
 						'%%order_class%% img',
 						'%%order_class%% .et_pb_slides',
 						'%%order_class%% .et_pb_video_overlay',
-					),
+					)),
 				),
 			),
 			'button'                => false,
@@ -457,6 +458,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				'depends_on'        => array(
 					'fullwidth',
 				),
+				'hover'             => 'tabs',
 			),
 			'__posts' => array(
 				'type' => 'computed',
@@ -492,6 +494,27 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 		);
+		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['background_layout'] = array(
+			'color' => implode( ', ',
+				array(
+					'%%order_class%% .entry-title',
+					'%%order_class%% .post-meta',
+					'%%order_class%% .post-content'
+				)
+			)
+		);
+		$fields['border_radii']            = array( 'border-radius' => self::$_->array_get( $this->advanced_fields, 'borders.default.css.main.border_radii' ) );
+		$fields['border_styles']           = array( 'border' => self::$_->array_get( $this->advanced_fields, 'borders.default.css.main.border_styles' ) );
+		$fields['border_radii_fullwidth']  = array( 'border-radius' => self::$_->array_get( $this->advanced_fields, 'borders.fullwidth.css.main.border_radii' ) );
+		$fields['border_styles_fullwidth'] = array( 'border' => self::$_->array_get( $this->advanced_fields, 'borders.fullwidth.css.main.border_styles' ) );
+		$fields['max_width']               = array( 'max-width' => '%%order_class%%');
+
 		return $fields;
 	}
 
@@ -861,26 +884,29 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		global $wp_filter;
 		$wp_filter_cache = $wp_filter;
 
-		$fullwidth           = $this->props['fullwidth'];
-		$posts_number        = $this->props['posts_number'];
-		$include_categories  = $this->props['include_categories'];
-		$meta_date           = $this->props['meta_date'];
-		$show_thumbnail      = $this->props['show_thumbnail'];
-		$show_content        = $this->props['show_content'];
-		$show_author         = $this->props['show_author'];
-		$show_date           = $this->props['show_date'];
-		$show_categories     = $this->props['show_categories'];
-		$show_comments       = $this->props['show_comments'];
-		$show_pagination     = $this->props['show_pagination'];
-		$background_layout   = $this->props['background_layout'];
-		$show_more           = $this->props['show_more'];
-		$offset_number       = $this->props['offset_number'];
-		$masonry_tile_background_color = $this->props['masonry_tile_background_color'];
-		$overlay_icon_color  = $this->props['overlay_icon_color'];
-		$hover_overlay_color = $this->props['hover_overlay_color'];
-		$hover_icon          = $this->props['hover_icon'];
-		$use_overlay         = $this->props['use_overlay'];
-		$header_level        = $this->props['header_level'];
+		$fullwidth                           = $this->props['fullwidth'];
+		$posts_number                        = $this->props['posts_number'];
+		$include_categories                  = $this->props['include_categories'];
+		$meta_date                           = $this->props['meta_date'];
+		$show_thumbnail                      = $this->props['show_thumbnail'];
+		$show_content                        = $this->props['show_content'];
+		$show_author                         = $this->props['show_author'];
+		$show_date                           = $this->props['show_date'];
+		$show_categories                     = $this->props['show_categories'];
+		$show_comments                       = $this->props['show_comments'];
+		$show_pagination                     = $this->props['show_pagination'];
+		$background_layout                   = $this->props['background_layout'];
+		$background_layout_hover             = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$background_layout_hover_enabled     = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
+		$show_more                           = $this->props['show_more'];
+		$offset_number                       = $this->props['offset_number'];
+		$masonry_tile_background_color       = $this->props['masonry_tile_background_color'];
+		$masonry_tile_background_color_hover = $this->get_hover_value( 'masonry_tile_background_color' );
+		$overlay_icon_color                  = $this->props['overlay_icon_color'];
+		$hover_overlay_color                 = $this->props['hover_overlay_color'];
+		$hover_icon                          = $this->props['hover_icon'];
+		$use_overlay                         = $this->props['use_overlay'];
+		$header_level                        = $this->props['header_level'];
 
 		global $paged;
 
@@ -912,6 +938,16 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				'declaration' => sprintf(
 					'background-color: %1$s;',
 					esc_html( $masonry_tile_background_color )
+				),
+			) );
+		}
+
+		if ( et_builder_is_hover_enabled( 'masonry_tile_background_color', $this->props ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%%:hover .et_pb_blog_grid .et_pb_post',
+				'declaration' => sprintf(
+					'background-color: %1$s;',
+					esc_html( $masonry_tile_background_color_hover )
 				),
 			) );
 		}
@@ -1202,6 +1238,20 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			$render_slug,
 		) );
 
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+
+		if ( $background_layout_hover_enabled ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
+
 		if ( 'on' !== $fullwidth ) {
 			// Module classname
 			$this->add_classname( array(
@@ -1234,7 +1284,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			}
 
 			$output = sprintf(
-				'<div%4$s class="%5$s">
+				'<div%4$s class="%5$s"%9$s%10$s>
 					<div class="%1$s">
 					%7$s
 					%6$s
@@ -1247,10 +1297,12 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				$posts,
 				( ! $container_is_closed ? '</div> <!-- .et_pb_posts -->' : '' ),
 				$this->module_id(),
-				$this->module_classname( $render_slug ),
+				$this->module_classname( $render_slug ), // #5
 				$video_background,
 				$parallax_image_background,
-				$this->drop_shadow_back_compatibility( $render_slug )
+				$this->drop_shadow_back_compatibility( $render_slug ),
+				et_esc_previously( $data_background_layout ),
+				et_esc_previously( $data_background_layout_hover ) // #10
 			);
 		} else {
 			// Module classname
@@ -1261,7 +1313,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			) );
 
 			$output = sprintf(
-				'<div%4$s class="%1$s">
+				'<div%4$s class="%1$s"%8$s%9$s>
 				%6$s
 				%5$s
 				<div class="et_pb_ajax_pagination_container">
@@ -1271,10 +1323,12 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 				$this->module_classname( $render_slug ),
 				$posts,
 				( ! $container_is_closed ? '</div> <!-- .et_pb_posts -->' : '' ),
-				$this->module_id(), // 5
-				$video_background,
+				$this->module_id(),
+				$video_background, // #5
 				$parallax_image_background,
-				$this->drop_shadow_back_compatibility( $render_slug )
+				$this->drop_shadow_back_compatibility( $render_slug ),
+				et_esc_previously( $data_background_layout ),
+				et_esc_previously( $data_background_layout_hover )
 			);
 		}
 
@@ -1290,17 +1344,18 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 	}
 
 	public function process_box_shadow( $function_name ) {
-		/**
-		 * @var ET_Builder_Module_Field_BoxShadow $boxShadow
-		 */
-		$boxShadow = ET_Builder_Module_Fields_Factory::get( 'BoxShadow' );
-		$selector = '.' . self::get_module_order_class( $function_name );
-
 		if ( isset( $this->props['fullwidth'] ) && $this->props['fullwidth'] === 'off' ) {
-			$selector .= ' article.et_pb_post';
+			$this->advanced_fields['box_shadow'] = array(
+				'default' => array(
+					'css' => array(
+						'main'         => '%%order_class%% article.et_pb_post',
+						'overlay'      => "inset",
+					),
+				),
+			);
 		}
 
-		self::set_style( $function_name, $boxShadow->get_style( $selector, $this->props ) );
+		parent::process_box_shadow( $function_name );
 	}
 
 	/**

@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.15
+Version: 3.16
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -12045,6 +12045,7 @@ a.et_pb_more_button:after,
 	/* Fold: Left */
 	/* Roll: Center */
 	/* BoxShadow */
+	/* Link Options CSS */
 	/* Text meant only for screen readers. */
 }
 
@@ -12597,6 +12598,11 @@ a.et_pb_more_button:after,
 	position: relative;
 }
 
+.et-db #et-boc .et_hover_enabled:hover {
+	position: relative;
+	z-index: 90000;
+}
+
 .et-db #et-boc .et_pb_button {
 	position: relative;
 	padding: 0.3em 1em;
@@ -12654,6 +12660,11 @@ a.et_pb_more_button:after,
 	-webkit-transition: all 0.2s;
 	-moz-transition: all 0.2s;
 	transition: all 0.2s;
+}
+
+.et-db #et-boc .et_pb_button.et_pb_hovered:hover:after,
+.et-db #et-boc .et_pb_button.et_hover_enabled:hover:after {
+	transition: none !important;
 }
 
 .et-db #et-boc .et_pb_button:before {
@@ -14111,6 +14122,7 @@ a.et_pb_more_button:after,
 	padding-left: 0;
 }
 
+.et-db #et-boc .et_pb_newsletter_form .input,
 .et-db #et-boc .et_pb_newsletter_form input[type="text"],
 .et-db #et-boc .et_pb_newsletter_form input[type="password"],
 .et-db #et-boc .et_pb_newsletter_form p.et_pb_newsletter_field input[type="text"],
@@ -15083,6 +15095,8 @@ a.et_pb_more_button:after,
 	position: absolute;
 	top: 0;
 	left: 0;
+	width: 100% !important;
+	height: auto !important;
 }
 
 .et-db #et-boc .et_pb_circle_counter .percent {
@@ -15909,6 +15923,7 @@ a.et_pb_more_button:after,
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	background-size: cover;
+	transition: inherit;
 }
 
 .et-db #et-boc .et_pb_audio_module_content {
@@ -16709,6 +16724,11 @@ a.et_pb_more_button:after,
 	pointer-events: none;
 
 	background-repeat-y: no-repeat;
+}
+
+.et-db #et-boc .et_pb_top_inside_divider.et-no-transition,
+.et-db #et-boc .et_pb_bottom_inside_divider.et-no-transition {
+	transition: none !important;
 }
 
 .et-db #et-boc .et_pb_top_inside_divider {
@@ -18080,6 +18100,7 @@ a.et_pb_more_button:after,
 	color: #999;
 	background-color: #eee;
 	font-size: 18px;
+	line-height: 1em;
 }
 
 .et-db #et-boc .form-submit {
@@ -22462,6 +22483,10 @@ a.et_pb_more_button:after,
 
 .et-db #et-boc .has-box-shadow-overlay {
 	position: relative;
+}
+
+.et-db #et-boc .et_clickable {
+	cursor: pointer;
 }
 
 .et-db #et-boc .screen-reader-text {

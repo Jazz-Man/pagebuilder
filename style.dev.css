@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.15
+Version: 3.16
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -12013,6 +12013,11 @@ a.et_pb_more_button:after,
 	position: relative;
 }
 
+.et_hover_enabled:hover {
+	position: relative;
+	z-index: 90000;
+}
+
 /* Button Styles */
 .et_pb_button {
 	position: relative;
@@ -12075,6 +12080,11 @@ a.et_pb_more_button:after,
 	-webkit-transition: all 0.2s;
 	-moz-transition: all 0.2s;
 	transition: all 0.2s;
+}
+
+.et_pb_button.et_pb_hovered:hover:after,
+.et_pb_button.et_hover_enabled:hover:after {
+	transition: none !important;
 }
 
 .et_pb_button:before {
@@ -13562,6 +13572,7 @@ p.et_pb_gallery_caption {
 	padding-left: 0;
 }
 
+.et_pb_newsletter_form .input,
 .et_pb_newsletter_form input[type="text"],
 .et_pb_newsletter_form input[type="password"],
 .et_pb_newsletter_form p.et_pb_newsletter_field input[type="text"],
@@ -14544,6 +14555,8 @@ h1.et_pb_contact_main_title {
 	position: absolute;
 	top: 0;
 	left: 0;
+	width: 100% !important;
+	height: auto !important;
 }
 
 .et_pb_circle_counter .percent {
@@ -15387,6 +15400,7 @@ h1.et_pb_contact_main_title {
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	background-size: cover;
+	transition: inherit;
 }
 
 .et_pb_audio_module_content {
@@ -16201,6 +16215,11 @@ ul.et_pb_social_media_follow {
 	pointer-events: none;
 
 	background-repeat-y: no-repeat;
+}
+
+.et_pb_top_inside_divider.et-no-transition,
+.et_pb_bottom_inside_divider.et-no-transition {
+	transition: none !important;
 }
 
 .et_pb_top_inside_divider {
@@ -17600,6 +17619,7 @@ span.comment_date {
 	color: #999;
 	background-color: #eee;
 	font-size: 18px;
+	line-height: 1em;
 }
 
 .form-submit {
@@ -22006,6 +22026,11 @@ span.comment_date {
 
 .has-box-shadow-overlay {
 	position: relative;
+}
+
+/* Link Options CSS */
+.et_clickable {
+	cursor: pointer;
 }
 
 /* Text meant only for screen readers. */

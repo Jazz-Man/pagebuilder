@@ -18,7 +18,6 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 					'email'        => esc_html__( 'Email', 'et_builder' ),
 					'elements'     => esc_html__( 'Elements', 'et_builder' ),
 					'redirect'     => esc_html__( 'Redirect', 'et_builder' ),
-					'background'   => esc_html__( 'Background', 'et_builder' ),
 				),
 			),
 		);
@@ -49,14 +48,15 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'form_field'   => array(
 					'label'    => esc_html__( 'Form Field', 'et_builder' ),
 					'css'      => array(
-						'main' => array(
-							"{$this->main_css_element} .input",
-							"{$this->main_css_element} .input::-webkit-input-placeholder",
-							"{$this->main_css_element} .input::-moz-placeholder",
-							"{$this->main_css_element} .input:-ms-input-placeholder",
-							"{$this->main_css_element} .input[type=checkbox] + label",
-							"{$this->main_css_element} .input[type=radio] + label",
-						),
+						'main' => implode( ', ', array(
+								"{$this->main_css_element} .input",
+								"{$this->main_css_element} .input::placeholder",
+								"{$this->main_css_element} .input::-webkit-input-placeholder",
+								"{$this->main_css_element} .input::-moz-placeholder",
+								"{$this->main_css_element} .input:-ms-input-placeholder",
+								"{$this->main_css_element} .input[type=checkbox] + label",
+								"{$this->main_css_element} .input[type=radio] + label",
+							) ),
 						'important' => 'plugin_only',
 					),
 				),
@@ -78,6 +78,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
+						'main'        => "{$this->main_css_element}.et_pb_module .et_pb_button",
 						'plugin_main' => "{$this->main_css_element}.et_pb_module .et_pb_button",
 					),
 					'no_rel_attr' => true,
@@ -224,7 +225,22 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'custom_color'      => true,
 				'toggle_slug'       => 'form_field',
 				'tab_slug'          => 'advanced',
+				'hover'             => 'tabs',
 			),
+		);
+
+		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['form_background_color'] = array(
+			'background-color' => implode(', ', array(
+				'%%order_class%% .input',
+				'%%order_class%% .input[type="checkbox"]+label i',
+				'%%order_class%% .input[type="radio"]+label i',
+			))
 		);
 
 		return $fields;
@@ -246,20 +262,21 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 		$et_pb_half_width_counter = 0;
 
-		$module_id             = $this->props['module_id'];
-		$captcha               = $this->props['captcha'];
-		$email                 = $this->props['email'];
-		$title                 = $this->props['title'];
-		$form_field_text_color = $this->props['form_field_text_color'];
-		$form_background_color = $this->props['form_background_color'];
-		$button_custom         = $this->props['custom_button'];
-		$custom_icon           = $this->props['button_icon'];
-		$submit_button_text    = $this->props['submit_button_text'];
-		$custom_message        = $this->props['custom_message'];
-		$use_redirect          = $this->props['use_redirect'];
-		$redirect_url          = $this->props['redirect_url'];
-		$success_message       = $this->props['success_message'];
-		$header_level          = $this->props['title_level'];
+		$module_id                   = $this->props['module_id'];
+		$captcha                     = $this->props['captcha'];
+		$email                       = $this->props['email'];
+		$title                       = $this->props['title'];
+		$form_field_text_color       = $this->props['form_field_text_color'];
+		$form_background_color       = $this->props['form_background_color'];
+		$form_background_color_hover = $this->get_hover_value( 'form_background_color' );
+		$button_custom               = $this->props['custom_button'];
+		$custom_icon                 = $this->props['button_icon'];
+		$submit_button_text          = $this->props['submit_button_text'];
+		$custom_message              = $this->props['custom_message'];
+		$use_redirect                = $this->props['use_redirect'];
+		$redirect_url                = $this->props['redirect_url'];
+		$success_message             = $this->props['success_message'];
+		$header_level                = $this->props['title_level'];
 
 		global $et_pb_contact_form_num;
 
@@ -292,6 +309,17 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'background-color: %1$s%2$s;',
 					esc_html( $form_background_color ),
+					et_is_builder_plugin_active() ? ' !important' : ''
+				),
+			) );
+		}
+
+		if ( et_builder_is_hover_enabled( 'form_background_color', $this->props ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%%:hover .input, %%order_class%%:hover .input[type="checkbox"] + label i, %%order_class%%:hover .input[type="radio"] + label i',
+				'declaration' => sprintf(
+					'background-color: %1$s%2$s;',
+					esc_html( $form_background_color_hover ),
 					et_is_builder_plugin_active() ? ' !important' : ''
 				),
 			) );

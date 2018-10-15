@@ -102,8 +102,8 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 					'tab_slug'        => 'advanced',
 					'toggle_slug'     => 'image',
 					'css'             => array(
-						'main'         => '%%order_class%% .project .et_portfolio_image',
-						'custom_style' => true,
+						'main'    => '%%order_class%% .project .et_portfolio_image',
+						'overlay' => 'inset',
 					),
 					'default_on_fronts'  => array(
 						'color'    => '',
@@ -126,8 +126,12 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				'options' => array(
 					'background_layout' => array(
 						'default' => 'light',
+						'hover' => 'tabs',
 					),
 				),
+				'css' => array(
+					'main' => '%%order_class%% .et_pb_module_header, %%order_class%% .post-meta'
+				)
 			),
 			'filters'               => array(
 				'css' => array(
@@ -450,17 +454,19 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$fullwidth          = $this->props['fullwidth'];
-		$posts_number       = $this->props['posts_number'];
-		$include_categories = $this->props['include_categories'];
-		$show_title         = $this->props['show_title'];
-		$show_categories    = $this->props['show_categories'];
-		$show_pagination    = $this->props['show_pagination'];
-		$background_layout  = $this->props['background_layout'];
-		$hover_icon          = $this->props['hover_icon'];
-		$zoom_icon_color     = $this->props['zoom_icon_color'];
-		$hover_overlay_color = $this->props['hover_overlay_color'];
-		$header_level        = $this->props['title_level'];
+		$fullwidth                       = $this->props['fullwidth'];
+		$posts_number                    = $this->props['posts_number'];
+		$include_categories              = $this->props['include_categories'];
+		$show_title                      = $this->props['show_title'];
+		$show_categories                 = $this->props['show_categories'];
+		$show_pagination                 = $this->props['show_pagination'];
+		$background_layout               = $this->props['background_layout'];
+		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
+		$hover_icon                      = $this->props['hover_icon'];
+		$zoom_icon_color                 = $this->props['zoom_icon_color'];
+		$hover_overlay_color             = $this->props['hover_overlay_color'];
+		$header_level                    = $this->props['title_level'];
 
 		wp_enqueue_script( 'hashchange' );
 
@@ -627,8 +633,22 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 			) );
 		}
 
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+
+		if ( $background_layout_hover_enabled ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
+
 		$output = sprintf(
-			'<div%4$s class="%1$s" data-posts-number="%5$d"%8$s>
+			'<div%4$s class="%1$s" data-posts-number="%5$d"%8$s%11$s%12$s>
 				%10$s
 				%9$s
 				<div class="et_pb_portfolio_filters clearfix">%2$s</div><!-- .et_pb_portfolio_filters -->
@@ -642,12 +662,14 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 			$category_filters,
 			$posts,
 			$this->module_id(),
-			esc_attr( $posts_number),
+			esc_attr( $posts_number), // #5
 			('on' === $show_pagination ? 'clearfix' : 'no_pagination' ),
 			('on' === $show_pagination ? '<div class="et_pb_portofolio_pagination"></div>' : '' ),
 			is_rtl() ? ' data-rtl="true"' : '',
 			$video_background,
-			$parallax_image_background
+			$parallax_image_background, // #10
+			et_esc_previously( $data_background_layout ),
+			et_esc_previously( $data_background_layout_hover )
 		);
 
 		return $output;

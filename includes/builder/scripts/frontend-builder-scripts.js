@@ -1048,10 +1048,11 @@
 				$et_pb_parallax = $( '.et_parallax_bg' ),
 				$et_pb_shop = $( '.et_pb_shop' ),
 				$et_pb_post_fullwidth = $( '.single.et_pb_pagebuilder_layout.et_full_width_page' ),
+				$et_pb_background_layout_hoverable = $('[data-background-layout][data-background-layout-hover]'),
 				et_is_mobile_device = navigator.userAgent.match( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/ ) !== null,
 				et_is_ipad = navigator.userAgent.match( /iPad/ ),
 				et_is_ie9 = navigator.userAgent.match( /MSIE 9.0/ ) !== null,
-        et_all_rows = $('.et_pb_row'),
+        		et_all_rows = $('.et_pb_row'),
 				$et_container = ! et_pb_custom.is_builder_plugin_used ? $( '.container' ) : et_all_rows,
 				et_container_width = $et_container.width(),
 				et_is_vertical_fixed_nav = $( 'body' ).hasClass( 'et_vertical_fixed' ),
@@ -1089,6 +1090,7 @@
 					con_goal: false,
 					con_short: false,
 				};
+			var $hover_gutter_modules = $('.et_pb_gutter_hover');
 
 			window.et_pb_slider_init = function( $this_slider ) {
 				var et_slider_settings = {
@@ -1167,70 +1169,90 @@
 				});
 			}
 
+			// Handle gutter hover options
+			if ($hover_gutter_modules.length > 0) {
+				$hover_gutter_modules.each(function() {
+					var $thisEl        = $(this);
+					var originalGutter = $thisEl.data('original_gutter');
+					var hoverGutter    = $thisEl.data('hover_gutter');
+
+					$thisEl.hover(
+						function() {
+							$thisEl.removeClass('et_pb_gutters' + originalGutter);
+							$thisEl.addClass('et_pb_gutters' + hoverGutter);
+						}, 
+						function() {
+							$thisEl.removeClass('et_pb_gutters' + hoverGutter);
+							$thisEl.addClass('et_pb_gutters' + originalGutter);
+						}
+					);
+				});
+			}
+
 			// init AB Testing if enabled
 			if ( et_pb_custom.is_ab_testing_active ) {
 				et_pb_init_ab_test();
 			}
 
-      if (et_all_rows.length) {
-        et_all_rows.each(function () {
-          var $this_row = $(this),
-            row_class = '';
+			if (et_all_rows.length) {
+				et_all_rows.each(function () {
+					var $this_row = $(this),
+					row_class = '';
 
-          row_class = et_get_column_types($this_row.find('>.et_pb_column'));
+					row_class = et_get_column_types($this_row.find('>.et_pb_column'));
 
-          if ('' !== row_class) {
-            $this_row.addClass(row_class);
-          }
+					if ('' !== row_class) {
+					$this_row.addClass(row_class);
+					}
 
-          if ($this_row.find('.et_pb_row_inner').length) {
-            $this_row.find('.et_pb_row_inner').each(function () {
-              var $this_row_inner = $(this);
-              row_class = et_get_column_types($this_row_inner.find('.et_pb_column'));
+					if ($this_row.find('.et_pb_row_inner').length) {
+					$this_row.find('.et_pb_row_inner').each(function () {
+						var $this_row_inner = $(this);
+						row_class = et_get_column_types($this_row_inner.find('.et_pb_column'));
 
-              if ('' !== row_class) {
-                $this_row_inner.addClass(row_class);
-              }
-            });
-          }
-        });
-      }
+						if ('' !== row_class) {
+						$this_row_inner.addClass(row_class);
+						}
+					});
+					}
+				});
+			}
 
-      function et_get_column_types($columns) {
-        var row_class = '';
+			function et_get_column_types($columns) {
+				var row_class = '';
 
-        if ($columns.length) {
-          $columns.each(function () {
-            var $column = $(this);
-            var column_type = $column.attr('class').split('et_pb_column_')[1];
-            var column_type_clean = typeof column_type !== 'undefined' ? column_type.split(' ', 1)[0] : '4_4';
-            var column_type_updated = column_type_clean.replace('_', '-').trim();
+				if ($columns.length) {
+					$columns.each(function () {
+					var $column = $(this);
+					var column_type = $column.attr('class').split('et_pb_column_')[1];
+					var column_type_clean = typeof column_type !== 'undefined' ? column_type.split(' ', 1)[0] : '4_4';
+					var column_type_updated = column_type_clean.replace('_', '-').trim();
 
-            row_class += '_' + column_type_updated;
-          });
+					row_class += '_' + column_type_updated;
+					});
 
-          if ((row_class.indexOf('1-4') !== -1)
-            || (row_class.indexOf('1-5_1-5') !== -1)
-            || (row_class.indexOf('1-6_1-6') !== -1)) {
-            switch (row_class) {
-              case '_1-4_1-4_1-4_1-4':
-                row_class = 'et_pb_row_4col';
-                break;
-              case '_1-5_1-5_1-5_1-5_1-5':
-                row_class = 'et_pb_row_5col';
-                break;
-              case '_1-6_1-6_1-6_1-6_1-6_1-6':
-                row_class = 'et_pb_row_6col';
-                break;
-              default:
-                row_class = 'et_pb_row' + row_class;
-            }
-          } else {
-            row_class = '';
-          }
-        }
-        return row_class;
-      }
+					if ((row_class.indexOf('1-4') !== -1)
+					|| (row_class.indexOf('1-5_1-5') !== -1)
+					|| (row_class.indexOf('1-6_1-6') !== -1)) {
+					switch (row_class) {
+						case '_1-4_1-4_1-4_1-4':
+						row_class = 'et_pb_row_4col';
+						break;
+						case '_1-5_1-5_1-5_1-5_1-5':
+						row_class = 'et_pb_row_5col';
+						break;
+						case '_1-6_1-6_1-6_1-6_1-6_1-6':
+						row_class = 'et_pb_row_6col';
+						break;
+						default:
+						row_class = 'et_pb_row' + row_class;
+					}
+					} else {
+					row_class = '';
+					}
+				}
+				return row_class;
+			}
 
 			window.et_pb_init_nav_menu( $et_top_menu );
 
@@ -2522,6 +2544,37 @@
 						.addClass( 'et_pb_inline_icon' );
 				} );
 			}
+
+			$et_pb_background_layout_hoverable.each(function() {
+				var $this_el                = $(this);
+				var background_layout       = $this_el.data('background-layout');
+				var background_layout_hover = $this_el.data('background-layout-hover');
+
+				// Switch the target element for the button module
+				if ($this_el.hasClass('et_pb_button_module_wrapper')) {
+					$this_el = $this_el.find('> .et_pb_button');
+				}
+
+				$this_el.on('mouseenter', function() {
+					$this_el.removeClass('et_pb_bg_layout_light et_pb_bg_layout_dark et_pb_text_color_dark');
+
+					$this_el.addClass('et_pb_bg_layout_' + background_layout_hover);
+
+					if ($this_el.hasClass('et_pb_audio_module') && 'light' === background_layout_hover) {
+						$this_el.addClass('et_pb_text_color_dark');
+					}
+				});
+
+				$this_el.on('mouseleave', function() {
+					$this_el.removeClass('et_pb_bg_layout_light et_pb_bg_layout_dark et_pb_text_color_dark');
+
+					$this_el.addClass('et_pb_bg_layout_' + background_layout);
+
+					if ($this_el.hasClass('et_pb_audio_module') && 'light' === background_layout) {
+						$this_el.addClass('et_pb_text_color_dark');
+					}
+				});
+			});
 
 			if ( $et_pb_circle_counter.length || is_frontend_builder || $( '.et_pb_ajax_pagination_container' ).length > 0 ) {
 				window.et_pb_circle_counter_init = function($the_counter, animate) {
@@ -4355,6 +4408,84 @@
 				} // End of et_pb_debounce().
 			}, 100 );
 
+
+			function et_process_link_options_data() {
+				if ('undefined' !== typeof et_link_options_data && et_link_options_data.length > 0) {
+
+					// $.each needs to be used so that the proper values are bound
+					// when there are multiple elements with link options enabled
+					$.each(et_link_options_data, function(index, link_option_entry) {
+						if (
+							! link_option_entry.class ||
+							! link_option_entry.url ||
+							! link_option_entry.target
+						) {
+							return;
+						}
+
+						var $clickable = $('.' + link_option_entry.class);
+
+						$clickable.on('click', function(event) {
+							// If the event target is different from current target a check for elements that should not trigger module link is performed
+							if ( ( event.target !== event.currentTarget && ! et_is_click_exception($(event.target)) ) || event.target === event.currentTarget ) {
+								event.stopPropagation();
+
+								if ('_blank' === link_option_entry.target) {
+									window.open( link_option_entry.url );
+
+									return;
+								}
+
+								window.location = link_option_entry.url;
+							}
+						});
+
+						// Prevent any links inside the element from triggering its (parent) link
+						$clickable.on('click', 'a, button', function(event) {
+							if (! et_is_click_exception( $(this))) {
+								event.stopPropagation();
+							}
+						});
+					});
+				}
+			}
+
+			// There are some classes that have other click handlers attached to them
+			// Link options should not be triggered by/or prevent them from working
+			function et_is_click_exception($element) {
+				var is_exception = false;
+
+				// List of elements that already have click handlers
+				var click_exceptions = [
+					// Accordion/Toggle
+					'.et_pb_toggle_title',
+
+					// Audio Module
+					'.mejs-container *',
+
+					// Contact Form Fields
+					'.et_pb_contact_field input',
+					'.et_pb_contact_field textarea',
+					'.et_pb_contact_field_checkbox *',
+					'.et_pb_contact_field_radio *',
+					'.et_pb_contact_captcha',
+
+					// Tabs
+					'.et_pb_tabs_controls a'
+				];
+
+				for (var i = 0; i < click_exceptions.length; i++) {
+					if ($element.is(click_exceptions[i])) {
+						is_exception = true;
+						break;
+					}
+				}
+
+				return is_exception;
+			}
+
+			et_process_link_options_data();
+
 			function et_pb_init_ab_test() {
 				var $et_pb_ab_goal = $( '.et_pb_ab_goal' ),
 					et_ab_subject_id = et_pb_get_subject_id();
@@ -5512,6 +5643,9 @@
 	}
 
 	$(document).ready(function() {
+		// Hover transition are disabled for section dividers to prevent visual glitches while document is loading,
+		// we can enable them again now.
+		$('.et_pb_top_inside_divider.et-no-transition, .et_pb_bottom_inside_divider.et-no-transition').removeClass('et-no-transition');
 		( et_pb_box_shadow_elements||[] ).map(et_pb_box_shadow_apply_overlay);
 	});
 

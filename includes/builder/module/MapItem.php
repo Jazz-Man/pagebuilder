@@ -37,6 +37,7 @@ class ET_Builder_Module_Map_Item extends ET_Builder_Module {
 			'text'                  => false,
 			'margin_padding' => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 	}
 

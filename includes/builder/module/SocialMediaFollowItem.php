@@ -90,6 +90,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 			'text'                  => false,
 			'max_width'             => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 	}
 
@@ -176,7 +177,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 				'toggle_slug' => 'main_content',
 			),
 			'url' => array(
-				'label'               => esc_html__( 'Account URL', 'et_builder' ),
+				'label'               => esc_html__( 'Account Link URL', 'et_builder' ),
 				'type'                => 'text',
 				'option_category'     => 'basic_option',
 				'description'         => esc_html__( 'The URL for this social network link.', 'et_builder' ),

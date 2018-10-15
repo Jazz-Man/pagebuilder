@@ -49,7 +49,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
@@ -66,6 +66,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 			'fonts'                 => false,
 			'text'                  => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 
 		$this->help_videos = array(
@@ -134,6 +135,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 				'custom_color'      => true,
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'play_icon',
+				'hover'             => 'tabs',
 			),
 			'__video' => array(
 				'type'                => 'computed',
@@ -159,6 +161,14 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 			),
 
 		);
+		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['play_icon_color'] = array( 'color' => '%%order_class%% .et_pb_video_overlay .et_pb_video_play' );
+
 		return $fields;
 	}
 
@@ -208,10 +218,11 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$src             = $this->props['src'];
-		$src_webm        = $this->props['src_webm'];
-		$image_src       = $this->props['image_src'];
-		$play_icon_color = $this->props['play_icon_color'];
+		$src                   = $this->props['src'];
+		$src_webm              = $this->props['src_webm'];
+		$image_src             = $this->props['image_src'];
+		$play_icon_color       = $this->props['play_icon_color'];
+		$play_icon_color_hover = $this->get_hover_value( 'play_icon_color' );
 
 		$video_src       = self::get_video( array(
 			'src'      => $src,
@@ -231,6 +242,16 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 				'declaration' => sprintf(
 					'color: %1$s;',
 					esc_html( $play_icon_color )
+				),
+			) );
+		}
+
+		if ( et_builder_is_hover_enabled( 'play_icon_color', $this->props ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector' => '%%order_class%% .et_pb_video_overlay .et_pb_video_play:hover',
+				'declaration' => sprintf(
+					'color: %1$s;',
+					esc_html( $play_icon_color_hover )
 				),
 			) );
 		}

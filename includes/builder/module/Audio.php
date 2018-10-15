@@ -53,7 +53,6 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				),
 			),
 			'background'            => array(
-				'use_background_color' => 'fields_only',
 				'settings' => array(
 					'color' => 'alpha',
 				),
@@ -69,7 +68,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
@@ -96,6 +95,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					),
 					'background_layout' => array(
 						'default_on_front' => 'dark',
+						'hover' => 'tabs',
 					),
 				),
 			),
@@ -157,6 +157,44 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'name' => esc_html__( 'An introduction to the Audio Player module', 'et_builder' ),
 			),
 		);
+	}
+
+	public function get_transition_fields_css_props() {
+		$title     = "{$this->main_css_element} .et_pb_module_header";
+		$meta      = "{$this->main_css_element} .et_audio_module_meta";
+		$container = "{$this->main_css_element} .et_audio_container";
+
+		$fields                      = parent::get_transition_fields_css_props();
+		$fields['background_layout'] = array(
+			'color'            => implode( ', ',
+				array(
+					$title,
+					$meta,
+					"{$container} .mejs-playpause-button button:before",
+					"{$container} .mejs-volume-button button:before",
+					"{$container} .mejs-container .mejs-controls .mejs-time span",
+				) ),
+			'background-color' => implode( ', ',
+				array(
+					$title,
+					"{$container} .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-total",
+					"{$container} .mejs-controls .mejs-time-rail .mejs-time-total",
+					"{$container} .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-current",
+					"{$container} .mejs-controls .mejs-time-rail .mejs-time-current",
+					"{$container} .mejs-controls .mejs-horizontal-volume-slider .mejs-horizontal-volume-handle",
+				) ),
+
+		);
+		$fields['text_shadow_style']         = array(
+			'text-shadow' => implode( ', ',
+				array(
+					$title,
+					$meta,
+					"{$this->main_css_element} .et_audio_container .mejs-container .mejs-controls .mejs-time span",
+				) ),
+		);
+
+		return $fields;
 	}
 
 	function get_fields() {
@@ -241,16 +279,31 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 
 	function render( $attrs, $content = null, $render_slug ) {
 		global $wp_version;
-		$audio             = $this->props['audio'];
-		$title             = $this->props['title'];
-		$artist_name       = $this->props['artist_name'];
-		$album_name        = $this->props['album_name'];
-		$image_url         = $this->props['image_url'];
-		$background_color  = $this->props['background_color'];
-		$background_layout = $this->props['background_layout'];
-		$header_level      = $this->props['title_level'];
+
+		$audio                           = $this->props['audio'];
+		$title                           = $this->props['title'];
+		$artist_name                     = $this->props['artist_name'];
+		$album_name                      = $this->props['album_name'];
+		$image_url                       = $this->props['image_url'];
+		$background_layout               = $this->props['background_layout'];
+		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
+		$header_level                    = $this->props['title_level'];
 
 		$meta = $cover_art = '';
+
+		$data_background_layout       = '';
+		$data_background_layout_hover = '';
+
+		if ( et_pb_hover_options()->is_enabled( 'background_layout', $this->props ) ) {
+			$data_background_layout = sprintf(
+				' data-background-layout="%1$s"',
+				esc_attr( $background_layout )
+			);
+			$data_background_layout_hover = sprintf(
+				' data-background-layout-hover="%1$s"',
+				esc_attr( $background_layout_hover )
+			);
+		}
 
 		if ( '' !== $artist_name || '' !== $album_name ) {
 			if ( '' !== $artist_name && '' !== $album_name ) {
@@ -326,11 +379,10 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<div%7$s class="%4$s"%5$s>
-				%9$s
+			'<div%6$s class="%4$s"%9$s%10$s>
 				%8$s
-				%6$s
-
+				%7$s
+				%5$s
 				<div class="et_pb_audio_module_content et_audio_container">
 					%1$s
 					%2$s
@@ -343,11 +395,12 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'audio' => $audio,
 			) ),
 			$this->module_classname( $render_slug ),
-			sprintf( ' style="background-color: %1$s;"', esc_attr( $background_color ) ),
 			$cover_art,
 			$this->module_id(),
 			$video_background,
-			$parallax_image_background
+			$parallax_image_background,
+			et_esc_previously( $data_background_layout ), // #10
+			et_esc_previously( $data_background_layout_hover )
 		);
 
 		return $output;

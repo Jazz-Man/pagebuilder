@@ -47,7 +47,7 @@ class ET_Builder_Module_Field_Template_Tabbed extends ET_Builder_Module_Field_Te
 									<?php $hidden = 'hidden' === $control['type'] ? ' et_pb_hidden' : ''; ?>
 									<div class="et-pb-composite-option et-pb-composite-tabbed-option et-pb-option<?= $hidden ?>" data-control-index="<?php echo esc_attr( $name ) ?>" data-option_name="<?php echo esc_attr( $name ) ?>">
 										<?php echo $render_helper->wrap_settings_option_label( $control ); ?>
-										<?php echo $render_helper->wrap_settings_option_field( $control ); ?>
+										<?php echo $render_helper->wrap_settings_option_field( $control, $name ); ?>
 									</div>
 								<?php endforeach; ?>
 							<?php endif; ?>

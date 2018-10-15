@@ -46,13 +46,14 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 				),
 			),
 			'fonts'                 => false,
 			'text'                  => false,
 			'button'                => false,
+			'link_options'          => false,
 		);
 
 		$this->help_videos = array(
@@ -121,7 +122,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				'description'       => esc_html__( 'Here you can choose whether or not the image should open in Lightbox. Note: if you select to open the image in Lightbox, url options below will be ignored.', 'et_builder' ),
 			),
 			'url' => array(
-				'label'           => esc_html__( 'Link URL', 'et_builder' ),
+				'label'           => esc_html__( 'Image Link URL', 'et_builder' ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
 				'depends_show_if' => 'off',
@@ -132,7 +133,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				'toggle_slug'     => 'link',
 			),
 			'url_new_window' => array(
-				'label'             => esc_html__( 'Url Opens', 'et_builder' ),
+				'label'             => esc_html__( 'Image Link Target', 'et_builder' ),
 				'type'              => 'select',
 				'option_category'   => 'configuration',
 				'options'           => array(
@@ -194,6 +195,13 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		);
 
 		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+		$filters = $this->get_transition_filters_fields_css_props( 'child_filters' );
+
+		return array_merge( $fields, $filters );
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {

@@ -215,16 +215,26 @@ function et_builder_load_modules_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'et_builder_load_modules_styles', 11 );
 
-function et_builder_get_animation_data() {
-	// Animaiton shouldn't be loaded in Builder, so always pass an empty array there.
-	$animation_data      = et_fb_enabled() ? array() : et_builder_handle_animation_data();
-	$animation_data_json = json_encode( $animation_data ); ?>
+function et_builder_get_modules_js_data() {
+	// Data shouldn't be loaded in Builder, so always pass an empty array there.
+	$animation_data         = et_fb_enabled() ? array() : et_builder_handle_animation_data();
+	$animation_data_json    = json_encode( $animation_data );
+
+	$link_options_data      = et_fb_enabled() ? array() : et_builder_handle_link_options_data();
+	$link_options_data_json = json_encode( $link_options_data );
+	?>
 	<script type="text/javascript">
-		var et_animation_data = <?php echo $animation_data_json; ?>;
+		<?php if ( $animation_data ): ?>
+		var et_animation_data = <?php echo et_esc_previously( $animation_data_json ); ?>;
+		<?php endif;
+
+		if ( $link_options_data ): ?>
+		var et_link_options_data = <?php echo et_esc_previously( $link_options_data_json ); ?>;
+		<?php endif; ?>
 	</script>
 	<?php
 }
-add_action( 'wp_footer', 'et_builder_get_animation_data' );
+add_action( 'wp_footer', 'et_builder_get_modules_js_data' );
 
 // Force Backbone templates cache to be cleared on language change to make sure the settings modal is translated
 // defaults for arguments are provided because their number is different for both the actions
@@ -252,6 +262,28 @@ function et_builder_handle_animation_data( $element_data = false ) {
 	}
 
 	// Prevent duplication animation data entries created by global modules
+	if ( in_array( $element_data['class'], $data_classes ) ) {
+		return;
+	}
+
+	$data[] = $element_data;
+	$data_classes[] = $element_data['class'];
+}
+
+function et_builder_handle_link_options_data( $element_data = false ) {
+	static $data = array();
+	static $data_classes = array();
+
+	if ( ! $element_data ) {
+		return $data;
+	}
+
+	// Safe checks bellow
+	if ( empty( $element_data['class'] ) ) {
+		return;
+	}
+
+	// Prevent duplication link options data entries created by global modules
 	if ( in_array( $element_data['class'], $data_classes ) ) {
 		return;
 	}

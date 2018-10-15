@@ -71,7 +71,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 					'toggle_slug'     => 'image',
 					'css'             => array(
 						'main'         => '%%order_class%% .et_shop_image',
-						'custom_style' => true,
+						'overlay' => 'inset',
 					),
 					'default_on_fronts'  => array(
 						'color'    => '',
@@ -87,13 +87,19 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			),
 			'text'                  => array(
 				'css' => array(
-					'text_shadow' => array(
+					'text_shadow' => implode(', ', array(
 						// Title
-						"{$this->main_css_element} .woocommerce ul.products h3, {$this->main_css_element} .woocommerce ul.products  h1, {$this->main_css_element} .woocommerce ul.products  h2, {$this->main_css_element} .woocommerce ul.products  h4, {$this->main_css_element} .woocommerce ul.products  h5, {$this->main_css_element} .woocommerce ul.products  h6",
+						"{$this->main_css_element} .woocommerce ul.products h3",
+						"{$this->main_css_element} .woocommerce ul.products  h1",
+						"{$this->main_css_element} .woocommerce ul.products  h2",
+						"{$this->main_css_element} .woocommerce ul.products  h4",
+						"{$this->main_css_element} .woocommerce ul.products  h5",
+						"{$this->main_css_element} .woocommerce ul.products  h6",
 						// Price
-						"{$this->main_css_element} .woocommerce ul.products .price, {$this->main_css_element} .woocommerce ul.products .price .amount",
+						"{$this->main_css_element} .woocommerce ul.products .price",
+						"{$this->main_css_element} .woocommerce ul.products .price .amount"
 
-					),
+					) ),
 				),
 			),
 			'filters'               => array(
@@ -345,6 +351,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				'custom_color'      => true,
 				'tab_slug'          => 'advanced',
 				'toggle_slug'       => 'badge',
+				'hover'             => 'tabs',
 			),
 			'icon_hover_color' => array(
 				'label'             => esc_html__( 'Icon Hover Color', 'et_builder' ),
@@ -402,6 +409,14 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				),
 			),
 		);
+
+		return $fields;
+	}
+
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+
+		$fields['sale_badge_color'] = array( 'background-color' => '%%order_class%% span.onsale' );
 
 		return $fields;
 	}
@@ -599,6 +614,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		$orderby                 = $this->props['orderby'];
 		$columns                 = $this->props['columns_number'];
 		$sale_badge_color        = $this->props['sale_badge_color'];
+		$sale_badge_color_hover  = $this->get_hover_value( 'sale_badge_color' );
 		$icon_hover_color        = $this->props['icon_hover_color'];
 		$hover_overlay_color     = $this->props['hover_overlay_color'];
 		$hover_icon              = $this->props['hover_icon'];
@@ -612,6 +628,16 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				'declaration' => sprintf(
 					'background-color: %1$s !important;',
 					esc_html( $sale_badge_color )
+				),
+			) );
+		}
+
+		if ( et_builder_is_hover_enabled( 'sale_badge_color', $this->props ) ) {
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%%:hover span.onsale',
+				'declaration' => sprintf(
+					'background-color: %1$s !important;',
+					esc_html( $sale_badge_color_hover )
 				),
 			) );
 		}

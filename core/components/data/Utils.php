@@ -569,6 +569,46 @@ class ET_Core_Data_Utils {
 		return json_decode( $json, true );
 	}
 
+	/**
+	 * Make sure that in provided selector do not exist sub-selectors that targets inputs placeholders
+	 *
+	 * If they exist they should be split in an apart selector.
+	 *
+	 * @param string $selector
+	 *
+	 * @return array Return a list of selectors
+	 */
+	public function sanitize_css_placeholders( $selector ) {
+		$selectors     = explode( ',', $selector );
+		$selectors     = array_map( 'trim', $selectors );
+		$selectors     = array_filter( $selectors );
+		$main_selector = array();
+		$exceptions    = array();
+		$placeholders  = array(
+			'::-webkit-input-placeholder',
+			'::-moz-placeholder',
+			':-ms-input-placeholder',
+		);
+
+		// No need to sanitize if is a single selector or even no selectors at all
+		// Also if selectors do not contain placeholder meta-selector
+		if ( count( $selectors ) < 2 || ! preg_match( '/' . implode( '|', $placeholders ) . '/', $selector ) ) {
+			return array( $selector );
+		}
+
+		foreach ( $selectors as $selector ) {
+			foreach ( $placeholders as $placeholder ) {
+				if ( strpos( $selector, $placeholder ) !== false ) {
+					$exceptions[] = $selector;
+					continue 2;
+				}
+			}
+
+			$main_selector[] = $selector;
+		}
+
+		return array_merge( array( implode( ', ', $main_selector ) ), $exceptions );
+	}
 }
 
 

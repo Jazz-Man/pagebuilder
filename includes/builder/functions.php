@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.15' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.16' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -5497,7 +5497,7 @@ function et_pb_pagebuilder_meta_box() {
 
 	printf(
 		'<script type="text/template" id="et-builder-mobile-options-tabs-template">
-			<div class="et_pb_mobile_settings_tabs">
+			<div class="et_pb_mobile_settings_tabs et_pb_tabs_mobile">
 				<a href="#" class="et_pb_mobile_settings_tab et_pb_mobile_settings_active_tab" data-settings_tab="desktop">
 					%1$s
 				</a>
@@ -5512,6 +5512,53 @@ function et_pb_pagebuilder_meta_box() {
 		esc_html__( 'Desktop', 'et_builder' ),
 		esc_html__( 'Tablet', 'et_builder' ),
 		esc_html__( 'Smartphone', 'et_builder' )
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-hover-options-tabs-template">
+			<div class="et_pb_mobile_settings_tabs et_pb_tabs_hover et_pb_tabs_hover_only">
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_mobile_settings_active_tab et_pb_hover" data-settings_tab="default">
+					%1$s
+				</a>
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_hover" data-settings_tab="hover">
+					%2$s
+				</a>
+			</div>
+		</script>',
+		esc_html__( 'Default', 'et_builder' ),
+		esc_html__( 'Hover', 'et_builder' )
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-mobile-hover-options-tabs-template">
+			<div class="et_pb_mobile_settings_tabs et_pb_tabs_mobile et_pb_tabs_hover">
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_mobile_settings_active_tab" data-settings_tab="desktop">
+					%1$s
+				</a>
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_hover" data-settings_tab="hover">
+					%2$s
+				</a>
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_mobile" data-settings_tab="tablet">
+					%3$s
+				</a>
+				<a href="#" class="et_pb_mobile_settings_tab et_pb_mobile" data-settings_tab="phone">
+					%4$s
+				</a>
+			</div>
+		</script>',
+		esc_html__( 'Desktop', 'et_builder' ),
+		esc_html__( 'Hover', 'et_builder' ),
+		esc_html__( 'Tablet', 'et_builder' ),
+		esc_html__( 'Smartphone', 'et_builder' )
+	);
+
+	printf(
+		'<script type="text/template" id="et-builder-hover-icon-template"><span class="et-pb-hover-settings-toggle" data-id="placeholder">
+			 <svg width="18" height="18" viewBox="-2 -3 16 16">
+			     <path d="M8.69 9.43l2.22-.84a.5.5 0 0 0 .19-.8L5.22 1.28A.7.7 0 0 0 4 1.75v8.73a.5.5 0 0 0 .68.47l2.14-.81 1 2.42a1 1 0 1 0 1.86-.75z"></path>
+			 </svg>
+			 <input type="hidden" id="placeholder"/>
+			 </span></script>'
 	);
 
 	printf(
@@ -7623,6 +7670,7 @@ function et_fb_retrieve_builder_data() {
 	$fields_data['customTabsFields'] = ET_Builder_Element::get_settings_modal_tabs_fields( $post_type );
 	$fields_data['customLayoutsTabs'] = ET_Builder_Library::builder_library_modal_custom_tabs( $post_type );
 	$fields_data['moduleItemsConfig'] = ET_Builder_Element::get_module_items_configs( $post_type );
+	$fields_data['moduleTransitions'] = ET_Builder_Element::get_modules_transitions( $post_type );
 	$fields_data['contact_form_input_defaults'] = et_fb_process_shortcode( sprintf(
 		'[et_pb_contact_field field_title="%1$s" field_type="input" field_id="Name" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%2$s" field_type="email" field_id="Email" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%3$s" field_type="text" field_id="Message" required_mark="on" fullwidth_field="on" /]',
 		esc_attr__( 'Name', 'et_builder' ),
@@ -7984,13 +8032,38 @@ function et_fb_process_shortcode( $content, $parent_address = '', $global_parent
 			$output = call_user_func( $shortcode_tags[$tag], $attr, null, $tag );
 		}
 
-		$_matches[] = $output;
+		$_matches[] = et_fb_add_additional_attrs( $attr, $output );
 	}
 
 	// Turn off the flag since the shortcode object is done being built.
 	et_fb_reset_shortcode_object_processing();
 
 	return $_matches;
+}
+
+// Whitelist any additional attributes
+function et_fb_add_additional_attrs( $processed_attrs, $output ) {
+	if ( ! isset( $output['attrs'] ) ) {
+		return $output;
+	}
+
+	// A list of all the attributes that are already returned after the shortcode is processed
+	$safe_attrs           = array_keys( $output['attrs'] );
+	$whitelisted_attrs    = array();
+
+	foreach ( $processed_attrs as $attr => $value ) {
+		if ( ! preg_match( '~_hover(_enabled)?$~', $attr ) ) {
+			continue;
+		}
+
+		$whitelisted_attrs[$attr] = $value;
+	}
+
+	if ( $whitelisted_attrs ) {
+		$output['attrs'] = array_merge( $output['attrs'], $whitelisted_attrs );
+	}
+
+	return $output;
 }
 
 /**
@@ -8757,5 +8830,26 @@ function et_builder_get_active_plugins() {
 	}
 
 	return apply_filters( 'et_builder_get_active_plugins', $active_plugins );
+}
+endif;
+
+if ( ! function_exists( 'et_has_hover_enabled' ) ) :
+function et_has_hover_enabled( $props ) {
+	$et_has_hover_enabled = false;
+	$prop_names = array_keys( $props );
+	$suffix = et_pb_hover_options()->get_enabled_suffix();
+	foreach ( $prop_names as $prop_name ) {
+		if ( preg_match( "~{$suffix}$~", $prop_name ) && 'on' === $props[ $prop_name ] ) {
+			$et_has_hover_enabled = true;
+			break;
+		}
+	}
+	return $et_has_hover_enabled;
+}
+endif;
+
+if ( ! function_exists( 'et_builder_is_hover_enabled' ) ) :
+function et_builder_is_hover_enabled( $setting, $props ) {
+	return et_pb_hover_options()->is_enabled( $setting, $props );
 }
 endif;
