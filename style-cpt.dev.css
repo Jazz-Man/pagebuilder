@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.16
+Version: 3.16.1
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -7313,7 +7313,7 @@ a.et_pb_more_button:after,
 
 	.et_pb_gutters3 .et_pb_column_1_6,
 	.et_pb_gutters3.et_pb_row .et_pb_column_1_6 {
-		width: 12.083%;
+		width: 12.0833%;
 	}
 
 	.et_pb_gutters3 .et_pb_column_1_6 .et_pb_module,
@@ -9453,7 +9453,7 @@ a.et_pb_more_button:after,
 
 	.et_pb_gutters2 .et_pb_column_1_6,
 	.et_pb_gutters2.et_pb_row .et_pb_column_1_6 {
-		width: 14.167%;
+		width: 14.1667%;
 	}
 
 	.et_pb_gutters2 .et_pb_column_1_6 .et_pb_module,
@@ -10523,7 +10523,7 @@ a.et_pb_more_button:after,
 
 	.et_pb_gutters1 .et_pb_column_1_6,
 	.et_pb_gutters1.et_pb_row .et_pb_column_1_6 {
-		width: 16.667%;
+		width: 16.6667%;
 	}
 
 	.et_pb_gutters1 .et_pb_column_1_6 .et_pb_module,
@@ -12600,7 +12600,7 @@ a.et_pb_more_button:after,
 
 .et-db #et-boc .et_hover_enabled:hover {
 	position: relative;
-	z-index: 90000;
+	z-index: 2;
 }
 
 .et-db #et-boc .et_pb_button {
@@ -15089,6 +15089,11 @@ a.et_pb_more_button:after,
 
 .et-db #et-boc .et_pb_circle_counter {
 	max-width: 225px;
+}
+
+.et-db #et-boc .et_pb_circle_counter_inner {
+	display: block;
+	position: relative;
 }
 
 .et-db #et-boc .et_pb_circle_counter canvas {
@@ -17672,6 +17677,7 @@ a.et_pb_more_button:after,
 }
 
 .et-db #et-boc .et_pb_fullwidth_section .et_pb_post_title {
+	position: relative;
 	padding: 6% 0;
 }
 
@@ -21087,11 +21093,6 @@ a.et_pb_more_button:after,
 	.et-db #et-boc .et_audio_content,
 	.et-db #et-boc .et_pb_blog_grid .et_link_content {
 		padding: 35px 20px !important;
-	}
-
-	.et-db #et-boc .et_pb_blog_grid .et_main_video_container {
-		margin-right: 0;
-		margin-left: 0;
 	}
 
 	.et-db #et-boc .et_pb_post .et_pb_slide,

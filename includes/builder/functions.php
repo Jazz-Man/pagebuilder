@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.16' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.16.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2354,8 +2354,40 @@ function et_pb_edit_export_query_filter( $query ) {
 
 function et_pb_setup_theme(){
 	add_action( 'add_meta_boxes', 'et_pb_add_custom_box', 10, 2 );
+	add_action( 'add_meta_boxes', 'et_builder_prioritize_meta_box', 999999 );
 }
 add_action( 'init', 'et_pb_setup_theme', 11 );
+
+/**
+ * Forcefully prioritize the Divi Builder metabox to be at the top.
+ * User drag&drop metabox order customizations are still supported.
+ * Required since not all plugins properly register their metaboxes in the add_meta_boxes hook.
+ *
+ * @since ??
+ *
+ * @return void
+ */
+function et_builder_prioritize_meta_box() {
+	global $wp_meta_boxes;
+
+	foreach ( $wp_meta_boxes as $page => $contexts ) {
+		foreach ( $contexts as $context => $priorities ) {
+			foreach ( $priorities as $priority => $boxes ) {
+				if ( ! isset( $boxes[ ET_BUILDER_LAYOUT_POST_TYPE ] ) ) {
+					continue;
+				}
+
+				$divi = $boxes[ ET_BUILDER_LAYOUT_POST_TYPE ];
+				unset( $boxes[ ET_BUILDER_LAYOUT_POST_TYPE ] );
+
+				$wp_meta_boxes[ $page ][ $context ][ $priority ] = array_merge(
+					array( ET_BUILDER_LAYOUT_POST_TYPE => $divi ),
+					$boxes
+				);
+			}
+		}
+	}
+}
 
 /**
 * The page builders require the WP Heartbeat script in order to function. We ensure the heartbeat
@@ -3112,7 +3144,7 @@ function et_pb_add_builder_page_js_css(){
 		'default_initial_text_module'              => apply_filters( 'et_builder_default_initial_text_module', 'et_pb_text' ),
 		'section_only_row_dragged_away'            => esc_html__( 'The section should have at least one row.', 'et_builder' ),
 		'fullwidth_module_dragged_away'            => esc_html__( 'Fullwidth module can\'t be used outside of the Fullwidth Section.', 'et_builder' ),
-		'stop_dropping_3_col_row'                  => esc_html__( '3 column row can\'t be used in this column.', 'et_builder' ),
+		'stop_dropping_3_col_row'                  => esc_html__( "This number of columns can't be used on this row.", 'et_builder' ),
 		'preview_image'                            => esc_html__( 'Preview', 'et_builder' ),
 		'empty_admin_label'                        => esc_html__( 'Module', 'et_builder' ),
 		'video_module_image_error'                 => esc_html__( 'Still images cannot be generated from this video service and/or this video format', 'et_builder' ),
@@ -3623,7 +3655,7 @@ function et_builder_get_columns() {
 function et_builder_get_columns_layout() {
 	$layout_columns =
 		'<% if ( typeof et_pb_specialty !== \'undefined\' && et_pb_specialty === \'on\' ) { %>
-			<li data-layout="1_2,1_2" data-specialty="1,0" data-specialty_columns="2">
+			<li data-layout="1_2,1_2" data-specialty="1,0" data-specialty_columns="3">
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_variations et_pb_3_variations">
 					<div class="et_pb_variation et_pb_variation_full"></div>
 					<div class="et_pb_variation_row">
@@ -3639,7 +3671,7 @@ function et_builder_get_columns_layout() {
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_specialty_column"></div>
 			</li>
 
-			<li data-layout="1_2,1_2" data-specialty="0,1" data-specialty_columns="2">
+			<li data-layout="1_2,1_2" data-specialty="0,1" data-specialty_columns="3">
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_specialty_column"></div>
 
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_variations et_pb_3_variations">
@@ -3688,7 +3720,7 @@ function et_builder_get_columns_layout() {
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 			</li>
 
-			<li data-layout="1_4,1_2,1_4" data-specialty="0,1,0" data-specialty_columns="2">
+			<li data-layout="1_4,1_2,1_4" data-specialty="0,1,0" data-specialty_columns="3">
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_variations et_pb_3_variations">
 					<div class="et_pb_variation et_pb_variation_full"></div>
@@ -3705,7 +3737,7 @@ function et_builder_get_columns_layout() {
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 			</li>
 
-			<li data-layout="1_2,1_4,1_4" data-specialty="1,0,0" data-specialty_columns="2">
+			<li data-layout="1_2,1_4,1_4" data-specialty="1,0,0" data-specialty_columns="3">
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_variations et_pb_3_variations">
 					<div class="et_pb_variation et_pb_variation_full"></div>
 					<div class="et_pb_variation_row">
@@ -3722,7 +3754,7 @@ function et_builder_get_columns_layout() {
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 			</li>
 
-			<li data-layout="1_4,1_4,1_2" data-specialty="0,0,1" data-specialty_columns="2">
+			<li data-layout="1_4,1_4,1_2" data-specialty="0,0,1" data-specialty_columns="3">
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 				<div class="et_pb_layout_column et_pb_column_layout_1_4 et_pb_specialty_column"></div>
 				<div class="et_pb_layout_column et_pb_column_layout_1_2 et_pb_variations et_pb_3_variations">
@@ -3739,7 +3771,7 @@ function et_builder_get_columns_layout() {
 				</div>
 			</li>
 
-			<li data-layout="1_3,2_3" data-specialty="0,1" data-specialty_columns="2">
+			<li data-layout="1_3,2_3" data-specialty="0,1" data-specialty_columns="4">
 				<div class="et_pb_layout_column et_pb_column_layout_1_3 et_pb_specialty_column"></div>
 				<div class="et_pb_layout_column et_pb_column_layout_2_3 et_pb_variations et_pb_3_variations">
 					<div class="et_pb_variation et_pb_variation_full"></div>
@@ -3756,7 +3788,7 @@ function et_builder_get_columns_layout() {
 				</div>
 			</li>
 
-			<li data-layout="2_3,1_3" data-specialty="1,0" data-specialty_columns="2">
+			<li data-layout="2_3,1_3" data-specialty="1,0" data-specialty_columns="4">
 				<div class="et_pb_layout_column et_pb_column_layout_2_3 et_pb_variations et_pb_3_variations">
 					<div class="et_pb_variation et_pb_variation_full"></div>
 					<div class="et_pb_variation_row">

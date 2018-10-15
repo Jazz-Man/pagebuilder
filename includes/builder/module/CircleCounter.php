@@ -197,41 +197,6 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 		$custom_padding_phone            = $this->props['custom_padding_phone'];
 		$header_level                    = $this->props['title_level'];
 
-		if ( '' !== $custom_padding ) {
-			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% canvas',
-				'declaration' => sprintf(
-					'top: %1$s; left: %2$s;',
-					esc_attr( et_pb_get_spacing( $custom_padding, 'top' ) ),
-					esc_attr( et_pb_get_spacing( $custom_padding, 'left' ) )
-				),
-			) );
-		}
-
-		if ( '' !== $custom_padding_tablet ) {
-			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% canvas',
-				'declaration' => sprintf(
-					'top: %1$s; left: %2$s;',
-					esc_attr( et_pb_get_spacing( $custom_padding_tablet, 'top' ) ),
-					esc_attr( et_pb_get_spacing( $custom_padding_tablet, 'left' ) )
-				),
-				'media_query' => ET_Builder_Element::get_media_query( 'max_width_980' ),
-			) );
-		}
-
-		if ( '' !== $custom_padding_phone ) {
-			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% canvas',
-				'declaration' => sprintf(
-					'top: %1$s; left: %2$s;',
-					esc_attr( et_pb_get_spacing( $custom_padding_phone, 'top' ) ),
-					esc_attr( et_pb_get_spacing( $custom_padding_phone, 'left' ) )
-				),
-				'media_query' => ET_Builder_Element::get_media_query( 'max_width_767' ),
-			) );
-		}
-
 		$number = str_ireplace( '%', '', $number );
 
 		$video_background = $this->video_background();
@@ -269,11 +234,13 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 		}
 
 		$output = sprintf(
-			'<div%1$s class="%2$s" data-number-value="%3$s" data-bar-bg-color="%4$s"%7$s%8$s%11$s%12$s>
+			'<div%1$s class="%2$s"%11$s%12$s>
+				<div class="et_pb_circle_counter_inner" data-number-value="%3$s" data-bar-bg-color="%4$s"%7$s%8$s>
 				%10$s
 				%9$s
 					<div class="percent"><p><span class="percent-value"></span>%5$s</p></div>
 					%6$s
+				</div>
 			</div><!-- .et_pb_circle_counter -->',
 			$this->module_id(),
 			$this->module_classname( $render_slug ),

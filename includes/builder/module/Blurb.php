@@ -432,6 +432,27 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		return $fields;
 	}
 
+	public function get_transition_fields_css_props() {
+		$fields = parent::get_transition_fields_css_props();
+		$fields['icon_color'] = array(
+			'color' => '%%order_class%% .et-pb-icon',
+		);
+
+		$fields['circle_color'] = array(
+			'background-color' => '%%order_class%% .et-pb-icon',
+		);
+
+		$fields['circle_border_color'] = array(
+			'border-color' => '%%order_class%% .et-pb-icon',
+		);
+
+		$fields['icon_font_size'] = array(
+			'font-size' => '%%order_class%% .et-pb-icon',
+		);
+
+		return $fields;
+	}
+
 	function render( $attrs, $content = null, $render_slug ) {
 		$title                           = $this->props['title'];
 		$url                             = $this->props['url'];

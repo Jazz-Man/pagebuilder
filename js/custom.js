@@ -361,9 +361,10 @@
 					is_post_pb_full_layout_has_title = $et_pb_post_fullwidth.length && $et_main_content_first_row_meta_wrapper_title.length,
 					is_post_pb_full_layout_no_title  = $et_pb_post_fullwidth.length && 0 === $et_main_content_first_row_meta_wrapper_title.length,
 					is_pb_fullwidth_section_first    = $et_pb_first_row.is( '.et_pb_fullwidth_section' ),
-					is_no_pb_mobile                  = et_window_width <= 980 && $et_main_content_first_row.length;
+					is_no_pb_mobile                  = et_window_width <= 980 && $et_main_content_first_row.length,
+					isProject                        = $( 'body' ).hasClass( 'single-project' );
 
-				if ( is_post_pb && ! ( is_post_pb_full_layout_no_title && is_pb_fullwidth_section_first ) ) {
+				if ( is_post_pb && ! ( is_post_pb_full_layout_no_title && is_pb_fullwidth_section_first ) && !isProject ) {
 
 					/* Desktop / Mobile + Single Post */
 

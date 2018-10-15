@@ -2607,7 +2607,7 @@
 
 				window.et_pb_reinit_circle_counters = function( $et_pb_circle_counter ) {
 					$et_pb_circle_counter.each(function(){
-						var $the_counter = $(this);
+						var $the_counter = $(this).find('.et_pb_circle_counter_inner');
 						window.et_pb_circle_counter_init($the_counter, false);
 
 						$the_counter.on('containerWidthChanged', function( event ){
@@ -4288,7 +4288,7 @@
 					if ( $et_pb_circle_counter.length ) {
 						// iterate over each.
 						$et_pb_circle_counter.each(function(){
-							var $this_counter = $(this);
+							var $this_counter = $(this).find('.et_pb_circle_counter_inner');
 							if ( ! $this_counter.is( ':visible' ) || et_has_animation_data( $this_counter ) ) {
 								return;
 							}
@@ -4356,7 +4356,7 @@
 
 					if ( $et_pb_circle_counter.length ) {
 						$et_pb_circle_counter.each(function() {
-							var $this_counter = $(this);
+							var $this_counter = $(this).find('.et_pb_circle_counter_inner');
 
 							if ( ! $this_counter.is( ':visible' ) ) {
 								return;
@@ -4923,7 +4923,7 @@
 					var $et_pb_circle_counter = $( '.et_pb_circle_counter' );
 					if ( $et_pb_circle_counter.length ) {
 						$et_pb_circle_counter.each(function(){
-							var $this_counter = $(this);
+							var $this_counter = $(this).find('.et_pb_circle_counter_inner');
 							if ( ! $this_counter.is( ':visible' ) || typeof $this_counter.data('easyPieChart') === 'undefined' ) {
 								return;
 							}

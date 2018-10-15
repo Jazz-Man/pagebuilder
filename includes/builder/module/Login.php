@@ -445,7 +445,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 
 		if ( '' !== $form_field_background_color ) {
 			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% input[type="text"], %%order_class%% textarea, %%order_class%% .input',
+				'selector'    => '%%order_class%% input[type="password"], %%order_class%% input[type="text"], %%order_class%% textarea, %%order_class%% .input',
 				'declaration' => sprintf(
 					'background-color: %1$s%2$s;',
 					esc_html( $form_field_background_color ),
@@ -483,7 +483,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 			}
 
 			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => '%%order_class%% input[type="text"], %%order_class%% textarea, %%order_class%% .input',
+				'selector'    => '%%order_class%% input[type="password"], %%order_class%% input[type="text"], %%order_class%% textarea, %%order_class%% .input',
 				'declaration' => sprintf(
 					'color: %1$s;',
 					esc_html( $form_field_text_color )

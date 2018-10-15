@@ -1687,7 +1687,7 @@ function et_fb_backend_helpers() {
 			'section_only_row_dragged_away'            => esc_html__( 'The section should have at least one row.', 'et_builder' ),
 			'global_module_alert'                      => esc_html__( 'You cannot add global modules into global sections or rows', 'et_builder' ),
 			'cannot_move_module_goal_out_from_subject' => esc_html__( 'Once set, a goal that has been placed inside a split testing subject cannot be moved outside the split testing subject. You can end your split test and start a new one if you would like to make this change.', 'et_builder' ),
-			'stop_dropping_3_col_row'                  => esc_html__( '3 column row can\'t be used in this column.', 'et_builder' ),
+			'stop_dropping_3_col_row'                  => esc_html__( "This number of columns can't be used on this row.", 'et_builder' ),
 		),
 		'tooltip' => array(
 			'pageSettingsBar' => array(

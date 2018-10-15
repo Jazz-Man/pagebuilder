@@ -1508,10 +1508,6 @@ html.et_fb_preview_active--responsive_preview--phone_preview .et_audio_content,
 html.et_fb_preview_active--responsive_preview--phone_preview .et_pb_blog_grid .et_link_content {
   padding: 35px 20px !important;
 }
-html.et_fb_preview_active--responsive_preview--phone_preview .et_pb_blog_grid .et_main_video_container {
-  margin-left: 0;
-  margin-right: 0;
-}
 html.et_fb_preview_active--responsive_preview--phone_preview .et_pb_post .et_pb_slide,
 html.et_fb_preview_active--responsive_preview--phone_preview .et_pb_blog_grid .et_pb_post .et_pb_slide {
   min-height: 156px !important;

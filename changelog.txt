@@ -1,3 +1,35 @@
+version 3.16.1 ( updated 10-05-2018 )
+- Fixed Responsive Tabs, Hover Tabs and reset button support for multiselect.
+- Added missing blurb icon transitions.
+- Fixed Login Module issue where form field background color and text color was not applied to Password Field.
+- Fixed circle counter behavior when custom padding on hover exists.
+- Fixed Hover tabs rendering in combination with responsive tabs for Section Dividers.
+- Fixed an issue with background controls in the Visual Builder that incorrectly only allowed background color to be edited in certain situations.
+- Fixed heading 2 text size in VB that rendered differently than previous version (3.14 compared to 3.15).
+- Fixed Fullwidth Post-Title module issue where background disappeared when section background set as parallax.
+- The Divi Builder meta box will now take priority over other meta boxes on the post edit screen.
+- Fixed inconsistent mobile display of embedded videos in Blog module blocks.
+- Fixed a Visual Builder bug that prevented editing in Internet Explorer 11.
+- Fixed a Visual Builder bug where non-Latin characters were ignored when determining whether a block of text was empty.
+- Fixed double click issue when opening modal settings for selected items.
+- Fixed 1/6 column wrap on certain viewports.
+- Fixed global element children so that they stay colored as a global when moved outside their global containers.
+- Fixed issue with dragging specialty columns.
+- Fixed font field group visibility when options filter is active.
+- Fixed the missing padding on the Section when the Nav has a transparent background.
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Login.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-grid.less
+	* includes/builder/styles/frontend-builder-style.less
+	* js/custom.js
+
 version 3.16 ( updated 10-4-2018 )
 - Added Hover Options to the Divi Builder.
 	* core/components/data/Utils.php
