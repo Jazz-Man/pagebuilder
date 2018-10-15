@@ -3950,13 +3950,15 @@
 								et_waypoint( $animated, {
 									offset: '100%',
 									handler: function() {
-										if ( $(this.element).data( 'PieChartHasLoaded' ) || typeof $(this.element).data('easyPieChart') === 'undefined' ) {
+										var $this_counter = $(this.element).find('.et_pb_circle_counter_inner');
+
+										if ( $this_counter.data( 'PieChartHasLoaded' ) || typeof $this_counter.data('easyPieChart') === 'undefined' ) {
 											return;
 										}
 
-										$(this.element).data('easyPieChart').update( $(this.element).data('number-value') );
+										$this_counter.data('easyPieChart').update( $this_counter.data('number-value') );
 
-										$(this.element).data( 'PieChartHasLoaded', true );
+										$this_counter.data( 'PieChartHasLoaded', true );
 
 										et_animate_element( $(this.element) );
 									}
@@ -3966,13 +3968,15 @@
 								et_waypoint( $animated, {
 									offset: 'bottom-in-view',
 									handler: function() {
-										if ( $(this.element).data( 'PieChartHasLoaded' ) || typeof $(this.element).data('easyPieChart') === 'undefined' ) {
+										var $this_counter = $(this.element).find('.et_pb_circle_counter_inner');
+
+										if ( $this_counter.data( 'PieChartHasLoaded' ) || typeof $this_counter.data('easyPieChart') === 'undefined' ) {
 											return;
 										}
 
-										$(this.element).data('easyPieChart').update( $(this.element).data('number-value') );
+										$this_counter.data('easyPieChart').update( $this_counter.data('number-value') );
 
-										$(this.element).data( 'PieChartHasLoaded', true );
+										$this_counter.data( 'PieChartHasLoaded', true );
 
 										et_animate_element( $(this.element) );
 									}

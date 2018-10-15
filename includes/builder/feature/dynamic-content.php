@@ -18,8 +18,10 @@ function et_builder_get_built_in_dynamic_content_fields( $post_id = 0 ) {
 	$default_category = 'post' === $post_type ? 'category' : "${post_type}_category";
 	
 	if ( ! empty( $post_taxonomy_types ) && ! isset( $post_taxonomy_types[$default_category] ) ) {
-		// Use the 1st available taxonomy as default
-		$default_category = array_keys( $post_taxonomy_types )[0];
+		// Use the 1st available taxonomy as the default value.
+		// Do it in 2 steps in order to support PHP < 5.4 (array dereferencing).
+		$default_category = array_keys( $post_taxonomy_types );
+		$default_category = $default_category[0];
 	}
 
 	$date_format_options = array(

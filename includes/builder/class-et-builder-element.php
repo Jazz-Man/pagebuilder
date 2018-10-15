@@ -5075,8 +5075,8 @@ class ET_Builder_Element {
 		$gutter_selector = 'et_pb_section' === $this->slug ? '%%order_class%% .et_pb_gutter_hover *' : '%%order_class%%.et_pb_gutter_hover *';
 
 		// animate width, padding and margin if gutter width has hover options
-		return array( 
-			'gutter_width' => array( 
+		return array(
+			'gutter_width' => array(
 				'width'   => $gutter_selector,
 				'margin'  => $gutter_selector,
 				'padding' => $gutter_selector,
@@ -13477,7 +13477,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 		$output .= sprintf(
 			'<div class="et_pb_subtoggle_section">
 				<div class="et-pb-option-toggle-content">
-					<div data-depends_hover="padding_<%%= counter %%>" data-option_name="padding_<%%= counter %%>" class="et-pb-option et-pb-option-standard">
+					<div class="et-pb-option">
 						<label for="et_pb_padding_<%%= counter %%>">
 							%1$s
 							<%% if ( "4_4" !== column_type ) { %%>
@@ -13485,8 +13485,9 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 							<%% } %%>
 							%2$s:
 						</label>
-						<div class="et-pb-option-container et-pb-option-container--custom_padding">
-							<div class="et-pb-responsive-container"><div class="et_custom_margin_padding et_margin_padding">
+						<div class="et-pb-option-container">
+						%7$s
+							<div class="et_margin_padding">
 								<label>
 									%3$s
 									<input type="text" class="medium-text et_custom_margin et_custom_margin_top et-pb-validate-unit et_pb_setting_mobile et_pb_setting_mobile_desktop et_pb_setting_mobile_active" id="et_pb_padding_top_<%%= counter %%>" name="et_pb_padding_top_<%%= counter %%>" value="<%%= current_value_pt %%>" data-device="desktop">
@@ -13515,7 +13516,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 								<input type="hidden" class="et_custom_margin_main et_pb_setting_mobile et_pb_setting_mobile_tablet et-pb-main-setting" id="et_pb_padding_<%%= counter %%>_tablet" name="et_pb_padding_<%%= counter %%>_tablet" value="<%%= current_value_padding_tablet %%>" data-device="tablet" data-has_saved_value="<%%= has_tablet_padding %%>">
 								<input type="hidden" class="et_custom_margin_main et_pb_setting_mobile et_pb_setting_mobile_phone et-pb-main-setting" id="et_pb_padding_<%%= counter %%>_phone" name="et_pb_padding_<%%= counter %%>_phone" value="<%%= current_value_padding_phone %%>" data-device="phone" data-has_saved_value="<%%= has_phone_padding %%>">
 								<input id="et_pb_padding_<%%= counter %%>_last_edited" type="hidden" class="et_pb_mobile_last_edited_field" value="<%%= last_edited_padding_field %%>">
-							</div></div>
+							</div>
 							<span class="et-pb-mobile-settings-toggle"></span>
 							<span class="et-pb-reset-setting"></span>
 						</div>
@@ -13529,7 +13530,8 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 			esc_html__( 'Top', 'et_builder' ),
 			esc_html__( 'Right', 'et_builder' ),
 			esc_html__( 'Bottom', 'et_builder' ), // #5
-			esc_html__( 'Left', 'et_builder' )
+			esc_html__( 'Left', 'et_builder' ),
+			et_pb_generate_mobile_settings_tabs() // #7
 		);
 
 		return $output;
