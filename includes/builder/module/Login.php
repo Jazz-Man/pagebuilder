@@ -272,6 +272,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Choose a title of your login box.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'current_page_redirect' => array(
 				'label'           => esc_html__( 'Redirect To The Current Page', 'et_builder' ),
@@ -291,6 +292,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				'option_category'   => 'basic_option',
 				'description'       => esc_html__( 'Input the main text content for your module here.', 'et_builder' ),
 				'toggle_slug'       => 'main_content',
+				'dynamic_content'   => 'text',
 			),
 			'form_field_background_color' => array(
 				'label'             => esc_html__( 'Form Field Background Color', 'et_builder' ),
@@ -348,7 +350,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 
 	function render( $attrs, $content = null, $render_slug ) {
 		$module_id                         = $this->props['module_id'];
-		$title                             = $this->props['title'];
+		$title                             = $this->_esc_attr( 'title' );
 		$background_color                  = $this->props['background_color'];
 		$background_layout                 = $this->props['background_layout'];
 		$background_layout_hover           = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
@@ -618,7 +620,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 				</div>
 				%3$s
 			</div>',
-			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), et_esc_previously( $title ) ) : '' ),
 			( '' !== $content ? '<div class="et_pb_newsletter_description_content">' . $content . '</div>' : '' ),
 			$form,
 			$this->module_classname( $render_slug ),

@@ -114,6 +114,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 				'classes'            => 'et_pb_video_overlay',
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display over your video. You can also generate a still image from your video.', 'et_builder' ),
 				'toggle_slug'        => 'overlay',
+				'dynamic_content'    => 'image',
 			),
 			'__oembed_thumbnail' => array(
 				'type' => 'computed',
@@ -158,7 +159,17 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
+	protected static function resolve_oembed_thumbnail( $src, $post_id ) {
+		$dynamic_value = et_builder_parse_dynamic_content( $src );
+		if ( $dynamic_value->is_dynamic() && current_user_can( 'edit_post', $post_id ) ) {
+			return $dynamic_value->resolve( $post_id );
+		}
+
+		return $src;
+	}
+
 	static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+		$post_id = isset( $current_page['id'] ) ? $current_page['id'] : self::get_current_post_id();
 		$defaults = array(
 			'image_src' => '',
 			'src' => '',
@@ -167,7 +178,10 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		$args = wp_parse_args( $args, $defaults );
 
 		if ( '' !== $args['image_src'] ) {
-			return et_pb_set_video_oembed_thumbnail_resolution( $args['image_src'], 'high' );
+			return et_pb_set_video_oembed_thumbnail_resolution(
+				self::resolve_oembed_thumbnail( $args['image_src'], $post_id ),
+				'high'
+			);
 		} else {
 			if ( false !== et_pb_check_oembed_provider( esc_url( $args['src'] ) ) ) {
 				add_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
@@ -225,7 +239,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 				add_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
 				// Save thumbnail
 				$thumbnail_track_output = wp_oembed_get( esc_url( $src ) );
-				$image_overlay_output = $thumbnail_track_output; 
+				$image_overlay_output = $thumbnail_track_output;
 				// Set back to normal
 				remove_filter( 'oembed_dataparse', 'et_pb_video_oembed_data_parse', 10, 3 );
 			} else {

@@ -1099,7 +1099,7 @@ class ET_Core_Portability {
 				'export' => wp_create_nonce( 'et_core_portability_export' ),
 				'cancel' => wp_create_nonce( 'et_core_portability_cancel' ),
 			),
-			'postMaxSize'   => (int) @ini_get( 'post_max_size' ),
+			'postMaxSize'   => $this->to_megabytes( @ini_get( 'post_max_size' ) ),
 			'uploadMaxSize' => $this->to_megabytes( @ini_get( 'upload_max_filesize' ) ),
 			'text'          => array(
 				'browserSupport'      => esc_html__( 'The browser version you are currently using is outdated. Please update to the newest version.', ET_CORE_TEXTDOMAIN ),

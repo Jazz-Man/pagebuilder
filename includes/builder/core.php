@@ -447,10 +447,17 @@ function et_is_extra_library_layout( $post_id ) {
  */
 function et_pb_is_allowed( $capabilities, $role = '' ) {
 	$saved_capabilities = et_pb_get_role_settings();
-	$role = '' === $role ? et_pb_get_current_user_role() : $role;
+	$role               = '' === $role ? et_pb_get_current_user_role() : $role;
+
+	// Disable certain capabilities for non-administrators by default.
+	$dangerous          = array( 'read_dynamic_content_custom_fields' );
 
 	foreach ( (array) $capabilities as $capability ) {
-		if ( ! empty( $saved_capabilities[ $role ][ $capability ] ) && 'off' === $saved_capabilities[ $role ][ $capability ] ) {
+		if ( ! empty( $saved_capabilities[ $role ][ $capability ] ) ) {
+			return 'on' === $saved_capabilities[ $role ][ $capability ];
+		}
+
+		if ( 'administrator' !== $role && in_array( $capability, $dangerous ) ) {
 			return false;
 		}
 	}
@@ -460,7 +467,7 @@ function et_pb_is_allowed( $capabilities, $role = '' ) {
 
 /**
  * Gets the array of role settings
- * @return string
+ * @return array
  */
 function et_pb_get_role_settings() {
 	global $et_pb_role_settings;
@@ -1862,6 +1869,7 @@ function et_fb_get_nonces() {
 		'libraryUpdateAccount'          => wp_create_nonce( 'et_builder_library_update_account' ),
 		'fetchAttachments'              => wp_create_nonce( 'et_fb_fetch_attachments' ),
 		'droploaderProcess'             => wp_create_nonce( 'et_builder_droploader_process_nonce' ),
+		'resolvePostContent'            => wp_create_nonce( 'et_fb_resolve_post_content' ),
 	);
 
 	return array_merge( $nonces, $fb_nonces );
@@ -2294,9 +2302,7 @@ function et_pb_save_role_settings() {
 		foreach( $data as $role => $settings ) {
 			parse_str( $data[ $role ], $role_capabilities );
 			foreach ( $role_capabilities as $capability => $value ) {
-				if ( $value !== 'on' ) {
-					$processed_options[ $role ][ $capability ] = $value;
-				}
+				$processed_options[ $role ][ $capability ] = $value;
 			}
 		}
 	}
@@ -2596,7 +2602,7 @@ function et_builder_get_failure_notification_modal() {
 endif;
 
 if ( ! function_exists( 'et_builder_get_no_builder_notification_modal' ) ) :
-function et_builder_get_no_builder_notification_modal() {	
+function et_builder_get_no_builder_notification_modal() {
 	$output = sprintf(
 		'<div class="et-core-modal-overlay et-builder-timeout et-core-active">
 			<div class="et-core-modal">
@@ -4123,6 +4129,7 @@ function et_intentionally_unescaped( $passthru, $excuse ) {
 		'cap_based_sanitized',
 		'fixed_string',
 		'react_jsx',
+		'underscore_template',
 	);
 
 	if ( ! in_array( $excuse, $valid_excuses ) ) {

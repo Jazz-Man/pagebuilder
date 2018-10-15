@@ -332,6 +332,16 @@ if ( ! function_exists( 'truncate_post' ) ) {
 				$truncate = apply_filters( 'the_content', $truncate );
 			}
 
+			/**
+			 * Filter automatically generated post excerpt before it gets truncated.
+			 *
+			 * @since ??
+			 *
+			 * @param string $excerpt
+			 * @param integer $post_id
+			 */
+			$truncate = apply_filters( 'et_truncate_post', $truncate, $post->ID );
+
 			// decide if we need to append dots at the end of the string
 			if ( strlen( $truncate ) <= $amount ) {
 				$echo_out = '';
@@ -1179,8 +1189,13 @@ function add_favicon(){
 	global $shortname;
 
 	$faviconUrl = et_get_option( $shortname.'_favicon' );
-	if ( $faviconUrl <> '' ) {
-		echo '<link rel="shortcut icon" href="'.esc_url( $faviconUrl ).'" />';
+
+	// If the `has_site_icon` function doesn't exist (ie we're on < WP 4.3) or if the site icon has not been set,
+	// and when we have a icon URL from theme option
+	if ( ( ! function_exists( 'has_site_icon' ) || ! has_site_icon() ) && '' !== $faviconUrl ) {
+		echo '<link rel="shortcut icon" href="' . esc_url( $faviconUrl ) . '" />';
+	} elseif ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
+		et_update_option( $shortname . '_favicon', '' );
 	}
 }
 

@@ -196,6 +196,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Title displayed above the portfolio.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'fullwidth' => array(
 				'label'             => esc_html__( 'Layout', 'et_builder' ),
@@ -377,7 +378,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$fullwidth                       = $this->props['fullwidth'];
 		$include_categories              = $this->props['include_categories'];
 		$posts_number                    = $this->props['posts_number'];
@@ -513,7 +514,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 			) );
 		}
 
-		$portfolio_title = sprintf( '<%1$s class="et_pb_portfolio_title">%2$s</%1$s>', et_pb_process_header_level( $portfolio_header, 'h2' ), esc_html( $title ) );
+		$portfolio_title = sprintf( '<%1$s class="et_pb_portfolio_title">%2$s</%1$s>', et_pb_process_header_level( $portfolio_header, 'h2' ), et_esc_previously( $title ) );
 
 		$data_background_layout       = '';
 		$data_background_layout_hover = '';

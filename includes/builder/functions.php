@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.16.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.17' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -508,6 +508,11 @@ function et_pb_get_svg_icons_list() {
 			'<g>
  				<path d="M22 5h-1v2h2V6a1 1 0 0 0-1-1zM9 21h2v2H9zM21 17h2v2h-2zM13 21h2v2h-2zM21 13h2v2h-2zM9 5h2v2H9zM17 21h2v2h-2zM17 5h2v2h-2zM21 9h2v2h-2zM8 7V5H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h2V7zM21 23h1a1 1 0 0 0 1-1v-1h-2zM13 5h2v2h-2z"/>
  			</g>',
+		'lock'   =>
+			'<g>
+				<path d="M20 12C19.9 11.7 19.3 11 19 11L18 11C18 8.1 16.2 6 14 6 11.8 6 10 8.1 10 11L9 11C8.6 11 8.1 11.6 8 12L8 13 8 19 8 20C8.1 20.3 8.7 20.9 9 21L19 21C19.4 21 19.9 20.4 20 20L20 19 20 14 20 12 20 12ZM14 8C15.1 8 16 9.4 16 11.1L12 11.1C12 9.4 12.9 8 14 8L14 8ZM18 19L10 19 10 13 18 13 18 19 18 19Z" fillRule="evenodd"/>
+				<path d="M14 18C14.6 18 15 17.6 15 17L15 15C15 14.4 14.6 14 14 14 13.4 14 13 14.4 13 15L13 15 13 17C13 17.6 13.4 18 14 18L14 18Z" fillRule="evenodd"/>
+			</g>',
 	);
 	return $all_icons;
 }
@@ -1061,6 +1066,9 @@ function et_fb_process_to_shortcode( $object, $options = array(), $library_item_
 				$json_attributes = array( 'checkbox_options', 'radio_options', 'select_options' );
 				if ( 0 === strpos( $attribute, 'custom_css_' ) || in_array( $attribute, $json_attributes ) ) {
 					$value = str_ireplace('\\', '%92', $value);
+
+				} else if ( et_builder_parse_dynamic_content( $value )->is_dynamic() ) {
+					$value = str_replace( '\\', '%92', $value );
 				}
 
 				$attributes .= ' ' . esc_attr( $attribute ) . '="' . et_esc_previously( $value ) . '"';
@@ -6884,6 +6892,9 @@ function et_pb_all_role_options() {
 				'custom_fonts_management' => array(
 					'name'    => esc_html__( 'Upload/Remove Fonts', 'et_builder' ),
 				),
+				'read_dynamic_content_custom_fields' => array(
+					'name'    => esc_html__( 'Dynamic Content Custom Fields', 'et_builder' ),
+				),
 			),
 		),
 		'library_capabilities' => array(
@@ -7040,12 +7051,10 @@ function et_pb_generate_roles_tab( $all_role_options, $role ) {
  */
 function et_pb_generate_capabilities_output( $cap_array, $role ) {
 	$output = '';
-	$saved_capabilities = get_option( 'et_pb_role_settings', array() );
 
 	if ( ! empty( $cap_array ) ) {
 		foreach ( $cap_array as $capability => $capability_details ) {
 			if ( empty( $capability_details['applicability'] ) || ( ! empty( $capability_details['applicability'] ) && in_array( $role, $capability_details['applicability'] ) ) ) {
-				$capability_default = ! empty ( $capability_details['default'] ) ? $capability_details['default'] : 'on';
 				$output .= sprintf(
 					'<div class="et_pb_capability_option">
 						<span class="et_pb_capability_title">%4$s</span>
@@ -7065,8 +7074,8 @@ function et_pb_generate_capabilities_output( $cap_array, $role ) {
 					esc_html__( 'Disabled', 'et_builder' ),
 					esc_attr( $capability ),
 					esc_html( $capability_details['name'] ),
-					! empty( $saved_capabilities[$role][$capability] ) ? selected( 'on', $saved_capabilities[$role][$capability], false ) : selected( 'on', $capability_default, false ),
-					! empty( $saved_capabilities[$role][$capability] ) ? selected( 'off', $saved_capabilities[$role][$capability], false ) : selected( 'off', $capability_default, false )
+					selected( true, et_pb_is_allowed( $capability, $role ), false ),
+					selected( false, et_pb_is_allowed( $capability, $role ), false )
 				);
 			}
 		}

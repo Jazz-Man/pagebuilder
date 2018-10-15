@@ -6,8 +6,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 et_core_security_check( 'edit_posts', 'et_pb_preview_nonce', '', '_GET' );
 
-$container_style = isset($_POST['is_fb_preview']) ? 'max-width: none; padding: 0;' : '';
+$container_style = isset( $_POST['is_fb_preview'] ) ? 'max-width: none; padding: 0;' : '';
+$post_id         = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
 
+if ( ! current_user_can( 'edit_post', $post_id ) ) {
+	$post_id = 0;
+}
+
+$post = get_post( $post_id );
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -43,6 +49,12 @@ $container_style = isset($_POST['is_fb_preview']) ? 'max-width: none; padding: 0
 
 					<?php
 						if ( isset( $_POST['shortcode' ] ) ) {
+							if ( $post ) {
+								// Setup postdata so post-dependent data like dynamic content
+								// can be resolved.
+								setup_postdata( $post );
+							}
+
 							// process content for builder plugin
 							if ( et_is_builder_plugin_active() ) {
 								$content = do_shortcode( wp_unslash( $_POST['shortcode'] ) );
@@ -70,6 +82,10 @@ $container_style = isset($_POST['is_fb_preview']) ? 'max-width: none; padding: 0
 							} else {
 								$content = apply_filters( 'the_content', wp_unslash( $_POST['shortcode'] ) );
 								$content = str_replace( ']]>', ']]&gt;', $content );
+							}
+
+							if ( $post ) {
+								wp_reset_postdata();
 							}
 
 							echo $content;

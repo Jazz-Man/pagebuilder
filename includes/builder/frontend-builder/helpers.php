@@ -1820,6 +1820,15 @@ function et_fb_backend_helpers() {
 			),
 			'unsupportedFieldType' => esc_html__( 'The above custom field is not fully supported and has been rendered as a standard input.' ),
 		),
+
+		'dynamicContent' => array(
+			'invalidField' => esc_html__( 'Invalid field or insufficient permissions.', 'et_builder' ),
+			'tooltips' => array(
+				'enable' => esc_html__( 'Use Dynamic Content', 'et_builder' ),
+				'disable' => esc_html__( 'Remove Dynamic Content', 'et_builder' ),
+				'settings' => esc_html__( 'Edit Dynamic Content', 'et_builder' ),
+			),
+		),
 	);
 
 	// Add strings from i18n directory. Note: We don't handle subdirectories, but we should in the future.
@@ -1830,6 +1839,8 @@ function et_fb_backend_helpers() {
 
 		$helpers['i18n'][ $key ] = require $file;
 	}
+
+	$helpers['dynamicContentFields'] = et_builder_get_dynamic_content_fields( $post_id, 'edit' );
 
 	// Pass helpers via localization.
 	wp_localize_script( 'et-frontend-builder', 'ETBuilderBackend', $helpers );

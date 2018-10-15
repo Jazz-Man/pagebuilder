@@ -230,6 +230,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Enter your page title here.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'subhead' => array(
 				'label'           => esc_html__( 'Subheading Text', 'et_builder' ),
@@ -237,6 +238,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'If you would like to use a subhead, add it here. Your subhead will appear below your title in a small font.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'text_orientation' => array(
 				'label'             => esc_html__( 'Text & Logo Orientation', 'et_builder' ),
@@ -320,6 +322,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Enter the text for the Button.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'button_one_url' => array(
 				'label'           => sprintf( esc_html__( 'Button %1$s Link URL', 'et_builder' ), '#1' ),
@@ -327,6 +330,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Enter the URL for the Button.', 'et_builder' ),
 				'toggle_slug'     => 'link_options',
+				'dynamic_content' => 'url',
 			),
 			'button_two_text' => array(
 				'label'           => sprintf( esc_html__( 'Button %1$s Link Text', 'et_builder' ), '#2' ),
@@ -334,6 +338,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Enter the text for the Button.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'button_two_url' => array(
 				'label'           => sprintf( esc_html__( 'Button %1$s Link URL', 'et_builder' ), '#2' ),
@@ -341,6 +346,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Enter the URL for the Button.', 'et_builder' ),
 				'toggle_slug'     => 'link_options',
+				'dynamic_content' => 'url',
 			),
 			'background_overlay_color' => array(
 				'label'             => esc_html__( 'Background Overlay Color', 'et_builder' ),
@@ -362,6 +368,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				),
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display.', 'et_builder' ),
 				'toggle_slug'        => 'images',
+				'dynamic_content'    => 'image',
 			),
 			'logo_alt_text' => array(
 				'label'           => esc_html__( 'Logo Image Alternative Text', 'et_builder' ),
@@ -374,6 +381,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML ALT text. A short description of your image can be placed here.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'logo_title' => array(
 				'label'           => esc_html__( 'Logo Image Title', 'et_builder' ),
@@ -386,6 +394,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML Title text.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'content_orientation' => array(
 				'label'           => esc_html__( 'Text Vertical Alignment', 'et_builder' ),
@@ -415,6 +424,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 					'image_alt_text',
 					'image_title',
 				),
+				'dynamic_content'    => 'image',
 			),
 			'image_alt_text' => array(
 				'label'           => esc_html__( 'Header Image Alternative Text', 'et_builder' ),
@@ -427,6 +437,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML ALT text. A short description of your image can be placed here.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'image_title' => array(
 				'label'           => esc_html__( 'Header Image Title', 'et_builder' ),
@@ -439,6 +450,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML Title text.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'image_orientation' => array(
 				'label'           => esc_html__( 'Image Vertical Alignment', 'et_builder' ),
@@ -459,6 +471,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Content entered here will appear below the subheading text.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'content_max_width' => array(
 				'label'           => esc_html__( 'Content Width', 'et_builder' ),
@@ -504,16 +517,18 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$title                             = $this->props['title'];
-		$subhead                           = $this->props['subhead'];
+		// Allowing full html for backwards compatibility.
+		$title                             = $this->_esc_attr( 'title', 'full' );
+		// Allowing full html for backwards compatibility.
+		$subhead                           = $this->_esc_attr( 'subhead', 'full' );
 		$background_layout                 = $this->props['background_layout'];
 		$background_layout_hover           = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
 		$background_layout_hover_enabled   = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
 		$text_orientation                  = $this->get_text_orientation();
-		$button_one_text                   = $this->props['button_one_text'];
+		$button_one_text                   = $this->_esc_attr( 'button_one_text', 'limited' );
 		$button_one_url                    = $this->props['button_one_url'];
 		$button_one_rel                    = $this->props['button_one_rel'];
-		$button_two_text                   = $this->props['button_two_text'];
+		$button_two_text                   = $this->_esc_attr( 'button_two_text', 'limited' );
 		$button_two_url                    = $this->props['button_two_url'];
 		$button_two_rel                    = $this->props['button_two_rel'];
 		$header_fullscreen                 = $this->props['header_fullscreen'];
@@ -539,10 +554,10 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		$button_custom_1                   = $this->props['custom_button_one'];
 		$custom_icon_2                     = $this->props['button_two_icon'];
 		$button_custom_2                   = $this->props['custom_button_two'];
-		$logo_title                        = $this->props['logo_title'];
-		$logo_alt_text                     = $this->props['logo_alt_text'];
-		$image_alt_text                    = $this->props['image_alt_text'];
-		$image_title                       = $this->props['image_title'];
+		$logo_title                        = $this->_esc_attr( 'logo_title' );
+		$logo_alt_text                     = $this->_esc_attr( 'logo_alt_text' );
+		$image_alt_text                    = $this->_esc_attr( 'image_alt_text' );
+		$image_title                       = $this->_esc_attr( 'image_title' );
 		$header_level                      = $this->props['title_level'];
 		$content_max_width                 = $this->props['content_max_width'];
 		$content_max_width_tablet          = $this->props['content_max_width_tablet'];
@@ -626,23 +641,25 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		$button_output = '';
 
 		$button_output .= $this->render_button( array(
-			'button_classname' => array( 'et_pb_more_button', 'et_pb_button_one' ),
-			'button_custom'    => $button_custom_1,
-			'button_rel'       => $button_one_rel,
-			'button_text'      => $button_one_text,
-			'button_url'       => $button_one_url,
-			'custom_icon'      => $custom_icon_1,
-			'has_wrapper'      => false,
+			'button_classname'    => array( 'et_pb_more_button', 'et_pb_button_one' ),
+			'button_custom'       => $button_custom_1,
+			'button_rel'          => $button_one_rel,
+			'button_text'         => $button_one_text,
+			'button_text_escaped' => true,
+			'button_url'          => $button_one_url,
+			'custom_icon'         => $custom_icon_1,
+			'has_wrapper'         => false,
 		) );
 
 		$button_output .= $this->render_button( array(
-			'button_classname' => array( 'et_pb_more_button', 'et_pb_button_two' ),
-			'button_custom'    => $button_custom_2,
-			'button_rel'       => $button_two_rel,
-			'button_text'      => $button_two_text,
-			'button_url'       => $button_two_url,
-			'custom_icon'      => $custom_icon_2,
-			'has_wrapper'      => false,
+			'button_classname'    => array( 'et_pb_more_button', 'et_pb_button_two' ),
+			'button_custom'       => $button_custom_2,
+			'button_rel'          => $button_two_rel,
+			'button_text'         => $button_two_text,
+			'button_text_escaped' => true,
+			'button_url'          => $button_two_url,
+			'custom_icon'         => $custom_icon_2,
+			'has_wrapper'         => false,
 		) );
 
 		$video_background = $this->video_background();
@@ -679,8 +696,8 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 						%5$s
 					</div>
 				</div>',
-				( $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h1' ), $title ) : '' ),
-				( $subhead ? sprintf( '<span class="et_pb_fullwidth_header_subhead">%1$s</span>', $subhead ) : '' ),
+				( $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h1' ), et_esc_previously( $title ) ) : '' ),
+				( $subhead ? sprintf( '<span class="et_pb_fullwidth_header_subhead">%1$s</span>', et_esc_previously( $subhead ) ) : '' ),
 				$logo_image,
 				sprintf( '<div class="et_pb_header_content_wrapper">%1$s</div>', $this->content ),
 				( '' !== $button_output ? $button_output : '' ),

@@ -35,6 +35,24 @@ class ET_Builder_Element {
 	protected static $_deprecations;
 
 	/**
+	 * Unprocessed attributes.
+	 *
+	 * @since ??
+	 *
+	 * @var array<string, mixed>
+	 */
+	protected $attrs_unprocessed = array();
+
+	/**
+	 * Unprocessed content.
+	 *
+	 * @since ??
+	 *
+	 * @var string
+	 */
+	protected $content_unprocessed = '';
+
+	/**
 	 * Settings used to render the module's output.
 	 *
 	 * @since 3.1 Renamed from `$shortcode_atts` to `$props`.
@@ -537,9 +555,29 @@ class ET_Builder_Element {
 
 	/**
 	 * Retrieve Post ID from 1 of 3 sources depending on which exists:
-	 * - get_the_ID()
 	 * - $_POST['et_post_id']
 	 * - $_GET['post']
+	 * - get_the_ID()
+	 * Similar to get_the_ID() but in reverse order and statically callable.
+	 *
+	 * @since ??
+	 *
+	 * @return int|bool
+	 */
+	public static function get_current_post_id() {
+		if ( wp_doing_ajax() && isset( $_POST['et_post_id'] ) ) {
+			return absint( $_POST['et_post_id'] );
+		}
+
+		if ( isset( $_POST['post'] ) ) {
+			return absint( $_POST['post'] );
+		}
+
+		return get_the_ID();
+	}
+
+	/**
+	 * Get the current ID depending on the current request.
 	 *
 	 * @return int|bool
 	 */
@@ -721,6 +759,9 @@ class ET_Builder_Element {
 
 		// Add _builder_version field to all modules
 		$this->fields_unprocessed['_builder_version'] = array( 'type' => 'skip' );
+
+		// Add _dynamic_attributes field to all modules.
+		$this->fields_unprocessed['_dynamic_attributes'] = array( 'type' => 'skip' );
 
 		if ( $this->_is_official_module ) {
 			return;
@@ -1005,9 +1046,11 @@ class ET_Builder_Element {
 	 * Double quote are saved as "%22" in shortcode attributes.
 	 * Decode them back into "
 	 *
+	 * @param array $enabled_dynamic_attributes
+	 *
 	 * @return void
 	 */
-	private function _decode_double_quotes() {
+	private function _decode_double_quotes( $enabled_dynamic_attributes ) {
 		if ( ! isset( $this->props ) ) {
 			return;
 		}
@@ -1036,7 +1079,10 @@ class ET_Builder_Element {
 			}
 
 			// URLs are weird since they can allow non-ascii characters so we escape those separately.
-			if ( in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
+			// Also make sure the attribute is not powered by dynamic content so we do not escape
+			// the JSON value as if it is a raw url.
+			$is_dynamic_content_attribute = $this->_is_dynamic_value( $attribute_key, $attribute_value, $enabled_dynamic_attributes );
+			if ( ! $is_dynamic_content_attribute && in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
 				$shortcode_attributes[ $attribute_key ] = esc_url_raw( $processed_attr_value );
 			} else {
 				$shortcode_attributes[ $attribute_key ] = str_replace( array( '%22', '%92', '%91', '%93' ), array( '"', '\\', '&#91;', '&#93;' ), $processed_attr_value );
@@ -1417,6 +1463,36 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Resolves the values for dynamic attributes.
+	 *
+	 * @since ??
+	 *
+	 * @param  array  $attrs              List of attributes
+	 * 
+	 * @return array                      Processed attributes with resolved dynamic values.
+	 */
+	function process_dynamic_attrs( $original_attrs ) {
+		global $et_fb_processing_shortcode_object;
+		
+		$attrs                      = $original_attrs;
+		$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $attrs );
+
+		if ( is_array( $attrs ) ) {
+			foreach ( $attrs as $key => $value ) {
+				$attrs[ $key ] = $this->_resolve_value(
+					$this->get_the_ID(),
+					$key,
+					$value,
+					$enabled_dynamic_attributes,
+					$et_fb_processing_shortcode_object
+				);
+			}
+		}
+
+		return $attrs;
+	}
+
+	/**
 	 * Prepares for and then calls the module's {@see self::render()} method.
 	 *
 	 * @since 3.1 Renamed from `_shortcode_callback()` to `_render()`.
@@ -1434,9 +1510,15 @@ class ET_Builder_Element {
 	function _render( $attrs, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
 		global $et_fb_processing_shortcode_object;
 
+		$this->attrs_unprocessed = $attrs;
+
+		$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $attrs );
+
+		$attrs = $this->process_dynamic_attrs( $attrs );
+
 		$this->props = shortcode_atts( $this->resolve_conditional_defaults($attrs, $render_slug), $attrs );
 
-		$this->_decode_double_quotes();
+		$this->_decode_double_quotes( $enabled_dynamic_attributes );
 
 		$this->_maybe_remove_global_default_values_from_props();
 
@@ -1558,6 +1640,12 @@ class ET_Builder_Element {
 						$this->props[ $single_attr] = is_string( $global_atts[ $single_attr] ) && ! array_intersect( array( "et_pb_{$single_attr}", $single_attr ), $this->dbl_quote_exception_options ) ? str_replace( '%22', '"', $global_atts[ $single_attr] ) : $global_atts[ $single_attr];
 					}
 				}
+
+				$enabled_dynamic_attributes_global = $this->_get_enabled_dynamic_attributes( $this->props );
+
+				$this->props = $this->process_dynamic_attrs( $this->props );
+
+				$this->_decode_double_quotes( $enabled_dynamic_attributes_global );
 			}
 		}
 
@@ -1565,7 +1653,14 @@ class ET_Builder_Element {
 
 		$this->before_render();
 
-		$content = false !== $global_content ? $global_content : $content;
+		$this->content_unprocessed = (false !== $global_content ? $global_content : $content);
+		$content = $this->_resolve_value(
+			$this->get_the_ID(),
+			'content',
+			$this->content_unprocessed,
+			$enabled_dynamic_attributes,
+			$et_fb_processing_shortcode_object
+		);
 
 		// Set empty TinyMCE content '&lt;br /&gt;<br />' as empty string.
 		if ( 'ltbrgtbr' === preg_replace( '/[^a-z]/', '', $content ) ) {
@@ -5072,6 +5167,7 @@ class ET_Builder_Element {
 			'type'            => 'text',
 			'toggle_slug'     => 'link_options',
 			'description'     => esc_html__( 'When clicked the module will link to this URL.', 'et_builder' ),
+			'dynamic_content' => 'url',
 		);
 
 		$additional_options['link_option_url_new_window'] = array(
@@ -5767,6 +5863,31 @@ class ET_Builder_Element {
 				isset( $field['type'] ) ? esc_attr( $field['type'] ) : ''
 			);
 		}
+
+		$dynamic_content_notice = et_get_safe_localization( sprintf(
+			__( 'This field contains a dynamic value which requires the Visual Builder. <a href="#" class="%1$s">Open Visual Builder</a>', 'et_builder' ),
+			'et-pb-dynamic-content-fb-switch'
+		) );
+
+		// Conditionally wrap fields depending on whether their values represent dynamic content or not.
+		$output = sprintf(
+			'<%% var isDynamic = typeof %1$s !== \'undefined\' && ET_PageBuilder.isDynamicContent(%1$s); %%>
+			<%% if (isDynamic) { %%>
+				<div class="et-pb-dynamic-content">
+					<div class="et-pb-dynamic-content__message">
+						%2$s
+					</div>
+					<div class="et-pb-dynamic-content__field">
+			<%% } %%>
+			%3$s
+			<%% if (isDynamic) { %%>
+					</div>
+				</div>
+			<%% } %%>',
+			et_intentionally_unescaped( $this->get_field_variable_name( $field ), 'underscore_template' ),
+			et_intentionally_unescaped( $this->get_icon( 'lock' ) . $dynamic_content_notice, 'underscore_template'),
+			et_intentionally_unescaped( $output, 'underscore_template' )
+		);
 
 		return $output;
 	}
@@ -6512,12 +6633,38 @@ class ET_Builder_Element {
 	}
 
 	function get_field_name( $field ) {
-		// Don't add 'et_pb_' prefix to the "Admin Label" field
+		$prefix = 'et_pb_';
+
+		// Don't add 'et_pb_' prefix to the "Admin Label" field.
 		if ( 'admin_label' === $field['name'] ) {
 			return $field['name'];
 		}
 
-		return sprintf( 'et_pb_%s', $field['name'] );
+		// Make sure the prefix is not doubled.
+		if ( strpos( $field['name'], $prefix ) === 0 ) {
+			return $field['name'];
+		}
+
+		return $prefix . $field['name'];
+	}
+
+	/**
+	 * Get field name for use in underscore templates.
+	 *
+	 * @since ??
+	 *
+	 * @param array $field
+	 *
+	 * @return string
+	 */
+	function get_field_variable_name( $field ) {
+		$name = $this->get_field_name( $field );
+		if ( isset( $this->type ) && 'child' === $this->type ) {
+			$name = "data.{$name}";
+		}
+		$name = str_replace( '-', '_', $name );
+
+		return $name;
 	}
 
 	function process_html_attributes( $field, &$attributes ) {
@@ -6614,7 +6761,7 @@ class ET_Builder_Element {
 			$field_name = "data.{$field_name}";
 		}
 
-		$field_var_name = str_replace('-', '_', $field_name);
+		$field_var_name = $this->get_field_variable_name( $field );
 
 		$default_on_front = self::$_->array_get( $field, 'default_on_front', '' );
 		$default_arr = self::$_->array_get( $field, 'default', $default_on_front );
@@ -8138,9 +8285,17 @@ class ET_Builder_Element {
 			$template_output .= sprintf(
 				'%6$s<script type="text/template" id="et-builder-advanced-setting-%1$s-title">
 					<%% if ( typeof( %2$s ) !== \'undefined\' && typeof( %2$s ) === \'string\' && %2$s !== \'\' ) { %%>
-						<%%- %2$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% if ( ET_PageBuilder.isDynamicContent(%2$s) ) { %%>
+							%7$s
+						<%% } else { %%>
+							<%%- %2$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% } %%>
 					<%% } else if ( typeof( %3$s ) !== \'undefined\' && typeof( %3$s ) === \'string\' && %3$s !== \'\' ) { %%>
-						<%%- %3$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% if ( ET_PageBuilder.isDynamicContent(%3$s) ) { %%>
+							%7$s
+						<%% } else { %%>
+							<%%- %3$s.replace( /%%91/g, "[" ).replace( /%%93/g, "]" ) %%>
+						<%% } %%>
 					<%% } else { %%>
 						<%%- \'%4$s\' %%>
 					<%% } %%>
@@ -8150,7 +8305,8 @@ class ET_Builder_Element {
 				esc_html( $title_fallback_var ),
 				esc_html( $add_new_text ),
 				"\n\n",
-				"\t"
+				"\t",
+				$this->get_icon( 'lock' ) . esc_html__( 'Dynamic Content', 'et_builder' )
 			);
 		}
 
@@ -9188,6 +9344,8 @@ class ET_Builder_Element {
 						$max_width_default = $$value;
 					}
 				}
+			} else if( $max_width === $max_width_default ) {
+				$max_width = '';
 			}
 
 			if ( '' !== $max_width_tablet || '' !== $max_width_phone || '' !== $max_width ) {
@@ -9196,10 +9354,6 @@ class ET_Builder_Element {
 				$selector                    = isset( $max_width_options_css['main'] ) ? $max_width_options_css['main'] : '%%order_class%%';
 				$additional_css              = $this->get_max_width_additional_css();
 				$max_width_attrs             = array( 'max_width' );
-
-				if ( et_builder_is_hover_enabled( 'max_width', $this->props ) ) {
-					array_push( $max_width_attrs, $hover->get_hover_field( 'max_width' ) );
-				}
 
 				// Append !important tag
 				if ( isset( $max_width_options_css['important'] ) ) {
@@ -12239,22 +12393,25 @@ class ET_Builder_Element {
 	function render_button( $args = array() ) {
 		// Prepare arguments
 		$defaults = array(
-			'button_id'        => '',
-			'button_classname' => array(),
-			'button_custom'    => '',
-			'button_rel'       => '',
-			'button_text'      => '',
-			'button_url'       => '',
-			'custom_icon'      => '',
-			'display_button'   => true,
-			'has_wrapper'      => true,
-			'url_new_window'   => '',
+			'button_id'           => '',
+			'button_classname'    => array(),
+			'button_custom'       => '',
+			'button_rel'          => '',
+			'button_text'         => '',
+			'button_text_escaped' => false,
+			'button_url'          => '',
+			'custom_icon'         => '',
+			'display_button'      => true,
+			'has_wrapper'         => true,
+			'url_new_window'      => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
 
+		$button_text = $args['button_text_escaped'] ? $args['button_text'] : esc_html( $args['button_text'] );
+
 		// Do not proceed if no button URL or text found
-		if ( ! $args['display_button'] || '' === $args['button_text'] ) {
+		if ( ! $args['display_button'] || '' === $button_text ) {
 			return '';
 		}
 
@@ -12279,7 +12436,7 @@ class ET_Builder_Element {
 		// Render button
 		return sprintf( '%7$s<a%9$s class="%5$s" href="%1$s"%3$s%4$s%6$s>%2$s</a>%8$s',
 			esc_url( $args['button_url'] ),
-			esc_html( $args['button_text'] ),
+			et_esc_previously( $button_text ),
 			( 'on' === $args['url_new_window'] ? ' target="_blank"' : '' ),
 			et_esc_previously( $data_icon ),
 			esc_attr( implode( ' ', array_unique( $button_classname ) ) ), // #5
@@ -12364,6 +12521,110 @@ class ET_Builder_Element {
 		}
 
 		return '{' . implode( ',', $slugs ) . '}';
+	}
+
+	/**
+	 * Get array of attributes which have dynamic content enabled.
+	 *
+	 * @since ??
+	 *
+	 * @param array<string, mixed> $attrs
+	 *
+	 * @return array<string>
+	 */
+	protected function _get_enabled_dynamic_attributes( $attrs ) {
+		$enabled_dynamic_attributes = isset( $attrs['_dynamic_attributes'] ) ? $attrs['_dynamic_attributes'] : '';
+		$enabled_dynamic_attributes = array_filter( explode( ',', $enabled_dynamic_attributes ) );
+
+		return $enabled_dynamic_attributes;
+	}
+
+	/**
+	 * Check if an attribute value is dynamic or not.
+	 *
+	 * @since ??
+	 *
+	 * @param string $attribute
+	 * @param string $value
+	 * @param array $enabled_dynamic_attributes
+	 *
+	 * @return bool
+	 */
+	protected function _is_dynamic_value( $attribute, $value, $enabled_dynamic_attributes ) {
+		if ( ! in_array( $attribute, $enabled_dynamic_attributes ) ) {
+			return false;
+		}
+
+		return et_builder_parse_dynamic_content( $value )->is_dynamic();
+	}
+
+	/**
+	 * Resolve a value, be it static or dynamic to a static one.
+	 *
+	 * @since ??
+	 *
+	 * @param integer $post_id
+	 * @param string $field
+	 * @param string $value
+	 * @param array<string> $enabled_dynamic_attributes
+	 * @param boolean $serialize
+	 *
+	 * @return string
+	 */
+	protected function _resolve_value( $post_id, $field, $value, $enabled_dynamic_attributes, $serialize ) {
+		if ( ! in_array( $field, $enabled_dynamic_attributes ) ) {
+			return $value;
+		}
+
+		$builder_value = et_builder_parse_dynamic_content( $value );
+
+		if ( $serialize ) {
+			return $builder_value->serialize();
+		}
+
+		return $builder_value->resolve( $post_id );
+	}
+
+	/**
+	 * Escape an attribute's value.
+	 *
+	 * @since ??
+	 *
+	 * @param string $attribute
+	 * @param string $html 'limited', 'full', 'none'
+	 *
+	 * @return string
+	 */
+	protected function _esc_attr( $attribute, $html = 'none' ) {
+		$html               = in_array( $html, array( 'limited', 'full' ), true ) ? $html : 'none';
+		$raw                = isset( $this->attrs_unprocessed[ $attribute ] ) ? $this->attrs_unprocessed[ $attribute ] : '';
+		$formatted          = isset( $this->props[ $attribute ] ) ? $this->props[ $attribute ] : '';
+		$dynamic_attributes = $this->_get_enabled_dynamic_attributes( $this->props );
+
+		// More often than not content is not an attribute so we need to handle that special case.
+		if ( 'content' === $attribute && ! isset( $this->attrs_unprocessed[ $attribute ] ) ) {
+			$raw       = $this->content_unprocessed;
+			$formatted = $this->content;
+		}
+
+		if ( ! $this->_is_dynamic_value( $attribute, $raw, $dynamic_attributes ) ) {
+			if ( 'full' === $html ) {
+				return $formatted;
+			}
+			return esc_html( $formatted );
+		}
+
+		if ( 'limited' === $html ) {
+			return wp_kses( $formatted, array(
+				'strong' => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+				'em'     => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+				'i'      => array( 'id' => array(), 'class' => array(), 'style' => array() ),
+			) );
+		}
+
+		// Dynamic content values are escaped when they are resolved so we do not want to
+		// double-escape them when using them in the frontend, for example.
+		return et_esc_previously( $formatted );
 	}
 }
 

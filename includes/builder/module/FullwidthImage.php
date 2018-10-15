@@ -79,6 +79,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				),
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display.', 'et_builder' ),
 				'toggle_slug'        => 'main_content',
+				'dynamic_content'    => 'image',
 			),
 			'alt' => array(
 				'label'           => esc_html__( 'Image Alternative Text', 'et_builder' ),
@@ -91,6 +92,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML ALT text. A short description of your image can be placed here.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'title_text' => array(
 				'label'           => esc_html__( 'Image Title Text', 'et_builder' ),
@@ -103,6 +105,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				'description'     => esc_html__( 'This defines the HTML Title text.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'show_in_lightbox' => array(
 				'label'             => esc_html__( 'Open In Lightbox', 'et_builder' ),
@@ -131,6 +134,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 				),
 				'description'     => esc_html__( 'If you would like your image to be a link, input your destination URL here. No link will be created if this field is left blank.', 'et_builder' ),
 				'toggle_slug'     => 'link',
+				'dynamic_content' => 'url',
 			),
 			'url_new_window' => array(
 				'label'             => esc_html__( 'Image Link Target', 'et_builder' ),

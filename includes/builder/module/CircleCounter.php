@@ -123,6 +123,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input a title for the circle counter.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'number' => array(
 				'label'             => esc_html__( 'Number', 'et_builder' ),
@@ -185,7 +186,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 
 		$number                          = $this->props['number'];
 		$percent_sign                    = $this->props['percent_sign'];
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
 		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
@@ -247,7 +248,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			esc_attr( $bar_bg_color ),
 			( 'on' == $percent_sign ? '%' : ''), // #5
-			( '' !== $title ?  sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), esc_html( $title ) ) : '' ),
+			( '' !== $title ?  sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), et_esc_previously( $title ) ) : '' ),
 			$circle_color_data,
 			$circle_color_alpha_data,
 			$video_background,

@@ -189,6 +189,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'The title of your blurb will appear in bold below your blurb image.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'url' => array(
 				'label'           => esc_html__( 'Title Link URL', 'et_builder' ),
@@ -196,6 +197,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'If you would like to make your blurb a link, input your destination URL here.', 'et_builder' ),
 				'toggle_slug'     => 'link_options',
+				'dynamic_content' => 'url',
 			),
 			'url_new_window' => array(
 				'label'           => esc_html__( 'Title Link Target', 'et_builder' ),
@@ -326,6 +328,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'depends_show_if'    => 'off',
 				'description'        => esc_html__( 'Upload an image to display at the top of your blurb.', 'et_builder' ),
 				'toggle_slug'        => 'image',
+				'dynamic_content'    => 'image',
 			),
 			'alt' => array(
 				'label'           => esc_html__( 'Image Alt Text', 'et_builder' ),
@@ -335,6 +338,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'depends_show_if' => 'off',
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'icon_placement' => array(
 				'label'             => esc_html__( 'Image/Icon Placement', 'et_builder' ),
@@ -352,6 +356,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'option_category'   => 'basic_option',
 				'description'       => esc_html__( 'Input the main text content for your module here.', 'et_builder' ),
 				'toggle_slug'       => 'main_content',
+				'dynamic_content'   => 'text',
 			),
 			'image_max_width' => array(
 				'label'           => esc_html__( 'Image Width', 'et_builder' ),
@@ -454,11 +459,11 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$url                             = $this->props['url'];
 		$image                           = $this->props['image'];
 		$url_new_window                  = $this->props['url_new_window'];
-		$alt                             = $this->props['alt'];
+		$alt                             = $this->_esc_attr( 'alt' );
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
 		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
@@ -566,13 +571,18 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		if ( '' !== $title && '' !== $url ) {
 			$title = sprintf( '<a href="%1$s"%3$s>%2$s</a>',
 				esc_url( $url ),
-				esc_html( $title ),
+				et_esc_previously( $title ),
 				( 'on' === $url_new_window ? ' target="_blank"' : '' )
 			);
 		}
 
 		if ( '' !== $title ) {
-			$title = sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), $title );
+			$title = sprintf(
+				'<%1$s class="et_pb_module_header">%2$s</%1$s>',
+				et_pb_process_header_level( $header_level, 'h4' ),
+				// Allowing full html for backwards compatibility.
+				$this->_esc_attr( 'title', 'full' )
+			);
 		}
 
 		// Added for backward compatibility
@@ -584,7 +594,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			$image = ( '' !== trim( $image ) ) ? sprintf(
 				'<img src="%1$s" alt="%2$s" class="et-waypoint%3$s" />',
 				esc_attr( $image ),
-				esc_attr( $alt ),
+				et_esc_previously( $alt ),
 				esc_attr( " et_pb_animation_{$animation}" )
 			) : '';
 		} else {
@@ -697,7 +707,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			</div> <!-- .et_pb_blurb -->',
 			$this->content,
 			$image,
-			$title,
+			et_esc_previously( $title ),
 			$this->module_classname( $render_slug ),
 			$this->module_id(), // #5
 			$video_background,

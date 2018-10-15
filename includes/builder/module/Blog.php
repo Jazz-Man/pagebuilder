@@ -241,6 +241,10 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			'include_categories' => array(
 				'label'            => esc_html__( 'Include Categories', 'et_builder' ),
 				'type'             => 'categories',
+				'meta_categories'  => array(
+					'all'     => esc_html__( 'All Categories', 'et_builder' ),
+					'current' => esc_html__( 'Current Category', 'et_builder' ),
+				),
 				'option_category'  => 'basic_option',
 				'renderer_options' => array(
 					'use_terms' => false,
@@ -561,6 +565,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		$is_search                   = et_fb_conditional_tag( 'is_search', $conditional_tags );
 		$is_single                   = et_fb_conditional_tag( 'is_single', $conditional_tags );
 		$et_is_builder_plugin_active = et_fb_conditional_tag( 'et_is_builder_plugin_active', $conditional_tags );
+		$post_id                     = isset( $current_page['id'] ) ? (int) $current_page['id'] : 0;
 
 		$container_is_closed = false;
 
@@ -610,7 +615,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		}
 
 		if ( '' !== $args['include_categories'] ) {
-			$query_args['cat'] = $args['include_categories'];
+			$query_args['cat'] = implode( ',', self::filter_meta_categories( $args['include_categories'], $post_id ) );
 		}
 
 		if ( ! $is_search ) {
@@ -1004,7 +1009,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		}
 
 		if ( '' !== $include_categories ) {
-			$args['cat'] = $include_categories;
+			$args['cat'] = implode( ',', self::filter_meta_categories( $include_categories, $this->get_the_ID() ) );
 		}
 
 		if ( ! is_search() ) {

@@ -135,6 +135,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'This is the title displayed for the countdown timer.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'date_time' => array(
 				'label'           => esc_html__( 'Countdown To', 'et_builder' ),
@@ -149,7 +150,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$date_time                       = $this->props['date_time'];
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
@@ -164,7 +165,11 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		$gmt                             = "GMT{$gmt_divider}{$gmt_offset_hour}{$gmt_offset_minute}";
 
 		if ( '' !== $title ) {
-			$title = sprintf( '<%2$s class="title">%s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h4' ) );
+			$title = sprintf(
+				'<%2$s class="title">%s</%2$s>',
+				et_esc_previously( $title ),
+				et_pb_process_header_level( $header_level, 'h4' )
+			);
 		}
 
 		$video_background = $this->video_background();
@@ -223,7 +228,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 			$this->module_classname( $render_slug ),
 			'',
 			esc_attr( strtotime( "{$end_date} {$gmt}" ) ),
-			$title, // #5
+			et_esc_previously( $title ), // #5
 			esc_html__( 'Day(s)', 'et_builder' ),
 			esc_html__( 'Hour(s)', 'et_builder' ),
 			esc_attr__( 'Hrs', 'et_builder' ),

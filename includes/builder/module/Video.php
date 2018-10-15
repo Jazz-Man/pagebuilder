@@ -128,6 +128,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 				'computed_affects' => array(
 					'__video_cover_src',
 				),
+				'dynamic_content'   => 'image',
 			),
 			'play_icon_color' => array(
 				'label'             => esc_html__( 'Play Icon Color', 'et_builder' ),
@@ -202,11 +203,19 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 	}
 
 	static function get_video_cover_src( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+		$post_id = isset( $current_page['id'] ) ? $current_page['id'] : self::get_current_post_id();
 		$defaults = array(
 			'image_src' => '',
 		);
 
 		$args = wp_parse_args( $args, $defaults );
+
+		if ( isset( $args['image_src'] ) ) {
+			$dynamic_value = et_builder_parse_dynamic_content( stripslashes( $args['image_src'] ) );
+			if ( $dynamic_value->is_dynamic() && current_user_can( 'edit_post', $post_id ) ) {
+				$args['image_src'] = $dynamic_value->resolve( $post_id );
+			}
+		}
 
 		$image_output = '';
 

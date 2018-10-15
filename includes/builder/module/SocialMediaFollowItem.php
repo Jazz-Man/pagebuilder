@@ -186,7 +186,8 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 					'social_network'
 				),
 				'toggle_slug'         => 'link',
-				'default_on_front' => '#',
+				'default_on_front'    => '#',
+				'dynamic_content'     => 'url',
 			),
 			'skype_url' => array(
 				'label'           => esc_html__( 'Account Name', 'et_builder' ),

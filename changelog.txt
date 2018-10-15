@@ -1,3 +1,74 @@
+version 3.17 ( updated 10-11-2018 )
+- Added Dynamic Content to Divi.
+- Fixed Style Type, Position and Indent Option for Lists (OL/UL) in Text module for Post.
+- Removed certain instances of hover icon that should not be present.
+- Fixed a bug where Shop modules failed to display products sorted by price or date (ascending).
+- Prevent adding max-width: 100% to modules when the sizing is not changed.
+- Fixed incorrect history state for bulk editing hover options.
+- Fixed alignment issue in Firefox for the first field in Email Optin module.
+- Fixed the bug where Play Icon color option in VIdeo module were not working only in Visual Builder for a Post.
+- Fixed Custom CSS removing CSS when hover is enabled.
+- Fixed testimonial portrait margin on 1/5 and 1/6 columns.
+- Fixed CSS for Grid columns For Smartphone.
+- Fixed specialty column styles for 1/6 columns inside a 1/2 column.
+- Fixed the issue where Favicon from old Theme Option setting were printed on page, even if Site Icon has been uploaded from WordPress Customizer.
+- Fixed post_max_size megabytes conversion.
+- Fixed a issue where Your Save Has Failed Modal Hides Wordfence's Blocked Request Notification.
+	* core/admin/css/core.css
+	* core/components/Portability.php
+	* epanel/custom_functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-value.php
+	* includes/builder/core.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/feature/post-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets/css/responsive-preview-wrapped.css
+	* includes/builder/frontend-builder/assets/css/responsive-preview.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/FullwidthHeader.php
+	* includes/builder/module/FullwidthImage.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/Image.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Search.php
+	* includes/builder/module/Shop.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/SocialMediaFollowItem.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/TeamMember.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/Video.php
+	* includes/builder/module/VideoSliderItem.php
+	* includes/builder/module/type/PostBased.php
+	* includes/builder/plugin-compat/advanced-custom-fields.php
+	* includes/builder/plugin-compat/woocommerce.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/style.css
+	* includes/builder/template-preview.php
+
 version 3.16.1 ( updated 10-05-2018 )
 - Fixed Responsive Tabs, Hover Tabs and reset button support for multiselect.
 - Added missing blurb icon transitions.

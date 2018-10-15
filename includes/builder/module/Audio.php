@@ -219,6 +219,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define a title.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'artist_name' => array(
 				'label'           => esc_html__( 'Artist Name', 'et_builder' ),
@@ -226,6 +227,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define an artist name.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'album_name' => array(
 				'label'           => esc_html__( 'Album name', 'et_builder' ),
@@ -233,6 +235,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define an album name.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'image_url' => array(
 				'label'              => esc_html__( 'Cover Art Image URL', 'et_builder' ),
@@ -246,6 +249,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 				'computed_affects'   => array(
 					'__audio',
 				),
+				'dynamic_content'    => 'image',
 			),
 			'__audio' => array(
 				'type'                => 'computed',
@@ -281,9 +285,9 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		global $wp_version;
 
 		$audio                           = $this->props['audio'];
-		$title                           = $this->props['title'];
-		$artist_name                     = $this->props['artist_name'];
-		$album_name                      = $this->props['album_name'];
+		$title                           = $this->_esc_attr( 'title' );
+		$artist_name                     = $this->_esc_attr( 'artist_name' );
+		$album_name                      = $this->_esc_attr( 'album_name' );
 		$image_url                       = $this->props['image_url'];
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
@@ -313,13 +317,13 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 			if ( '' !== $artist_name ) {
 				$artist_name = sprintf(
 					et_get_safe_localization( _x( 'by <strong>%1$s</strong>', 'Audio Module meta information', 'et_builder' ) ),
-					esc_html( $artist_name )
+					et_esc_previously( $artist_name )
 				);
 			}
 
 			$meta = sprintf( '%1$s%2$s',
-				$artist_name,
-				esc_html( $album_name )
+				et_esc_previously( $artist_name ),
+				et_esc_previously( $album_name )
 			);
 
 			$meta = sprintf( '<p class="et_audio_module_meta">%1$s</p>', $meta );
@@ -389,7 +393,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					%3$s
 				</div>
 			</div>',
-			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), et_esc_previously( $title ) ) : '' ),
 			$meta,
 			self::get_audio( array(
 				'audio' => $audio,

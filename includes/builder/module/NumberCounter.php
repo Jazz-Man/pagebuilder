@@ -119,6 +119,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input a title for the counter.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'number' => array(
 				'label'           => esc_html__( 'Number', 'et_builder' ),
@@ -155,7 +156,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 
 		$number                          = $this->props['number'];
 		$percent_sign                    = $this->props['percent_sign'];
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$counter_color                   = $this->props['counter_color'];
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
@@ -206,7 +207,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			esc_attr( $number ),
 			( '' !== $counter_color ? sprintf( ' style="color:%s"', esc_attr( $counter_color ) ) : '' ),
 			( 'on' == $percent_sign ? '%' : ''), // #5
-			( '' !== $title ? sprintf( '<%1$s class="title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h3' ), et_esc_previously( $title ) ) : '' ),
 			esc_attr( $separator ),
 			$video_background,
 			$parallax_image_background,

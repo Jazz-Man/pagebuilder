@@ -89,6 +89,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 				'option_category'  => 'basic_option',
 				'description'      => esc_html__( 'Input the destination URL for your button.', 'et_builder' ),
 				'toggle_slug'      => 'link',
+				'dynamic_content'  => 'url',
 			),
 			'url_new_window' => array(
 				'label'            => esc_html__( 'Button Link Target', 'et_builder' ),
@@ -108,6 +109,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 				'option_category'  => 'basic_option',
 				'description'      => esc_html__( 'Input your desired button text.', 'et_builder' ),
 				'toggle_slug'      => 'main_content',
+				'dynamic_content'  => 'text',
 			),
 			'button_alignment' => array(
 				'label'            => esc_html__( 'Button Alignment', 'et_builder' ),
@@ -132,7 +134,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 	function render( $attrs, $content = null, $render_slug ) {
 		$button_url                      = $this->props['button_url'];
 		$button_rel                      = $this->props['button_rel'];
-		$button_text                     = $this->props['button_text'];
+		$button_text                     = $this->_esc_attr( 'button_text', 'limited' );
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
 		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
@@ -167,15 +169,16 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 
 		// Render Button
 		$button = $this->render_button( array(
-			'button_id'        => $this->module_id( false ),
-			'button_classname' => explode( ' ', $this->module_classname( $render_slug ) ),
-			'button_custom'    => $button_custom,
-			'button_rel'       => $button_rel,
-			'button_text'      => $button_text,
-			'button_url'       => $button_url,
-			'custom_icon'      => $custom_icon,
-			'has_wrapper'      => false,
-			'url_new_window'   => $url_new_window,
+			'button_id'           => $this->module_id( false ),
+			'button_classname'    => explode( ' ', $this->module_classname( $render_slug ) ),
+			'button_custom'       => $button_custom,
+			'button_rel'          => $button_rel,
+			'button_text'         => $button_text,
+			'button_text_escaped' => true,
+			'button_url'          => $button_url,
+			'custom_icon'         => $custom_icon,
+			'has_wrapper'         => false,
+			'url_new_window'      => $url_new_window,
 		) );
 
 		// Render module output

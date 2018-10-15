@@ -108,6 +108,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input a title for your bar.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'percent' => array(
 				'label'            => esc_html__( 'Percent', 'et_builder' ),
@@ -315,7 +316,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 					<span class="et_pb_counter_amount" style="%5$s" data-width="%3$s"><span class="et_pb_counter_amount_number">%2$s</span></span>
 				</span>
 			</li>',
-			sanitize_text_field( $content ),
+			$this->_esc_attr( 'content' ),
 			( isset( $et_pb_counters_settings['use_percentages'] ) && 'on' === $et_pb_counters_settings['use_percentages'] ? esc_html( $percent ) : '' ),
 			esc_attr( $percent ),
 			$background_color_style,

@@ -260,6 +260,9 @@ a.et-pb-clone.et-pb-advanced-setting-clone { left: 44px; font-size: 33px; top: 9
 .et-pb-option-advanced-module-settings { border-bottom: 1px solid #EAEDF0; padding-bottom: 10px; padding-bottom: 20px; margin-bottom: 40px; }
 .et_pb_modal_selective_sync .et-pb-option-advanced-module-settings { padding-left: 40px; }
 
+.et-pb-option-advanced-module-settings .et-pb-sortable-options .et-pb-icon { display: inline-block; }
+.et-pb-option-advanced-module-settings .et-pb-sortable-options .et-pb-icon svg { position: relative; top: 2px; height: 2em; margin: -0.5em 0; }
+
 .et-pb-add-sortable-option { color: #8294A5; text-decoration: none; position: relative; top: -3px; }
 .et-pb-add-sortable-initial { margin: 0 0 10px; top: 0; }
 .et-pb-add-sortable-option:hover { color: #23282D; }
@@ -4515,4 +4518,69 @@ a.et-pb-ab-refresh-stats span.icon:after { font-family: 'etbuilder'; font-size: 
 	position: absolute;
 	top: 4px;
 	left: 10px;
+}
+
+.et-pb-dynamic-content,
+.et-pb-dynamic-content * {
+    box-sizing: content-box;
+}
+
+.et-pb-dynamic-content {
+    float: left;
+}
+
+.et-pb-dynamic-content__message {
+    position: relative;
+    width: 580px;
+    padding: 10px 10px 10px 38px;
+    line-height: 20px;
+    background: #F1F5F9;
+}
+
+.et-pb-dynamic-content__field {
+    display: none;
+}
+
+.et-pb-option--tiny_mce .et-pb-dynamic-content {
+    float: none;
+}
+
+.et-pb-option--tiny_mce .et-pb-dynamic-content__message {
+    width: auto;
+}
+
+.et-pb-dynamic-content__message .et-pb-icon {
+    position: absolute;
+    display: block;
+    width: 28px;
+    height: 28px;
+    left: 7px;
+    top: 7px;
+}
+
+.et-pb-dynamic-content-fb-switch {
+    position: relative;
+    right: -5px;
+    top: -5px;
+    display: block;
+    float: right;
+    padding: 5px 10px 5px 32px;
+    border-radius: 3px;
+    background: #00c3aa;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+.et-pb-dynamic-content-fb-switch:hover {
+    background: #00BBA3;
+    color: #FFFFFF;
+}
+
+.et-pb-dynamic-content-fb-switch:before {
+    position: absolute;
+    left: 9px;
+    top: 5px;
+    font-family: 'etbuilder';
+    content: '\51';
+    font-size: 16px;
 }

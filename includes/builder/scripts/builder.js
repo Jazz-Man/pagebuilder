@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.16.1';
+window.et_builder_version = '3.17';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -404,6 +404,32 @@ window.et_builder_product_name = 'Divi';
 		return string.substr( 0, substring.length ) === substring;
 	}
 
+	/**
+	 * Determine whether the given value represents dynamic content.
+	 * Added to ET_PageBuilder so it can be access from inside templates.
+	 *
+	 * @param {string} content
+	 * @return {boolean}
+	 */
+	ET_PageBuilder.isDynamicContent = function(content) {
+		var clearParagraph = new RegExp(/^<p>(.*)<\/p>$/, 'i');
+		var trimSpace      = /^\s+|\s+$/;
+		var cleanContent   = content.replace(trimSpace, '');
+		cleanContent       = cleanContent.replace(clearParagraph, '$1');
+		cleanContent       = cleanContent.replace(trimSpace, '');
+
+		try {
+			var parsedContent = JSON.parse(cleanContent);
+
+			if (typeof parsedContent.dynamic !== 'undefined' && true === parsedContent.dynamic) {
+				return true;
+			}
+		} catch (e) {
+			// do nothing
+		}
+
+		return false;
+	}
 
 	$( document ).ready( function() {
 
@@ -2916,7 +2942,8 @@ window.et_builder_product_name = 'Divi';
 				request_data = {
 					et_pb_preview_nonce : et_pb_options.et_pb_preview_nonce,
 					shortcode           : shortcode,
-					post_title          : $('#title').val()
+					post_title          : $('#title').val(),
+					post_id             : et_pb_options.postId
 				};
 
 				// Toggle button state
@@ -19180,6 +19207,11 @@ window.et_builder_product_name = 'Divi';
 				$(window).trigger( 'resize' );
 			}, 50 );
 		} );
+
+		$(document).on('click', '.et-pb-dynamic-content-fb-switch', function(e) {
+			e.preventDefault();
+			$('#et_pb_fb_cta').click();
+		});
 	});
 
 } )(jQuery);

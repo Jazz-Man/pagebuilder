@@ -293,6 +293,10 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			'include_categories'   => array(
 				'label'            => esc_html__( 'Include Categories', 'et_builder' ),
 				'type'             => 'categories',
+				'meta_categories'  => array(
+					'all'     => esc_html__( 'All Categories', 'et_builder' ),
+					'current' => esc_html__( 'Current Category', 'et_builder' ),
+				),
 				'renderer_options' => array(
 					'use_terms'    => true,
 					'term_name'    => 'product_cat',
@@ -447,23 +451,38 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			$this->props[ $arg ] = $value;
 		}
 
-		$type                 = $this->props['type'];
-		$include_category_ids = explode ( ",", $this->props['include_categories'] );
-		$posts_number         = $this->props['posts_number'];
-		$orderby              = $this->props['orderby'];
-		$columns              = $this->props['columns_number'];
-		$pagination           = 'on' === $this->props['show_pagination'];
+		$post_id                 = isset( $current_page['id'] ) ? (int) $current_page['id'] : 0;
+		$type                    = $this->props['type'];
+		$posts_number            = $this->props['posts_number'];
+		$orderby                 = $this->props['orderby'];
+		$order                   = 'ASC'; // Default to ascending order
+		$columns                 = $this->props['columns_number'];
+		$pagination              = 'on' === $this->props['show_pagination'];
+		$all_shop_categories     = et_builder_get_shop_categories();
+		$all_shop_categories_map = array();
+		$raw_product_categories  = self::filter_meta_categories( $this->props['include_categories'], $post_id, 'product_cat' );
 
-		$product_categories = array();
-		$all_shop_categories = et_builder_get_shop_categories();
-		if ( is_array( $all_shop_categories ) && ! empty( $all_shop_categories ) ) {
-			foreach ( $all_shop_categories as $category ) {
-				if ( is_object( $category ) && is_a($category, 'WP_Term') ) {
-					if ( in_array( $category->term_id, $include_category_ids ) ) {
-						$product_categories[] = $category->slug;
-					}
-				}
+		foreach ( $all_shop_categories as $term ) {
+			if ( is_object( $term ) && is_a( $term, 'WP_Term' ) ) {
+				$all_shop_categories_map[ $term->term_id ] = $term->slug;
 			}
+		}
+
+		$product_categories = array_values( $all_shop_categories_map );
+
+		if ( ! empty( $raw_product_categories ) ) {
+			$product_categories = array_intersect_key(
+				$all_shop_categories_map,
+				array_flip( $raw_product_categories )
+			);
+		}
+
+		if ( in_array( $orderby, array( 'price-desc', 'date-desc' ) ) ) {
+			// Supported orderby arguments (as defined by WC_Query->get_catalog_ordering_args() ):
+			//   rand | date | price | popularity | rating | title
+			$orderby = str_replace( '-desc', '', $orderby );
+			// Switch to descending order if orderby is 'price-desc' or 'date-desc'
+			$order = 'DESC';
 		}
 
 		$woocommerce_shortcodes_types = array(
@@ -479,29 +498,19 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 			$this->_add_remove_pagination_callbacks( 'add', $woocommerce_shortcodes_types[$type] );
 		}
 
-		/**
-		 * Actually, orderby parameter used by WooCommerce shortcode is equal to orderby parameter used by WP_Query
-		 * Hence customize WooCommerce' product query via modify_woocommerce_shortcode_products_query method
-		 * @see http://docs.woothemes.com/document/woocommerce-shortcodes/#section-5
-		 */
-		$modify_woocommerce_query = 'best_selling' !== $type && in_array( $orderby, array( 'menu_order', 'price', 'price-desc', 'date', 'date-desc', 'rating', 'popularity' ) );
-
-		if ( $modify_woocommerce_query ) {
-			add_filter( 'woocommerce_shortcode_products_query', array( $this, 'modify_woocommerce_shortcode_products_query' ), 10, 2 );
-		}
-
 		do_action( 'et_pb_shop_before_print_shop' );
 
 		// https://github.com/woocommerce/woocommerce/issues/17769
 		$post = $GLOBALS['post'];
 
 		$shop = do_shortcode(
-			sprintf( '[%1$s per_page="%2$s" orderby="%3$s" columns="%4$s" category="%5$s"]',
+			sprintf( '[%1$s per_page="%2$s" orderby="%3$s" columns="%4$s" category="%5$s" order="%6$s"]',
 				esc_html( $woocommerce_shortcodes_types[ $type ] ),
 				esc_attr( $posts_number ),
 				esc_attr( $orderby ),
 				esc_attr( $columns ),
-				esc_attr( implode ( ",", $product_categories ) )
+				esc_attr( implode( ',', $product_categories ) ),
+				esc_attr( $order )
 			)
 		);
 
@@ -512,17 +521,6 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 
 		if ( $pagination ) {
 			$this->_add_remove_pagination_callbacks( 'remove', $woocommerce_shortcodes_types[$type] );
-		}
-
-		/**
-		 * Remove modify_woocommerce_shortcode_products_query method after being used
-		 */
-		if ( $modify_woocommerce_query ) {
-			remove_filter( 'woocommerce_shortcode_products_query', array( $this, 'modify_woocommerce_shortcode_products_query' ) );
-
-			if ( function_exists( 'WC' ) ) {
-				WC()->query->remove_ordering_args(); // remove args added by woocommerce to avoid errors in sql queries performed afterwards
-			}
 		}
 
 		if ( '<div class="woocommerce columns-0"></div>' === $shop ) {
@@ -552,7 +550,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		add_filter( 'post_class', array( $shop, 'add_product_class_name' ) );
 
 		// Get product HTML
-		$output = $shop->get_shop();
+		$output = $shop->get_shop( array(), array(), $current_page );
 
 		// Remove 'product' class addition to product loop's post class
 		remove_filter( 'post_class', array( $shop, 'add_product_class_name' ) );
@@ -694,7 +692,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 				%5$s
 				%1$s
 			</div>',
-			$this->get_shop(),
+			$this->get_shop( array(), array(), array( 'id' => $this->get_the_ID() ) ),
 			$this->module_id(),
 			$this->module_classname( $render_slug ),
 			$data_icon,
@@ -721,37 +719,6 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		$GLOBALS['et_pb_shop_pages'] = $products->max_num_pages;
 
 		return $query_args;
-	}
-
-	/**
-	 * Modifying WooCommerce' product query filter based on $orderby value given
-	 * @see WC_Query->get_catalog_ordering_args()
-	 */
-	function modify_woocommerce_shortcode_products_query( $args, $atts ) {
-
-		if ( function_exists( 'WC' ) ) {
-			// Default to ascending order
-			$orderby = $this->props['orderby'];
-			$order   = 'ASC';
-
-			// Switch to descending order if orderby is 'price-desc' or 'date-desc'
-			if ( in_array( $orderby, array( 'price-desc', 'date-desc' ) ) ) {
-				$order = 'DESC';
-			}
-
-			// Supported orderby arguments (as defined by WC_Query->get_catalog_ordering_args() ): rand | date | price | popularity | rating | title
-			$orderby = in_array( $orderby, array( 'price-desc', 'date-desc' ) ) ? str_replace( '-desc', '', $orderby ) : $orderby;
-
-			// Get arguments for the given non-native orderby
-			$query_args = WC()->query->get_catalog_ordering_args( $orderby, $order );
-
-			// Confirm that returned argument isn't empty then merge returned argument with default argument
-			if ( is_array( $query_args ) && ! empty( $query_args ) ) {
-				$args = array_merge( $args, $query_args );
-			}
-		}
-
-		return $args;
 	}
 }
 

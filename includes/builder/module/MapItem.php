@@ -49,6 +49,7 @@ class ET_Builder_Module_Map_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'The title will be used within the tab button for this tab.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'pin_address' => array(
 				'label'             => esc_html__( 'Map Pin Address', 'et_builder' ),
@@ -88,6 +89,7 @@ class ET_Builder_Module_Map_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Here you can define the content that will be placed within the infobox for the pin.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 		);
 		return $fields;
@@ -96,7 +98,7 @@ class ET_Builder_Module_Map_Item extends ET_Builder_Module {
 	function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_tab_titles;
 
-		$title = $this->props['title'];
+		$title           = $this->_esc_attr( 'title' );
 		$pin_address_lat = $this->props['pin_address_lat'];
 		$pin_address_lng = $this->props['pin_address_lng'];
 
@@ -118,7 +120,7 @@ class ET_Builder_Module_Map_Item extends ET_Builder_Module {
 			</div>',
 			esc_attr( $pin_address_lat ),
 			esc_attr( $pin_address_lng ),
-			esc_html( $title ),
+			et_esc_previously( $title ),
 			( '' != $content ? sprintf( '<div class="infowindow">%1$s</div>', $content ) : '' ),
 			esc_attr( $title )
 		);

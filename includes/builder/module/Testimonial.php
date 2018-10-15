@@ -172,6 +172,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the name of the testimonial author.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'job_title' => array(
 				'label'           => esc_html__( 'Job Title', 'et_builder' ),
@@ -179,6 +180,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the job title.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'company_name' => array(
 				'label'           => esc_html__( 'Company Name', 'et_builder' ),
@@ -186,6 +188,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the name of the company.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'url' => array(
 				'label'           => esc_html__( 'Company Link URL', 'et_builder' ),
@@ -193,6 +196,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the website of the author or leave blank for no link.', 'et_builder' ),
 				'toggle_slug'     => 'link_options',
+				'dynamic_content' => 'url',
 			),
 			'url_new_window' => array(
 				'label'           => esc_html__( 'Company Link Target', 'et_builder' ),
@@ -215,6 +219,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'update_text'        => esc_attr__( 'Set As Image', 'et_builder' ),
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display.', 'et_builder' ),
 				'toggle_slug'        => 'image',
+				'dynamic_content'    => 'image',
 			),
 			'quote_icon' => array(
 				'label'           => esc_html__( 'Show Quote Icon', 'et_builder' ),
@@ -234,6 +239,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the main text content for your module here.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'quote_icon_color' => array(
 				'label'             => esc_html__( 'Quote Icon Color', 'et_builder' ),
@@ -300,10 +306,12 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$author                            = $this->props['author'];
-		$job_title                         = $this->props['job_title'];
+		// Allowing full html for backwards compatibility.
+		$author                            = $this->_esc_attr( 'author', 'full' );
+		$job_title                         = $this->_esc_attr( 'job_title' );
 		$portrait_url                      = $this->props['portrait_url'];
-		$company_name                      = $this->props['company_name'];
+		// Allowing full html for backwards compatibility.
+		$company_name                      = $this->_esc_attr( 'company_name', 'full' );
 		$url                               = $this->props['url'];
 		$quote_icon                        = $this->props['quote_icon'];
 		$url_new_window                    = $this->props['url_new_window'];
@@ -394,9 +402,12 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		}
 
 		if ( '' !== $url && ( '' !== $company_name || '' !== $author ) ) {
-			$link_output = sprintf( '<a href="%1$s"%3$s>%2$s</a>',
+			// NOT allowing full html for backwards compatibility in this case.
+			$author       = $this->_esc_attr( 'author' );
+			$company_name = $this->_esc_attr( 'company_name' );
+			$link_output  = sprintf( '<a href="%1$s"%3$s>%2$s</a>',
 				esc_url( $url ),
-				( '' !== $company_name ? esc_html( $company_name ) : esc_html( $author ) ),
+				( '' !== $company_name ? et_esc_previously( $company_name ) : et_esc_previously( $author ) ),
 				( 'on' === $url_new_window ? ' target="_blank"' : '' )
 			);
 
@@ -483,13 +494,13 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 				</div> <!-- .et_pb_testimonial_description -->
 			</div> <!-- .et_pb_testimonial -->',
 			$this->content,
-			$author,
+			et_esc_previously( $author ),
 			$this->module_id(),
 			$this->module_classname( $render_slug ),
-			( '' !== $job_title ? esc_html( $job_title ) : '' ), // #5
+			( '' !== $job_title ? et_esc_previously( $job_title ) : '' ), // #5
 			( '' !== $company_name
 				? sprintf( '%2$s%1$s',
-					$company_name,
+					et_esc_previously( $company_name ),
 					( '' !== $job_title ? ', ' : '' )
 				)
 				: ''

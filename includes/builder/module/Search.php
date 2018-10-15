@@ -196,10 +196,11 @@ class ET_Builder_Module_Search extends ET_Builder_Module {
 				'description'     => esc_html__( 'Turn this on to show the Search button', 'et_builder' ),
 			),
 			'placeholder' => array(
-				'label'       => esc_html__( 'Placeholder Text', 'et_builder' ),
-				'type'        => 'text',
-				'description' => esc_html__( 'Type the text you want to use as placeholder for the search field.', 'et_builder' ),
-				'toggle_slug' => 'main_content',
+				'label'           => esc_html__( 'Placeholder Text', 'et_builder' ),
+				'type'            => 'text',
+				'description'     => esc_html__( 'Type the text you want to use as placeholder for the search field.', 'et_builder' ),
+				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'button_color' => array(
 				'label'        => esc_html__( 'Button and Border Color', 'et_builder' ),

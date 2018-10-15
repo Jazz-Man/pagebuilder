@@ -682,6 +682,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'option_category' => 'basic_option',
 					'description'     => esc_html__( 'Choose a title of your signup box.', 'et_builder' ),
 					'toggle_slug'     => 'main_content',
+					'dynamic_content' => 'text',
 				),
 				'button_text'                 => array(
 					'label'            => esc_html__( 'Button Text', 'et_builder' ),
@@ -690,6 +691,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'description'      => esc_html__( 'Define custom text for the subscribe button.', 'et_builder' ),
 					'toggle_slug'      => 'main_content',
 					'default_on_front' => esc_html__( 'Subscribe', 'et_builder' ),
+					'dynamic_content' => 'text',
 				),
 				'description'                 => array(
 					'label'           => esc_html__( 'Description', 'et_builder' ),
@@ -697,6 +699,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'option_category' => 'basic_option',
 					'description'     => esc_html__( 'This content will appear below the title.', 'et_builder' ),
 					'toggle_slug'     => 'main_content',
+					'dynamic_content' => 'text',
 				),
 				'footer_content'              => array(
 					'label'           => esc_html__( 'Footer', 'et_builder' ),
@@ -704,6 +707,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'option_category' => 'basic_option',
 					'description'     => esc_html__( 'This content will appear below the subscribe button.', 'et_builder' ),
 					'toggle_slug'     => 'main_content',
+					'dynamic_content' => 'text',
 				),
 				'form_field_background_color' => array(
 					'label'        => esc_html__( 'Form Field Background Color', 'et_builder' ),
@@ -946,7 +950,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 
 		$et_pb_half_width_counter    = 0;
 
-		$title                           = $this->props['title'];
+		$title                           = $this->_esc_attr( 'title' );
 		$use_background_color            = $this->props['use_background_color'];
 		$provider                        = $this->props['provider'];
 		$list                            = ( 'feedburner' !== $provider ) ? $this->props[ $provider . '_list' ] : array();
@@ -1220,7 +1224,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 				</div>
 				%3$s
 			</div>',
-			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), esc_html( $title ) ) : '' ),
+			( '' !== $title ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), et_esc_previously( $title ) ) : '' ),
 			$description,
 			$form,
 			$this->module_classname( $render_slug ),

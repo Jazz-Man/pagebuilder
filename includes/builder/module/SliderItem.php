@@ -205,6 +205,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define the title text for your slide.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'button_text' => array(
 				'label'           => esc_html__( 'Button Text', 'et_builder' ),
@@ -212,14 +213,16 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define the text for the slide button', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'button_link' => array(
-				'label'           => esc_html__( 'Button Link URL', 'et_builder' ),
-				'type'            => 'text',
-				'option_category' => 'basic_option',
-				'description'     => esc_html__( 'Input a destination URL for the slide button.', 'et_builder' ),
-				'toggle_slug'     => 'link_options',
+				'label'            => esc_html__( 'Button Link URL', 'et_builder' ),
+				'type'             => 'text',
+				'option_category'  => 'basic_option',
+				'description'      => esc_html__( 'Input a destination URL for the slide button.', 'et_builder' ),
+				'toggle_slug'      => 'link_options',
 				'default_on_front' => '#',
+				'dynamic_content'  => 'url',
 			),
 			'url_new_window' => array(
 				'label'            => esc_html__( 'Button Link Target', 'et_builder' ),
@@ -245,6 +248,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				),
 				'description'        => esc_html__( 'If defined, this slide image will appear to the left of your slide text. Upload an image, or leave blank for a text-only slide.', 'et_builder' ),
 				'toggle_slug'        => 'image_video',
+				'dynamic_content'    => 'image',
 			),
 			'use_bg_overlay'      => array(
 				'label'           => esc_html__( 'Use Background Overlay', 'et_builder' ),
@@ -335,6 +339,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'description'     => esc_html__( 'If you have a slide image defined, input your HTML ALT text for the image here.', 'et_builder' ),
 				'tab_slug'        => 'custom_css',
 				'toggle_slug'     => 'attributes',
+				'dynamic_content' => 'text',
 			),
 			'allow_player_pause' => array(
 				'label'           => esc_html__( 'Pause Video When Another Video Plays', 'et_builder' ),
@@ -354,6 +359,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input your main slide text content here.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'arrows_custom_color' => array(
 				'label'        => esc_html__( 'Arrows Custom Color', 'et_builder' ),
@@ -484,8 +490,9 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 
 	function render( $attrs, $content = null, $render_slug ) {
 		$alignment                       = $this->props['alignment'];
-		$heading                         = $this->props['heading'];
-		$button_text                     = $this->props['button_text'];
+		// Allowing full html for backwards compatibility.
+		$heading                         = $this->_esc_attr( 'heading', 'full' );
+		$button_text                     = $this->_esc_attr( 'button_text', 'limited' );
 		$button_link                     = $this->props['button_link'];
 		$url_new_window                  = $this->props['url_new_window'];
 		$image                           = $this->props['image'];
@@ -523,11 +530,15 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 			if ( '#' !== $button_link ) {
 				$heading = sprintf( '<a href="%1$s">%2$s</a>',
 					esc_url( $button_link ),
-					$heading
+					et_esc_previously( $heading )
 				);
 			}
 
-			$heading = sprintf( '<%1$s class="et_pb_slide_title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h2' ), $heading );
+			$heading = sprintf(
+				'<%1$s class="et_pb_slide_title">%2$s</%1$s>',
+				et_pb_process_header_level( $header_level, 'h2' ),
+				et_esc_previously( $heading )
+			);
 		}
 
 		// Overwrite button rel with pricin tables' button_rel if needed
@@ -543,14 +554,15 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		}
 
 		$button = $this->render_button( array(
-			'button_classname' => $button_classname,
-			'button_custom'    => '' !== $custom_slide_icon ? 'on' : 'off',
-			'button_rel'       => $button_rel,
-			'button_text'      => $button_text,
-			'button_url'       => $button_link,
-			'url_new_window'   => $url_new_window,
-			'custom_icon'      => $custom_slide_icon,
-			'display_button'   => true,
+			'button_classname'    => $button_classname,
+			'button_custom'       => '' !== $custom_slide_icon ? 'on' : 'off',
+			'button_rel'          => $button_rel,
+			'button_text'         => $button_text,
+			'button_text_escaped' => $button_text,
+			'button_url'          => $button_link,
+			'url_new_window'      => $url_new_window,
+			'custom_icon'         => $custom_slide_icon,
+			'display_button'      => true,
 		) );
 
 		$style = $class = '';
@@ -669,7 +681,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		$slide_content = sprintf(
 			'%1$s
 				<div class="et_pb_slide_content%3$s">%2$s</div>',
-			$heading,
+			et_esc_previously( $heading ),
 			$this->content,
 			( 'on' !== $et_pb_slider_show_mobile['show_content_on_mobile'] ? esc_attr( " {$hide_on_mobile_class}" ) : '' )
 		);

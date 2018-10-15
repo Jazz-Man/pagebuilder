@@ -1180,7 +1180,7 @@
 						function() {
 							$thisEl.removeClass('et_pb_gutters' + originalGutter);
 							$thisEl.addClass('et_pb_gutters' + hoverGutter);
-						}, 
+						},
 						function() {
 							$thisEl.removeClass('et_pb_gutters' + hoverGutter);
 							$thisEl.addClass('et_pb_gutters' + originalGutter);
@@ -3670,32 +3670,48 @@
 				var window_width = $( window ).width();
 
 				if ( window_width > 959 ) {
-					$( '.et_pb_testimonial' ).each( function() {
-						if ( ! $(this).is( ':visible' ) ) {
+					$('.et_pb_testimonial').each(function () {
+						if (! $(this).is(':visible')) {
 							return;
 						}
 
-						var $testimonial            = $(this);
-						var $portrait               = $testimonial.find( '.et_pb_testimonial_portrait' );
-						var portrait_width          = $portrait.outerWidth( true );
-						var $testimonial_descr      = $testimonial.find( '.et_pb_testimonial_description' );
-						var $outer_column           = $testimonial.closest( '.et_pb_column' );
-						var testimonial_indent      = ! ( $outer_column.hasClass( 'et_pb_column_1_3' ) || $outer_column.hasClass( 'et_pb_column_1_4' ) || $outer_column.hasClass( 'et_pb_column_3_8' ) ) ? portrait_width : 0;
+						var $testimonial       = $(this);
+						var $portrait          = $testimonial.find('.et_pb_testimonial_portrait');
+						var portrait_width     = $portrait.outerWidth(true);
+						var $testimonial_descr = $testimonial.find('.et_pb_testimonial_description');
+						var $outer_column      = $testimonial.closest('.et_pb_column');
 
-						$testimonial_descr.css( 'margin-left', testimonial_indent );
-					} );
+						if (portrait_width > 90) {
+							$portrait.css('padding-bottom', '0');
+							$portrait.width('90px');
+							$portrait.height('90px');
+						}
+
+						var testimonial_indent = ! ($outer_column.hasClass('et_pb_column_1_3')
+							|| $outer_column.hasClass('et_pb_column_1_4')
+							|| $outer_column.hasClass('et_pb_column_1_5')
+							|| $outer_column.hasClass('et_pb_column_1_6')
+							|| $outer_column.hasClass('et_pb_column_2_5')
+							|| $outer_column.hasClass('et_pb_column_3_8')) ? portrait_width : 0;
+
+						$testimonial_descr.css('margin-left', testimonial_indent);
+					});
 				} else if ( window_width > 767 ) {
 					$( '.et_pb_testimonial' ).each( function() {
 						if ( ! $(this).is( ':visible' ) ) {
 							return;
 						}
 
-						var $testimonial            = $(this);
-						var $portrait               = $testimonial.find( '.et_pb_testimonial_portrait' );
-						var portrait_width          = $portrait.outerWidth( true );
-						var $testimonial_descr      = $testimonial.find( '.et_pb_testimonial_description' );
-						var $outer_column           = $testimonial.closest( '.et_pb_column' );
-						var testimonial_indent      = ! ( $outer_column.hasClass( 'et_pb_column_1_4' ) || $outer_column.hasClass( 'et_pb_column_3_8' ) ) ? portrait_width : 0;
+						var $testimonial       = $(this);
+						var $portrait          = $testimonial.find('.et_pb_testimonial_portrait');
+						var portrait_width     = $portrait.outerWidth(true);
+						var $testimonial_descr = $testimonial.find('.et_pb_testimonial_description');
+						var $outer_column      = $testimonial.closest('.et_pb_column');
+						var testimonial_indent = ! ($outer_column.hasClass('et_pb_column_1_4')
+							|| $outer_column.hasClass('et_pb_column_1_5')
+							|| $outer_column.hasClass('et_pb_column_1_6')
+							|| $outer_column.hasClass('et_pb_column_2_5')
+							|| $outer_column.hasClass('et_pb_column_3_8')) ? portrait_width : 0;
 
 						$testimonial_descr.css( 'margin-left', testimonial_indent );
 					} );

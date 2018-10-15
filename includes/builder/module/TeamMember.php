@@ -173,6 +173,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the name of the person', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'position' => array(
 				'label'           => esc_html__( 'Position', 'et_builder' ),
@@ -180,6 +181,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( "Input the person's position.", 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'image_url' => array(
 				'label'              => esc_html__( 'Image URL', 'et_builder' ),
@@ -190,6 +192,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'update_text'        => esc_attr__( 'Set As Image', 'et_builder' ),
 				'description'        => esc_html__( 'Upload your desired image, or type in the URL to the image you would like to display.', 'et_builder' ),
 				'toggle_slug'        => 'image',
+				'dynamic_content'    => 'image',
 			),
 			'facebook_url' => array(
 				'label'           => esc_html__( 'Facebook Profile Url', 'et_builder' ),
@@ -197,6 +200,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input Facebook Profile Url.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'url',
 			),
 			'twitter_url' => array(
 				'label'           => esc_html__( 'Twitter Profile Url', 'et_builder' ),
@@ -204,6 +208,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input Twitter Profile Url', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'url',
 			),
 			'google_url' => array(
 				'label'           => esc_html__( 'Google+ Profile Url', 'et_builder' ),
@@ -211,6 +216,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input Google+ Profile Url', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'url',
 			),
 			'linkedin_url' => array(
 				'label'           => esc_html__( 'LinkedIn Profile Url', 'et_builder' ),
@@ -218,6 +224,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input LinkedIn Profile Url', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'url',
 			),
 			'content' => array(
 				'label'           => esc_html__( 'Description', 'et_builder' ),
@@ -225,6 +232,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Input the main text content for your module here.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'icon_color' => array(
 				'label'             => esc_html__( 'Icon Color', 'et_builder' ),
@@ -248,8 +256,8 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$name                            = $this->props['name'];
-		$position                        = $this->props['position'];
+		$name                            = $this->_esc_attr( 'name' );
+		$position                        = $this->_esc_attr( 'position' );
 		$image_url                       = $this->props['image_url'];
 		$animation                       = $this->props['animation'];
 		$facebook_url                    = $this->props['facebook_url'];
@@ -395,8 +403,8 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 			( '' !== $image ? $image : '' ),
 			$this->module_id(),
 			$this->module_classname( $render_slug ),
-			( '' !== $name ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), esc_html( $name ) ) : '' ), // #5
-			( '' !== $position ? sprintf( '<p class="et_pb_member_position">%1$s</p>', esc_html( $position ) ) : '' ),
+			( '' !== $name ? sprintf( '<%1$s class="et_pb_module_header">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h4' ), et_esc_previously( $name ) ) : '' ), // #5
+			( '' !== $position ? sprintf( '<p class="et_pb_member_position">%1$s</p>', et_esc_previously( $position ) ) : '' ),
 			$social_links,
 			$video_background,
 			$parallax_image_background,

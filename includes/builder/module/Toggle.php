@@ -124,6 +124,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'The title will appear above the content and when the toggle is closed.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'open' => array(
 				'label'           => esc_html__( 'State', 'et_builder' ),
@@ -143,6 +144,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 				'option_category'   => 'basic_option',
 				'description'       => esc_html__( 'Input the main text content for your module here.', 'et_builder' ),
 				'toggle_slug'       => 'main_content',
+				'dynamic_content'   => 'text',
 			),
 			'open_toggle_text_color' => array(
 				'label'             => esc_html__( 'Open Toggle Text Color', 'et_builder' ),
@@ -210,7 +212,6 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {
-		$title                                = $this->props['title'];
 		$open                                 = $this->props['open'];
 
 		$open_toggle_background_color         = $this->props['open_toggle_background_color'];
@@ -353,7 +354,11 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
-		$heading = sprintf( '<%1$s class="et_pb_toggle_title">%2$s</%1$s>', et_pb_process_header_level( $header_level, 'h5' ), esc_html( $title ) );
+		$heading = sprintf(
+			'<%1$s class="et_pb_toggle_title">%2$s</%1$s>',
+			et_pb_process_header_level( $header_level, 'h5' ),
+			$this->_esc_attr( 'title' )
+		);
 
 		// Module classnames
 		$this->add_classname( array(

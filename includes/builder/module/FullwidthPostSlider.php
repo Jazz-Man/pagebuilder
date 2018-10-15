@@ -435,6 +435,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 				'default_on_front'  => esc_html__( 'Read More', 'et_builder' ),
 				'depends_show_if'   => 'on',
 				'toggle_slug'       => 'main_content',
+				'dynamic_content'   => 'text',
 				'description'       => esc_html__( 'Define the text which will be displayed on "Read More" button. Leave blank for default ( Read More )', 'et_builder' ),
 			),
 			'content_source' => array(

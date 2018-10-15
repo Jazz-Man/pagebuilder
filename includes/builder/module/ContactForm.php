@@ -174,6 +174,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define a title for your contact form.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'custom_message' => array(
 				'label'           => esc_html__( 'Message Pattern', 'et_builder' ),
@@ -211,6 +212,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'option_category' => 'configuration',
 				'description'     => esc_html__( 'Type the message you want to display after successful form submission. Leave blank for default', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'submit_button_text' => array(
 				'label'           => esc_html__( 'Submit Button Text', 'et_builder' ),
@@ -218,6 +220,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				'option_category' => 'basic_option',
 				'description'     => esc_html__( 'Define the text of the form submit button.', 'et_builder' ),
 				'toggle_slug'     => 'main_content',
+				'dynamic_content' => 'text',
 			),
 			'form_background_color' => array(
 				'label'             => esc_html__( 'Form Field Background Color', 'et_builder' ),
@@ -265,7 +268,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$module_id                   = $this->props['module_id'];
 		$captcha                     = $this->props['captcha'];
 		$email                       = $this->props['email'];
-		$title                       = $this->props['title'];
+		$title                       = $this->_esc_attr( 'title' );
 		$form_field_text_color       = $this->props['form_field_text_color'];
 		$form_background_color       = $this->props['form_background_color'];
 		$form_background_color_hover = $this->get_hover_value( 'form_background_color' );
@@ -275,7 +278,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		$custom_message              = $this->props['custom_message'];
 		$use_redirect                = $this->props['use_redirect'];
 		$redirect_url                = $this->props['redirect_url'];
-		$success_message             = $this->props['success_message'];
+		$success_message             = $this->_esc_attr( 'success_message' );
 		$header_level                = $this->props['title_level'];
 
 		global $et_pb_contact_form_num;
@@ -459,7 +462,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				et_get_safe_localization( sprintf(
 					__( 'New Message From %1$s%2$s', 'et_builder' ),
 					sanitize_text_field( html_entity_decode( $et_site_name, ENT_QUOTES, 'UTF-8' ) ),
-					( '' !== $title ? sprintf( _x( ' - %s', 'contact form title separator', 'et_builder' ), sanitize_text_field( html_entity_decode( $title, ENT_QUOTES, 'UTF-8' ) ) ) : '' )
+					( '' !== $title ? sprintf( _x( ' - %s', 'contact form title separator', 'et_builder' ), $title ) : '' )
 				) ),
 				! empty( $email_message ) ? $email_message : ' ',
 				apply_filters( 'et_contact_page_headers', $headers, $contact_name, $contact_email )
@@ -467,7 +470,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 			remove_filter( 'et_get_safe_localization', 'et_allow_ampersand' );
 
-			$et_error_message = sprintf( '<p>%1$s</p>', esc_html( $success_message ) );
+			$et_error_message = sprintf( '<p>%1$s</p>', et_esc_previously( $success_message ) );
 		}
 
 		$form = '';
@@ -544,8 +547,8 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				%3$s
 			</div> <!-- .et_pb_contact_form_container -->
 			',
-			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', esc_html( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
-			'' !== $et_error_message ? $et_error_message : '',
+			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', et_esc_previously( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
+			$et_error_message,
 			$form,
 			( '' !== $module_id
 				? esc_attr( $module_id )

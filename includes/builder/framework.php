@@ -1,6 +1,8 @@
 <?php
 
 require_once ET_BUILDER_DIR . 'core.php';
+require_once ET_BUILDER_DIR . 'feature/post-content.php';
+require_once ET_BUILDER_DIR . 'feature/dynamic-content.php';
 require_once ET_BUILDER_DIR . 'api/DiviExtensions.php';
 
 if ( wp_doing_ajax() && ! is_customize_preview() ) {
@@ -38,6 +40,7 @@ if ( wp_doing_ajax() && ! is_customize_preview() ) {
 			'et_builder_library_get_layouts_data',
 			'et_fb_fetch_attachments',
 			'et_pb_get_saved_templates',
+			'et_builder_resolve_post_content',
 		),
 	);
 
@@ -531,6 +534,7 @@ function et_builder_load_framework() {
 	$action_hook = apply_filters( 'et_builder_modules_load_hook', is_admin() ? 'wp_loaded' : 'wp' );
 
 	if ( et_builder_should_load_framework() ) {
+		require ET_BUILDER_DIR . 'class-et-builder-value.php';
 		require ET_BUILDER_DIR . 'class-et-builder-element.php';
 		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-base.php';
 		require ET_BUILDER_DIR . 'class-et-builder-plugin-compat-loader.php';
