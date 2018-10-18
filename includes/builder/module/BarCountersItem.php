@@ -283,13 +283,29 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 					esc_html( $bar_background_color )
 				),
 			) );
+
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '%%order_class%% .et_pb_counter_amount.overlay',
+				'declaration' => sprintf(
+					'color: %1$s;',
+					esc_html( $bar_background_color )
+				),
+			) );
 		}
 
 		if ( '' !== $bar_background_hover_color ) {
 			ET_Builder_Element::set_style( $render_slug, array(
-				'selector'    => $this->add_hover_to_order_class( '.et_pb_counters %%order_class%% .et_pb_counter_amount' ),
+				'selector'    => '.et_pb_counters %%order_class%% .et_pb_counter_amount',
 				'declaration' => sprintf(
 					'background-color: %1$s;',
+					esc_html( $bar_background_hover_color )
+				),
+			) );
+
+			ET_Builder_Element::set_style( $render_slug, array(
+				'selector'    => '.et_pb_counters %%order_class%%:hover .et_pb_counter_amount.overlay',
+				'declaration' => sprintf(
+					'color: %1$s;',
 					esc_html( $bar_background_hover_color )
 				),
 			) );
@@ -314,6 +330,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 					%8$s
 					%7$s
 					<span class="et_pb_counter_amount" style="%5$s" data-width="%3$s"><span class="et_pb_counter_amount_number">%2$s</span></span>
+					<span class="et_pb_counter_amount overlay" style="%5$s" data-width="%3$s"><span class="et_pb_counter_amount_number">%2$s</span></span>
 				</span>
 			</li>',
 			$this->_esc_attr( 'content' ),

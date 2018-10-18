@@ -540,8 +540,9 @@ function et_builder_wrap_dynamic_content( $post_id, $name, $value, $settings ) {
 	$def     = 'et_builder_get_dynamic_attribute_field_default';
 	$before  = $_->array_get( $settings, 'before', $def( $post_id, $name, 'before' ) );
 	$after   = $_->array_get( $settings, 'after', $def( $post_id, $name, 'after' ) );
+	$user_id = get_post_field( 'post_author', $post_id );
 
-	if ( ! current_user_can( 'unfiltered_html' ) ) {
+	if ( ! user_can( $user_id, 'unfiltered_html' ) ) {
 		$before = esc_html( $before );
 		$after  = esc_html( $after );
 	}
@@ -569,8 +570,6 @@ function et_builder_filter_resolve_default_dynamic_content( $content, $name, $se
 	$def     = 'et_builder_get_dynamic_attribute_field_default';
 	$post    = get_post( $post_id );
 	$author  = get_userdata( $post->post_author );
-	$fields  = et_builder_get_built_in_dynamic_content_fields( $post_id );
-	$field   = isset( $fields[ $name ] ) ? $fields[ $name ] : array( 'type' => '' );
 	$wrapped = false;
 
 	switch ( $name ) {
@@ -761,11 +760,7 @@ function et_builder_filter_resolve_default_dynamic_content( $content, $name, $se
 		case 'post_featured_image':
 			if ( isset( $overrides[ $name ] ) ) {
 				$id      = (int) $overrides[ $name ];
-				$content = '';
-
-				if ( current_user_can( 'read_post', $id ) ) {
-					$content = wp_get_attachment_image_url( $id, 'full' );
-				}
+				$content = wp_get_attachment_image_url( $id, 'full' );
 				break;
 			}
 
@@ -883,9 +878,6 @@ function et_builder_parse_dynamic_content( $content ) {
 	// Replace encoded quotes.
 	$json               = str_replace( array( '&#8220;', '&#8221;', '&#8243;', "%22" ), '"', $content );
 
-	// Strip wrapping <p></p> tag as it appears in shortcode content in certain cases (e.g. BB preview).
-	$json               = preg_replace( '/^<p>(.*)<\/p>$/i', '$1', trim( $json ) );
-
 	// Strip <p></p> artifacts from wpautop in before/after settings. Example:
 	// {"dynamic":true,"content":"post_title","settings":{"before":"</p>
 	// <h1>","after":"</h1>
@@ -903,6 +895,12 @@ function et_builder_parse_dynamic_content( $content ) {
 	        <\/?p>                # The root of all evil.
 	    )*
 	~xi', '$1$2', $json );
+	
+	// Remove line-breaks which break the json strings.
+	$json               = preg_replace( '/\r|\n/', '', $json );
+	
+	// Strip wrapping <p></p> tag as it appears in shortcode content in certain cases (e.g. BB preview).
+	$json               = preg_replace( '/^<p>(.*)<\/p>$/i', '$1', trim( $json ) );
 
 	// Parse and validate dynamic content schema.
 	$dynamic_content    = json_decode( $json, true );

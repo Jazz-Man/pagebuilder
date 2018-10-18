@@ -4912,7 +4912,7 @@ class ET_Builder_Element {
 		$overlay    = self::$_->array_get( $this->advanced_fields, "box_shadow.$module.css.overlay", false );
 		$suffix     = 'default' == $module ? '' : "_$module";
 
-		if ( $box_shadow->has_overlay( $this->props, array( 'overlay' => $overlay ) ) ) {
+		if ( in_array( $overlay, array( 'inset', 'always' ) ) ) {
 			$selector .= ', ' . $box_shadow->get_overlay_selector( $selector );
 		}
 

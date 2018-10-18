@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.17.1';
+window.et_builder_version = '3.17.2';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -412,6 +412,10 @@ window.et_builder_product_name = 'Divi';
 	 * @return {boolean}
 	 */
 	ET_PageBuilder.isDynamicContent = function(content) {
+		if (typeof content !== 'string') {
+			return false;
+		}
+
 		var clearParagraph = new RegExp(/^<p>(.*)<\/p>$/, 'i');
 		var trimSpace      = /^\s+|\s+$/;
 		var cleanContent   = content.replace(trimSpace, '');

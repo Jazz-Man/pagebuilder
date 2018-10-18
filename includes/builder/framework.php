@@ -175,6 +175,7 @@ function et_builder_load_modules_styles() {
 		'ab_bounce_rate'         => '' !== get_post_meta( $current_page_id, '_et_pb_ab_bounce_rate_limit', true ) ? get_post_meta( $current_page_id, '_et_pb_ab_bounce_rate_limit', true ) : 5,
 		'is_cache_plugin_active' => false === et_pb_detect_cache_plugins() ? 'no' : 'yes',
 		'is_shortcode_tracking'  => get_post_meta( $current_page_id, '_et_pb_enable_shortcode_tracking', true ),
+		'tinymce_uri'            => defined( 'ET_FB_ASSETS_URI' ) ? ET_FB_ASSETS_URI . '/vendors' : '',
 	) );
 
 	/**

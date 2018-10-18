@@ -1,3 +1,24 @@
+version 3.17.2 ( updated 10-17-2018 )
+- Fixed issue with rendering dynamic content in Global Modules in some cases.
+- Fixed the issue where Button Text option can't be copied between Button modules.
+- Fixed VB select control to only fire onChange event when necessary.
+- Fixed output of inner box shadow in VB.
+- Fixed Blurb module title link not being applied to the title.
+- Fixed HTML being incorrectly filtered in Dynamic Content's Before and After settings.
+- Fixed Autoptimize incompatibility with the Visual Builder, causing the rich text control to crash.
+- Fixed JS error which breaks some modules in BB while checking for dynamic content.
+- Fixed Bar Counter amount not changing on hover for small % amounts.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Image.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-global-functions.js
+	* includes/builder/styles/frontend-builder-style.less
+
 version 3.17.1 ( updated 10-12-2018 )
 - Fixed error occurring in Team Member module.
 - Fixed circle counter not showing up in the front end when there was an animation set for it.

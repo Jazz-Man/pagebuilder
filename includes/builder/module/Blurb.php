@@ -574,14 +574,16 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				et_esc_previously( $title ),
 				( 'on' === $url_new_window ? ' target="_blank"' : '' )
 			);
+		} else {
+			// Allowing full html for backwards compatibility.
+			$title = $this->_esc_attr( 'title', 'full' );
 		}
 
 		if ( '' !== $title ) {
 			$title = sprintf(
 				'<%1$s class="et_pb_module_header">%2$s</%1$s>',
 				et_pb_process_header_level( $header_level, 'h4' ),
-				// Allowing full html for backwards compatibility.
-				$this->_esc_attr( 'title', 'full' )
+				et_esc_previously( $title )
 			);
 		}
 

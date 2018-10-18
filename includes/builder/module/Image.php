@@ -57,7 +57,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			'box_shadow'            => array(
 				'default' => array(
 					'css' => array(
-						'main'         => '%%order_class%% .et_pb_image_wrap',
+						'main'    => '%%order_class%% .et_pb_image_wrap',
 						'overlay' => 'inset',
 					),
 				),

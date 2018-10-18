@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.17.1
+Version: 3.17.2
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -12849,8 +12849,10 @@ p.et_pb_gallery_caption {
 .et_pb_counter_amount {
 	display: block;
 	float: left;
+	overflow: hidden;
+	z-index: 2;
 	min-height: 6px;
-	padding: 1px 3% 1px 1px;
+	padding: 1px;
 	opacity: 0;
 	font-size: 12px;
 	font-weight: 600;
@@ -12858,10 +12860,28 @@ p.et_pb_gallery_caption {
 	text-align: right;
 }
 
+.et_pb_counter_amount.overlay {
+	overflow: visible;
+	position: absolute !important;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	color: #2ea3f2;
+	background-color: transparent !important;
+}
+
 /* Bar Counter Module */
 .et_pb_counters span.et_pb_counter_amount_number {
 	display: inline-block;
-	padding-left: 5px;
+	padding: 0 10px;
+}
+
+.et_pb_counters span.et_pb_counter_amount_number:before,
+.et_pb_counters span.et_pb_counter_amount_number:after {
+	display: block;
+	min-width: 5px;
+	max-width: 20px;
+	content: "";
 }
 
 .et_pb_counters.et_pb_section_video > li {
