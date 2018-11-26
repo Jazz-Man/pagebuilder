@@ -53,6 +53,7 @@ class ET_Builder_Settings {
 				'id'          => 'et_pb_enable_ab_testing',
 				'label'       => esc_html__( 'Enable Split Testing', 'et_builder' ),
 				'autoload'    => false,
+				'default'     => 'off',
 				'class'       => 'et-pb-visible',
 				'affects'     => array(
 					'et_pb_ab_bounce_rate_limit',
@@ -87,6 +88,7 @@ class ET_Builder_Settings {
 				'label'           => esc_html__( 'Stats refresh interval', 'et_builder' ),
 				'autoload'        => false,
 				'depends_show_if' => 'on',
+				'default'         => 'hourly',
 				'options'         => array(
 					'hourly' => esc_html__( 'Hourly', 'et_builder' ),
 					'daily'  => esc_html__( 'Daily', 'et_builder' ),

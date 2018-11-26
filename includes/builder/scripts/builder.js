@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.17.4';
+window.et_builder_version = '3.17.6';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -3997,7 +3997,7 @@ window.et_builder_product_name = 'Divi';
 					layout.name         = 'layout.json';
 
 					$window.on( 'et_fb_layout_import_finished.et_bb', function() {
-						resolve( get( window.et_fb_import_layout_response, 'data.postContent', '' ) );
+						resolve( { content: get( window.et_fb_import_layout_response, 'data.postContent', '' ) } );
 						$window.off( 'et_fb_layout_import_finished.et_bb' );
 					} );
 
@@ -7065,6 +7065,10 @@ window.et_builder_product_name = 'Divi';
 					event.preventDefault();
 				}
 
+				if (!et_pb_can_module_add_siblings(this.model)) {
+					return;
+				}
+
 				var parent            = _.isUndefined( parent ) ? this.model.get( 'parent' ) : parent;
 				var clipboard_type    = _.isUndefined( clipboard_type ) ? this.getClipboardType() : clipboard_type;
 				var has_cloned_cid    = _.isUndefined( has_cloned_cid ) ? true : has_cloned_cid;
@@ -7370,7 +7374,8 @@ window.et_builder_product_name = 'Divi';
 							if ( this.hasOptionSupport( [ "section", "row_inner", "row", "module" ] ) &&
 								 this.et_pb_has_storage_support &&
 								 this.has_compatible_clipboard_content &&
-								 is_ab_allowed_paste ) {
+								 is_ab_allowed_paste &&
+								 et_pb_can_module_add_siblings(this.options.model) ) {
 								has_option = true;
 							}
 						break;
@@ -17921,11 +17926,10 @@ window.et_builder_product_name = 'Divi';
 				complete : function() {
 					ET_PageBuilder_Events.trigger( 'et-pb-loading:ended' );
 				},
-				success: function( data ) {
-					if ( data.error ) {
+				success: function(data) {
+					if (! data || data.error) {
 						// if global template not found, then make module not global.
-						view_settings.model.unset( 'et_pb_global_module' );
-						view_settings.model.unset( 'et_pb_saved_tabs' );
+						ET_PageBuilder_Layout.removeGlobalAttributes(view_settings);
 					} else {
 						var et_pb_shortcodes_tags = ET_PageBuilder_App.getShortCodeParentTags(),
 							reg_exp = window.wp.shortcode.regexp( et_pb_shortcodes_tags ),
@@ -18014,8 +18018,10 @@ window.et_builder_product_name = 'Divi';
 						$('.et-pb-modal-preview-template').trigger( 'click' );
 					}
 
-					$( '.et_pb_modal_settings_container' ).addClass( 'et_pb_saved_global_modal et_pb_modal_selective_sync' );
-					et_pb_add_selective_sync_buttons( $( '.et_pb_modal_settings_container' ), global_module_id )
+					if (data && !data.error) {
+						$( '.et_pb_modal_settings_container' ).addClass( 'et_pb_saved_global_modal et_pb_modal_selective_sync' );
+						et_pb_add_selective_sync_buttons( $( '.et_pb_modal_settings_container' ), global_module_id );
+					}
 				}
 			} );
 		}
@@ -18232,6 +18238,12 @@ window.et_builder_product_name = 'Divi';
 
 		function et_pb_is_modal_opened() {
 			return 0 < $( '.et_pb_modal_overlay, .et-core-modal-overlay.et-core-active' ).length;
+		}
+
+		function et_pb_can_module_add_siblings(model) {
+			var is_not_global = !ET_PageBuilder_Layout.is_global_children(model);
+			var global_library_is_editable = !!et_pb_options.et_builder_edit_global_library;
+			return is_not_global || global_library_is_editable;
 		}
 
 		/**

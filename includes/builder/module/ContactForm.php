@@ -456,7 +456,12 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			$http_host = str_replace( 'www.', '', sanitize_text_field( $_SERVER['HTTP_HOST'] ) );
 
 			$headers[] = "From: \"{$contact_name}\" <mail@{$http_host}>";
-			$headers[] = "Reply-To: \"{$contact_name}\" <{$contact_email}>";
+
+			// Set `Reply-To` email header based on contact_name and contact_email values
+			if ( ! empty( $contact_email ) ) {
+				$contact_name = ! empty( $contact_name ) ? $contact_name : $contact_email;
+				$headers[] = "Reply-To: \"{$contact_name}\" <{$contact_email}>";
+			}
 
 			add_filter( 'et_get_safe_localization', 'et_allow_ampersand' );
 

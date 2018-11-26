@@ -3609,21 +3609,23 @@
 						}
 
 						if ( data.success ) {
-							if ( redirect_url ) {
-								et_pb_maybe_log_event( $newsletter_container, 'con_goal', function() {
+							if (redirect_url) {
+								et_pb_maybe_log_event($newsletter_container, 'con_goal', function() {
 									var query = get_redirect_query();
 
-									if ( redirect_url.indexOf( '?' ) > -1 ) {
-										redirect_url += '&';
-									} else {
-										redirect_url += '?';
+									if (query.length) {
+										if (redirect_url.indexOf('?') > - 1) {
+											redirect_url += '&';
+										} else {
+											redirect_url += '?';
+										}
 									}
 
 									window.location = redirect_url + query;
-								} );
+								});
 							} else {
-								et_pb_maybe_log_event( $newsletter_container, 'con_goal' );
-								$newsletter_container.find( '.et_pb_newsletter_fields' ).hide();
+								et_pb_maybe_log_event($newsletter_container, 'con_goal');
+								$newsletter_container.find('.et_pb_newsletter_fields').hide();
 								$success_message.show();
 							}
 						}
@@ -4707,7 +4709,8 @@
 					 * Divi Top Header:
 					 *
 					 * - Desktop fixed: standard.
-					 * - Desktop fixed BUT first header's height shouldn't be substracted: hide nav until scroll activated
+					 * - Desktop fixed BUT first header's height shouldn't be substracted: hide nav until
+					 * scroll activated
 					 * - Desktop relative: fixed nav bar disabled
 					 * - Desktop relative: vertical nav activated
 					 */
@@ -4733,8 +4736,10 @@
 					 * - Desktop fixed: standard. Initial and 'fixed' header might have different height
 					 * - Desktop relative: fixed nav bar disabled
 					 * - Desktop fixed BUT height should be ignored: vertical nav activated
-					 * - Desktop fixed BUT height should be ignored for first header only: main header uses rgba
-					 * - Desktop fixed BUT first header's height shouldn't be substracted: hide nav until scroll activated
+					 * - Desktop fixed BUT height should be ignored for first header only: main header uses
+					 * rgba
+					 * - Desktop fixed BUT first header's height shouldn't be substracted: hide nav until
+					 * scroll activated
 					 * - Tablet relative: standard. Including vertical header style
 					 * - Phone relative: standard. Including vertical header style
 					 */

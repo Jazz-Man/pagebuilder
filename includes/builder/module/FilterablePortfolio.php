@@ -566,7 +566,9 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 				?>
 
 				<?php if ( 'on' === $show_title ) : ?>
-					<<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?> class="et_pb_module_header"><a href="<?php echo esc_url( $permalink ); ?>"><?php echo esc_html( $titletext ); ?></a></<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?>>
+					<<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?> class="et_pb_module_header">
+						<a href="<?php echo esc_url( $permalink ); ?>"><?php echo et_core_intentionally_unescaped( $titletext, 'html' ); ?></a>
+					</<?php echo et_pb_process_header_level( $header_level, 'h2' ) ?>>
 				<?php endif; ?>
 
 				<?php if ( 'on' === $show_categories ) : ?>

@@ -1,20 +1,62 @@
+version 3.17.6 ( updated 11-02-2018 )
+- Fixed JavaScript error when trying to edit non-existing Global Module in BB.
+- Fixed a issue where module styles cannot be pasted.
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/scripts/builder.js
+
+version 3.17.5 ( updated 11-02-2018 )
+- Fixed JavaScript error when trying to edit non-existing Global Module in BB.
+- Fixed a issue where module styles cannot be pasted.
+- Prevent Custom CSS code from being removed when hover options is used.
+- Fixed modules with hover styles applied not getting proper z-index in VB preview.
+- Fixed bar counter item titles inadvertently displaying html tags.
+- Fixed a bug in Email Optin module where Redirect URL had Question Mark at end of the URL.
+- Fixed a issue where Contact Form module incorrectly set Reply-To email header when no Email field has been set for the module.
+- Fixed Backend Builder not being able to import premade layouts.
+- Removed HTML escaping recently added to Filterable Portfolio module post titles.
+- Fixes a PHP warning when importing layouts.
+- Fixed some aspects of modules being editable even if the relevant capability has been disabled in the Role Editor.
+- Fixed CSS for VB Wireframe View when Vertical Navigation is enabled.
+- Removed Design and Advanced settings for Pin Settings of Map module.
+- Improved timer separator display in Countdown Timer modules.
+- Fixed issue affecting border field's generated styles.
+- Added label for reset button in Page Settings.
+- Fixed issue where modules with partial support were not visible in VB.
+- Fixed a bug where Site Header gets hidden when Vertical Navigation is enabled.
+- Fixed a JavaScript error for CSS ID on Tabs module when Alternative scroll-to-anchor method is enabled.
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/module/BarCountersItem.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/MapItem.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/settings/migration/DiscontinueHtmlEncoding.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.less
+	* js/custom.js
+
 version 3.17.4 ( updated 10-31-2018 )
-	- Fixed the internal server error that occurred when the Yoast SEO plugin was activated.
-	- Fixed paragraphs encoding issue when multiple Code Module were added in the same page.
-	- Fixed a PHP Warning caused by the Post Slider Module.
-	- Fixed broken shortcode rendering on code and fullwidth module caused by late line break stripping.
-		* includes/builder/functions.php
-		* includes/builder/core.php
-		* includes/builder/class-et-builder-element.php
-		* includes/builder/module/PostSlider.php
-		* includes/builder/module/Code.php
-		* includes/builder/module/FullwidthCode.php
+- Fixed the internal server error that occurred when the Yoast SEO plugin was activated.
+- Fixed paragraphs encoding issue when multiple Code Module were added in the same page.
+- Fixed a PHP Warning caused by the Post Slider Module.
+- Fixed broken shortcode rendering on code and fullwidth module caused by late line break stripping.
+	* includes/builder/functions.php
+	* includes/builder/core.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/FullwidthCode.php
 
 version 3.17.3 ( updated 10-30-2018 )
-	- Important Security Update. Following an internal code audit, various security improvements were made and several minor security vulnerabilities were patched. For more information, please refer to the disclosure here: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=a9763c15f2
-	- Fixed Right-click controls missing in empty fullwidth sections.
-	- Added missing extend options to border styles and background tabs.
-	- Fixed languages using quote characters different from the ones in English causing Dynamic Content to not render properly in the front-end.
+- Important Security Update. Following an internal code audit, various security improvements were made and several minor security vulnerabilities were patched. For more information, please refer to the disclosure here: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=a9763c15f2
+- Fixed Right-click controls missing in empty fullwidth sections.
+- Added missing extend options to border styles and background tabs.
+- Fixed languages using quote characters different from the ones in English causing Dynamic Content to not render properly in the front-end.
 
 version 3.17.2 ( updated 10-17-2018 )
 - Fixed issue with rendering dynamic content in Global Modules in some cases.

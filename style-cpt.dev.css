@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.17.4
+Version: 3.17.6
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -12615,6 +12615,10 @@ a.et_pb_more_button:after,
 	position: relative;
 }
 
+.et-db #et-boc .et_hover_enabled_preview {
+	z-index: 2;
+}
+
 .et-db #et-boc .et_hover_enabled:hover {
 	position: relative;
 	z-index: 2;
@@ -15007,6 +15011,7 @@ a.et_pb_more_button:after,
 	position: relative;
 	width: 100%;
 	text-align: center;
+	vertical-align: top;
 }
 
 .et-db #et-boc .et_pb_countdown_timer .title {
@@ -15028,6 +15033,7 @@ a.et_pb_more_button:after,
 .et-db #et-boc .et_pb_countdown_timer .section.values {
 	width: 17%;
 	max-width: 160px;
+	vertical-align: top;
 }
 
 .et-db #et-boc .et_pb_countdown_timer .section p {
@@ -15055,7 +15061,10 @@ a.et_pb_more_button:after,
 
 .et-db #et-boc .et_pb_countdown_timer .sep {
 	position: relative;
-	top: -28px;
+}
+
+.et-db #et-boc .et_pb_countdown_timer .sep.sep.sep.sep.sep p {
+	text-decoration: none !important;
 }
 
 .et-db #et-boc .et_pb_column_1_2 .et_pb_countdown_timer .section p,
@@ -15068,20 +15077,6 @@ a.et_pb_more_button:after,
 .et-db #et-boc .et_pb_column_3_5 .et_pb_countdown_timer .section p.label {
 	font-size: 12px;
 	line-height: 20px;
-}
-
-.et-db #et-boc .et_pb_column_1_2 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_3_5 .et_pb_countdown_timer .sep {
-	top: -22px;
-}
-
-.et-db #et-boc .et_pb_column_3_8 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_1_3 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_2_5 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_1_4 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_1_5 .et_pb_countdown_timer .sep,
-.et-db #et-boc .et_pb_column_1_6 .et_pb_countdown_timer .sep {
-	top: -22px;
 }
 
 .et-db #et-boc .et_pb_column_1_3 .et_pb_countdown_timer .title,
@@ -15288,8 +15283,8 @@ a.et_pb_more_button:after,
 	display: none;
 }
 
-.et-db #et-boc .et_pb_fullwidth_menu {
-	position: relative;
+.et-db #et-boc .et_pb_fullwidth_menu.et_hover_enabled:hover {
+	z-index: initial;
 }
 
 .et-db #et-boc .et_pb_fullwidth_menu .fullwidth-menu-nav,
@@ -20190,17 +20185,13 @@ a.et_pb_more_button:after,
 		line-height: 25px !important;
 	}
 
-	.et-db #et-boc .et_pb_countdown_timer .sep {
-		top: -28px !important;
+	.et-db #et-boc .et_pb_countdown_timer .sep.sep.sep.sep.sep p {
+		text-decoration: none !important;
 	}
 
 	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
 		font-size: 32px !important;
 		line-height: 32px !important;
-	}
-
-	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
-		top: -27px !important;
 	}
 
 	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p.label {
@@ -20472,10 +20463,6 @@ a.et_pb_more_button:after,
 	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
 		font-size: 25px !important;
 		line-height: 25px !important;
-	}
-
-	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
-		top: -25px !important;
 	}
 }
 
@@ -20770,17 +20757,9 @@ a.et_pb_more_button:after,
 		line-height: 25px !important;
 	}
 
-	.et-db #et-boc .et_pb_countdown_timer .sep {
-		top: -28px !important;
-	}
-
 	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p {
 		font-size: 16px !important;
 		line-height: 16px !important;
-	}
-
-	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
-		top: -21px !important;
 	}
 
 	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .section p.label {
@@ -21152,10 +21131,6 @@ a.et_pb_more_button:after,
 		font-size: 32px !important;
 		line-height: 32px !important;
 	}
-
-	.et-db #et-boc .et_pb_row_1-4_1-4 .et_pb_column_1_4 .et_pb_countdown_timer .sep {
-		top: -25px !important;
-	}
 }
 
 @media all and (max-width: 380px) {
@@ -21168,10 +21143,6 @@ a.et_pb_more_button:after,
 	.et-db #et-boc .et_pb_countdown_timer .section p.label {
 		font-size: 12px !important;
 		line-height: 25px !important;
-	}
-
-	.et-db #et-boc .et_pb_countdown_timer .sep {
-		top: -24px !important;
 	}
 }
 

@@ -3562,7 +3562,7 @@ function et_builder_set_content_activation( $post_id = false ) {
 	$saved_old_content = get_post_meta( $post_id, '_et_pb_old_content', true );
 	$save_old_content = update_post_meta( $post_id, '_et_pb_old_content', $_post->post_content );
 
-	if ( false === $save_old_content && $saved_old_content !== $post->post_content && '' !== $post->post_content ) {
+	if ( false === $save_old_content && $saved_old_content !== $_post->post_content && '' !== $_post->post_content ) {
 		return false;
 	}
 

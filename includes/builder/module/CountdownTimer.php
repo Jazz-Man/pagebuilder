@@ -37,8 +37,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 				'numbers' => array(
 					'label'    => esc_html__( 'Numbers', 'et_builder' ),
 					'css'      => array(
-						'main'        => ".et_pb_column {$this->main_css_element} .section p.value",
-						'text_shadow' => ".et_pb_column {$this->main_css_element} .section p.value, .et_pb_column {$this->main_css_element} .section.sep p",
+						'main'        => ".et_pb_column {$this->main_css_element} .section p.value, .et_pb_column {$this->main_css_element} .section.sep p",
 						'important'   => 'all',
 					),
 					'line_height' => array(

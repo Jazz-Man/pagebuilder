@@ -48,7 +48,7 @@ class ET_Builder_Module_Settings_Migration_DiscontinueHtmlEncoding extends ET_Bu
 		// TODO, not sure about this, but single quotes were encoded so this seemed to be needed
 		$content = str_replace( "&#39;", "'", $content );
 
-		$author_id = get_post( get_the_ID() )->post_author;
+		$author_id = get_post_field( 'post_author', get_the_ID() ) || get_current_user_id();
 
 		if ( ! user_can( $author_id, 'unfiltered_html' ) ) {
 			$content = $this->_post_content_capability_check( $content );

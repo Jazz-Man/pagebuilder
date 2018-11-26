@@ -205,19 +205,24 @@
 				$body_height = $( document ).height(),
 				$viewport_height = $( window ).height() + et_header_height + 200;
 
-			if ( $body.hasClass( 'et_hide_nav' ) ||  $body.hasClass( 'et_hide_nav_disabled' ) && ( $body.hasClass( 'et_fixed_nav' ) ) ) {
-				if ( $body_height > $viewport_height ) {
-					if ( $body.hasClass( 'et_hide_nav_disabled' ) ) {
-						$body.addClass( 'et_hide_nav' );
-						$body.removeClass( 'et_hide_nav_disabled' );
+			// Do nothing when Vertical Navigation is Enabled
+			if ($body.hasClass('et_vertical_nav')) {
+				return;
+			}
+
+			if ($body.hasClass('et_hide_nav') || $body.hasClass('et_hide_nav_disabled') && ($body.hasClass('et_fixed_nav'))) {
+				if ($body_height > $viewport_height) {
+					if ($body.hasClass('et_hide_nav_disabled')) {
+						$body.addClass('et_hide_nav');
+						$body.removeClass('et_hide_nav_disabled');
 					}
-					$('#main-header').css( 'transform', 'translateY(-' + et_header_height +'px)' );
-					$('#top-header').css( 'transform', 'translateY(-' + et_header_height +'px)' );
+					$('#main-header').css('transform', 'translateY(-' + et_header_height + 'px)');
+					$('#top-header').css('transform', 'translateY(-' + et_header_height + 'px)');
 				} else {
-					$('#main-header').css( { 'transform': 'translateY(0)', 'opacity': '1' } );
-					$('#top-header').css( { 'transform': 'translateY(0)', 'opacity': '1' } );
-					$body.removeClass( 'et_hide_nav' );
-					$body.addClass( 'et_hide_nav_disabled' );
+					$('#main-header').css({ 'transform': 'translateY(0)', 'opacity': '1' });
+					$('#top-header').css({ 'transform': 'translateY(0)', 'opacity': '1' });
+					$body.removeClass('et_hide_nav');
+					$body.addClass('et_hide_nav_disabled');
 				}
 
 				// Run fix page container again, needed when body height is not tall enough and
@@ -240,35 +245,37 @@
 		}
 
 		function et_page_load_scroll_to_anchor() {
-			if ( $( window.et_location_hash ).length === 0 ) {
+			var location_hash = window.et_location_hash.replace(/(\|)/g, "\\$1");
+
+			if ($(location_hash).length === 0) {
 				return;
 			}
 
-			var $map_container = $( window.et_location_hash + ' .et_pb_map_container' ),
-				$map = $map_container.children( '.et_pb_map' ),
-				$target = $( window.et_location_hash );
+			var $map_container = $(location_hash + ' .et_pb_map_container');
+			var $map           = $map_container.children('.et_pb_map');
+			var $target        = $(location_hash);
 
 			// Make the target element visible again
-			$target.css( 'display', window.et_location_hash_style );
+			$target.css('display', window.et_location_hash_style);
 
-			var distance = ( 'undefined' !== typeof( $target.offset().top ) ) ? $target.offset().top : 0,
-				speed = ( distance > 4000 ) ? 1600 : 800;
+			var distance = ('undefined' !== typeof($target.offset().top)) ? $target.offset().top : 0;
+			var speed    = (distance > 4000) ? 1600 : 800;
 
-			if ( $map_container.length ) {
-				google.maps.event.trigger( $map[0], 'resize' );
+			if ($map_container.length) {
+				google.maps.event.trigger($map[0], 'resize');
 			}
 
 			// Allow the header sizing functions enough time to finish before scrolling the page
-			setTimeout( function() {
-				et_pb_smooth_scroll( $target, false, speed, 'swing');
+			setTimeout(function() {
+				et_pb_smooth_scroll($target, false, speed, 'swing');
 
 				// During the page scroll animation, the header's height might change.
 				// Do the scroll animation again to ensure its accuracy.
-				setTimeout( function() {
-					et_pb_smooth_scroll( $target, false, 150, 'linear' );
-				}, speed + 25 );
+				setTimeout(function() {
+					et_pb_smooth_scroll($target, false, 150, 'linear');
+				}, speed + 25);
 
-			}, 700 );
+			}, 700);
 		}
 
 		// Retrieving padding/margin value based on formatted saved padding/margin strings

@@ -333,7 +333,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 					<span class="et_pb_counter_amount overlay" style="%5$s" data-width="%3$s"><span class="et_pb_counter_amount_number">%2$s</span></span>
 				</span>
 			</li>',
-			$this->_esc_attr( 'content' ),
+			sanitize_text_field( $content ),
 			( isset( $et_pb_counters_settings['use_percentages'] ) && 'on' === $et_pb_counters_settings['use_percentages'] ? esc_html( $percent ) : '' ),
 			esc_attr( $percent ),
 			$background_color_style,
