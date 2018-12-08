@@ -580,7 +580,7 @@ class ET_Global_Settings {
 			'et_pb_toggle-background_blend'                          => $background_image_defaults['blend'],
 		);
 
-		if ( ! et_is_builder_plugin_active() ) {
+		if ( et_builder_has_limitation('forced_icon_color_default') ) {
 			$defaults['et_pb_gallery-zoom_icon_color']              = et_get_option( 'accent_color', '#2ea3f2' );
 			$defaults['et_pb_portfolio-zoom_icon_color']            = et_get_option( 'accent_color', '#2ea3f2' );
 			$defaults['et_pb_filterable_portfolio-zoom_icon_color'] = et_get_option( 'accent_color', '#2ea3f2' );
@@ -592,6 +592,7 @@ class ET_Global_Settings {
 				'default' => $default_value,
 			);
 
+			// Plugin don't have module specific customizer options like Divi theme, so $actual_value is always = ''
 			$actual_value = ! et_is_builder_plugin_active() ? et_get_option( $setting_name, '', '', true ) : '';
 			if ( '' !== $actual_value ) {
 				$defaults[ $setting_name ]['actual']  = $actual_value;

@@ -48,7 +48,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 					'css'      => array(
 						'line_height' => "{$this->main_css_element} p",
 						'main' => "{$this->main_css_element} p",
-						'plugin_main' => "{$this->main_css_element} p, {$this->main_css_element} p strong",
+						'limited_main' => "{$this->main_css_element} p, {$this->main_css_element} p strong",
 					),
 				),
 			),

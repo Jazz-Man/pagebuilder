@@ -55,7 +55,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'label'    => esc_html__( 'Title', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title",
-						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title, .et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title a",
+						'limited_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title, .et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_slide_description .et_pb_slide_title a",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -90,7 +90,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css'      => array(
 						'main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
-						'plugin_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
+						'limited_main' => ".et_pb_slider {$this->main_css_element}.et_pb_slide .et_pb_more_button.et_pb_button",
 						'alignment' => ".et_pb_slider {$this->main_css_element} .et_pb_slide_description .et_pb_button_wrapper",
 					),
 					'use_alignment' => true,
@@ -477,7 +477,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		// In VB, inheritance is done in VB side. However in migrating changing default that is affected by inheritance, the value
 		// needs to be modified before being set to avoid sudden color change when _builder_version is bumped when settings modal
 		// is opened. This making prior saved value changed but it is the safest option considering old Divi doesn't trim background_color
-		if ( ! empty( $et_pb_slider ) && is_admin() && $is_prior_v32 ) {
+		if ( ! empty( $et_pb_slider ) && ( is_admin() || et_core_is_fb_enabled() ) && $is_prior_v32 ) {
 			$slider_background_color           = self::$_->array_get( $et_pb_slider, 'background_color', '' );
 			$is_slide_background_color_empty   = in_array( $this->props['background_color'], array( '', '#ffffff', et_builder_accent_color() ) );
 			$is_slider_background_color_filled = '' !== $slider_background_color;

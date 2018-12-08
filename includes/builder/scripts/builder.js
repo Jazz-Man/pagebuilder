@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.17.6';
+window.et_builder_version = '3.18.2';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -5319,7 +5319,8 @@ window.et_builder_product_name = 'Divi';
 				view = new ET_PageBuilder.AdvancedModuleSettingEditViewContainer( {
 					view : this,
 					attributes : {
-						show_settings_clicked : ( event ? true : false )
+						show_settings_clicked : ( event ? true : false ),
+						'data-module_type': this.model.get('module_type')
 					}
 				} );
 
@@ -7198,8 +7199,10 @@ window.et_builder_product_name = 'Divi';
 					global_module_elements = [ 'et_pb_global_parent', 'global_parent_cid' ];
 
 				// Add newly generated cid and parent to the pasted view
-				view.cid    = cid;
-				view.parent = parent;
+				view.cid     = cid;
+				view.parent  = parent;
+				// set `created` to manually to not open module settings when pasted
+				view.created = 'manually';
 
 				if ( typeof is_main_parent !== 'undefined' && 'main_parent' === is_main_parent ) {
 					view.pasted_module = true;
@@ -7756,6 +7759,19 @@ window.et_builder_product_name = 'Divi';
 				this.$loading_animation.hide();
 
 				this.isLoading = false;
+				try {
+					// Only triggered when reloading the page using the following line in devtools console:
+					// localStorage.setItem('et_page_loading', Date.now()); window.location.reload();
+					var started = window.localStorage.getItem('et_page_loading');
+					if (started) {
+						console.log(
+							'Builder load : %c%f',
+							'color: red',
+							parseInt((Date.now() - parseInt(started, 10)) / 10, 10) / 100
+						);
+						window.localStorage.removeItem('et_page_loading');
+					}
+				} catch (e) {}
 			},
 
 			pageBuilderIsActive : function() {
@@ -10368,7 +10384,7 @@ window.et_builder_product_name = 'Divi';
 			$gallery_button.click( function( event ) {
 				var $this_el = $(this),
 					$gallery_ids = $gallery_button.next( '.et-pb-gallery' ),
-					$gallery_orderby = $gallery_button.closest( '.et-pb-options-tab' ).find( '.et-pb-option-gallery_orderby .et-pb-gallery-ids-field' );
+					$gallery_orderby = $gallery_button.closest('.et-pb-options-tab').find('#et_pb_gallery_orderby');
 
 				event.preventDefault();
 
@@ -15839,6 +15855,10 @@ window.et_builder_product_name = 'Divi';
 				module_type = 'et_pb_section';
 			}
 
+			if ('row' === module_type) {
+				module_type = 'et_pb_row';
+			}
+
 			if ( has( window.et_pb_module_field_dependencies, module_type ) ) {
 				var field_dependencies = window.et_pb_module_field_dependencies[module_type];
 
@@ -15952,6 +15972,7 @@ window.et_builder_product_name = 'Divi';
 
 						var $affected_field          = $(field);
 						var $affected_container      = $affected_field.closest( '.et-pb-option' );
+						var use_new_depends_method   = $affected_container.hasClass('et-pb-new-depends');
 						var is_text_trigger          = 'text' === $this_field.attr( 'type' ); // need to know if trigger is text field
 						var show_if                  = $affected_container.data( 'depends_show_if' ) || 'on';
 						var show_if_not              = is_text_trigger ? '' : $affected_container.data( 'depends_show_if_not' );
@@ -15967,6 +15988,8 @@ window.et_builder_product_name = 'Divi';
 							is_text_trigger
 							&&
 							! $this_field.is( ':visible' )
+							||
+							use_new_depends_method
 						) {
 							return;
 						}
@@ -16052,26 +16075,26 @@ window.et_builder_product_name = 'Divi';
 						});
 					});
 				} );
-
-				// trigger change event for all dependant ( affected ) fields to show on settings page load
-				setTimeout( function() {
-					// make all settings visible to properly enable all affected fields
-					$settings_tab.css( { 'display' : 'block' } );
-
-					// include fields using more advanced dependency declaration instead of html5 data attrs
-					$et_affect_fields = $et_affect_fields.add( $other_et_affects );
-
-					$et_affect_fields.data( 'is_rendering_setting_view', true );
-
-					et_pb_update_affected_fields( $et_affect_fields );
-
-					$et_affect_fields.data( 'is_rendering_setting_view', false );
-
-					// After all affected fields is being processed return all tabs to the initial state
-					$settings_tab.css( { 'display' : 'none' } );
-					et_pb_open_current_tab();
-				}, 100 );
 			}
+
+			// trigger change event for all dependant ( affected ) fields to show on settings page load
+			setTimeout( function() {
+				// make all settings visible to properly enable all affected fields
+				$settings_tab.css( { 'display' : 'block' } );
+
+				// include fields using more advanced dependency declaration instead of html5 data attrs
+				$et_affect_fields = $et_affect_fields.add( $other_et_affects );
+
+				$et_affect_fields.data( 'is_rendering_setting_view', true );
+
+				et_pb_update_affected_fields( $et_affect_fields );
+
+				$et_affect_fields.data( 'is_rendering_setting_view', false );
+
+				// After all affected fields is being processed return all tabs to the initial state
+				$settings_tab.css( { 'display' : 'none' } );
+				et_pb_open_current_tab();
+			}, 100 );
 
 			setTimeout(function() {
 				// Hide all empty toggles which may appear in Settings Modal
@@ -18046,7 +18069,7 @@ window.et_builder_product_name = 'Divi';
 				},
 				success: function( data ){
 					var global_content_is_different = false;
-					if ( data.error ) {
+					if (! data || data.error) {
 						// if global template not found, then make module and all child modules not global.
 						var this_view = ET_PageBuilder_Layout.getView( module_cid );
 

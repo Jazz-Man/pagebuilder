@@ -34,6 +34,7 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 				'default' => array(
 					'css' => array(
 						'main' => array(
+							// Accordion Item can use %%parent_class%% because its slug is parent_slug + `_item` suffix
 							'border_radii'  => "%%parent_class%% .et_pb_module{$this->main_css_element}",
 							'border_styles' => "%%parent_class%% .et_pb_module{$this->main_css_element}",
 						)
@@ -45,6 +46,13 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 							'color' => '#d9d9d9',
 							'style' => 'solid',
 						),
+					),
+				),
+			),
+			'box_shadow'            => array(
+				'default' => array(
+					'css' => array(
+						'important' => true,
 					),
 				),
 			),

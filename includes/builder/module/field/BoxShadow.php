@@ -15,6 +15,8 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 			'depends_show_if'     => null,
 			'depends_on'          => null,
 			'default_on_fronts'   => array(),
+			'show_if'             => null,
+			'show_if_not'         => null,
 		), $args );
 
 		$prefix     = 'box_shadow_';
@@ -31,8 +33,9 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 			'option_category'     => $arguments['option_category'],
 			'tab_slug'            => $arguments['tab_slug'],
 			'toggle_slug'         => $arguments['toggle_slug'],
-			'depends_on'          => array( $style ),
-			'depends_show_if_not' => 'none',
+			'show_if_not'         => array(
+				"{$style}" => 'none',
+			),
 			'default_on_child'    => true,
 		);
 		$range   = array_merge(
@@ -87,8 +90,21 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 				'depends_show_if'     => $arguments['depends_show_if'],
 				'depends_show_if_not' => $arguments['depends_show_if_not'],
 				'depends_on'          => $arguments['depends_on'],
+				'show_if'             => $arguments['show_if'],
+				'show_if_not'         => $arguments['show_if_not'],
 			)
 		);
+
+		// Configure dependency for fields via show_if/show_if_not attribute
+		if ( $options[ $style ]['show_if'] === null ) {
+			unset( $options[ $style ]['show_if'] );
+		}
+		if ( $options[ $style ]['show_if_not'] === null ) {
+			unset( $options[ $style ]['show_if_not'] );
+		}
+
+		// Field dependency via depends_on, depends_show_if, and depends_show_if_not have been deprecated
+		// These remain here as backward compatibility for third party modules
 		if ( $options[ $style ]['depends_on'] === null ) {
 			unset( $options[ $style ]['depends_on'] );
 		}
@@ -337,6 +353,8 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 		$reg_selector    = str_replace( '%%order_class%%', ".{$order_class_name}", $selector );
 		$reg_selector    = str_replace( '%order_class%', ".{$order_class_name}", $reg_selector );
 
+		// %%parent_class%% only works if child module's slug is `parent_slug` + _item suffix. If child module slug
+		// use different slug structure, %%parent_class%% should not be used
 		if ( false !== strpos( $reg_selector, '%%parent_class%%' ) ) {
 			$parent_class = str_replace( '_item', '', $function_name );
 			$reg_selector     = str_replace( '%%parent_class%%', ".{$parent_class}", $reg_selector );

@@ -364,7 +364,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 
 				$post_index++;
 			}
-		} else if ( wp_doing_ajax() ) {
+		} else if ( wp_doing_ajax() || et_core_is_fb_enabled() ) {
 			// This is for the VB
 			$posts  = '<div class="et_pb_row et_pb_no_results">';
 			$posts .= self::get_no_results_template();

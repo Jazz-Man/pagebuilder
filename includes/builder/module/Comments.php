@@ -106,7 +106,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => "{$this->main_css_element}.et_pb_comments_module .et_pb_button",
-						'plugin_main' => "{$this->main_css_element}.et_pb_comments_module .et_pb_button",
+						'limited_main' => "{$this->main_css_element}.et_pb_comments_module .et_pb_button",
 						'alignment' => "{$this->main_css_element} .form-submit",
 					),
 					'no_rel_attr' => true,

@@ -119,7 +119,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_pricing li",
-						'plugin_main' => "{$this->main_css_element} .et_pb_pricing li, {$this->main_css_element} .et_pb_pricing li span, {$this->main_css_element} .et_pb_pricing li a",
+						'limited_main' => "{$this->main_css_element} .et_pb_pricing li, {$this->main_css_element} .et_pb_pricing li span, {$this->main_css_element} .et_pb_pricing li a",
 					),
 					'line_height' => array(
 						'range_settings' => array(
@@ -182,7 +182,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => "{$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
-						'plugin_main' => "{$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
+						'limited_main' => "{$this->main_css_element} .et_pb_pricing_table_button.et_pb_button",
 						'alignment'   => "{$this->main_css_element} .et_pb_button_wrapper",
 					),
 					'use_alignment' => true,
@@ -545,7 +545,8 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		}
 
 		if ( '' !== $featured_table_text_color ) {
-			$featured_table_text_color_selector = et_is_builder_plugin_active() ? '%%order_class%% .et_pb_featured_table .et_pb_pricing_content li, %%order_class%% .et_pb_featured_table .et_pb_pricing_content li span, %%order_class%% .et_pb_featured_table .et_pb_pricing_content li a' : '%%order_class%% .et_pb_featured_table .et_pb_pricing_content li';
+			$featured_table_text_color_selector = et_builder_has_limitation( 'use_additional_limiting_styles' ) ? '%%order_class%% .et_pb_featured_table .et_pb_pricing_content li, %%order_class%% .et_pb_featured_table .et_pb_pricing_content li span, %%order_class%% .et_pb_featured_table .et_pb_pricing_content li a' : '%%order_class%% .et_pb_featured_table .et_pb_pricing_content li';
+
 			ET_Builder_Element::set_style( $render_slug, array(
 				'selector'    => $featured_table_text_color_selector,
 				'declaration' => sprintf(

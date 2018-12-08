@@ -39,7 +39,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 						'main' => "{$this->main_css_element} .entry-title",
 						'font' => "{$this->main_css_element} .entry-title a",
 						'color' => "{$this->main_css_element} .entry-title a",
-						'plugin_main' => "{$this->main_css_element} .entry-title, {$this->main_css_element} .entry-title a",
+						'limited_main' => "{$this->main_css_element} .entry-title, {$this->main_css_element} .entry-title a",
 						'important' => 'all',
 					),
 					'header_level' => array(
@@ -55,14 +55,14 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 						'main'        => "{$this->main_css_element} .post-content, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p",
 						'color'       => "{$this->main_css_element}, {$this->main_css_element} .post-content *",
 						'line_height' => "{$this->main_css_element} p",
-						'plugin_main' => "{$this->main_css_element}, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_light .et_pb_post a.more-link, %%order_class%%.et_pb_bg_layout_dark .et_pb_post a.more-link",
+						'limited_main' => "{$this->main_css_element}, %%order_class%%.et_pb_bg_layout_light .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_dark .et_pb_post .post-content p, %%order_class%%.et_pb_bg_layout_light .et_pb_post a.more-link, %%order_class%%.et_pb_bg_layout_dark .et_pb_post a.more-link",
 					),
 				),
 				'meta' => array(
 					'label'    => esc_html__( 'Meta', 'et_builder' ),
 					'css'      => array(
 						'main'        => "{$this->main_css_element} .post-meta, {$this->main_css_element} .post-meta a",
-						'plugin_main' => "{$this->main_css_element} .post-meta, {$this->main_css_element} .post-meta a, {$this->main_css_element} .post-meta span",
+						'limited_main' => "{$this->main_css_element} .post-meta, {$this->main_css_element} .post-meta a, {$this->main_css_element} .post-meta span",
 					),
 				),
 				'pagination' => array(
@@ -486,9 +486,6 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 					'header_level',
 					'__page',
 				),
-				'computed_minimum' => array(
-					'posts_number',
-				),
 			),
 			'__page'          => array(
 				'type'              => 'computed',
@@ -823,12 +820,12 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 									);
 								}
 
-								echo '</div>';
-
 								if ( 'on' !== $args['show_content'] ) {
 									$more = 'on' === $args['show_more'] ? sprintf( ' <a href="%1$s" class="more-link" >%2$s</a>' , esc_url( get_permalink() ), esc_html__( 'read more', 'et_builder' ) )  : ''; //phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 									echo et_core_esc_previously( $more );
 								}
+
+								echo '</div>';
 								?>
 						<?php } // 'off' === $fullwidth || ! in_array( $post_format, array( 'link', 'audio', 'quote', 'gallery' ?>
 					</article>

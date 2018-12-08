@@ -207,6 +207,11 @@ function et_divi_load_scripts_styles(){
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) )
 		wp_enqueue_script( 'comment-reply' );
 
+	if ( is_singular() && has_post_format( 'audio' ) ) {
+		wp_enqueue_style( 'wp-mediaelement' );
+		wp_enqueue_script( 'wp-mediaelement' );
+	}
+
 	$dependencies_array = array( 'jquery' );
 
 	// load 'jquery-effects-core' if SlideIn/Fullscreen header used or if customizer opened
@@ -6058,7 +6063,7 @@ function et_divi_add_customizer_css() {
 		$resource_owner = $unified_styles ? 'core' : 'divi';
 		$resource_slug  = $unified_styles ? 'unified' : 'customizer';
 		$resource_slug .= $unified_styles && et_builder_post_is_of_custom_post_type( $post_id ) && et_pb_is_pagebuilder_used( $post_id ) ? '-cpt' : '';
-    $css            = 'et_builder_maybe_wrap_css_selector';
+		$css            = 'et_builder_maybe_wrap_css_selector';
 
 		if ( $is_preview ) {
 			// Don't let previews cause existing saved static css files to be modified.
@@ -6211,7 +6216,8 @@ function et_divi_add_customizer_css() {
 		$fullscreen_nav_top_font_size = intval( et_get_option( 'fullscreen_nav_top_font_size', '18' ) );
 
 		// use different selector for the styles applied directly to body tag while in Visual Builder. Otherwise unwanted styles applied to the Builder interface.
-		$body_selector = empty( $_GET['et_fb'] ) ? 'body' : 'body .et_fb_preview_container';
+		$body_selector         = empty( $_GET['et_fb'] ) ? 'body' : 'body .et-fb-post-content';
+		$body_selector_sibling = empty( $_GET['et_fb'] ) ? '' : 'body .et-fb-root-ancestor-sibling, ';
 
 		/* ====================================================
 		 * --------->>> BEGIN THEME CUSTOMIZER CSS <<<---------
@@ -6219,6 +6225,7 @@ function et_divi_add_customizer_css() {
 		ob_start();
 
 		if ( 14 !== $body_font_size ) { ?>
+			<?php echo esc_html( $body_selector_sibling ); ?>
 			<?php echo esc_html( $body_selector ); ?>,
 			<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote cite', false ); ?>,
 			<?php echo $css( '.et_pb_column_1_2 .et_link_content a.et_link_main_url', false ); ?>,
@@ -6240,6 +6247,7 @@ function et_divi_add_customizer_css() {
 			}
 		<?php } ?>
 		<?php if ( '#666666' !== $body_font_color) { ?>
+			<?php echo esc_html( $body_selector_sibling ); ?>
 			<?php echo esc_html( $body_selector ); ?> {
 				color: <?php echo esc_html( $body_font_color ); ?>;
 			}
@@ -6255,6 +6263,7 @@ function et_divi_add_customizer_css() {
 			}
 		<?php } ?>
 		<?php if ( 1.7 !== $body_font_height ) { ?>
+			<?php echo esc_html( $body_selector_sibling ); ?>
 			<?php echo esc_html( $body_selector ); ?> {
 				line-height: <?php echo esc_html( $body_font_height ); ?>em;
 			}
@@ -6931,17 +6940,13 @@ function et_divi_add_customizer_css() {
 		<?php } ?>
 
 		@media only screen and ( min-width: 981px ) {
-			<?php
-				// output the styles below only if not inside the Frontend Builder
-				if ( empty( $_GET['et_fb'] ) ) { ?>
-				<?php if ( 4 !== $section_padding ) { ?>
-					<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( $section_padding ); ?>% 0; }
-					<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
-					<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
-				<?php } ?>
-				<?php if ( 2 !== $row_padding ) { ?>
-					<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( $row_padding ); ?>% 0; }
-				<?php } ?>
+			<?php if ( 4 !== $section_padding ) { ?>
+				<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( $section_padding ); ?>% 0; }
+				<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
+				<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
+			<?php } ?>
+			<?php if ( 2 !== $row_padding ) { ?>
+				<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( $row_padding ); ?>% 0; }
 			<?php } ?>
 			<?php if ( intval( $body_header_size * .6 ) !== $widget_header_font_size ) { ?>
 				.footer-widget h4 { font-size: <?php echo esc_html( $widget_header_font_size ); ?>px; }
@@ -7034,20 +7039,19 @@ function et_divi_add_customizer_css() {
 				) );
 			?>
 		}
-		<?php
-		// output the styles below only if not inside the Frontend Builder
-		if ( empty( $_GET['et_fb'] ) ) { ?>
-			@media only screen and ( min-width: <?php echo esc_html( $large_content_width ); ?>px) {
-				<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 ) ); ?>px 0; }
-				<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $section_padding / 100 ) ); ?>px 0; }
-				.single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper { padding-top: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 * 3 ) ); ?>px; }
-				<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
-				<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
-			}
-		<?php } ?>
+
+		@media only screen and ( min-width: <?php echo esc_html( $large_content_width ); ?>px) {
+			<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 ) ); ?>px 0; }
+			<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $section_padding / 100 ) ); ?>px 0; }
+			.single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper { padding-top: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 * 3 ) ); ?>px; }
+			<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
+			<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
+		}
 
 		<?php if ( 30 !== $body_header_size ) { ?>
-			<?php echo $css( 'h1' ); ?> {
+			<?php echo $css( 'h1' ); ?>,
+			<?php echo $css( 'h1.et_pb_contact_main_title' ); ?>,
+			<?php echo $css( '.et_pb_title_container h1' ); ?> {
 				font-size: <?php echo esc_html( $body_header_size ); ?>px;
 			}
 			<?php echo $css( 'h2' ); ?>,
@@ -7114,6 +7118,7 @@ function et_divi_add_customizer_css() {
 				.et_search_form_container input:-ms-input-placeholder { color: <?php echo esc_html( $mobile_menu_link ); ?>; }
 			<?php } ?>
 			<?php if ( 14 !== $tablet_body_font_size && $body_font_size !== $tablet_body_font_size ) { ?>
+				<?php echo esc_html( $body_selector_sibling ); ?>
 				<?php echo esc_html( $body_selector ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote cite', false ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_link_content a.et_link_main_url', false ); ?>,
@@ -7207,6 +7212,7 @@ function et_divi_add_customizer_css() {
 		}
 		@media only screen and ( max-width: 767px ) {
 			<?php if ( 14 !== $phone_body_font_size && $phone_body_font_size !== $tablet_body_font_size ) { ?>
+				<?php echo esc_html( $body_selector_sibling ); ?>
 				<?php echo esc_html( $body_selector ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote cite', false ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_link_content a.et_link_main_url', false ); ?>,
@@ -7310,292 +7316,6 @@ function et_divi_add_customizer_css() {
 		 */
 		$css_output[] = apply_filters( 'et_divi_theme_customizer_css_output', ob_get_clean() );
 
-		// output responsive css styles for responsive preview in Frontend Builder
-		if ( ! empty( $_GET['et_fb'] ) ) {
-			ob_start(); ?>
-			@media only screen and ( min-width: 981px ) {
-				<?php if ( 4 !== $section_padding ) { ?>
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_section', false ); ?> {
-						padding: <?php echo esc_html( $section_padding ); ?>% 0;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_section.et_pb_section_first', false ); ?> {
-						padding-top: inherit;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_fullwidth_section', false ); ?> {
-						padding: 0;
-					}
-				<?php } ?>
-				<?php if ( 2 !== $row_padding ) { ?>
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_row', false ); ?> {
-						padding: <?php echo esc_html( $row_padding ); ?>% 0;
-					}
-				<?php } ?>
-				<?php if ( 30 !== $body_header_size ) { ?>
-					<?php echo $css( '.et_fb_desktop_mode', 'h1' ); ?> {
-						font-size: <?php echo esc_html( $body_header_size ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', 'h2' ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.product .related h2' ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .86 ) ) ; ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', 'h3' ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .73 ) ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', 'h4' ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_circle_counter h3', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_number_counter h3', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_3 .et_pb_post h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_4 .et_pb_post h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_blog_grid h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_3 .et_quote_content blockquote p', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_3_8 .et_quote_content blockquote p', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_4 .et_quote_content blockquote p', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_blog_grid .et_quote_content blockquote p', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_3 .et_link_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_3_8 .et_link_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_4 .et_link_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_blog_grid .et_link_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_3 .et_audio_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_3_8 .et_audio_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_4 .et_audio_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_blog_grid .et_audio_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_3_8 .et_pb_audio_module_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_3 .et_pb_audio_module_content h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .6 ) ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', 'h5' ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .53 ) ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', 'h6' ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .47 ) ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_slide_description .et_pb_slide_title', false ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * 1.53 ) ); ?>px;
-					}
-					<?php echo $css( '.et_fb_desktop_mode .woocommerce', 'ul.products li.product h3' ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode .woocommerce-page', 'ul.products li.product h3' ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-					<?php echo $css( '.et_fb_desktop_mode', '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-						font-size: <?php echo esc_html( intval( $body_header_size * .53 ) ); ?>px;
-					}
-				<?php } ?>
-			}
-
-			@media only screen and ( min-width: <?php echo esc_html( $large_content_width ); ?>px) {
-				<?php echo $css( '.et_fb_desktop_mode', '.et_pb_row', false ); ?> {
-					padding: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 ) ); ?>px 0;
-				}
-				<?php echo $css( '.et_fb_desktop_mode', '.et_pb_section', false ); ?> {
-					padding: <?php echo esc_html( intval( $large_content_width * $section_padding / 100 ) ); ?>px 0;
-				}
-				.et_fb_desktop_mode .single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper {
-					padding-top: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 * 3 ) ); ?>px;
-				}
-				<?php echo $css( '.et_fb_desktop_mode', '.et_pb_section.et_pb_section_first', false ); ?> {
-					padding-top: inherit;
-				}
-				<?php echo $css( '.et_fb_desktop_mode', '.et_pb_fullwidth_section', false ); ?> {
-					padding: 0;
-				}
-			}
-
-			<?php if ( 14 !== $tablet_body_font_size && $body_font_size !== $tablet_body_font_size ) { ?>
-				<?php $selector = '.et_fb_preview_active.et_fb_preview_active--responsive_preview'; ?>
-				<?php echo $selector; ?> <?php echo esc_html( $body_selector ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_link_content a.et_link_main_url', false ); ?> {
-					font-size: <?php echo esc_html( $tablet_body_font_size ); ?>px;
-				}
-				<?php echo $css( $selector, '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_content', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_best_value', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_body_font_size * 1.14 ) ); ?>px;
-				}
-			<?php } ?>
-			<?php if ( 30 !== $tablet_header_font_size && $tablet_header_font_size !== $body_header_size ) { ?>
-				<?php $selector = '.et_fb_preview_active.et_fb_preview_active--responsive_preview'; ?>
-				<?php echo $css( $selector, 'h1' ); ?> {
-					font-size: <?php echo esc_html( $tablet_header_font_size ); ?>px;
-				}
-				<?php echo $css( $selector, 'h2', false ); ?>,
-				<?php echo $css( $selector, '.product .related h2' ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .86 ) ) ; ?>px;
-				}
-				<?php echo $css( $selector, 'h3' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .73 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h4' ); ?>,
-				<?php echo $css( $selector, '.et_pb_circle_counter h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_number_counter h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_pb_post h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_pb_post h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_pb_audio_module_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_pb_audio_module_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview ', '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .6 ) ); ?>px;
-				}
-				<?php echo $css( $selector, '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_description .et_pb_slide_title', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * 1.53 ) ); ?>px;
-				}
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview .woocommerce', 'ul.products li.product h3' ); ?>,
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview .woocommerce-page', 'ul.products li.product h3' ); ?>,
-				<?php echo $css( $selector, '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .53 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h5' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .53 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h6' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .47 ) ); ?>px;
-				}
-			<?php } ?>
-			<?php if ( 50 !== $tablet_section_height ) { ?>
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview', '.et_pb_section', false ); ?> {
-					padding: <?php echo esc_html( $tablet_section_height ); ?>px 0;
-				}
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview', '.et_pb_section.et_pb_section_first', false ); ?> {
-					padding-top: inherit;
-				}
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview', '.et_pb_section.et_pb_fullwidth_section', false ); ?> {
-					padding: 0;
-				}
-			<?php } ?>
-			<?php if ( 30 !== $tablet_row_height ) { ?>
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview', '.et_pb_row', false ); ?>,
-				<?php echo $css( '.et_fb_preview_active.et_fb_preview_active--responsive_preview', '.et_pb_column .et_pb_row_inner', false ); ?> {
-					padding: <?php echo esc_html( $tablet_row_height ); ?>px 0;
-				}
-			<?php } ?>
-
-			<?php if ( 14 !== $phone_body_font_size && $phone_body_font_size !== $tablet_body_font_size ) { ?>
-				<?php $selector = '.et_fb_preview_active.et_fb_preview_active--responsive_preview.et_fb_preview_active--responsive_preview--phone_preview'; ?>
-				<?php echo $selector; ?> <?php echo esc_html( $body_selector ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_quote_content blockquote cite', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_link_content a.et_link_main_url', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_link_content a.et_link_main_url', false ); ?> {
-					font-size: <?php echo esc_html( $phone_body_font_size ); ?>px;
-				}
-				<?php echo $css( $selector, '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_content', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_best_value', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_body_font_size * 1.14 ) ); ?>px;
-				}
-			<?php } ?>
-			<?php if ( 30 !== $phone_header_font_size && $tablet_header_font_size !== $phone_header_font_size ) { ?>
-				<?php $selector = '.et_fb_preview_active.et_fb_preview_active--responsive_preview.et_fb_preview_active--responsive_preview--phone_preview'; ?>
-				<?php echo $css( $selector, 'h1' ); ?> {
-					font-size: <?php echo esc_html( $phone_header_font_size ); ?>px;
-				}
-				<?php echo $css( $selector, 'h2' ); ?>,
-				<?php echo $css( $selector, '.product .related h2' ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .86 ) ) ; ?>px;
-				}
-				<?php echo $css( $selector, 'h3' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .73 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h4' ); ?>,
-				<?php echo $css( $selector, '.et_pb_circle_counter h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_number_counter h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_pb_post h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_pb_post h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_quote_content blockquote p', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_link_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_blog_grid .et_audio_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_3_8 .et_pb_audio_module_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_3 .et_pb_audio_module_content h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .6 ) ); ?>px;
-				}
-				<?php echo $css( $selector, '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_description h2.et_pb_slide_title', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * 1.53 ) ); ?>px;
-				}
-				<?php echo $css( $selector . ' .woocommerce', 'ul.products li.product h3' ); ?>,
-				<?php echo $css( $selector . ' .woocommerce-page', 'ul.products li.product h3' ); ?>,
-				<?php echo $css( $selector, '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .53 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h5' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .53 ) ); ?>px;
-				}
-				<?php echo $css( $selector, 'h6' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .47 ) ); ?>px;
-				}
-			<?php } ?>
-			<?php if ( 50 !== $phone_section_height && $tablet_section_height !== $phone_section_height ) { ?>
-				<?php $selector = '.et_fb_preview_active.et_fb_preview_active--responsive_preview.et_fb_preview_active--responsive_preview--phone_preview'; ?>
-				<?php echo $css( $selector, '.et_pb_section', false ); ?> {
-					padding: <?php echo esc_html( $phone_section_height ); ?>px 0;
-				}
-				<?php echo $css( $selector, '.et_pb_section.et_pb_section_first', false ); ?> {
-					padding-top: inherit;
-				}
-				<?php echo $css( $selector, '.et_pb_section.et_pb_fullwidth_section', false ); ?> {
-					padding: 0;
-				}
-			<?php } ?>
-			<?php if ( 30 !== $phone_row_height && $tablet_row_height !== $phone_row_height ) { ?>
-				<?php echo $css( $selector, '.et_pb_row', false ); ?>,
-				<?php echo $css( $selector, '.et_pb_column .et_pb_row_inner', false ); ?> {
-					padding: <?php echo esc_html( $phone_row_height ); ?>px 0;
-				}
-			<?php }
-			$css_output[] = ob_get_clean();
-		}
-
 		$et_gf_heading_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'heading_font', 'none' ) ) );
 		$et_gf_body_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'body_font', 'none' ) ) );
 		$et_gf_buttons_font = sanitize_text_field( et_pb_get_specific_default_font( et_get_option( 'all_buttons_font', 'none' ) ) );
@@ -7627,7 +7347,7 @@ function et_divi_add_customizer_css() {
 			}
 			<?php
 		} else if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) || ! in_array( $et_gf_body_font, array( '', 'none' ) ) || ! in_array( $et_gf_buttons_font, array( '', 'none' ) ) || ! in_array( $et_gf_primary_nav_font, array( '', 'none' ) ) || ! in_array( $et_gf_secondary_nav_font, array( '', 'none' ) ) || ! in_array( $et_gf_slide_nav_font, array( '', 'none' ) ) ) {
-			if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) ) { 
+			if ( ! in_array( $et_gf_heading_font, array( '', 'none' ) ) ) {
 				?>
 				<?php echo $css( 'h1' ); ?>,
 				<?php echo $css( 'h2' ); ?>,
@@ -9032,6 +8752,8 @@ add_action( 'et_before_content', 'et_do_video_embed_html' );
  * galleries on top of the page
  */
 function et_delete_post_gallery( $content ) {
+    $deleted = false;
+    
 	if ( ( is_single() || is_archive() ) && is_main_query() && has_post_format( 'gallery' ) ) :
 		$regex = get_shortcode_regex();
 		preg_match_all( "/{$regex}/s", $content, $matches );
@@ -9040,14 +8762,18 @@ function et_delete_post_gallery( $content ) {
 		foreach ( $matches[2] as $key => $shortcode_match ) {
 			if ( 'gallery' === $shortcode_match ) {
 				$content = str_replace( $matches[0][$key], '', $content );
+				$deleted = true;
 				break;
 			}
 		}
+		$content = apply_filters('et_delete_post_gallery', $content, $deleted);
 	endif;
 
-	return $content;
+    return $content;
 }
 add_filter( 'the_content', 'et_delete_post_gallery' );
+// Include GB galleries in `get_post_gallery`
+add_filter( 'et_gb_gallery_include_in_get_post_gallery', '__return_true' );
 
 function et_divi_post_admin_scripts_styles( $hook ) {
 	global $typenow;
@@ -9392,7 +9118,7 @@ require_once( get_template_directory() . '/et-pagebuilder/et-pagebuilder.php' );
 function et_divi_sidebar_class( $classes ) {
 	$default_sidebar_class = et_get_option( 'divi_sidebar' );
 	$post_id = get_queried_object_id();
-	$is_builder_active = 'on' === get_post_meta( $post_id, '_et_pb_use_builder', true );	
+	$is_builder_active = 'on' === get_post_meta( $post_id, '_et_pb_use_builder', true );
 
 	if ( ! $default_sidebar_class ) {
 		$default_sidebar_class = is_rtl() ? 'et_left_sidebar' : 'et_right_sidebar';
@@ -9741,6 +9467,16 @@ function et_divi_gallery_layout_enable( $option ) {
 	return ( 'on' === $setting ) ? true : $option;
 }
 add_filter( 'et_gallery_layout_enable', 'et_divi_gallery_layout_enable' );
+
+/**
+ * Enable GB gallery to shortcode conversion
+ *
+ * @return bool
+ */
+function et_divi_gb_gallery_to_shortcode() {
+    return et_divi_gallery_layout_enable( false );
+}
+add_filter( 'et_gb_gallery_to_shortcode', 'et_divi_gb_gallery_to_shortcode' );
 
 /**
  * Register theme and modules Customizer portability.

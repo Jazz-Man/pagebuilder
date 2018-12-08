@@ -4,7 +4,11 @@
 function et_fb_enqueue_assets_head() {
 	// Setup WP media.
 	wp_enqueue_media();
+
+	// Setup Builder Media Library
+	wp_enqueue_script( 'et_pb_media_library', ET_BUILDER_URI . '/scripts/ext/media-library.js', array( 'media-editor' ), ET_BUILDER_PRODUCT_VERSION, true );
 }
+
 add_action( 'wp_enqueue_scripts', 'et_fb_enqueue_assets_head' );
 
 // TODO, make this fire late enough, so that the_content has fired and ET_Builder_Element::get_computed_vars() is ready
@@ -16,23 +20,21 @@ function et_fb_enqueue_main_assets() {
 	$assets = ET_FB_ASSETS_URI;
 
 	wp_register_style( 'et_pb_admin_date_css', "{$root}/styles/jquery-ui-1.10.4.custom.css", array(), $ver );
+	wp_register_style( 'et-fb-top-window', "{$assets}/css/fb-top-window.css", array(), $ver );
 
-	if ( et_is_builder_plugin_active() || et_builder_post_is_of_custom_post_type() ) {
-		$responsive_preview_styles = 'responsive-preview-wrapped.css';
-	} else {
-		$responsive_preview_styles = 'responsive-preview.css';
+	$conditional_deps = array();
+
+	if ( ! et_builder_bfb_enabled() ) {
+		$conditional_deps[] = 'et-fb-top-window';
 	}
 
-	wp_register_style( 'et-fb-responsive-preview', "{$assets}/css/{$responsive_preview_styles}", array(), $ver );
-
 	// Enqueue the appropriate bundle CSS (hot/start/build)
-	et_fb_enqueue_bundle( 'et-frontend-builder', 'bundle.css', array(
+	et_fb_enqueue_bundle( 'et-frontend-builder', 'bundle.css', array_merge( array(
 		'et_pb_admin_date_css',
 		'wp-mediaelement',
 		'wp-color-picker',
 		'et-core-admin',
-		'et-fb-responsive-preview',
-	));
+	), $conditional_deps ) );
 
 	// Load Divi Builder style.css file with hardcore CSS resets and Full Open Sans font if the Divi Builder plugin is active
 	if ( et_is_builder_plugin_active() ) {
@@ -40,10 +42,12 @@ function et_fb_enqueue_main_assets() {
 		wp_enqueue_style(
 			'et-builder-divi-builder-styles',
 			"{$assets}/css/divi-builder-style.css",
-			array( 'et-core-admin', 'wp-color-picker', 'et-fb-responsive-preview' ),
+			array_merge( array( 'et-core-admin', 'wp-color-picker' ), $conditional_deps ),
 			$ver
 		);
 	}
+
+	wp_enqueue_script( 'mce-view' );
 
 	if ( ! et_core_use_google_fonts() || et_is_builder_plugin_active() ) {
 		et_fb_enqueue_open_sans();
@@ -86,6 +90,75 @@ function et_fb_load_portability() {
 	) );
 }
 
+function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false ) {
+
+	if ( false === $post_type ) {
+		global $post;
+		$post_type = isset( $post->post_type ) ? $post->post_type : 'post';
+	}
+	
+	$post_type = sanitize_text_field( $post_type );
+	
+	if ( ! in_array( $prefix, array( 'helpers', 'definitions' ) ) ) {
+		$prefix = '';
+	}
+	$cache  = ET_Core_PageResource::get_cache_directory();
+	$files  = glob( sprintf( '%s/%s-%s-*.js', $cache, $prefix, $post_type ) );
+	$exists = is_array( $files ) && count( $files ) > 0;
+
+	if ( $exists ) {
+		$file = $files[0];
+		$uniq = array_reverse( explode( '-', basename( $file, '.js' ) ) );
+		$uniq = $uniq[0];
+	}
+
+	$updated = false;
+
+	if ( $update || ! $exists ) {
+		// Make sure cache folder exists
+		wp_mkdir_p( $cache );
+
+		// We (currently) use just 2 prefixes: 'helpers' and 'definitions'.
+		// Each prefix has its content generated via a custom function called via the hook system:
+		// add_filter( 'et_fb_get_asset_definitions', 'et_fb_get_asset_definitions', 10, 2 );
+		// add_filter( 'et_fb_get_asset_helpers', 'et_fb_get_asset_helpers', 10, 2 );
+		$content = apply_filters( "et_fb_get_asset_$prefix", false, $post_type );
+		if ( $exists && $update ) {
+			// Compare with old one (when a previous version exists)
+			$update = file_get_contents( $file ) !== $content;
+		}
+		if ( ( $update || ! $exists ) ) {
+
+			foreach ( $files as $file ) {
+				// Delete old version.
+				@unlink( $file );
+			}
+			// Write the file only if it did not exist or its content changed
+			$uniq = str_replace( '.', '', (string) microtime( true ) );
+			$file = sprintf( '%s/%s-%s-%s.js', $cache, $prefix, $post_type, $uniq );
+
+			if ( is_writable( dirname( $file ) ) && file_put_contents( $file, $content ) ) {
+				$updated = true;
+				$exists  = true;
+			}
+		}
+	}
+
+	$url = ! $exists ? false : sprintf(
+		'%s/%s-%s-%s.js',
+		content_url( ET_Core_PageResource::get_cache_directory( 'relative' ) ),
+		$prefix,
+		$post_type,
+		$uniq
+	);
+
+	return array(
+		'url'     => $url,
+		'updated' => $updated,
+	);
+}
+
+
 function et_fb_enqueue_assets() {
 	global $wp_version;
 
@@ -99,12 +172,7 @@ function et_fb_enqueue_assets() {
 	// Get WP major version
 	$wp_major_version = substr( $wp_version, 0, 3 );
 
-	// Register styles.
-	// wp_enqueue_style( 'et-frontend-builder', "{$assets}/css/frontend-builder.css", null, $ver );
-
 	// Register scripts.
-	// wp_register_script( 'minicolors', "{$root}/scripts/ext/jquery.minicolors.js" );
-
 	wp_register_script( 'iris', admin_url( 'js/iris.min.js' ), array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), false, 1 );
 	wp_register_script( 'wp-color-picker', admin_url( 'js/color-picker.min.js' ), array( 'iris' ), false, 1 );
 
@@ -141,6 +209,9 @@ function et_fb_enqueue_assets() {
 
 	wp_register_script( 'chart', ET_BUILDER_URI . '/scripts/ext/chart.min.js', array(), ET_BUILDER_VERSION, true );
 
+	/** This filter is documented in includes/builder/framework.php */
+	$builder_modules_script_handle = apply_filters( 'et_builder_modules_script_handle', 'et-builder-modules-script' );
+
 	$dependencies_list = array(
 		'jquery',
 		'jquery-ui-core',
@@ -152,7 +223,6 @@ function et_fb_enqueue_assets() {
 		'iris',
 		'wp-color-picker',
 		'wp-color-picker-alpha',
-		'react-tiny-mce',
 		'et_pb_admin_date_addon_js',
 		'et-wp-shortcode',
 		'heartbeat',
@@ -161,6 +231,8 @@ function et_fb_enqueue_assets() {
 		'chart',
 		'react',
 		'react-dom',
+		'react-tiny-mce',
+		$builder_modules_script_handle,
 	);
 
 	// Add dependency on et-shortcode-js only if Divi Theme is used or ET Shortcodes plugin activated
@@ -168,11 +240,31 @@ function et_fb_enqueue_assets() {
 		$dependencies_list[] = 'et-shortcodes-js';
 	}
 
+	if ( defined( 'ET_BUILDER_CACHE_ASSETS' ) && ET_BUILDER_CACHE_ASSETS ) {
+		// Use cached files for helpers and definitions
+		foreach ( array( 'helpers', 'definitions' ) as $asset ) {
+			if ( $url = et_()->array_get( et_fb_get_dynamic_asset( $asset ), 'url' ) ) {
+				// The asset exists, we can add it to bundle's dependencies
+				$key = "et-dynamic-asset-$asset";
+				wp_register_script( $key, $url, array(), ET_BUILDER_VERSION );
+				$dependencies_list[] = $key;
+			}
+		}
+	}
+
 	$fb_bundle_dependencies = apply_filters( 'et_fb_bundle_dependencies', $dependencies_list );
 
 	// Adding concatenated script as dependencies for script debugging
 	if ( et_load_unminified_scripts() ) {
-		array_push( $fb_bundle_dependencies, 'easypiechart', 'salvattore', 'hashchange' );
+		array_push( $fb_bundle_dependencies,
+			'easypiechart',
+			'salvattore',
+			'hashchange'
+		);
+	}
+
+	if ( et_pb_enqueue_google_maps_script() ) {
+		wp_enqueue_script( 'google-maps-api', esc_url( add_query_arg( array( 'key' => et_pb_get_google_api_key(), 'callback' => 'initMap' ), is_ssl() ? 'https://maps.googleapis.com/maps/api/js' : 'http://maps.googleapis.com/maps/api/js' ) ), array(), '3', true );
 	}
 
 	// enqueue the Avada script before 'et-frontend-builder' to make sure easypiechart ( and probably some others ) override the scripts from Avada.
@@ -184,7 +276,7 @@ function et_fb_enqueue_assets() {
 	}
 
 	$DEBUG        = defined( 'ET_DEBUG' ) && ET_DEBUG;
-	$core_scripts = ET_CORE_URL . '/admin/js';
+	$core_scripts = ET_CORE_URL . 'admin/js';
 
 	if ( $DEBUG || DiviExtensions::is_debugging_extension() ) {
 		wp_enqueue_script( 'react', 'https://cdn.jsdelivr.net/npm/react@16.3.2/umd/react.development.js', array(), '16.3.2', true );
@@ -214,7 +306,7 @@ function et_fb_enqueue_assets() {
 	));
 
 	// Enqueue failure notice script.
-	wp_enqueue_script( 'et-frontend-builder-failure', "{$assets}/scripts/failure_notice.js", array(), $ver, true );
+	wp_enqueue_script( 'et-frontend-builder-failure', "{$assets}/scripts/failure_notice.js", array(), ET_BUILDER_PRODUCT_VERSION, true );
 	wp_localize_script( 'et-frontend-builder-failure', 'et_fb_options', array(
 		'ajaxurl'                    => admin_url( 'admin-ajax.php' ),
 		'et_admin_load_nonce'        => wp_create_nonce( 'et_admin_load_nonce' ),
@@ -229,6 +321,19 @@ function et_fb_enqueue_assets() {
 
 	do_action( 'et_fb_enqueue_assets' );
 }
+
+/**
+ * Disable admin bar styling for HTML in VB. BFB doesn't loaded admin bar and  VB loads admin bar
+ * on top window which makes built-in admin bar styling irrelevant because admin bar is affected by
+ * top window width instead of app window width (while app window width changes based on preview mode)
+ *
+ * @see _admin_bar_bump_cb()
+ */
+function et_fb_disable_admin_bar_style() {
+	add_theme_support( 'admin-bar', array( 'callback' => '__return_false' ) );
+}
+add_action( 'wp', 'et_fb_disable_admin_bar_style', 15 );
+
 
 function et_fb_output_wp_auth_check_html() {
 	// A <button> element is used for the close button which looks ugly in Chrome. Use <a> element instead.

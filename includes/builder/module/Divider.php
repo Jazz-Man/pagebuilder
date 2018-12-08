@@ -26,6 +26,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 			'on'  => esc_html__( 'Yes', 'et_builder' ),
 		);
 
+		// Handle different default values for Builder Plugin
 		if ( ! et_is_builder_plugin_active() && true === et_get_option( 'et_pb_divider-show_divider', false ) ) {
 			$this->show_divider_options = array_reverse( $this->show_divider_options );
 		}

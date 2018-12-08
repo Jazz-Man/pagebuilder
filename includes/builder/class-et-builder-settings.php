@@ -141,7 +141,7 @@ class ET_Builder_Settings {
 	}
 
 	protected static function _get_builder_settings_fields() {
-		return array(
+		$builder_settings_fields = array(
 			'et_pb_static_css_file' => self::_get_static_css_generation_field( 'builder' ),
 			'et_pb_css_in_footer'   => array(
 				'type'            => 'yes_no_button',
@@ -173,6 +173,39 @@ class ET_Builder_Settings {
 				'tab_slug'        => 'advanced',
 				'toggle_slug'     => 'product_tour',
 			),
+			'et_enable_bfb'   => array(
+				'type'              => 'yes_no_button',
+				'id'                => 'et_enable_bfb',
+				'index'             => -1,
+				'label'             => esc_html__( 'Enable The Latest Divi Builder Experience', 'et_builder' ),
+				'description'       => esc_html__( 'Disabling this option will load the legacy Divi Builder interface when editing a post using the classic WordPress post editor. The legacy builder lacks many features and interface improvements, but it can still be used if you are experiencing trouble with the new interface.', 'et_builder' ),
+				'options'           => array(
+					'on'  => __( 'On', 'et_builder' ),
+					'off' => __( 'Off', 'et_builder' ),
+				),
+				'default'           => 'off',
+				'validation_type'   => 'simple_text',
+				'tab_slug'          => 'advanced',
+				'toggle_slug'       => 'enable_bfb',
+				'main_setting_name' => 'et_bfb_settings',
+				'sub_setting_name'  => 'enable_bfb',
+				'is_global'         => true,
+			),
+			'et_enable_classic_editor'   => array(
+				'type'            => 'yes_no_button',
+				'id'              => 'et_enable_classic_editor',
+				'index'           => -1,
+				'label'           => esc_html__( 'Enable Classic Editor', 'et_builder' ),
+				'description'     => esc_html__( 'Use Classic Editor instead of Gutenberg / Block Editor', 'et_builder' ),
+				'options'         => array(
+					'on'  => __( 'On', 'et_builder' ),
+					'off' => __( 'Off', 'et_builder' ),
+				),
+				'default'         => 'off',
+				'validation_type' => 'simple_text',
+				'tab_slug'        => 'advanced',
+				'toggle_slug'     => 'enable_classic_editor',
+			),
 			'et_pb_post_type_integration' => array(
 				'type'            => 'checkbox_list',
 				'usefor'          => 'custom',
@@ -188,6 +221,14 @@ class ET_Builder_Settings {
 				'toggle_slug'     => 'performance',
 			),
 		);
+
+		// Remove "Enable Classic Editor" options for versions of WordPress
+		// that don't have the Gutenberg editor.
+		if ( version_compare( $GLOBALS['wp_version'], '5.0-beta', '<' ) ) {
+			unset( $builder_settings_fields['et_enable_classic_editor'] );
+		}
+
+		return $builder_settings_fields;
 	}
 
 	protected static function _get_builder_settings_in_epanel_format() {
@@ -282,9 +323,11 @@ class ET_Builder_Settings {
 				'meta_key'       => '_et_pb_gutter_width',
 				'label'          => esc_html__( 'Gutter Width', 'et_builder' ),
 				'range_settings' => array(
-					'step' => 1,
-					'min'  => 1,
-					'max'  => 4,
+					'step'      => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'default'        => et_get_option( 'gutter_width', 3 ),
 				'mobile_options' => false,
@@ -501,8 +544,8 @@ class ET_Builder_Settings {
 			'et_pb_content_area_background_color'    => strtolower( $et_pb_content_area_background_color ),
 			'et_pb_section_background_color'         => strtolower( $et_pb_section_background_color ),
 			'et_pb_static_css_file'                  => $et_pb_static_css_file,
-			'et_pb_post_settings_title'              => $post->post_title,
-			'et_pb_post_settings_excerpt'            => $post->post_excerpt,
+			'et_pb_post_settings_title'              => $post ? $post->post_title : '',
+			'et_pb_post_settings_excerpt'            => $post ? $post->post_excerpt : '',
 			'et_pb_post_settings_image'              => get_post_thumbnail_id( $post_id ),
 			'et_pb_post_settings_categories'         => self::_get_object_terms( $post_id, 'category' ),
 			'et_pb_post_settings_tags'               => self::_get_object_terms( $post_id, 'post_tag' ),
@@ -690,6 +733,7 @@ class ET_Builder_Settings {
 
 		add_action( 'et_builder_settings_update_option', array( $class, 'update_option_cb'), 10, 3 );
 
+		// setup plugin style options, rather than epanel
 		if ( et_is_builder_plugin_active() ) {
 			add_filter( 'et_builder_plugin_dashboard_sections', array( $class, 'add_plugin_dashboard_sections' ) );
 			add_filter( 'et_builder_plugin_dashboard_fields_data', array( $class, 'add_plugin_dashboard_fields_data' ) );
@@ -943,13 +987,15 @@ class ET_Builder_Settings {
 	 * }
 	 */
 	public static function get_toggles() {
+		$utils = ET_Core_Data_Utils::instance();
 
 		// Get current post type singular name and use it as toggle title.
-		$post_type = get_post_type( et_core_page_resource_get_the_ID() );
+		$post_type = wp_doing_ajax() ? $utils->array_get( $_POST, 'et_post_type' ) : get_post_type( et_core_page_resource_get_the_ID() );
+
 		$post_type_obj = get_post_type_object( $post_type );
 
 		$toggles = array(
-			'main_content'  => $post_type_obj->labels->singular_name,
+			'main_content'  => ! empty( $post_type_obj ) ? $post_type_obj->labels->singular_name : '',
 			'background'    => esc_html__( 'Background', 'et_builder' ),
 			'color_palette' => esc_html__( 'Color Palette', 'et_builder' ),
 			'custom_css'    => esc_html__( 'Custom CSS', 'et_builder' ),

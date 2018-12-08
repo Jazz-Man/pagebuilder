@@ -68,10 +68,10 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
-						'main'        => "{$this->main_css_element}",
-						'plugin_main' => "{$this->main_css_element}, {$this->main_css_element} p, {$this->main_css_element} .et_pb_toggle_content",
-						'line_height' => "{$this->main_css_element} p",
-						'text_shadow' => "{$this->main_css_element} .et_pb_toggle_content",
+						'main'         => "{$this->main_css_element}",
+						'limited_main' => "{$this->main_css_element}, {$this->main_css_element} p, {$this->main_css_element} .et_pb_toggle_content",
+						'line_height'  => "{$this->main_css_element} p",
+						'text_shadow'  => "{$this->main_css_element} .et_pb_toggle_content",
 					),
 				),
 			),

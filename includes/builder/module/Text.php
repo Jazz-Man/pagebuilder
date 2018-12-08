@@ -454,6 +454,8 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		$quote_border_color              = $this->props['quote_border_color'];
 
 		$this->content = et_builder_replace_code_content_entities( $this->content );
+		// Un-autop converted GB block comments
+		$this->content = preg_replace( '/(<p>)?<!-- (\/)?divi:(.+?) (\/?)-->(<\/p>)?/', '<!-- $2divi:$3 $4-->', $this->content );
 
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();

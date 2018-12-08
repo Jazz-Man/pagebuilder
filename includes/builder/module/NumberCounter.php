@@ -99,7 +99,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 			'button'                => false,
 		);
 
-		if ( et_is_builder_plugin_active() ) {
+		if ( et_builder_has_limitation( 'force_use_global_important' ) ) {
 			$this->advanced_fields['fonts']['number']['css']['important'] = 'all';
 		}
 
@@ -163,7 +163,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );
 		$header_level                    = $this->props['title_level'];
 
-		if ( et_is_builder_plugin_active() ) {
+		if ( et_builder_has_limitation( 'register_fittext_script' ) ) {
 			wp_enqueue_script( 'fittext' );
 		}
 

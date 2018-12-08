@@ -332,7 +332,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $render_slug, array(
 				'selector'    => '%%order_class%% .et_pb_testimonial_portrait',
 				'declaration' => sprintf(
-					'width: %1$s;',
+					'width: %1$s!important;',
 					esc_html( et_builder_process_range_value( $portrait_width ) )
 				),
 			) );
@@ -342,7 +342,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			ET_Builder_Element::set_style( $render_slug, array(
 				'selector'    => '%%order_class%% .et_pb_testimonial_portrait',
 				'declaration' => sprintf(
-					'height: %1$s;',
+					'height: %1$s!important;',
 					esc_html( et_builder_process_range_value( $portrait_height ) )
 				),
 			) );

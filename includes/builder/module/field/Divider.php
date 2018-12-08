@@ -183,6 +183,8 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 							'min'  => 1,
 							'max'  => 20,
 							'step' => 1,
+							'min_limit' => 0,
+							'max_limit' => 20,
 						),
 						'default'        => '1x',
 						'fixed_unit'     => 'x',
@@ -263,6 +265,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 			'toggle_slug'         => $args['toggle_slug'],
 			'attr_suffix'         => '',
 			'type'                => 'composite',
+			'option_category'     => 'layout',
 			'composite_type'      => 'default',
 			'composite_structure' => $structure,
 		);
@@ -319,7 +322,8 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 			$responsive_repeat = self::$data_utils->array_get( $atts, "{$placement}_divider_repeat_${breakpoint}", false );
 
 			if ( $is_responsive_repeat_active && $responsive_repeat && '' !== $responsive_repeat ) {
-				$repeat = $responsive_repeat;
+				// Divider repeat contains 'x' suffix on the value. We should convert it into float.
+				$repeat = floatval( $responsive_repeat );
 			}
 		}
 

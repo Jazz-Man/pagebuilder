@@ -66,7 +66,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					'label'    => esc_html__( 'Meta', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} .et_pb_slide_content .post-meta, {$this->main_css_element} .et_pb_slide_content .post-meta a",
-						'plugin_main' => "{$this->main_css_element} .et_pb_slide_content .post-meta, {$this->main_css_element} .et_pb_slide_content .post-meta a, {$this->main_css_element} .et_pb_slide_content .post-meta span",
+						'limited_main' => "{$this->main_css_element} .et_pb_slide_content .post-meta, {$this->main_css_element} .et_pb_slide_content .post-meta a, {$this->main_css_element} .et_pb_slide_content .post-meta span",
 						'important' => 'all',
 					),
 					'line_height' => array(
@@ -84,7 +84,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 				'button' => array(
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
-						'plugin_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
+						'limited_main' => "{$this->main_css_element} .et_pb_more_button.et_pb_button",
 						'alignment' => "{$this->main_css_element} .et_pb_button_wrapper",
 					),
 					'use_alignment' => true,
@@ -205,6 +205,8 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 	}
 
 	static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array(), $is_ajax_request = true ) {
+		global $wp_query;
+
 		$defaults = array(
 			'posts_number'       => '',
 			'include_categories' => '',
@@ -246,6 +248,12 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		}
 
 		$query = new WP_Query( $query_args );
+
+		// Keep page's $wp_query global
+		$wp_query_page = $wp_query;
+
+		// Turn page's $wp_query into this module's query
+		$wp_query = $query; //phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 
 		if ( $query->have_posts() ) {
 			$post_index = 0;
@@ -299,6 +307,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					// page builder doesn't support more tag, so display the_content() in case of post made with page builder
 					if ( et_pb_is_pagebuilder_used( get_the_ID() ) ) {
 
+						// do_shortcode for Divi Plugin instead of applying `the_content` filter to avoid conflicts with 3rd party themes
 						$builder_post_content = et_is_builder_plugin_active() ? do_shortcode( $post_content ) : apply_filters( 'the_content', $post_content );
 
 						// Overwrite default content, in case the content is protected
@@ -334,7 +343,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 				$post_index++;
 			} // end while
 			wp_reset_query();
-		} else if ( wp_doing_ajax() ) {
+		} else if ( wp_doing_ajax() || et_core_is_fb_enabled() ) {
 			// This is for the VB
 			$query  = '<div class="et_pb_row et_pb_no_results">';
 			$query .= self::get_no_results_template();
@@ -342,6 +351,11 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 
 			$query = array( 'posts' => $query );
 		}
+
+		wp_reset_postdata();
+
+		// Reset $wp_query to its origin
+		$wp_query = $wp_query_page; // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 
 		return $query;
 	}

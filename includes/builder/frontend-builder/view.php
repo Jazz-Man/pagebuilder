@@ -10,7 +10,7 @@ function et_fb_app_boot( $content ) {
 	static $instances = 0;
 
 	// Don't boot the app if the builder is not in use
-	if ( ! et_pb_is_pagebuilder_used( get_the_ID() ) ) {
+	if ( ! et_pb_is_pagebuilder_used( get_the_ID() ) || doing_filter( 'get_the_excerpt' ) ) {
 		return $content;
 	}
 
@@ -40,8 +40,16 @@ function et_fb_app_boot( $content ) {
 
 	return $content;
 }
-
 add_filter( 'the_content', 'et_fb_app_boot', 1 );
+
+function et_builder_maybe_include_bfb_template( $template ) {
+	if ( et_builder_bfb_enabled() && ! is_admin() ) {
+		return ET_BUILDER_DIR . 'frontend-builder/bfb-template.php';
+	}
+
+	return $template;
+}
+add_filter( 'template_include', 'et_builder_maybe_include_bfb_template', 99 );
 
 /**
  * Added frontend builder assets.
@@ -75,6 +83,68 @@ function et_fb_add_body_class( $classes ) {
 		$classes[] = 'et-fb-no-rtl';
 	}
 
+	if ( et_builder_bfb_enabled() ) {
+		$classes[] = 'et-bfb';
+	}
+
 	return $classes;
 }
 add_filter( 'body_class', 'et_fb_add_body_class' );
+
+/**
+ * Added BFB specific body class
+ * @todo load conditionally, only when the frontend builder is used
+ *
+ * @param string initial <body> classes
+ * @return string modified <body> classes
+ */
+function et_fb_add_admin_body_class( $classes ) {
+	if ( is_rtl() && 'on' === et_get_option( 'divi_disable_translations', 'off' ) ) {
+		$classes .= ' et-fb-no-rtl';
+	}
+
+	if ( et_builder_bfb_enabled() ) {
+		$classes .= ' et-bfb';
+
+		$post_id   = et_core_page_resource_get_the_ID();
+		$post_type = get_post_type( $post_id );
+
+		// Add layout classes when on library page
+		if ( 'et_pb_layout' === $post_type ) {
+			$layout_type = et_fb_get_layout_type( $post_id );
+			$layout_scope = et_fb_get_layout_term_slug( $post_id, 'scope' );
+
+			$classes .= " et_pb_library_page_top-${layout_type}";
+			$classes .= " et_pb_library_page_top-${layout_scope}";
+		}
+	}
+
+	return $classes;
+}
+add_filter( 'admin_body_class', 'et_fb_add_admin_body_class' );
+
+/**
+ * Remove visual builder preloader classname on BFB because BFB spins the preloader on parent level to avoid flash of unstyled elements
+ * 
+ * @param string builder preloader classname
+ * @return string modified builder preloader classname
+ */
+function et_bfb_app_preloader_class( $classname ) {
+	return et_builder_bfb_enabled() ? '' : $classname;
+}
+add_filter( 'et_fb_app_preloader_class', 'et_bfb_app_preloader_class' );
+
+function et_builder_inject_preboot_script() {
+	$et_debug = defined( 'ET_DEBUG' ) && ET_DEBUG;
+	$is_debug = 'false';
+
+	if ( $et_debug || DiviExtensions::is_debugging_extension() ) {
+		$is_debug = 'true';
+	}
+
+	$preboot_path   = ET_BUILDER_DIR . 'frontend-builder/assets/scripts/preboot.js';
+	$preboot_script = file_get_contents( $preboot_path );
+
+	echo "<script>var et_fb_preboot = {}; et_fb_preboot.debug = {$is_debug}; {$preboot_script}</script>";
+}
+add_action( 'wp_head', 'et_builder_inject_preboot_script', 0 );

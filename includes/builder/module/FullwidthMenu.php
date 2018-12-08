@@ -39,7 +39,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 					'label'    => esc_html__( 'Menu', 'et_builder' ),
 					'css'      => array(
 						'main' => "{$this->main_css_element} ul li a",
-						'plugin_main' => "{$this->main_css_element} ul li a, {$this->main_css_element} ul li",
+						'limited_main' => "{$this->main_css_element} ul li a, {$this->main_css_element} ul li",
 					),
 					'line_height' => array(
 						'default' => '1em',
@@ -271,6 +271,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 
 		$menuClass = 'fullwidth-menu nav';
 
+		// divi_disable_toptier option available in Divi theme only
 		if ( ! et_is_builder_plugin_active() && 'on' === et_get_option( 'divi_disable_toptier' ) ) {
 			$menuClass .= ' et_disable_top_tier';
 		}

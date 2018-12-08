@@ -260,9 +260,11 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'tab_slug'         => 'advanced',
@@ -824,8 +826,10 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			}
 
 			if ( 'on' === $use_custom_width ) {
+				// Override the fullwidth post row width styles so rows do not have different
+				// widths on posts compared to other post types.
 				ET_Builder_Element::set_style( $function_name, array(
-					'selector'    => '%%order_class%% > .et_pb_row',
+					'selector'    => '%%order_class%% > .et_pb_row, .et_pb_pagebuilder_layout.single.et_full_width_page #page-container %%order_class%% .et_pb_row',
 					'declaration' => sprintf(
 						'max-width:%1$s !important;
 						%2$s',
@@ -928,7 +932,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			) );
 		}
 
-		$is_transparent_background = 'rgba(255,255,255,0)' === $background_color || ( et_is_builder_plugin_active() && '' === $background_color );
+		// Transparent is default for Builder Plugin, but not for theme
+		$page_setting_section_background = et_builder_settings_get( 'et_pb_section_background_color', get_the_ID() );
+		$is_transparent_background = 'rgba(255,255,255,0)' === $background_color || ( et_is_builder_plugin_active() && '' === $background_color && '' === $page_setting_section_background );
 
 		if ( '' !== $background_video_mp4 || '' !== $background_video_webm || ( '' !== $background_color && ! $is_transparent_background ) || '' !== $background_image ) {
 			$this->add_classname( 'et_pb_with_background' );
@@ -1034,10 +1040,12 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			( 'on' === $specialty ? '</div> <!-- .et_pb_row -->' : '' ), // 6
 			( '' !== $background_image && 'on' === $parallax
 				? sprintf(
-					'<div class="et_parallax_bg%2$s%3$s" style="background-image: url(%1$s);"></div>',
+					'%4$s<div class="et_parallax_bg%2$s%3$s" style="background-image: url(%1$s);"></div>%5$s',
 					esc_attr( $background_image ),
 					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' ),
-					( ( 'off' !== $inner_shadow && 'off' === $parallax_method ) ? ' et_pb_inner_shadow' : '' )
+					( ( 'off' !== $inner_shadow && 'off' === $parallax_method ) ? ' et_pb_inner_shadow' : '' ),
+					!et_core_is_fb_enabled() ? '' : '<div class="et_parallax_bg_wrap">',
+					!et_core_is_fb_enabled() ? '' : '</div>'
 				)
 				: ''
 			), // 7
@@ -1363,9 +1371,11 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'description'      => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
@@ -2313,7 +2323,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 
 		if ( 'on' === $use_custom_width ) {
 			ET_Builder_Element::set_style( $function_name, array(
-				'selector'    => '%%order_class%%',
+				'selector'    => '%%order_class%%, .et_pb_pagebuilder_layout.single.et_full_width_page #page-container %%order_class%%',
 				'declaration' => sprintf(
 					'max-width:%1$s !important;
 					%2$s',
@@ -2359,10 +2369,6 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$parallax_image = $this->get_parallax_image_background();
 		$background_video = $this->video_background();
 
-		if ( $et_pb_rendering_column_content_row ) {
-			$et_pb_rendering_column_content_row = false;
-		}
-
 		// CSS Filters
 		$this->add_classname( $this->generate_css_filters( $function_name ) );
 
@@ -2380,6 +2386,11 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		// reset the global column settings to make sure they are not affected by internal content
 		// This has to be done after inner content's shortcode being parsed
 		$et_pb_all_column_settings = $et_pb_all_column_settings_backup;
+
+		// Reset row's column content flag
+		if ( $et_pb_rendering_column_content_row ) {
+			$et_pb_rendering_column_content_row = false;
+		}
 
 		$output = sprintf(
 			'<div%4$s class="%2$s%7$s"%8$s>
@@ -2556,9 +2567,11 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				'type'             => 'range',
 				'option_category'  => 'layout',
 				'range_settings'   => array(
-					'min'  => 1,
-					'max'  => 4,
-					'step' => 1,
+					'min'       => 1,
+					'max'       => 4,
+					'step'      => 1,
+					'min_limit' => 1,
+					'max_limit' => 4,
 				),
 				'depends_show_if'  => 'on',
 				'description'      => esc_html__( 'Adjust the spacing between each column in this row.', 'et_builder' ),
@@ -3740,9 +3753,11 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 			$inner_content,
 			( '' !== $background_img && '' !== $parallax_method
 				? sprintf(
-					'<div class="et_parallax_bg%2$s" style="background-image: url(%1$s);"></div>',
+					'%3$s<div class="et_parallax_bg%2$s" style="background-image: url(%1$s);"></div>%4$s',
 					esc_attr( $background_img ),
-					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' )
+					( 'off' === $parallax_method ? ' et_pb_parallax_css' : '' ),
+					!et_core_is_fb_enabled() ? '' : '<div class="et_parallax_bg_wrap">',
+					!et_core_is_fb_enabled() ? '' : '</div>'
 				)
 				: ''
 			),

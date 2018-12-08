@@ -1,3 +1,154 @@
+version 3.18.2 ( updated 12-07-2018 )
+- Fixed compatibility issue with older versions of WordPress. 
+	* includes/builder/functions.php
+	
+version 3.18.1 ( updated 12-06-2018 )
+- Fixed BFB not loading when https was used in backend but not in frontend.
+- Fixed the issue when changes of the Tab Font Size or Tab Line Height options of the Tab Module did not displayed within Visual Builder in some cases.
+- Fixed PHP errors in Yoast Page Sitemap.
+- Fixed a case where removing Divi Builder support for a Custom Post Type could generate an error in Gutenberg.
+- Fixed Duplicate ID Validator Error for Contact Form Module.
+- Fixed Button module hover transition.
+- Fixed a fatal error in the Customizer in certain cases.
+- Fixed warnings in Yoast SEO sitemaps related to Dynamic Content.
+- Fixed administrators always having access to the "Dynamic Content Custom Fields" capability on non-multisite environments.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/scripts/frontend-builder-global-functions.js
+
+version 3.18 ( updated 12-05-2018 )
+- Fixed the issue when background options can't be copied in some situations.
+- Fixed superadmins not having access to Dynamic Content custom fields if their user role on the current subsite did not have access to them.
+- Fixed custom row width being overridden when using the fullwidth layout for posts.
+- Fixed copying and pasting of hover options.
+- Fixed comment styles on custom post types where comments are used outside the builder content (i.e. not inside a Comments module).
+- Fixed post meta showing a trailing separator character when comments are closed for a post.
+- Disable Gutenberg Divi Placeholder for new posts/pages when the User (role) can't Toggle Divi Builder.
+- Fixed a bug where the form on Contact Form module could be submitted multiple times which would sent email multiple times.
+- Fixed excluded options loading for Global Modules in Backend Builder.
+- Fixed the "Current Date" dynamic content option not respecting the current site language.
+- Fixed grid styling for Blog Module for RTL.
+- Fixed editing of Global Rows and Sections which became not Global.
+- Fixed a logic bug in the Divi Roles related code used to check if a user is allowed to access Divi features as defined in the Role Editor.
+- Fixed Dynamic Content icon overlapping long text inside text fields in the Visual Builder settings modal.
+- Fixed a bug where Video added on Code module were not responsive.
+- Fixed text hover styles not applying if they are the same as default.
+- Fixed a bug where Circle Color Opacity option for Circle Counter module can be set to invalid value in VB.
+- Fixed Dynamic Content support in the PRO version of Advanced Custom Fields.
+- Fixed Admin Label option reset.
+- Disabled column height equalization in responsive mode.
+- Fixed a Visual Builder display bug where browser zoom or OS display scaling sometimes resulted in incorrect height calculations for empty columns.
+- Added reset button to font style control.
+- Fixed custom field dynamic content not resolving in the Visual Builder on certain server configurations.
+- Improved handling of Specialty section gutters at tablet & phone breakpoints.
+- Disabled lightbox links in Images/Gallery to open in BFB and VB.
+- Fixed a bug where Gutter Width option could be set to invalid value from VB settings.
+- Fixed failure_notice.js being loaded with 2 different version numbers in certain cases.
+- Fixed an issue where clicking on Disabled Top Tier Menu Links caused the page to jump to the top.
+	* core/admin/css/core.css
+	* core/admin/css/portability.css
+	* core/admin/js/core.js
+	* core/components/data/init.php
+	* core/components/post/Query.php
+	* css/main-styles.css
+	* epanel/css/panel.css
+	* epanel/shortcodes/shortcodes.php
+	* functions.php
+	* includes/builder/.editorconfig
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/class-et-global-settings.php
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/assets/css/fb-top-window.css
+	* includes/builder/frontend-builder/assets/css/responsive-preview-wrapped.css
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/assets/vendors/plugins/wpview/plugin.min.js
+	* includes/builder/frontend-builder/bfb-template.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/init.php
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/functions.php
+	* includes/builder/main-structure-elements.php
+	* includes/builder/module/Accordion.php
+	* includes/builder/module/AccordionItem.php
+	* includes/builder/module/Audio.php
+	* includes/builder/module/Blog.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Button.php
+	* includes/builder/module/CircleCounter.php
+	* includes/builder/module/Comments.php
+	* includes/builder/module/ContactForm.php
+	* includes/builder/module/ContactFormItem.php
+	* includes/builder/module/CountdownTimer.php
+	* includes/builder/module/Cta.php
+	* includes/builder/module/Divider.php
+	* includes/builder/module/FilterablePortfolio.php
+	* includes/builder/module/FullwidthMenu.php
+	* includes/builder/module/FullwidthPortfolio.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/FullwidthPostTitle.php
+	* includes/builder/module/FullwidthSlider.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Login.php
+	* includes/builder/module/NumberCounter.php
+	* includes/builder/module/Portfolio.php
+	* includes/builder/module/PostSlider.php
+	* includes/builder/module/PostTitle.php
+	* includes/builder/module/PricingTables.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/module/Signup.php
+	* includes/builder/module/Slider.php
+	* includes/builder/module/SliderItem.php
+	* includes/builder/module/Tabs.php
+	* includes/builder/module/TabsItem.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Toggle.php
+	* includes/builder/module/VideoSlider.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/field/BoxShadow.php
+	* includes/builder/module/field/Divider.php
+	* includes/builder/module/field/TextShadow.php
+	* includes/builder/module/settings/migration/OptionsHarmony.php
+	* includes/builder/plugin-compat/advanced-custom-fields-pro.php
+	* includes/builder/plugin-compat/advanced-custom-fields.php
+	* includes/builder/plugin-compat/autoptimize.php
+	* includes/builder/plugin-compat/wp-smushit.php
+	* includes/builder/scripts/bfb_admin_script.js
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/ext/media-library.js
+	* includes/builder/scripts/frontend-builder-global-functions.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/scripts/page-settings-metabox.js
+	* includes/builder/styles/bb_bfb_common.css
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/notification_popup_styles.css
+	* includes/builder/styles/roles_style.css
+	* includes/builder/styles/style.css
+	* js/admin_post_settings.js
+	* js/custom.js
+	* js/smoothscroll.js
+
 version 3.17.6 ( updated 11-02-2018 )
 - Fixed JavaScript error when trying to edit non-existing Global Module in BB.
 - Fixed a issue where module styles cannot be pasted.

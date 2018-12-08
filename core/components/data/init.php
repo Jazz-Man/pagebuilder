@@ -5,6 +5,19 @@ function et_core_data_init() {}
 endif;
 
 
+if ( ! function_exists( 'et_' ) ):
+function et_() {
+	global $et_;
+
+	if ( ! $et_ ) {
+		$et_ = ET_Core_Data_Utils::instance();
+	}
+
+	return $et_;
+}
+endif;
+
+
 if ( ! function_exists( 'et_html_attr' ) ):
 /**
  * Generates a properly escaped attribute string.

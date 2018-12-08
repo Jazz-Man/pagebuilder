@@ -55,6 +55,11 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 					'important' => array( 'custom_margin' ), // needed to overwrite last module margin-bottom styling
 				),
 			),
+			'max_width'             => array(
+				'css' => array(
+					'module_alignment' => "%%order_class%%.et_pb_video_slider.et_pb_module",
+				),
+			),
 			'fonts'                 => false,
 			'text'                  => false,
 			'button'                => false,

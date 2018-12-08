@@ -89,7 +89,9 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 					'option_category'     => 'layout',
 					'tab_slug'            => 'advanced',
 					'toggle_slug'         => 'icon_settings',
-					'depends_show_if'     => 'off',
+					'show_if'             => array(
+						'use_icon' => 'off',
+					),
 					'css'                 => array(
 						'main' => '%%order_class%% .et_pb_main_blurb_image .et_pb_image_wrap',
 						'show_if_not' => array(
@@ -223,7 +225,6 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 				'affects'         => array(
 					'border_radii_image',
 					'border_styles_image',
-					'box_shadow_style_image',
 					'font_icon',
 					'image_max_width',
 					'use_icon_font_size',

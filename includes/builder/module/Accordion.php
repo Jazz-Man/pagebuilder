@@ -53,7 +53,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'main'        => "{$this->main_css_element} .et_pb_toggle_content",
-						'plugin_main' => "{$this->main_css_element} .et_pb_toggle_content, {$this->main_css_element} .et_pb_toggle_content p",
+						'limited_main' => "{$this->main_css_element} .et_pb_toggle_content, {$this->main_css_element} .et_pb_toggle_content p",
 						'line_height' => "{$this->main_css_element} .et_pb_toggle_content p",
 					),
 				),

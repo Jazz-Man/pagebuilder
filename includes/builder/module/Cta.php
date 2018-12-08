@@ -45,7 +45,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
 						'line_height' => "{$this->main_css_element} p",
-						'plugin_main' => "{$this->main_css_element} p",
+						'limited_main' => "{$this->main_css_element} p",
 						'text_shadow' => "{$this->main_css_element} p",
 					),
 				),
@@ -78,7 +78,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 					'label' => esc_html__( 'Button', 'et_builder' ),
 					'css' => array(
 						'main' => "{$this->main_css_element} .et_pb_promo_button.et_pb_button",
-						'plugin_main' => "{$this->main_css_element} .et_pb_promo_button.et_pb_button",
+						'limited_main' => "{$this->main_css_element} .et_pb_promo_button.et_pb_button",
 						'alignment'   => "{$this->main_css_element} .et_pb_button_wrapper",
 					),
 					'use_alignment' => true,

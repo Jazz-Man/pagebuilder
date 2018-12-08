@@ -205,19 +205,19 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 					<div class="days section values" data-short="%13$s" data-full="%6$s">
 						<p class="value"></p>
 						<p class="label">%6$s</p>
-					</div>
-					<div class="sep section"><p>:</p></div>
-					<div class="hours section values" data-short="%8$s" data-full="%7$s">
+					</div><div class="sep section">
+						<p>:</p>
+					</div><div class="hours section values" data-short="%8$s" data-full="%7$s">
 						<p class="value"></p>
 						<p class="label">%7$s</p>
-					</div>
-					<div class="sep section"><p>:</p></div>
-					<div class="minutes section values" data-short="%10$s" data-full="%9$s">
+					</div><div class="sep section">
+						<p>:</p>
+					</div><div class="minutes section values" data-short="%10$s" data-full="%9$s">
 						<p class="value"></p>
 						<p class="label">%9$s</p>
-					</div>
-					<div class="sep section"><p>:</p></div>
-					<div class="seconds section values" data-short="%12$s" data-full="%11$s">
+					</div><div class="sep section">
+						<p>:</p>
+					</div><div class="seconds section values" data-short="%12$s" data-full="%11$s">
 						<p class="value"></p>
 						<p class="label">%11$s</p>
 					</div>

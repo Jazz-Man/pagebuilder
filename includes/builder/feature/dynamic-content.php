@@ -566,9 +566,14 @@ function et_builder_wrap_dynamic_content( $post_id, $name, $value, $settings ) {
 function et_builder_filter_resolve_default_dynamic_content( $content, $name, $settings, $post_id, $context, $overrides ) {
 	global $shortname;
 
+	$post = get_post( $post_id );
+
+	if ( ! $post ) {
+		return $content;
+	}
+
 	$_       = ET_Core_Data_Utils::instance();
 	$def     = 'et_builder_get_dynamic_attribute_field_default';
-	$post    = get_post( $post_id );
 	$author  = get_userdata( $post->post_author );
 	$wrapped = false;
 
@@ -746,7 +751,7 @@ function et_builder_filter_resolve_default_dynamic_content( $content, $name, $se
 				$format = $custom_format;
 			}
 
-			$content = esc_html( date( $format ) );
+			$content = esc_html( date_i18n( $format ) );
 			break;
 
 		case 'post_link_url':
@@ -806,6 +811,12 @@ add_filter( 'et_builder_resolve_dynamic_content', 'et_builder_filter_resolve_def
  * @return string
  */
 function et_builder_filter_resolve_custom_field_dynamic_content( $content, $name, $settings, $post_id, $context, $overrides ) {
+	$post = get_post( $post_id );
+
+	if ( ! $post ) {
+		return $content;
+	}
+
 	$fields = et_builder_get_dynamic_content_fields( $post_id, $context );
 
 	if ( empty( $fields[ $name ]['meta_key'] ) ) {

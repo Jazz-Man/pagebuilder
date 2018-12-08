@@ -422,7 +422,7 @@ class ET_Builder_Module_Field_TextShadow extends ET_Builder_Module_Field_Base {
 		$all_values            = $module->props;
 		$main_element_selector = $module->main_css_element;
 		// Use a different selector for plugin
-		$css_element = $this->is_plugin_active && isset( $font['css']['plugin_main'] ) ? 'css.plugin_main' : 'css.main';
+		$css_element = $this->is_plugin_active && isset( $font['css']['limited_main'] ) ? 'css.limited_main' : 'css.main';
 		// Use 'text_shadow' selector if defined, fallback to $css_element or default selector
 		$selector = $utils->array_get( $font, 'css.text_shadow', $utils->array_get( $font, $css_element, $main_element_selector ) );
 

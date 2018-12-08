@@ -293,6 +293,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		$hover_icon              = $this->props['hover_icon'];
 		$use_overlay             = $this->props['use_overlay'];
 		$animation_style         = $this->props['animation_style'];
+		$box_shadow_style        = $this->props['box_shadow_style'];
 
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
@@ -379,12 +380,22 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 			) );
 		}
 
+		$box_shadow_overlay_wrap_class = 'none' !== $box_shadow_style
+			? 'has-box-shadow-overlay'
+			: '';
+
+		$box_shadow_overlay_element = 'none' !== $box_shadow_style
+			? '<div class="box-shadow-overlay"></div>'
+			: '';
+
 		$output = sprintf(
-			'<span class="et_pb_image_wrap"><img src="%1$s" alt="%2$s"%3$s />%4$s</span>',
+			'<span class="et_pb_image_wrap %5$s">%6$s<img src="%1$s" alt="%2$s"%3$s />%4$s</span>',
 			esc_attr( $src ),
 			esc_attr( $alt ),
 			( '' !== $title_text ? sprintf( ' title="%1$s"', esc_attr( $title_text ) ) : '' ),
-			'on' === $is_overlay_applied ? $overlay_output : ''
+			'on' === $is_overlay_applied ? $overlay_output : '',
+			$box_shadow_overlay_wrap_class,
+			$box_shadow_overlay_element
 		);
 
 		if ( 'on' === $show_in_lightbox ) {
