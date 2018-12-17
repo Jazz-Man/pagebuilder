@@ -447,8 +447,14 @@
 							'paddingTop'
 						);
 
+						// Reset any inline padding-top.
 						$et_pb_first_row.css({
-							'paddingTop' : header_height
+							paddingTop: ''
+						});
+
+						$et_pb_first_row.css({
+							// Ignore the extra 58px added to header height previously.
+							'paddingTop' : 'calc(' + (header_height - 58) + 'px + ' + $et_pb_first_row.css('paddingTop') + ')'
 						});
 
 					} else {
@@ -748,7 +754,7 @@
 					} else {
 						// Pagebuilder ignores #main-content .container's fixed height and uses its row's padding
 						// Anticipate the use of custom section padding.
-						et_pb_first_row_padding_top = header_height + parseInt( $et_pb_first_row.css( 'paddingBottom' ) );
+						et_pb_first_row_padding_top = header_height + parseInt( $et_pb_first_row.css( 'paddingTop' ) );
 
 						// Save current styling for the next resize cycle
 						et_save_initial_page_container_style(

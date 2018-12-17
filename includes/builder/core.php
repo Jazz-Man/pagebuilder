@@ -2642,6 +2642,7 @@ function et_pb_register_posttypes() {
 		'show_ui'           => true,
 		'show_admin_column' => true,
 		'query_var'         => true,
+		'show_in_rest'      => true,
 	) );
 
 	$labels = array(
@@ -2664,6 +2665,7 @@ function et_pb_register_posttypes() {
 		'show_ui'           => true,
 		'show_admin_column' => true,
 		'query_var'         => true,
+		'show_in_rest'      => true,
 	) );
 }
 endif;

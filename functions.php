@@ -6944,7 +6944,6 @@ function et_divi_add_customizer_css() {
 		@media only screen and ( min-width: 981px ) {
 			<?php if ( 4 !== $section_padding ) { ?>
 				<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( $section_padding ); ?>% 0; }
-				<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
 				<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
 			<?php } ?>
 			<?php if ( 2 !== $row_padding ) { ?>
@@ -7046,7 +7045,6 @@ function et_divi_add_customizer_css() {
 			<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 ) ); ?>px 0; }
 			<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $section_padding / 100 ) ); ?>px 0; }
 			.single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper { padding-top: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 * 3 ) ); ?>px; }
-			<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> { padding-top: inherit; }
 			<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
 		}
 
@@ -7198,9 +7196,6 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( '.et_pb_section', false ); ?> {
 					padding: <?php echo esc_html( $tablet_section_height ); ?>px 0;
 				}
-				<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> {
-					padding-top: inherit;
-				}
 				<?php echo $css( '.et_pb_section.et_pb_fullwidth_section', false ); ?> {
 					padding: 0;
 				}
@@ -7291,9 +7286,6 @@ function et_divi_add_customizer_css() {
 			<?php if ( 50 !== $phone_section_height && $tablet_section_height !== $phone_section_height ) { ?>
 				<?php echo $css( '.et_pb_section', false ); ?> {
 					padding: <?php echo esc_html( $phone_section_height ); ?>px 0;
-				}
-				<?php echo $css( '.et_pb_section.et_pb_section_first', false ); ?> {
-					padding-top: inherit;
 				}
 				<?php echo $css( '.et_pb_section.et_pb_fullwidth_section', false ); ?> {
 					padding: 0;

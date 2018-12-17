@@ -200,7 +200,19 @@ class ET_Core_Portability {
 					wp_send_json_error();
 				}
 
-				$data = array( intval( $_POST['post'] ) => wp_kses_post( stripcslashes( $_POST['content'] ) ) );
+				$fields_validatation = array(
+					'ID' => 'intval',
+					// no post_content as the default case for no fields_validation will run it through perms based wp_kses_post, which is exactly what we want.
+				);
+
+				$post_data = array(
+					'post_content' => stripcslashes( $_POST['content'] ), // need to run this through stripcslashes() as thats what wp_kses_post() expects.
+					'ID'           => $_POST['post'],
+				);
+
+				$post_data = $this->validate( $post_data, $fields_validatation );
+
+				$data = array( $post_data['ID'] => $post_data['post_content'] );
 			}
 
 			if ( 'post_type' === $this->instance->type ) {
@@ -929,7 +941,7 @@ class ET_Core_Portability {
 				if ( isset( $fields_validation[$key] ) ) {
 					$data[$key] = call_user_func( $fields_validation[$key], $value );
 				} else {
-					if ( current_user_can( 'switch_themes' ) ) {
+					if ( current_user_can( 'unfiltered_html' ) ) {
 						$data[ $key ] = $value;
 					} else {
 						$data[ $key ] = wp_kses_post( $value );

@@ -1,3 +1,22 @@
+version 3.18.7 ( updated 12-13-2018 )
+- Fixes Project categories and tags not showing up in Gutenberg's sidebar.
+- Fixed first section Divi Builder controls sometimes being hidden by the Navbar.
+- Fixed Divi Builder not working when certain plugins scripts were loaded in the same page.
+- Fixed portability export to only sanitize content if needed according to current user's role.
+- Fixed the Visual Builder failing to load in some cases.
+- Fixed inconsistent padding-top for the first section on a page when a transparent header is used in the Visual Builder and in the front-end.
+	* core/components/Portability.php
+	* core/ui/utils/frames.js
+	* functions.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/scripts/builder.js
+	* js/custom.js
+
+version 3.18.6 ( updated 12-13-2018 )
+- Fixed a bug that caused the content areas of modules to crash in the Visual Builder in some situations. 
+
 version 3.18.5 ( updated 12-12-2018 )
 - Fixed Inline Editor closing issue when Settings Modal is opened in some cases.
 - Fixed broken builder rendering when preview mode shortcut is used really fast multiple times in visual builder.
