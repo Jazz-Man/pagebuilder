@@ -296,6 +296,9 @@ body.rtl .et-bfb-optin-cta__button {
   -webkit-font-smoothing: antialiased;
 }
 
+label[for="et_pb_layout-hide"] {
+  display: none;
+}
 
 @keyframes et_pb_fade_in_small {
   0% {

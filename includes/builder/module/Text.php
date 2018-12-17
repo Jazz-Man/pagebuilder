@@ -440,6 +440,15 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		return $fields;
 	}
 
+	function convert_embeds( $matches ) {
+		$pieces = explode( 'v=', $matches[1] );
+		return sprintf(
+			'<p><iframe width="1080" height="608" src="%s" allow="%s" allowfullscreen></iframe></p>',
+			sprintf( 'https://www.youtube.com/embed/%s', esc_attr( $pieces[1] ) ),
+			"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+		);
+	}
+
 	function render( $attrs, $content = null, $render_slug ) {
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
@@ -456,6 +465,13 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		$this->content = et_builder_replace_code_content_entities( $this->content );
 		// Un-autop converted GB block comments
 		$this->content = preg_replace( '/(<p>)?<!-- (\/)?divi:(.+?) (\/?)-->(<\/p>)?/', '<!-- $2divi:$3 $4-->', $this->content );
+
+		// Convert GB embeds to iframes
+		$this->content = preg_replace_callback(
+			'/<!-- divi:core-embed\/youtube {"url":"([^"]+)"[\s\S]+?<!-- \/divi:core-embed\/youtube -->/',
+			array( $this, 'convert_embeds' ),
+			$this->content
+		);
 
 		$video_background = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();

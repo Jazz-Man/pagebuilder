@@ -219,7 +219,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 			),
 			'gallery_orderby' => array(
 				'label'   => esc_html__( 'Order By', 'et_builder' ),
-				'type'    => ! $this->is_loading_vb_data() ? 'hidden' : 'select',
+				'type'    => $this->is_loading_bb_data() ? 'hidden' : 'select',
 				'options' => array(
 					''     => esc_html__( 'Default', 'et_builder' ),
 					'rand' => esc_html__( 'Random', 'et_builder' ),

@@ -137,14 +137,28 @@ add_filter( 'et_fb_app_preloader_class', 'et_bfb_app_preloader_class' );
 function et_builder_inject_preboot_script() {
 	$et_debug = defined( 'ET_DEBUG' ) && ET_DEBUG;
 	$is_debug = 'false';
+	$is_BFB   = 'false';
 
 	if ( $et_debug || DiviExtensions::is_debugging_extension() ) {
 		$is_debug = 'true';
 	}
 
+	if ( et_builder_bfb_enabled() ) {
+		$is_BFB = 'true';
+	}
+
 	$preboot_path   = ET_BUILDER_DIR . 'frontend-builder/assets/scripts/preboot.js';
 	$preboot_script = file_get_contents( $preboot_path );
 
-	echo "<script>var et_fb_preboot = {}; et_fb_preboot.debug = {$is_debug}; {$preboot_script}</script>";
+	echo "
+		<script>
+			var et_fb_preboot = { debug: {$is_debug}, is_BFB: {$is_BFB} };
+
+			// Disable Google Tag Manager
+			window.dataLayer = [{'gtm.blacklist': ['google', 'nonGoogleScripts', 'customScripts', 'customPixels', 'nonGooglePixels']}];
+
+			{$preboot_script}
+		</script>
+	";
 }
 add_action( 'wp_head', 'et_builder_inject_preboot_script', 0 );

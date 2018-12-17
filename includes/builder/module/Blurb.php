@@ -662,7 +662,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 			( '' !== $url
 				? sprintf(
 					'<a href="%1$s"%3$s>%2$s</a>',
-					esc_url( $url ),
+					esc_attr( $url ),
 					$image,
 					( 'on' === $url_new_window ? ' target="_blank"' : '' )
 				)

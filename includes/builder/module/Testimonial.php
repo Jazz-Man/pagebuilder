@@ -397,7 +397,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 			$portrait_image = sprintf(
 				'<div class="et_pb_testimonial_portrait" style="background-image: url(%1$s);">
 				</div>',
-				esc_url( $portrait_url )
+				esc_attr( $portrait_url )
 			);
 		}
 

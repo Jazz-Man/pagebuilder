@@ -1,3 +1,67 @@
+version 3.18.5 ( updated 12-12-2018 )
+- Fixed Inline Editor closing issue when Settings Modal is opened in some cases.
+- Fixed broken builder rendering when preview mode shortcut is used really fast multiple times in visual builder.
+- Fixed advanced select position and the select options being visually cut off.
+- Fixed settings bar to display properly in IE11.
+- Fixed YouTube videos added in Gutenberg not being shown in Builder.
+- Fixed missing Enable Classic Editor button on Divi Builder Plugin's option page.
+- Refresh page after builder content save.
+- Fixed unwanted ajax module updates in some cases.
+- Fixed Image Box Shadow rendering in Visual Builder.
+- Fixed ctrl + arrow left/right shortcut when Input field is focused in Settings Modal.
+- Prevents the Divi Builder metabox from being hidden.
+- Fixed unwanted page refresh when loading the Builder after a theme update.
+- Fixed Smush plugin style not being enqueued in its own admin page.
+- Fixed a bug where Divider Arrangement option of the Section was not working properly.
+- Fixed a rare case where some Divi Builder style were not being loaded.
+- Fixed incorrect builder dimension on new builder's wireframe mode while module is dragged or dropped.
+- Fixed visual appearance of the Blog module under The New Divi Builder.
+- Fixed a bug where dummy image of Testimonial module were not displayed.
+- Added fix for unclosed html tags in all integration fields.
+- Fixed a console error when user-agent is Googlebot.
+- Fixed an issue where unclosed HTML tags in footer could prevent Builder from working correctly.
+- Fixed a bug where custom image width and height were not working for Testimonial module.
+- Fixed a CSS bug for Top and Main Header when Boxed Layout is used with non-fixed, transparent Navigation.
+	* core/admin/js/common.js
+	* core/components/data/init.php
+	* core/ui/utils/frames.js
+	* epanel/custom_functions.php
+	* footer.php
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/bfb-template.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/functions.php
+	* includes/builder/module/Blurb.php
+	* includes/builder/module/Gallery.php
+	* includes/builder/module/Testimonial.php
+	* includes/builder/module/Text.php
+	* includes/builder/plugin-compat/wp-smushit.php
+	* includes/builder/styles/bb_bfb_common.css
+	* js/theme-customizer.js
+
+version 3.18.4 ( updated 12-10-2018 )
+- Improved support for media buttons in the TinyMCE control.
+- Fixed complex options copy/paste when some settings have no values.
+- Fixed incompatibility with Wordpress MU Domain Mapping plugin.
+- Prevent rendering Full Width Portfolio title in visual builder when the title is empty.
+- Fixed Divi Builder loading on Library pages.
+- Fixed an issue where the color picker script wasn't properly loaded with the Divi Builder.
+- Fixes builder not being correctly loaded under some circumstances.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/plugin-compat/wordpress-mu-domain-mapping.php
+	* includes/builder/scripts/builder.js
+
 version 3.18.3 ( updated 12-08-2018 )
 - Fixed the new Divi Builder Experience being stuck closed if the builder interface has been closed in the Classic Builder before switching.
 - Fixed Divi Extras Plugin which Crashes BFB & VB due to custom renderer attribute on its field which is not properly unset when populating static definition file.

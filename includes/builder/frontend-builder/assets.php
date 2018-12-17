@@ -296,7 +296,10 @@ function et_fb_enqueue_assets() {
 	// Search for additional bundles
 	$additional_bundles = array();
 	// CSS is now splitted as well.
-	foreach ( glob( ET_BUILDER_DIR . 'frontend-builder/build/bundle.*.{css,js}' , GLOB_BRACE ) as $chunk ) {
+	foreach ( array_merge(
+		glob( ET_BUILDER_DIR . 'frontend-builder/build/bundle.*.css' ),
+		glob( ET_BUILDER_DIR . 'frontend-builder/build/bundle.*.js' )
+	) as $chunk ) {
 		$additional_bundles[] = "{$app}/build/" . basename( $chunk );
 	}
 	// Pass bundle path and additional bundles to preload

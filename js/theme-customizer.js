@@ -2707,7 +2707,8 @@
 						'et_divi[et_pb_testimonial-portrait_width]',
 						'width',
 						'.et_pb_testimonial_portrait',
-						to
+						to,
+						true
 					);
 				} );
 			} );
@@ -2718,7 +2719,8 @@
 						'et_divi[et_pb_testimonial-portrait_height]',
 						'height',
 						'.et_pb_testimonial_portrait',
-						to
+						to,
+						true
 					);
 				} );
 			} );

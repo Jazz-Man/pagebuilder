@@ -2030,6 +2030,7 @@ if ( ! function_exists( 'et_builder_get_media_buttons' ) ) :
 function et_builder_get_media_buttons() {
 	ob_start();
 	remove_action( 'media_buttons', 'media_buttons' );
+	echo '<span class="et-fb-tinymce-media-buttons__spacer et-fb-tinymce-media-buttons__spacer--leading">' . esc_html__( 'Add Media', 'et_builder' ) . '</span>';
 	do_action( 'media_buttons' );
 	$legacy_filter = apply_filters( 'media_buttons_context', '' );
 	if ( $legacy_filter ) {
@@ -2039,6 +2040,7 @@ function et_builder_get_media_buttons() {
 		}
 		echo $legacy_filter;
 	}
+	echo '<span class="et-fb-tinymce-media-buttons__spacer et-fb-tinymce-media-buttons__spacer--trailing"><span>' . esc_html__( 'Visual', 'et_builder' ) . '</span><span>' . esc_html__( 'Text', 'et_builder' ) . '</span></span>';
 	add_action( 'media_buttons', 'media_buttons' );
 	return ob_get_clean();
 }

@@ -129,16 +129,16 @@ class ET_Builder_Block_Editor_Integration {
 					'placeholder' => array(
 						'block'  => array(
 							'title'       => esc_html__( 'Divi Builder', 'et_builder' ),
-							'description' => esc_html__( 'The Divi Builder is activated on this page. To edit your page using the builder, click the Launch The Divi Builder button.', 'et_builder' ),
+							'description' => esc_html__( 'The Divi Builder is activated on this page. To edit your page using the builder, click the Edit With The Divi Builder button.', 'et_builder' ),
 						),
 						'render' => array(
 							'title'   => array(
-								'new' => esc_html__( 'Build Your Page on the Front-End Using Divi', 'et_builder' ),
-								'old' => esc_html__( 'The Divi Builder Is Enabled', 'et_builder' ),
+								'new' => esc_html__( 'Build Your Layout Using Divi', 'et_builder' ),
+								'old' => esc_html__( 'This Layout Is Built With Divi', 'et_builder' ),
 							),
 							'divi'    => array(
 								'new' => esc_html__( 'Use Divi Builder', 'et_builder' ),
-								'old' => esc_html__( 'Launch The Divi Builder', 'et_builder' ),
+								'old' => esc_html__( 'Edit With The Divi Builder', 'et_builder' ),
 							),
 							'default' => esc_html__( 'Use Default Editor', 'et_builder' ),
 						),
@@ -255,7 +255,7 @@ class ET_Builder_Block_Editor_Integration {
 					__( 'Edit &#8220;%s&#8221; in Divi', 'et-builder' ),
 					_draft_or_post_title( $post->ID )
 				) ),
-				esc_html__( 'Edit With Divi Builder', 'et-builder' )
+				esc_html__( 'Edit With Divi', 'et-builder' )
 			),
 		);
 

@@ -2179,7 +2179,7 @@ function et_builder_email_maybe_migrate_accounts() {
 
 	$builder_options  = (array) get_option( 'et_pb_builder_options' );
 	$builder_migrated = isset( $builder_options[ $builder_migrated_key ] );
-	$divi_migrated    = et_get_option( $divi_migrated_key, false );
+	$divi_migrated    = false !== et_get_option( $divi_migrated_key, false );
 
 	$data_utils = ET_Core_Data_Utils::instance();
 	$migrations = array( 'builder' => $builder_migrated, 'divi' => $divi_migrated );

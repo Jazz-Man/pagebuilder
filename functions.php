@@ -6368,6 +6368,8 @@ function et_divi_add_customizer_css() {
 				max-width: <?php echo esc_html( $content_width ); ?>px;
 			}
 			.et_boxed_layout #page-container,
+			.et_boxed_layout.et_non_fixed_nav.et_transparent_nav #page-container #top-header,
+			.et_boxed_layout.et_non_fixed_nav.et_transparent_nav #page-container #main-header,
 			.et_fixed_nav.et_boxed_layout #page-container #top-header,
 			.et_fixed_nav.et_boxed_layout #page-container #main-header,
 			.et_boxed_layout #page-container .container,
@@ -7536,14 +7538,16 @@ function et_divi_add_customizer_css() {
 					'selector' 	=> '.et_pb_testimonial_portrait, .et_pb_testimonial_portrait:before',
 				),
 				array(
-					'type' 		=> 'width',
-					'key' 		=> 'portrait_width',
-					'selector' 	=> '.et_pb_testimonial_portrait',
+					'type'      => 'width',
+					'key'       => 'portrait_width',
+					'selector'  => '.et_pb_testimonial_portrait',
+					'important' => true,
 				),
 				array(
-					'type' 		=> 'height',
-					'key' 		=> 'portrait_height',
-					'selector' 	=> '.et_pb_testimonial_portrait',
+					'type'      => 'height',
+					'key'       => 'portrait_height',
+					'selector'  => '.et_pb_testimonial_portrait',
+					'important' => true,
 				),
 				array(
 					'type' 		=> 'font-style',
@@ -8478,11 +8482,11 @@ function et_pb_print_module_styles_css( $section = '', $settings = array() ) {
 						break;
 
 					case 'width':
-						printf( "%s { width: %spx; }\n", esc_html( $selector ), esc_html( $value ) );
+						printf( "%s { width: %spx%s; }\n", esc_html( $selector ), esc_html( $value ), $important );
 						break;
 
 					case 'height':
-						printf( "%s { height: %spx; }\n", esc_html( $selector ), esc_html( $value ) );
+						printf( "%s { height: %spx%s; }\n", esc_html( $selector ), esc_html( $value ), $important );
 						break;
 
 					case 'padding':

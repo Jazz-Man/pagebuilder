@@ -1034,7 +1034,7 @@ class ET_Builder_Element {
 
 			// Unset renderer to avoid errors in VB because of errors in 3rd party plugins
 			// BB compat. Still need this data, so leave it for BB
-			if ( self::is_loading_vb_data() && isset( $this->fields_unprocessed[ $field_name ]['renderer'] ) ) {
+			if ( ( self::is_loading_vb_data() || et_fb_is_enabled() ) && isset( $this->fields_unprocessed[ $field_name ]['renderer'] ) ) {
 				unset( $this->fields_unprocessed[ $field_name ]['renderer'] );
 			}
 
@@ -1071,7 +1071,16 @@ class ET_Builder_Element {
 	 * @return bool
 	 */
 	protected function is_loading_vb_data() {
-		return isset( $_POST['action'] ) && 'et_fb_retrieve_builder_data' === $_POST['action']; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		return isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'et_fb_retrieve_builder_data', 'et_fb_update_builder_assets' ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+	}
+
+	/**
+	 * Determine if current request is BB Data Request by checking $_POST['action'] value
+	 *
+	 * @return bool
+	 */
+	protected function is_loading_bb_data() {
+		return isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'et_pb_get_backbone_templates') ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 	}
 
 	private function register_post_type( $post_type ) {

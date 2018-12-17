@@ -18,24 +18,6 @@
 		document.documentElement.className = 'js';
 	</script>
 
-	<script>
-		if (window.top && 'undefined' !== typeof MutationObserver) {
-			var observer = new MutationObserver(function(mutations) {
-				for (var i = 0, len = mutations.length; i < len; i++) {
-					for (var j = 0, len2 = mutations[i].addedNodes.length; j < len2; j++) {
-						var node = mutations[i].addedNodes[j];
-						
-						if ('LINK' === node.nodeName && 0 === node.href.indexOf('blob:')) {
-							window.top.jQuery('head').append(jQuery(node).clone());
-						}
-					}
-				}
-			});
-
-			observer.observe(document.head, { childList: true });
-		}
-	</script>
-
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class(); ?>>

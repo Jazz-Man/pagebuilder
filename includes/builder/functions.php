@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.18.2' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.18.5' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2499,6 +2499,7 @@ function et_pb_edit_export_query_filter( $query ) {
 function et_pb_setup_theme(){
 	add_action( 'add_meta_boxes', 'et_pb_add_custom_box', 10, 2 );
 	add_action( 'add_meta_boxes', 'et_builder_prioritize_meta_box', 999999 );
+	add_filter( 'hidden_meta_boxes', 'et_pb_hidden_meta_boxes');
 }
 add_action( 'init', 'et_pb_setup_theme', 11 );
 
@@ -2826,9 +2827,9 @@ function et_pb_before_main_editor( $post ) {
 	// Add button only if current user is allowed to use it otherwise display placeholder with all required data
 	if ( et_pb_is_allowed( 'divi_builder_control' ) ) {
 		$buttons = sprintf('<a href="#" id="et_pb_toggle_builder" data-builder="%2$s" data-editor="%3$s" class="button button-primary button-large%4$s%5$s">%1$s</a>',
-			( $is_builder_used ? esc_html__( 'Switch Back To Standard Editor', 'et_builder' ) : esc_html__( 'Use The Divi Builder', 'et_builder' ) ),
+			( $is_builder_used ? esc_html__( 'Return To Standard Editor', 'et_builder' ) : esc_html__( 'Use The Divi Builder', 'et_builder' ) ),
 			esc_html__( 'Use The Divi Builder', 'et_builder' ),
-			esc_html__( 'Switch Back To Standard Editor', 'et_builder' ),
+			esc_html__( 'Return To Standard Editor', 'et_builder' ),
 			( $is_builder_used ? ' et_pb_builder_is_used' : '' ),
 			( $builder_always_enabled ? ' et_pb_hidden' : '' )
 		);
@@ -2953,7 +2954,7 @@ function et_pb_admin_scripts_styles( $hook ) {
 
 			// BFB loads builder modal outside the iframe using react portal. external scripts
 			// that is used on modal needs to be enqueued
-			wp_register_script( 'wp-color-picker-alpha', get_template_directory_uri() . '/includes/builder/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ) );
+			wp_register_script( 'wp-color-picker-alpha', ET_BUILDER_URI . '/scripts/ext/wp-color-picker-alpha.min.js', array( 'jquery', 'wp-color-picker' ) );
 			wp_localize_script( 'wp-color-picker-alpha', 'et_pb_color_picker_strings', apply_filters( 'et_pb_color_picker_strings_builder', array(
 				'legacy_pick'    => esc_html__( 'Select', 'et_builder' ),
 				'legacy_current' => esc_html__( 'Current Color', 'et_builder' ),
@@ -3704,6 +3705,14 @@ function et_pb_metabox_scripts() {
 			'is_third_party_post_type' => et_builder_is_post_type_custom($typenow) ? 'yes' : 'no',
 		));
 	}
+}
+
+function et_pb_hidden_meta_boxes( $hidden ) {
+	$found = array_search( 'et_pb_layout', $hidden );
+	if ( false !== $found ) {
+		unset( $hidden[ $found ] );
+	}
+	return $hidden;
 }
 
 function et_pb_add_custom_box( $post_type, $post ) {
@@ -8962,7 +8971,7 @@ endif;
  * @return void
  */
 function et_pb_maybe_flush_3_0_rewrite_rules() {
-	et_builder_maybe_flush_rewrite_rules( '3_0_flush_rewrite_rules_2' );
+	et_builder_maybe_flush_rewrite_rules( '3_0_flush_rewrite_rules_' . ET_BUILDER_PRODUCT_VERSION );
 }
 add_action( 'init', 'et_pb_maybe_flush_3_0_rewrite_rules', 9 );
 
