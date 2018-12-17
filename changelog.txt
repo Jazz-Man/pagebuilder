@@ -1,7 +1,20 @@
-version 3.18.2 ( updated 12-07-2018 )
-- Fixed compatibility issue with older versions of WordPress. 
+version 3.18.3 ( updated 12-08-2018 )
+- Fixed the new Divi Builder Experience being stuck closed if the builder interface has been closed in the Classic Builder before switching.
+- Fixed Divi Extras Plugin which Crashes BFB & VB due to custom renderer attribute on its field which is not properly unset when populating static definition file.
+- Fixed "Load Layout" Modal position calculation when Page Settings Bar is on top.
+- Fixed VB top margin calculation in various cases with snapped modal.
+- Fixed Content Area overflow by Bottom snapped Settings Modal.
+- Fixed transitions of the navigation tabs of the Tab Module while switching to hover mode and back in Visual Builder.
+- Fix a PHP error that occurred when loading the Divi Builder.
+- Fixed PHP warning regarding use on continue inside of switch statement.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/frontend-builder/bundle.js
 	* includes/builder/functions.php
-	
+
+version 3.18.2 ( updated 12-07-2018 )
+- Fixed issues with the currently broken WordPress 5.1 beta build that was affecting some customers.
+	* includes/builder/functions.php
+
 version 3.18.1 ( updated 12-06-2018 )
 - Fixed BFB not loading when https was used in backend but not in frontend.
 - Fixed the issue when changes of the Tab Font Size or Tab Line Height options of the Tab Module did not displayed within Visual Builder in some cases.

@@ -15,19 +15,23 @@
   background-color: transparent;
   margin-top: 0;
 }
-#et_pb_layout.closed .inside {
+
+body:not(.et-db) #et_pb_layout.closed .inside {
   display: none;
 }
+
 #et_pb_layout .hndle {
   -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 }
+
 #et_pb_layout.postbox #et_pb_main_container_right_click_overlay {
   box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
   background-color: white;
   border-radius: 3px;
 }
+
 #et_pb_layout.postbox {
   /*color: transparent;*/
   border: none !important;
