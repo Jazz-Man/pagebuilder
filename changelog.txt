@@ -1,4 +1,32 @@
+version 3.19.1 ( updated 12-26-2018 )
+- Fixed unwanted z-index issue after module is animated.
+- Fixed a bug where Reset Advanced Styles action were not resetting Custom CSS fields.
+- Fixed CSS for Login and Email Optin module layout in Specialty section.
+- Fixed a bug where Blurb module circle icon became square if font size is big.
+- Fixed Dynamic Content being disabled when module styles are reset.
+- Fixed undraggable module items' drag and drop on settings modal in Firefox.
+- Fixed visual builder's incorrect drag handle position when dragging section/row/module which has custom width.
+- Fixed incorrect builder top margin when admin bar is disabled.
+- Fixed unwanted changed row z-index positioning due to recent section-divider related fix.
+- Removed unwanted margin on visual builder of post post-type in RTL layout.
+- Fixed Select Menu position when the admin bar isn't present on the page.
+- Fixed Go To Item list being updated after editing page.
+- Added quick actions modal launch keyboard shortcut into help modal.
+- Fixed go to action not scrolled to the right element when the page has been scrolled manually.
+- Fixed Visual Builder loading with "crm.zoho.com" script on page.
+- Fixed Integration Code sometimes being altered when including scripts.
+	* core/components/data/ScriptReplacer.php
+	* core/components/data/init.php
+	* core/ui/utils/frames.js
+	* includes/builder/frontend-builder/assets/css/fb-top-window.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-style.less
+
 version 3.19 ( updated 12-20-2018 )
+- Added Quick Access feature which allows users to perform and access builder actions and settings respectively, from a single point of entry. This entry point is a searchable modal triggered by a keyboard shortcut: shift + space.
 - Fixed a case where 3rd party faulty code could prevent the Visual Builder from loading.
 - Fixed Landing Page plugin compatibility.
 - Added missing label for image field in Image module.

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -9402,6 +9402,13 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 			'toggle_snap' => array(
 				'kbd'  => array( 'super', array( 'left', 'right' ) ),
 				'desc' => esc_html__( 'Snap Modal Left / Right', 'et_builder' ),
+				'on' => array(
+					'fb',
+				),
+			),
+			'quick_actions' => array(
+				'kbd'  => array( 'shift', 'space' ),
+				'desc' => esc_html__( 'Quick Actions', 'et_builder' ),
 				'on' => array(
 					'fb',
 				),

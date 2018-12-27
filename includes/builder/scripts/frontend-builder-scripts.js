@@ -4332,6 +4332,13 @@
 					'opacity'                   : '',
 					'transform'                 : ''
 				});
+
+				// Prevent animation module with no explicit position property to be incorrectly positioned
+				// after animation is clomplete and animation classname is removed because animation classname has
+				// animation-name property which gives pseudo correct z-index.
+				if ('static' === $element.css('position')) {
+					$element.addClass('et_had_animation');
+				}
 			}
 
 			function et_remove_animation_data( $element ) {

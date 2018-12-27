@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.19
+Version: 3.19.1
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -13291,10 +13291,13 @@ span.comment_date {
 /* Containers */
 .et_pb_row {
 	position: relative;
-	z-index: 5;
 	width: 80%;
 	max-width: 1080px;
 	margin: auto;
+}
+
+.section_has_divider .et_pb_row {
+	z-index: 5;
 }
 
 .et_pb_fullwidth_section .et_pb_row {
@@ -13475,9 +13478,9 @@ p.et_pb_gallery_caption {
 /* Blurb Module */
 .et-pb-icon-circle {
 	padding: 25px;
-	-webkit-border-radius: 100px;
-	-moz-border-radius: 100px;
-	border-radius: 100px;
+	-webkit-border-radius: 100%;
+	-moz-border-radius: 100%;
+	border-radius: 100%;
 	font-size: 48px;
 }
 
@@ -13547,9 +13550,6 @@ p.et_pb_gallery_caption {
 .et_pb_blurb_position_left .et-pb-icon-circle,
 .et_pb_blurb_position_right .et-pb-icon-circle {
 	padding: 8px;
-	-webkit-border-radius: 32px;
-	-moz-border-radius: 32px;
-	border-radius: 32px;
 	font-size: 16px;
 }
 
@@ -15019,12 +15019,12 @@ p.et_pb_gallery_caption {
 	flex-direction: column;
 }
 
-.et_pb_column_4_4 > .et_pb_newsletter_layout_left_right,
-.et_pb_column_4_4 > .et_pb_newsletter_layout_right_left,
-.et_pb_column_3_4 > .et_pb_newsletter_layout_left_right,
-.et_pb_column_3_4 > .et_pb_newsletter_layout_right_left,
-.et_pb_column_2_3 > .et_pb_newsletter_layout_left_right,
-.et_pb_column_2_3 > .et_pb_newsletter_layout_right_left {
+.et_pb_column_4_4:not(.et_pb_column_inner) > .et_pb_newsletter_layout_left_right,
+.et_pb_column_4_4:not(.et_pb_column_inner) > .et_pb_newsletter_layout_right_left,
+.et_pb_column_3_4:not(.et_pb_column_inner) > .et_pb_newsletter_layout_left_right,
+.et_pb_column_3_4:not(.et_pb_column_inner) > .et_pb_newsletter_layout_right_left,
+.et_pb_column_2_3:not(.et_pb_column_inner) > .et_pb_newsletter_layout_left_right,
+.et_pb_column_2_3:not(.et_pb_column_inner) > .et_pb_newsletter_layout_right_left {
 	flex-direction: row;
 }
 
@@ -15049,26 +15049,26 @@ p.et_pb_gallery_caption {
 	padding: 0;
 }
 
-.et_pb_column_4_4 .et_pb_newsletter_form,
-.et_pb_column_3_4 .et_pb_newsletter_form,
-.et_pb_column_2_3 .et_pb_newsletter_form {
-	padding-left: 25px;
+.et_pb_column_4_4:not(.et_pb_column_inner) > .et_pb_newsletter,
+.et_pb_column_3_4:not(.et_pb_column_inner) > .et_pb_newsletter,
+.et_pb_column_2_3:not(.et_pb_column_inner) > .et_pb_newsletter {
+	display: flex;
+
+	align-items: center;
 }
 
-.et_pb_column_4_4 > .et_pb_newsletter .et_pb_newsletter_description,
-.et_pb_column_3_4 > .et_pb_newsletter .et_pb_newsletter_description,
-.et_pb_column_2_3 > .et_pb_newsletter .et_pb_newsletter_description {
+.et_pb_column_4_4:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_description,
+.et_pb_column_3_4:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_description,
+.et_pb_column_2_3:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_description {
 	margin-bottom: 0;
 
 	align-self: start;
 }
 
-.et_pb_column_4_4 > .et_pb_newsletter,
-.et_pb_column_3_4 > .et_pb_newsletter,
-.et_pb_column_2_3 > .et_pb_newsletter {
-	display: flex;
-
-	align-items: center;
+.et_pb_column_4_4:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_form,
+.et_pb_column_3_4:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_form,
+.et_pb_column_2_3:not(.et_pb_column_inner) > .et_pb_newsletter .et_pb_newsletter_form {
+	padding-left: 25px;
 }
 
 /* Tabs Module */
@@ -21694,6 +21694,10 @@ article.et_pb_has_overlay {
 .et_animated.infinite {
 	-webkit-animation-iteration-count: infinite;
 	animation-iteration-count: infinite;
+}
+
+.et_had_animation {
+	position: relative;
 }
 
 /* Fade: Center */
