@@ -40,7 +40,7 @@ class ET_Builder_Classic_Editor {
 	/**
 	 * Get the class instance.
 	 *
-	 * @since ??
+	 * @since 3.18
 	 *
 	 * @return ET_Builder_Classic_Editor
 	 */
@@ -58,7 +58,7 @@ class ET_Builder_Classic_Editor {
 	 * to load Classic Editor on Gutenberg / Block Editor (WordPress 5.0). All conditiononal Block Editor
 	 * loader based on query string has been removed.
 	 *
-	 * @since ??
+	 * @since 3.18
 	 */
 	public function register_actions() {
 		$gutenberg    = has_filter( 'replace_editor', 'gutenberg_init' );

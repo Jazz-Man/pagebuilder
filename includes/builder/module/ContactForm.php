@@ -540,6 +540,9 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		// Remove automatically added classname
 		$this->remove_classname( $render_slug );
 
+		// Contact form should always have the ID. Use saved ID or generate automatically
+		$module_id = '' !== $this->module_id(false) ? $this->module_id(false) : 'et_pb_contact_form_' . $et_pb_contact_form_num;
+
 		$output = sprintf( '
 			<div id="%4$s" class="%5$s" data-form_unique_num="%6$s"%7$s>
 				%9$s
@@ -552,7 +555,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 			( '' !== $title ? sprintf( '<%2$s class="et_pb_contact_main_title">%1$s</%2$s>', et_core_esc_previously( $title ), et_pb_process_header_level( $header_level, 'h1' ) ) : '' ),
 			$et_error_message,
 			$form,
-			esc_attr( 'et_pb_contact_form_' . $et_pb_contact_form_num ),
+			esc_attr( $module_id ),
 			$this->module_classname( $render_slug ),
 			esc_attr( $et_pb_contact_form_num ),
 			'on' === $use_redirect && '' !== $redirect_url ? sprintf( ' data-redirect_url="%1$s"', esc_attr( $redirect_url ) ) : '',

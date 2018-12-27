@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Compatibility for Gutenberg
  *
- * @since ?? Added support for WP 5.0
+ * @since 3.18 Added support for WP 5.0
  * @since 3.10.2
  */
 class ET_Builder_Block_Editor_Integration {

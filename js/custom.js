@@ -790,6 +790,13 @@
 					}).appendTo('head');
 				}
 
+				// If the first visible (visibility is significant for for cached split test) section has parallax background,
+				// trigger parallax height resize so the parallax location isn't correctly rendered due to addition of first
+				// section/module margin-top/padding-top which is needed for transparent primary nav
+				if ($('.et_pb_section:visible:first').hasClass('et_pb_section_parallax')) {
+					$(window).trigger('resize.etTrueParallaxBackground');
+				}
+
 			} else if( et_is_fixed_nav ) {
 
 				$main_container_wrapper.css( 'paddingTop', header_height );

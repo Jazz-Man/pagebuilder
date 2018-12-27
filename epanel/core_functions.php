@@ -856,7 +856,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 
 							} elseif ( 'checkboxes' === $value['type'] ) {
 
-								if ( 'sanitize_text_field' === $value['value_sanitize_function'] ) {
+								if ( isset( $value['value_sanitize_function'] ) && 'sanitize_text_field' === $value['value_sanitize_function'] ) {
 									// strings
 									$et_option_new_value = array_map( 'sanitize_text_field', stripslashes_deep( $_POST[ $value['id'] ] ) );
 								} else {

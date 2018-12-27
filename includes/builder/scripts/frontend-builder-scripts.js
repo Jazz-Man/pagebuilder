@@ -4970,8 +4970,6 @@
 
 
 			window.debounced_et_apply_builder_css_parallax = et_pb_debounce(et_apply_builder_css_parallax, 100);
-			window.debounced_et_parallax_set_height    = et_pb_debounce(et_parallax_set_height, 100);
-			window.debounced_et_apply_parallax         = et_pb_debounce(et_apply_parallax, 100);
 
 			window.et_pb_parallax_init = function($this_parallax) {
 				var $this_parent = $this_parallax.parent();
@@ -4993,7 +4991,7 @@
 				$.proxy(et_apply_parallax, $this_parent)();
 
 				$(window).on('scroll.etTrueParallaxBackground', $.proxy(et_apply_parallax, $this_parent));
-				$(window).on('resize.etTrueParallaxBackground', $.proxy(window.debounced_et_parallax_set_height, $this_parent));
+				$(window).on('resize.etTrueParallaxBackground', $.proxy(et_pb_debounce(et_parallax_set_height, 100), $this_parent));
 				$(window).on('resize.etTrueParallaxBackground', $.proxy(et_pb_debounce(et_apply_parallax, 100), $this_parent));
 
 				$this_parent.find('.et-learn-more .heading-more').click(function() {

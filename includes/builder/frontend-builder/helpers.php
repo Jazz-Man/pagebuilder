@@ -1035,9 +1035,10 @@ function et_fb_get_static_backend_helpers($post_type) {
 
 			),
 		),
-		'knownShortcodeWrappers'           => et_fb_known_shortcode_wrappers(),
-		'acceptableCSSStringValues'    => et_builder_get_acceptable_css_string_values( 'all' ),
-		'customModuleCredits' => ET_Builder_Element::get_custom_modules_credits( $post_type ),
+		'knownShortcodeWrappers'    => et_fb_known_shortcode_wrappers(),
+		'acceptableCSSStringValues' => et_builder_get_acceptable_css_string_values( 'all' ),
+		'customModuleCredits'       => ET_Builder_Element::get_custom_modules_credits( $post_type ),
+		'ignoreAdminBarClickIds'    => apply_filters( 'et_fb_ignore_adminbar_click_ids', array() ),
 	);
 
 	$moduolesI10n = ET_Builder_Element::get_modules_i10n( $post_type );

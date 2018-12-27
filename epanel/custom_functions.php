@@ -15,8 +15,14 @@ add_theme_support( 'automatic-feed-links' );
 
 add_action( 'init', 'et_activate_features' );
 
-function et_activate_features(){
-	define( 'ET_SHORTCODES_VERSION', et_get_theme_version() );
+function et_activate_features() {
+	if ( ! defined( 'ET_SHORTCODES_VERSION' ) ) {
+		define( 'ET_SHORTCODES_VERSION', et_get_theme_version() );
+	}
+
+	if ( ! defined( 'ET_SHORTCODES_DIR' ) ) {
+		define( 'ET_SHORTCODES_DIR', get_template_directory_uri() . '/epanel/shortcodes' );
+	}
 
 	/* activate shortcodes */
 	require_once TEMPLATEPATH . '/epanel/shortcodes/shortcodes.php';
@@ -534,6 +540,7 @@ if ( ! function_exists( 'print_thumbnail' ) ) {
 		if ( empty( $post ) ) global $post, $et_theme_image_sizes;
 
 		$output = '';
+		$raw = false;
 
 		$et_post_id = ! empty( $et_post_id ) ? (int) $et_post_id : $post->ID;
 
@@ -561,17 +568,24 @@ if ( ! function_exists( 'print_thumbnail' ) ) {
 			$allow_new_thumb_method = !$external_source && $new_method && empty( $cropPosition );
 
 			if ( $allow_new_thumb_method && !empty( $thumbnail ) ) {
-				$et_crop = get_post_meta( $post->ID, 'et_nocrop', true );
-				$et_crop = empty( $et_crop ) ? true : false;
-				$new_method_thumb = et_resize_image( et_path_reltoabs( $thumbnail ), $width, $height, $et_crop );
-				if ( is_wp_error( $new_method_thumb ) ) $new_method_thumb = '';
+				if ( 'data:image' === substr( $thumbnail, 0, 10 ) ) {
+					$new_method_thumb = $thumbnail;
+					$raw              = true;
+				} else {
+					$et_crop          = get_post_meta( $post->ID, 'et_nocrop', true );
+					$et_crop          = empty( $et_crop ) ? true : false;
+					$new_method_thumb = et_resize_image( et_path_reltoabs( $thumbnail ), $width, $height, $et_crop );
+					if ( is_wp_error( $new_method_thumb ) ) {
+						$new_method_thumb = '';
+					}
+				}
 			}
 
 			$thumbnail = $new_method_thumb;
 		}
 
 		if ( false === $forstyle ) {
-			$output = '<img src="' . esc_url( $thumbnail ) . '"';
+			$output = '<img src="' . ( $raw ? $thumbnail : esc_url( $thumbnail ) ) . '"';
 
 			if ( ! empty( $class ) ) $output .= " class='" . esc_attr( $class ) . "' ";
 
@@ -1567,7 +1581,7 @@ function et_add_fullwidth_body_class( $classes ){
 	return $classes;
 }
 
-function et_add_responsive_shortcodes_css(){
+function et_add_responsive_shortcodes_css() {
 	global $shortname;
 
 	if ( 'on' === et_get_option( $shortname . '_responsive_shortcodes', 'on' ) )

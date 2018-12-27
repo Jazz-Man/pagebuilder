@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.18.7' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.18.9' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -8702,11 +8702,12 @@ function et_fb_process_shortcode( $content, $parent_address = '', $global_parent
 
 	// Find all registered tag names in $content.
 	preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $content, $matches );
-	$tagnames = array_intersect( array_keys( $shortcode_tags ), $matches[1] );
+	// Only need unique tag names
+	$unique_matches = array_unique( $matches[1] );
 
-	$pattern = get_shortcode_regex( $matches[1] );
-
-	$content = preg_match_all("/$pattern/", $content, $matches, PREG_SET_ORDER);
+	$tagnames       = array_intersect( array_keys( $shortcode_tags ), $unique_matches );
+	$pattern        = get_shortcode_regex( $unique_matches );
+	$content        = preg_match_all( "/$pattern/", $content, $matches, PREG_SET_ORDER );
 
 	$_matches = array();
 	$_index = 0;

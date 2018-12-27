@@ -222,15 +222,15 @@ function et_core_fix_unclosed_html_tags( $content ) {
 		'<html><head>%s</head><body>%s</body></html>',
 		// Use WP charset
 		sprintf( '<meta http-equiv="content-type" content="text/html; charset=%s" />', get_bloginfo( 'charset' ) ),
-		// Wrap content within a container to force a single node
-		sprintf( '<div>%s</div>', $content )
+		$content
 	) );
 
-	// Grab fixed content and remove its container
-	return preg_replace(
-		'|<div>([\s\S]+?)</div>|',
-		'$1',
-		$doc->saveHTML( $doc->getElementsByTagName( 'body' )->item( 0 )->childNodes->item( 0 ) )
-	);
+	if ( preg_match( '|<body>([\s\S]+)</body>|', $doc->saveHTML(), $matches) ) {
+		// Return fixed content
+		return $matches[1];
+	}
+
+	// Something went wrong with the fixing, return original content
+	return $content;
 }
 endif;

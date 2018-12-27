@@ -10727,7 +10727,7 @@ class ET_Builder_Element {
 	/**
 	 * Get list of modules that has rich content option
 	 *
-	 * @since ??
+	 * @since 3.18
 	 *
 	 * @return array
 	 */

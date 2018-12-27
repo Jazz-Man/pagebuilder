@@ -4540,7 +4540,7 @@ function et_load_unminified_styles() {
  * Enable / Disable classic editor based on saved option in Theme Options page.
  * Only applies to versions of WordPress that have the Gutenberg editor.
  *
- * @since ??
+ * @since 3.18
  *
  * @param bool
  *

@@ -25,7 +25,7 @@ class ET_Builder_Plugin_Compat_Advanced_Custom_Fields extends ET_Builder_Plugin_
 	/**
 	 * Get the currently activated ACF plugin id as the FREE and PRO versions are separate plugins.
 	 *
-	 * @since ??
+	 * @since 3.18
 	 *
 	 * @return string
 	 */

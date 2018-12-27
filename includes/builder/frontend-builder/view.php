@@ -51,6 +51,31 @@ function et_builder_maybe_include_bfb_template( $template ) {
 }
 add_filter( 'template_include', 'et_builder_maybe_include_bfb_template', 99 );
 
+
+function et_fb_dynamic_sidebar_ob_start() {
+	global $et_fb_dynamic_sidebar_buffering;
+
+	if ( $et_fb_dynamic_sidebar_buffering ) {
+		echo force_balance_tags( ob_get_clean() );
+	}
+
+	$et_fb_dynamic_sidebar_buffering = true;
+
+	ob_start();
+}
+add_action( 'dynamic_sidebar', 'et_fb_dynamic_sidebar_ob_start' );
+
+function et_fb_dynamic_sidebar_after_ob_get_clean() {
+	global $et_fb_dynamic_sidebar_buffering;
+
+	if ( $et_fb_dynamic_sidebar_buffering ) {
+		echo force_balance_tags( ob_get_clean() );
+
+		$et_fb_dynamic_sidebar_buffering = false;
+	}
+}
+add_action( 'dynamic_sidebar_after', 'et_fb_dynamic_sidebar_after_ob_get_clean' );
+
 /**
  * Added frontend builder assets.
  * Note: loading assets on head is way too early, computedVars returns undefined on header.
