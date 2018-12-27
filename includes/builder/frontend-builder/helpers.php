@@ -192,6 +192,10 @@ function et_fb_get_dynamic_backend_helpers() {
 			'logoutUrlRedirect'        => esc_url( wp_logout_url( $current_url ) ),
 			'themeOptionsUrl'          => esc_url( et_pb_get_options_page_link() ),
 			'builderPreviewStyle'      => ET_BUILDER_URI . '/styles/preview.css',
+			'themeCustomizerUrl'       => et_pb_is_allowed( 'theme_customizer' ) ? add_query_arg( array( 'et_customizer_option_set' => 'theme', 'url' => urlencode( $current_url ) ), admin_url( 'customize.php' ) ) : false,
+			'moduleCustomizerUrl'      => et_pb_is_allowed( 'theme_customizer' ) ? add_query_arg( array( 'et_customizer_option_set' => 'module', 'url' => urlencode( $current_url ) ), admin_url( 'customize.php' ) ) : false,
+			'roleEditorUrl'            => current_user_can( 'manage_options' ) ? add_query_arg( array( 'page' => 'et_divi_role_editor' ), admin_url( 'admin.php' ) ) : false,
+			'manageLibraryUrl'         => current_user_can( 'manage_options' ) ? add_query_arg( array( 'post_type' => 'et_pb_layout' ), admin_url( 'edit.php' ) ) : false,
 		),
 		'defaults'                     => array(
 			'et_pb_countdown_timer' => array(
@@ -1909,7 +1913,7 @@ function et_fb_get_static_backend_helpers($post_type) {
 	foreach ( $i18n_files as $file ) {
 		$key = basename( $file, '.php' );
 
-		$helpers['i18n'][ $key ] = require $file;
+		$helpers['i18n'][ et_fb_camel_case( $key ) ] = require $file;
 	}
 
 	return $helpers;
@@ -1972,6 +1976,22 @@ function et_fb_fix_plugin_conflicts() {
 		define( 'DONOTCACHEPAGE', true );
 	}
 }
+endif;
+
+/**
+ * Convert string to camel case format.
+ *
+ * @param string $string Original string data.
+ * @param bool $separator String separator.
+ *
+ * @return string
+ */
+if ( ! function_exists( 'et_fb_camel_case' ) ) :
+	function et_fb_camel_case( $string, $separator = '-' ) {
+		$strings = explode( $separator, strtolower( $string ) );
+
+		return lcfirst( implode( '', array_map( 'ucwords', $strings ) ) );
+	}
 endif;
 
 /**

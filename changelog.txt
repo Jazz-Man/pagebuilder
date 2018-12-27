@@ -1,3 +1,33 @@
+version 3.19 ( updated 12-20-2018 )
+- Fixed a case where 3rd party faulty code could prevent the Visual Builder from loading.
+- Fixed Landing Page plugin compatibility.
+- Added missing label for image field in Image module.
+- Fixed Help Video popup position in some cases.
+- Fixed a Visual Builder issue where undo-ing a recently added Module via shortcuts could lead to an error.
+- Fixed an error that could sometimes show up in console when adding a Pricing Table Module.
+- Fixed Visual Builder not loading when the menu included unclosed HTML tags.
+- Fixed Visual Builder not loading when page included scripts using 'document.write'.
+- Fixed a compatibility issue with DiviEstate theme.
+- Prevent themes styles affecting builder wireframe mode.
+- Fixed broken page list when Piklist plugin is activated and there is a page set as static page via 'Dashboard > Settings > Reading'.
+- Fixed issues with unwanted empty "p" tags inside Inline editor in Firefox.
+- Removed unwanted extra padding from TinyMCE's toolbar icons when using Classic Editor.
+- Fixed a jQuery error that could occur on window resize when using a customized header.
+	* core/ui/utils/frames.js
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/i18n/quick-actions.php
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/functions.php
+	* includes/builder/module/Image.php
+	* includes/builder/plugin-compat/landing-pages.php
+	* includes/builder/styles/style.css
+	* js/custom.js
+
 version 3.18.9 ( updated 12-18-2018 )
 - Fixed Global preloader sometimes being visible when it should have not.
 - Fixed Inline Editor position when Vertical Menu is enabled.
@@ -67,7 +97,7 @@ version 3.18.7 ( updated 12-13-2018 )
 	* js/custom.js
 
 version 3.18.6 ( updated 12-13-2018 )
-- Fixed a bug that caused the content areas of modules to crash in the Visual Builder in some situations. 
+- Fixed a bug that caused the content areas of modules to crash in the Visual Builder in some situations.
 
 version 3.18.5 ( updated 12-12-2018 )
 - Fixed Inline Editor closing issue when Settings Modal is opened in some cases.

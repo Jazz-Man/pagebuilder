@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.18.9' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -788,6 +788,22 @@ function _et_fb_get_app_preferences_defaults() {
 			'type'    => 'string',
 			'default' => 'default',
 		),
+		'quick_actions_always_start_with' => array(
+			'type'    => 'string',
+			'default' => 'nothing',
+		),
+		'quick_actions_show_recent_queries' => array(
+			'type'    => 'string',
+			'default' => 'off',
+		),
+		'quick_actions_recent_queries' => array(
+			'type'    => 'string',
+			'default' => '',
+		),
+		'quick_actions_recent_category' => array(
+			'type'    => 'string',
+			'default' => '',
+		),
 		'modal_preference'       => array(
 			'type'    => 'string',
 			'default' => 'default',
@@ -1332,28 +1348,29 @@ function et_fb_ajax_save() {
 		wp_send_json_error();
 	}
 
-	$shortcode_data = json_decode( stripslashes( $_POST['modules'] ), true );
-	$layout_type = '';
+	$update = false;
 
-	if ( isset( $_POST['layout_type'] ) ) {
-		$layout_type = sanitize_text_field( $_POST['layout_type'] );
+	$layout_type = isset( $_POST['layout_type'] ) ? sanitize_text_field( $_POST['layout_type'] ) : '';
+
+	if ( ! isset( $_POST['skip_post_update'] ) ) {
+		$shortcode_data = json_decode( stripslashes( $_POST['modules'] ), true );
+	
+		if ( ! $built_for_type = get_post_meta( $post_id, '_et_pb_built_for_post_type', true ) ) {
+			update_post_meta( $post_id, '_et_pb_built_for_post_type', 'page' );
+		}
+	
+		$post_content = et_fb_process_to_shortcode( $shortcode_data, $_POST['options'], $layout_type );
+	
+		// Store a copy of the sanitized post content in case wpkses alters it since that
+		// would cause our check at the end of this function to fail.
+		$sanitized_content = sanitize_post_field( 'post_content', $post_content, $post_id, 'db' );
+	
+		$update = wp_update_post( array(
+			'ID'           => $post_id,
+			'post_content' => $post_content,
+			'post_status'  => sanitize_text_field( $_POST['options']['status'] ),
+		) );
 	}
-
-	if ( ! $built_for_type = get_post_meta( $post_id, '_et_pb_built_for_post_type', true ) ) {
-		update_post_meta( $post_id, '_et_pb_built_for_post_type', 'page' );
-	}
-
-	$post_content = et_fb_process_to_shortcode( $shortcode_data, $_POST['options'], $layout_type );
-
-	// Store a copy of the sanitized post content in case wpkses alters it since that
-	// would cause our check at the end of this function to fail.
-	$sanitized_content = sanitize_post_field( 'post_content', $post_content, $post_id, 'db' );
-
-	$update = wp_update_post( array(
-		'ID'           => $post_id,
-		'post_content' => $post_content,
-		'post_status'  => esc_attr( $_POST['options']['status'] ),
-	) );
 
 	// update Global modules with selective sync
 	if ( 'module' === $layout_type && isset( $_POST['unsyncedGlobalSettings'] ) && 'none' !== $_POST['unsyncedGlobalSettings'] ) {
@@ -1437,6 +1454,8 @@ function et_fb_ajax_save() {
 			'status'            => get_post_status( $update ),
 			'save_verification' => apply_filters( 'et_fb_ajax_save_verification_result', $saved_verification ),
 		) );
+	} else if( isset( $_POST['skip_post_update'] ) ) {
+		wp_send_json_success();
 	} else {
 		wp_send_json_error();
 	}
@@ -9189,7 +9208,7 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 				),
 			),
 			'module_lock' => array(
-				'kbd'  => array( 'l' ),
+				'kbd'  => array( 'super', 'l' ),
 				'desc' => esc_html__( 'Lock Module', 'et_builder' ),
 				'on' => array(
 					'fb',
@@ -9197,7 +9216,7 @@ function et_builder_get_shortcuts( $on = 'fb' ) {
 				),
 			),
 			'module_disable' => array(
-				'kbd'  => array( 'd' ),
+				'kbd'  => array( 'super', 'd' ),
 				'desc' => esc_html__( 'Disable Module', 'et_builder' ),
 				'on' => array(
 					'fb',
