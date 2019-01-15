@@ -219,7 +219,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 
 			$et_one_row_option_name = $et_theme_options_name . '_' . $option_name;
 		} else {
-			$option_value = get_option( $option_name );
+			$option_value = $force_default_value ? get_option( $option_name, $default_value ) : get_option( $option_name );
 		}
 
 		// option value might be equal to false, so check if the option is not set in the database

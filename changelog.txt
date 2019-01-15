@@ -1,3 +1,39 @@
+version 3.19.4 ( updated 01-07-2019 )
+- Fixed issue where using a empty code module would cause the page content to not display.
+- Unified Mapping For Copy Paste Styles.
+- Added extend styles for module child items.
+- Fixed a bug where disable item capability were not applied properly.
+- Fixed two places in our Nederlands (nl_NL) translation file where "height" was incorrectly translated "breedte" ("width").
+- Fixed a bug where excerpt field in Visual Builder Page Settings were not preserving HTML content.
+- Removed unwanted "Your Existing Pages" tab appear in the  layout library modal.
+- Fixed Extend Styles modal not resizing properly in some situations.
+- Fixed typo for "Find This" field description in Find & Replace modal.
+- Fixed broken default value on app settings builder in Divi Builder Plugin which is used on legacy theme which saved options not in a single row.
+- Prevent some Mailchimp integration scripts from breaking the Visual Builder.
+- Fixed save keyboard shortcut not working when editing content inside the Settings Modal text editor.
+- Fixed shift+W when typing inside Yoast fields.
+- Fixed a bug that would cause an error when editing content inline while Settings Modal was open.
+- Fixed Shop module rendering in some cases.
+- Fixed audio player controls styles on audio devices.
+- Fixed Responsive Styles for the Email Optin module.
+- Fixed Product Tour buttons highlighting animation on some steps.
+- Fixed unwanted 'p' tags adding into Code module when it's inside the Global Row or Global Section.
+- Fixed incorrect page settings bar which is positioned vertically centered when settings_bar_location option value is not valid.
+- Fixed visual builder not being loaded on Divi Builder Plugin if wp_footer() action hook is not direct child of <body>.
+	* core/ui/utils/frames.js
+	* epanel/custom_functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/languages/nl_NL.mo
+	* includes/builder/languages/nl_NL.po
+	* includes/builder/module/Shop.php
+	* includes/builder/styles/frontend-builder-style.less
+
 version 3.19.3 ( updated 12-31-2018 )
 - Fixed incompatibility issue with some third party themes and plugins that caused the Visual Builder to fail to load with a "Cannot read property 'id' of undefined" error.
 - Fixed a bug that caused the 3rd page in the blog module not to load in some situations. 

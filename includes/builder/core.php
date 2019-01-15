@@ -5188,8 +5188,8 @@ function _et_pb_code_module_prep_content_regex_cb( $matches ) {
 }
 
 function et_pb_prep_code_module_for_wpautop( $content ) {
-	$content = preg_replace_callback('/\[et_pb_code.*?\](.*?)\[\/et_pb_code\]/mis', '_et_pb_code_module_prep_content_regex_cb', $content );
-	$content = preg_replace_callback('/\[et_pb_fullwidth_code.*?\](.*?)\[\/et_pb_fullwidth_code\]/mis', '_et_pb_code_module_prep_content_regex_cb', $content );
+	$content = preg_replace_callback('/\[et_pb_code(?:\s+[^\]]*)?\](.*?)\[\/et_pb_code\]/mis', '_et_pb_code_module_prep_content_regex_cb', $content );
+	$content = preg_replace_callback('/\[et_pb_fullwidth_code(?:\s+[^\]]*)?\](.*?)\[\/et_pb_fullwidth_code\]/mis', '_et_pb_code_module_prep_content_regex_cb', $content );
 
 	return $content;
 }

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.3' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.4' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -750,11 +750,21 @@ function et_fb_conditional_tag_params() {
 	return apply_filters( 'et_fb_conditional_tag_params', $conditional_tags );
 }
 
-function _et_fb_get_app_preferences_defaults() {
+function et_fb_app_preferences_settings() {
 	$app_preferences = array(
 		'settings_bar_location'  => array(
 			'type'    => 'string',
 			'default' => 'bottom',
+			'options' => array(
+				'top-left',
+				'top',
+				'top-right',
+				'right',
+				'bottom-right',
+				'bottom',
+				'bottom-left',
+				'left',
+			),
 		),
 		'builder_animation'      => array(
 			'type'    => 'bool',
@@ -771,10 +781,21 @@ function _et_fb_get_app_preferences_defaults() {
 		'event_mode'             => array(
 			'type'    => 'string',
 			'default' => 'hover',
+			'options' => array(
+				'hover' => esc_html__( 'Hover Mode' , 'et_builder' ),
+				'click' => esc_html__( 'Click Mode' , 'et_builder' ),
+				'grid'  => esc_html__( 'Grid Mode' , 'et_builder' ),
+			),
 		),
 		'view_mode'             => array(
 			'type'    => 'string',
 			'default' => et_builder_bfb_enabled() ? 'wireframe' : 'desktop',
+			'options' => array(
+				'desktop'   => esc_html__( 'Desktop View' , 'et_builder' ),
+				'tablet'    => esc_html__( 'Tablet View' , 'et_builder' ),
+				'phone'     => esc_html__( 'Phone View' , 'et_builder' ),
+				'wireframe' => esc_html__( 'Wireframe View' , 'et_builder' ),
+			),
 		),
 		'hide_disabled_modules'  => array(
 			'type'    => 'bool',
@@ -783,10 +804,23 @@ function _et_fb_get_app_preferences_defaults() {
 		'history_intervals'      => array(
 			'type'    => 'int',
 			'default' => 1,
+			'options' => array(
+				'1'  => esc_html__( 'After Every Action' , 'et_builder' ),
+				'10' => esc_html__( 'After Every 10th Action' , 'et_builder' ),
+				'20' => esc_html__( 'After Every 20th Action' , 'et_builder' ),
+				'30' => esc_html__( 'After Every 30th Action' , 'et_builder' ),
+				'40' => esc_html__( 'After Every 40th Action' , 'et_builder' ),
+			),
 		),
 		'page_creation_flow'     => array(
 			'type'    => 'string',
 			'default' => 'default',
+			'options' => array(
+				'default'               => esc_html__( 'Give Me A Choice', 'et_builder' ),
+				'build_from_scratch'    => esc_html__( 'Build From Scratch', 'et_builder' ),
+				'choose_premade_layout' => esc_html__( 'Load Premade Layout', 'et_builder' ),
+				'clone_existing_page'   => esc_html__( 'Clone Existing Page', 'et_builder' ),
+			),
 		),
 		'quick_actions_always_start_with' => array(
 			'type'    => 'string',
@@ -807,6 +841,16 @@ function _et_fb_get_app_preferences_defaults() {
 		'modal_preference'       => array(
 			'type'    => 'string',
 			'default' => 'default',
+			'options' => array(
+				'default'    => esc_html__( 'Last Used Position', 'et_builder' ),
+				'minimum'    => esc_html__( 'Floating Minimum Size', 'et_builder' ),
+				'fullscreen' => esc_html__( 'Fullscreen', 'et_builder' ),
+				'left'       => esc_html__( 'Fixed Left Sidebar', 'et_builder' ),
+				'right'      => esc_html__( 'Fixed Right Sidebar', 'et_builder' ),
+				'bottom'     => esc_html__( 'Fixed Bottom Panel', 'et_builder' ),
+				// TODO, disabled until further notice (Issue #3930 & #5859)
+				// 'top'     => esc_html__( 'Fixed Top Panel', 'et_builder' ),
+			),
 		),
 		'modal_snap_location'    => array(
 			'type'    => 'string',
@@ -885,7 +929,7 @@ function et_fb_unsynced_preferences() {
 }
 
 function et_fb_app_preferences() {
-	$app_preferences = _et_fb_get_app_preferences_defaults();
+	$app_preferences = et_fb_app_preferences_settings();
 	$limited_prefix = et_builder_is_limited_mode() ? 'limited_' : '';
 
 	foreach ( $app_preferences as $preference_key => $preference ) {
@@ -896,7 +940,17 @@ function et_fb_app_preferences() {
 			$option_name = 'et_fb_pref_' . $limited_prefix . $preference_key;
 		}
 
-		$option_value = et_get_option( $option_name, $preference['default'] );
+		$option_value = et_get_option( $option_name, $preference['default'], '', true );
+
+		// If options available, verify returned value against valid options. Return default if fails
+		if ( isset( $preference['options'] ) ) {
+			$options       = $preference['options'];
+			$valid_options = isset( $options[0] ) ? $options : array_keys( $options );
+
+			if ( ! in_array( (string) $option_value, $valid_options ) ) {
+				$option_value = $preference['default'];
+			}
+		}
 
 		// Exceptional preference. Snap left is not supported in Limited mode, so replace it with default
 		if ( '' !== $limited_prefix && 'modal_snap_location' === $preference_key && 'left' === $option_value ) {
@@ -1392,7 +1446,7 @@ function et_fb_ajax_save() {
 	}
 
 	if ( isset($_POST['preferences'] ) && is_array( $_POST['preferences'] ) ) {
-		$app_preferences = _et_fb_get_app_preferences_defaults();
+		$app_preferences = et_fb_app_preferences_settings();
 		$limited_prefix = ! empty( $_POST['et_builder_mode'] ) && 'limited' === $_POST['et_builder_mode'] ? 'limited_' : '';
 
 		foreach( $app_preferences as $preference_key => $preference_data ) {
@@ -3932,10 +3986,39 @@ if ( ! function_exists( 'et_pb_remove_shortcode_content' ) ) {
 
 if ( ! function_exists( 'et_pb_get_global_module_content' ) ) {
 	function et_pb_get_global_module_content( $content, $shortcode_name ) {
-		// Apply wpautop to all modules except for the Code module. Line-breaks in Code module processed differently
-		$global_content = in_array( $shortcode_name, array( 'et_pb_code', 'et_pb_fullwidth_code' ) ) ? et_pb_extract_shortcode_content( $content, $shortcode_name ) : et_pb_fix_shortcodes( wpautop( et_pb_extract_shortcode_content( $content, $shortcode_name ) ) );
+		// Do not apply autop to code modules.
+		if (in_array( $shortcode_name, array( 'et_pb_code', 'et_pb_fullwidth_code' ) ) ) {
+			return et_pb_extract_shortcode_content( $content, $shortcode_name );
+		}
+		
+		$original_code_modules = array();
+		$shortcode_content = et_pb_extract_shortcode_content( $content, $shortcode_name );
+
+		// Get all the code and fullwidth code modules from content
+		preg_match_all('/(\[et_pb(_fullwidth_code|_code).+?\[\/et_pb(_fullwidth_code|_code)\])/s', $shortcode_content, $original_code_modules);
+
+		$global_content = et_pb_fix_shortcodes( wpautop( $shortcode_content ) );
+
+		// Replace content modified by wpautop for code and fullwidth code modules with original content.
+		if ( ! empty( $original_code_modules ) ) {
+			global $et_pb_global_code_replacements;
+			
+			$et_pb_global_code_replacements = $original_code_modules[0];
+			$global_content = preg_replace_callback( '/(\[et_pb(_fullwidth_code|_code).+?\[\/et_pb(_fullwidth_code|_code)\])/s', 'et_builder_get_global_code_replacement', $global_content );
+		}
 
 		return $global_content;
+	}
+}
+
+/**
+ * Retrieve the global code original instance to replace the modified in global code shortcode
+ */
+if ( ! function_exists( 'et_builder_get_global_code_replacement' ) ) {
+	function et_builder_get_global_code_replacement( $matches ) {
+		global $et_pb_global_code_replacements;
+
+		return array_shift( $et_pb_global_code_replacements );
 	}
 }
 
@@ -6666,7 +6749,12 @@ function et_builder_update_settings( $settings, $post_id = 'global' ) {
 
 			case 'codemirror':
 			case 'textarea':
-				$setting_value = sanitize_textarea_field( $setting_value );
+				// Allow HTML content on Excerpt field.
+				if ( 'et_pb_post_settings_excerpt' === $setting_key ) {
+					$setting_value = wp_kses_post( $setting_value );
+				} else {
+					$setting_value = sanitize_textarea_field( $setting_value );
+				}
 				break;
 
 			case 'categories':
