@@ -809,6 +809,7 @@
 			et_change_primary_nav_position( 0 );
 			$(document).trigger('et-pb-header-height-calculated');
 		}
+		window.et_fix_page_container_position = et_fix_page_container_position;
 
 		// Save container width on page load for reference
 		$et_container.data( 'previous-width', $et_container.width() );

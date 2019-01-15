@@ -331,8 +331,8 @@ if ( ! function_exists( 'truncate_post' ) ) {
 			// Remove embed shortcode from post content
 			$truncate = preg_replace( '@\[embed[^\]]*?\].*?\[\/embed]@si', '', $truncate );
 
-			// Remove scripts from the post content
-			$truncate = wp_kses_post( html_entity_decode( $truncate ) );
+			// Remove script and style tags from the post content
+			$truncate = wp_strip_all_tags( $truncate );
 
 			if ( $strip_shortcodes ) {
 				$truncate = et_strip_shortcodes( $truncate );

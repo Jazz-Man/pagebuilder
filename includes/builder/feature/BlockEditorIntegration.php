@@ -569,6 +569,6 @@ class ET_Builder_Block_Editor_Integration {
 }
 
 
-if ( et_is_gutenberg_active() ) {
+if ( et_core_is_gutenberg_active() ) {
 	new ET_Builder_Block_Editor_Integration;
 }

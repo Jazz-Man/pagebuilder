@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.3' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -742,7 +742,7 @@ function et_fb_conditional_tag_params() {
 		'is_user_logged_in'           => is_user_logged_in(),
 		'et_is_ab_testing_active'     => et_is_ab_testing_active() ? 'yes' : 'no',
 		'is_wrapped_styles'           => et_builder_has_limitation( 'use_wrapped_styles' ),
-		'is_gutenberg'                => et_is_gutenberg_active(),
+		'is_gutenberg'                => et_core_is_gutenberg_active(),
 		'is_custom_post_type'         => et_builder_is_post_type_custom( $post_type ),
 		'is_rich_editor'              => user_can_richedit(),
 	);
@@ -2910,7 +2910,7 @@ function et_pb_after_main_editor( $post ) {
 }
 
 function et_pb_setup_main_editor() {
-	if ( ! et_is_gutenberg_enabled() ) {
+	if ( ! et_core_is_gutenberg_enabled() ) {
 		add_action( 'edit_form_after_title', 'et_pb_before_main_editor' );
 		add_action( 'edit_form_after_editor', 'et_pb_after_main_editor' );
 	}
@@ -2944,7 +2944,7 @@ function et_pb_admin_scripts_styles( $hook ) {
 	}
 
 	// Do not enqueue BB assets if GB is active on this page
-	if ( et_is_gutenberg_enabled() ) {
+	if ( et_core_is_gutenberg_enabled() ) {
 		return;
 	}
 
@@ -3737,7 +3737,7 @@ function et_pb_hidden_meta_boxes( $hidden ) {
 function et_pb_add_custom_box( $post_type, $post ) {
 	add_action( 'admin_enqueue_scripts', 'et_pb_metabox_scripts', 99 );
 	// Do not add BB metabox if GB is active on this page
-	if ( et_is_gutenberg_enabled() ) {
+	if ( et_core_is_gutenberg_enabled() ) {
 		return;
 	}
 
@@ -8041,19 +8041,16 @@ endif;
 /**
  * Is Gutenberg active?
  *
+ * @deprecated See {@see et_core_is_gutenberg_active()}
+ *
+ * @since 3.19.2 Renamed and moved to core.
+ * @since 3.18
+ *
  * @return bool  True - if the plugin is active
  */
 if ( ! function_exists( 'et_is_gutenberg_active' ) ) :
 function et_is_gutenberg_active() {
-	global $wp_version;
-
-	static $has_wp5_plus = null;
-
-	if ( is_null( $has_wp5_plus ) ) {
-		$has_wp5_plus = version_compare( $wp_version, '5.0-alpha1', '>=' );
-	}
-
-	return $has_wp5_plus || function_exists( 'is_gutenberg_page' );
+	return et_core_is_gutenberg_active();
 }
 endif;
 
@@ -8061,15 +8058,16 @@ endif;
  * Is Gutenberg active and enabled for the current post
  * WP 5.0 WARNING - don't use before global post has been set
  *
+ * @deprecated See {@see et_core_is_gutenberg_enabled()}
+ *
+ * @since 3.19.2 Renamed and moved to core.
+ * @since 3.18
+ *
  * @return bool  True - if the plugin is active and enabled.
  */
 if ( ! function_exists( 'et_is_gutenberg_enabled' ) ) :
 function et_is_gutenberg_enabled() {
-	if ( function_exists( 'is_gutenberg_page' ) ) {
-		return et_is_gutenberg_active() && is_gutenberg_page() && has_filter( 'replace_editor', 'gutenberg_init' );
-	}
-
-	return et_is_gutenberg_active() && function_exists( 'use_block_editor_for_post' ) && use_block_editor_for_post( null );
+	return et_core_is_gutenberg_enabled();
 }
 endif;
 
