@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.4' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.5' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2910,7 +2910,7 @@ function et_pb_before_main_editor( $post ) {
 		// add in the visual builder button only on appropriate post types
 		if ( et_pb_is_allowed( 'use_visual_builder' ) && ! et_is_extra_library_layout( $post->ID ) ) {
 			$buttons .= sprintf('<a href="%1$s" id="et_pb_fb_cta" class="button button-primary button-large%3$s%4$s">%2$s</a>',
-				esc_url( add_query_arg( 'et_fb', true, et_fb_prepare_ssl_link( get_the_permalink() ) ) ),
+				esc_url( et_fb_get_vb_url() ),
 				esc_html__( 'Build On The Front End', 'et_builder' ),
 				( $builder_always_enabled ? ' et-first-child' : '' ),
 				( et_pb_is_pagebuilder_used( $post->ID ) ? ' et_pb_ready' : '' )
@@ -4050,7 +4050,7 @@ add_action( 'wp_ajax_et_builder_activate_bfb_auto_draft', 'et_builder_activate_b
 
 if ( ! function_exists( 'et_builder_ajax_toggle_bfb' ) ) {
 	function et_builder_ajax_toggle_bfb() {
-		et_core_security_check( 'switch_themes', 'et_builder_toggle_bfb', 'nonce', '_GET' );
+		et_core_security_check( 'manage_options', 'et_builder_toggle_bfb', 'nonce', '_GET' );
 
 		$enable = isset( $_GET['enable'] ) && $_GET['enable'] === '1';
 		$welcome = isset( $_GET['welcome'] );
@@ -4451,7 +4451,7 @@ function et_pb_pagebuilder_meta_box() {
 			'nonce' => wp_create_nonce( 'et_builder_toggle_bfb' ),
 		), admin_url( 'admin-ajax.php' ) );
 
-		$bfb_url = et_core_intentionally_unescaped( add_query_arg( array( 'et_fb' => '1', 'et_bfb' => '1' ), et_fb_prepare_ssl_link( get_permalink() ) ), 'fixed_string' );
+		$bfb_url = et_core_intentionally_unescaped( et_fb_get_bfb_url(), 'fixed_string' );
 
 		if ( is_ssl() && 0 === strpos( $bfb_url, 'http://' ) ) {
 			// If Admin is SSL but FE is not, we need to fix BFB url or it won't work
@@ -4459,8 +4459,11 @@ function et_pb_pagebuilder_meta_box() {
 			$bfb_url = str_replace( 'http://', 'https://', $bfb_url );
 		}
 
+		$is_switch_to_classic_allowed = et_pb_is_allowed( 'divi_builder_control' ) && current_user_can( 'manage_options' );
+		$additional_bfb_class = ! $is_switch_to_classic_allowed ? ' et_divi_builder_bottom_margin' : '';
+		
 		echo "
-			<div class='et_divi_builder et-bfb-page-preloading'>
+			<div class='et_divi_builder et-bfb-page-preloading{$additional_bfb_class}'>
 				<script>
 					var iframe = document.body.appendChild(document.createElement('iframe'));
 
@@ -4489,7 +4492,7 @@ function et_pb_pagebuilder_meta_box() {
 			</div>
 		";
 
-		if ( et_pb_is_allowed( 'divi_builder_control' ) ) {
+		if ( $is_switch_to_classic_allowed ) {
 			echo '<div class="et-bfb-optin-cta">';
 				echo '<p class="et-bfb-optin-cta__message et-bfb-optin-cta__message--success">';
 					echo esc_html__( 'You Are Using The Latest Divi Builder Experience.', 'et_builder' );
@@ -4510,7 +4513,8 @@ function et_pb_pagebuilder_meta_box() {
 	), admin_url( 'admin-ajax.php' ) );
 
 	// Disable BFB notification on Extra category builder. BFB support for Extra category builder will be added post inital launch
-	if ( apply_filters( 'et_pb_display_bfb_notification_under_bb', true ) && et_pb_is_allowed( 'use_visual_builder' ) && et_pb_is_allowed( 'divi_builder_control' ) ) {
+	// This option available for admins only
+	if ( apply_filters( 'et_pb_display_bfb_notification_under_bb', true ) && current_user_can( 'manage_options' ) && et_pb_is_allowed( 'use_visual_builder' ) && et_pb_is_allowed( 'divi_builder_control' ) ) {
 		echo '<div class="et-bfb-optin-cta">';
 			echo '<p class="et-bfb-optin-cta__message et-bfb-optin-cta__message--warning">';
 				echo esc_html__( 'A New And Improved Divi Builder Experience Is Available!', 'et_builder' );
@@ -8291,7 +8295,7 @@ function et_fb_add_admin_bar_link() {
 	}
 
 	$use_visual_builder_url = et_pb_is_pagebuilder_used( $post_id ) ?
-		add_query_arg( 'et_fb', '1', et_fb_prepare_ssl_link( $page_url ) ) :
+		et_fb_get_builder_url( $page_url ) :
 		add_query_arg( array(
 			'et_fb_activation_nonce' => wp_create_nonce( 'et_fb_activation_nonce_' . $post_id ),
 		), $page_url );

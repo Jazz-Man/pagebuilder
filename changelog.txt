@@ -1,3 +1,37 @@
+version 3.19.5 ( updated 01-11-2019 )
+- Fixed issues with switching from tablet to hover tab on range controls.
+- Disabled the New Divi Experience warning for non-admin users.
+- Improve rendering performance while adjusting module settings in the Visual Builder.
+- Fixed incorrect label styling on project post type and incorrect layout on 2/5 column in wireframe mode.
+- Disabled animation on visual builder. Animation should only triggered when animation configuration is modified on settings modal.
+- Fixed fullscreen fullwidth header title being cutoff on visual builder's phone mode if the module content is taller than top window height.
+- Added support for save to library function from Library pages.
+- Fixed deactivating responsive mode on non-desktop preview mode requires two clicks.
+- Fixed reset button of responsive input doesn't appear when preview mode is on non-desktop and field's responsive mode is disabled.
+- Fixed reset button which doesn't reset the field when being clicked on non-desktop preview mode while the field's responsive mode is disabled.
+- Fixed unexpected height rendered when using vh unit in new backend builder and visual builder in zoom, tablet, and phone mode.
+- Fixed weird character after cursor in Custom CSS fields in Firefox.
+- Fixed incorrect visible element and vibrating transition when changing preview mode in visual builder in Safari.
+- Prevent some particular scripts added in Code blocks from breaking the Visual Builder.
+- Fixed Visual Builder reloading the page when mod_pagespeed was enabled.
+- Fixed inconsistent quick actions modal styling between divi theme and divi builder plugin.
+- Fixed incorrect parallax height of first appearing module on the page if transparent nav is used.
+	* core/admin/js/react-dom.production.min.js
+	* core/admin/js/react.production.min.js
+	* core/ui/utils/frames.js
+	* core/ui/utils/utils.js
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/assets/scripts/preboot.js
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/functions.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* js/custom.js
+
 version 3.19.4 ( updated 01-07-2019 )
 - Fixed issue where using a empty code module would cause the page content to not display.
 - Unified Mapping For Copy Paste Styles.
@@ -36,9 +70,9 @@ version 3.19.4 ( updated 01-07-2019 )
 
 version 3.19.3 ( updated 12-31-2018 )
 - Fixed incompatibility issue with some third party themes and plugins that caused the Visual Builder to fail to load with a "Cannot read property 'id' of undefined" error.
-- Fixed a bug that caused the 3rd page in the blog module not to load in some situations. 
-- Fixed compatibility issue with the WP Ultimate Recipe plugin, and other plugins that create null shortcode objects. 
-- Fixed Divi navbar overlap in the Visual Builder when switching from Wireframe mode to Desktop mode. 
+- Fixed a bug that caused the 3rd page in the blog module not to load in some situations.
+- Fixed compatibility issue with the WP Ultimate Recipe plugin, and other plugins that create null shortcode objects.
+- Fixed Divi navbar overlap in the Visual Builder when switching from Wireframe mode to Desktop mode.
 	* js/custom.js
 	* scripts/frontend-builder-scripts.js
 

@@ -3728,7 +3728,7 @@ function et_fb_auto_activate_builder() {
 	) {
 		$set_content  = et_builder_set_content_activation( $post_id );
 		$post_url     = get_permalink( $post_id );
-		$redirect_url = $set_content ? add_query_arg( 'et_fb', '1', $post_url ) : $post_url;
+		$redirect_url = $set_content ? et_fb_get_vb_url( $post_url ) : $post_url;
 
 		wp_redirect( $redirect_url );
 		exit();
@@ -4169,7 +4169,7 @@ function et_fb_get_posts_list() {
 			'id'    => $post->ID,
 			'title' => $post->post_title,
 			'link'  => array(
-				'vb'  => add_query_arg( array( 'et_fb' => '1' ),  get_permalink( $post->ID ) ),
+				'vb'  => et_fb_get_vb_url( $post->ID ),
 				'bfb' => add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'classic-editor' => '1' ),  admin_url( 'post.php' ) ),
 			),
 		);
@@ -4474,6 +4474,47 @@ function et_fb_prepare_ssl_link( $link ) {
 
  	return $link;
 }
+
+/**
+ * Create a VB/BFB url.
+ * @param string $url Post url.
+ * @param string $builder 'vb' or 'bfb'.
+ * @return string.
+ */
+if ( ! function_exists( 'et_fb_get_builder_url' ) ) :
+	function et_fb_get_builder_url( $url = false, $builder = 'vb' ) {
+		$args = array(
+			'et_fb'     => '1',
+			'et_bfb'    => 'bfb' === $builder ? '1' : false,
+			'PageSpeed' => 'off',
+		);
+
+		return add_query_arg( $args, et_fb_prepare_ssl_link( $url ? $url : get_the_permalink() ) );
+	}
+endif;
+
+/**
+ * Create a VB url.
+ * @param string $url Post url.
+ * @return string.
+ */
+if ( ! function_exists( 'et_fb_get_vb_url' ) ) :
+	function et_fb_get_vb_url( $url = false ) {
+		return et_fb_get_builder_url( $url );
+	}
+endif;
+
+/**
+ * Create a BFB url.
+ * @param string $url Post url.
+ * @return string.
+ */
+if ( ! function_exists( 'et_fb_get_bfb_url' ) ) :
+	function et_fb_get_bfb_url( $url = false ) {
+		return et_fb_get_builder_url( $url, 'bfb' );
+	}
+endif;
+
 
 /**
  * Filterable options for backend and visual builder. Designed to be filtered
@@ -4781,6 +4822,11 @@ if ( ! function_exists( 'et_builder_filter_show_bfb_optin_modal') ):
  */
 function et_builder_filter_show_bfb_optin_modal( $default ) {
 	global $shortname;
+
+	// Only admin users should see the modal
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return false;
+	}
 
 	$shown = et_get_option( $shortname . '_bfb_optin_modal_shown', 'unset' );
 

@@ -792,10 +792,19 @@
 					}).appendTo('head');
 				}
 
-				// If the first visible (visibility is significant for for cached split test) section has parallax background,
-				// trigger parallax height resize so the parallax location isn't correctly rendered due to addition of first
-				// section/module margin-top/padding-top which is needed for transparent primary nav
-				if ($('.et_pb_section:visible:first').hasClass('et_pb_section_parallax')) {
+				// If the first visible (visibility is significant for for cached split test) section/row/module has
+				// parallax background, trigger parallax height resize so the parallax location is correctly rendered
+				// due to addition of first section/row/module margin-top/padding-top which is needed for transparent
+				// primary nav
+				var $firstSection = $('.et_pb_section:visible:first');
+				var $firstRow = $firstSection.find('.et_pb_row:visible:first');
+				var $firstModule = $firstSection.find('.et_pb_module:visible:first');
+
+				var firstSectionHasParallax = $firstSection.hasClass('et_pb_section_parallax');
+				var firstRowHasParallax = $firstRow.hasClass('et_pb_section_parallax');
+				var firstModuleHasParallax = $firstModule.hasClass('et_pb_section_parallax');
+
+				if (firstSectionHasParallax || firstRowHasParallax || firstModuleHasParallax) {
 					$(window).trigger('resize.etTrueParallaxBackground');
 				}
 
@@ -903,7 +912,7 @@
 			if ( et_is_fixed_nav ) {
 				et_calculate_header_values();
 			}
-			
+
 			// Run container position calculation with 0 timeout to make sure all elements are ready for proper calculation.
 			setTimeout(function() {
 				et_fix_page_container_position();
@@ -1189,6 +1198,14 @@
 				$( window ).on( 'scroll', et_pb_window_side_nav_scroll_init );
 			}
 		};
+
+		if ($('body').is('.et-fb, .et-bfb')) {
+			var _ = window._ || window.top && window.top._;
+			if (_) {
+				// Debounce slow function
+				window.et_pb_side_nav_page_init = _.debounce(window.et_pb_side_nav_page_init, 200);
+			}
+		}
 
 		et_pb_side_nav_page_init();
 

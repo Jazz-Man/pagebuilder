@@ -118,6 +118,7 @@ function et_fb_get_dynamic_backend_helpers() {
 	$utils       = ET_Core_Data_Utils::instance();
 	$layout_type = '';
 	$layout_scope = '';
+	$layout_built_for = '';
 
 	$post_type    = isset( $post->post_type ) ? $post->post_type : false;
 	$post_id      = isset( $post->ID ) ? $post->ID : false;
@@ -126,8 +127,9 @@ function et_fb_get_dynamic_backend_helpers() {
 	$current_user = wp_get_current_user();
 
 	if ( 'et_pb_layout' === $post_type ) {
-		$layout_type = et_fb_get_layout_type( $post_id );
-		$layout_scope = et_fb_get_layout_term_slug( $post_id, 'scope' );
+		$layout_type      = et_fb_get_layout_type( $post_id );
+		$layout_scope     = et_fb_get_layout_term_slug( $post_id, 'scope' );
+		$layout_built_for = get_post_meta( $post_id, '_et_pb_built_for_post_type', 'page' );
 	}
 
 	$current_url  = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
@@ -152,6 +154,7 @@ function et_fb_get_dynamic_backend_helpers() {
 		'postType'                     => $post_type,
 		'layoutType'                   => $layout_type,
 		'layoutScope'                  => $layout_scope,
+		'layoutBuiltFor'               => $layout_built_for,
 		'publishCapability'            => ( is_page() && ! current_user_can( 'publish_pages' ) ) || ( ! is_page() && ! current_user_can( 'publish_posts' ) ) ? 'no_publish' : 'publish',
 		'ajaxUrl'                      => is_ssl() ? admin_url( 'admin-ajax.php' ) : admin_url( 'admin-ajax.php', 'http' ),
 		'et_account'                   => $et_account,

@@ -120,7 +120,7 @@ class ET_Builder_Block_Editor_Integration {
 				'postID'             => get_the_ID(),
 				'postType'           => $post_type,
 				'is3rdPartyPostType' => et_builder_is_post_type_custom( $post_type ) ? 'yes' : 'no',
-				'vbUrl'              => add_query_arg( 'et_fb', true, et_fb_prepare_ssl_link( get_the_permalink() ) ),
+				'vbUrl'              => et_fb_get_vb_url(),
 				'builderUsed'        => et_pb_is_pagebuilder_used(),
 				'scriptDebug'        => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG,
 				'canToggle'          => et_pb_is_allowed( 'divi_builder_control' ) && $enabled_for_post_type,
@@ -233,7 +233,7 @@ class ET_Builder_Block_Editor_Integration {
 		$edit_url        = $is_divi_library ? get_edit_post_link( $post_id, 'raw' ) : get_permalink( $post_id );
 
 		if ( et_pb_is_pagebuilder_used( $post_id ) ) {
-			$edit_url = add_query_arg( 'et_fb', '1', et_fb_prepare_ssl_link( $edit_url ) );
+			$edit_url = et_fb_get_vb_url( $edit_url );
 		} else {
 			if ( ! et_pb_is_allowed( 'divi_builder_control' ) ) {
 				// Do not add Divi activation link when user lacks `Toggle Divi Builder` capability.

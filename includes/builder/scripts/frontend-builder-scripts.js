@@ -2685,7 +2685,8 @@
 
 			window.et_parallax_set_height = function() {
 				var $this = $(this);
-				var parallaxHeight = window.top && $this.parent('.et_pb_fullscreen').length ? $et_top_window.height() : $this.innerHeight();
+				var isFullscreen = window.top && $this.parent('.et_pb_fullscreen').length;
+				var parallaxHeight = isFullscreen && $et_top_window.height() > $this.innerHeight() ? $et_top_window.height() : $this.innerHeight();
 				var bg_height = ( $et_top_window.height() * 0.3 + parallaxHeight );
 
 				// Add BFB metabox to top window offset on parallax image height to avoid parallax displays its
@@ -4363,11 +4364,11 @@
 						$et_pb_video_background = $( '.et_pb_section_video_bg video' );
 
 				// if waypoint is available and we are not ignoring them.
-				if ( $.fn.waypoint && 'yes' !== et_pb_custom.ignore_waypoints ) {
+				if ( $.fn.waypoint && 'yes' !== et_pb_custom.ignore_waypoints && !is_frontend_builder ) {
 					et_process_animation_data( true );
 
 					// get all of our waypoint things.
-					var modules = $( '.et_pb_counter_container, .et-waypoint' );
+					var modules = $( '.et-waypoint' );
 					modules.each(function(){
 						et_waypoint( $(this), {
 							offset: et_get_offset( $(this), '100%' ),
@@ -4446,7 +4447,9 @@
 					// if no waypoints supported then apply all the animations right away
 					et_process_animation_data( false );
 
-					$( '.et_pb_counter_container, .et-waypoint' ).addClass( 'et-animated' );
+					var animated_class = is_frontend_builder ? 'et-animated--vb' : 'et-animated';
+
+					$('.et-waypoint').addClass(animated_class);
 
 					if ( $et_pb_circle_counter.length ) {
 						$et_pb_circle_counter.each(function() {
@@ -4456,7 +4459,7 @@
 								return;
 							}
 
-							if ( $this_counter.data( 'PieChartHasLoaded' ) ) {
+							if ($this_counter.data('PieChartHasLoaded') || typeof $this_counter.data('easyPieChart') === 'undefined') {
 								return;
 							}
 
@@ -4762,6 +4765,7 @@
 				var isResizing = typeof event === 'object' && event.type === 'resize',
 					topWindow = window.top || window,
 					$et_window = $(topWindow),
+					$appWindow = $(window),
 					$this_section = section || $(this),
 					section_index = $this_section.index('.et_pb_fullscreen'),
 					timeout = isResizing && typeof fullscreen_section_width[section_index] !== 'undefined' && event.target.window_width > fullscreen_section_width[section_index] ? 800 : 0;
@@ -4937,31 +4941,28 @@
 						$header_image.css('align-self', 'flex-end');
 					}
 
-					// Mobile device and small screen handler
-					if ((et_is_mobile_device && !et_is_ipad) || $et_window.width() < 768){
-						// Detect if section height is lower than the content height
-						var headerContentHeight = 0;
-						if ($header_content.length) {
-							headerContentHeight += $header_content.outerHeight();
-						}
-						if ($header_image.length) {
-							headerContentHeight += $header_image.outerHeight();
-						}
-						if (headerContentHeight > sectionHeight ) {
-							$this_section.css('min-height', headerContentHeight + 'px');
-							$header.css('min-height', headerContentHeight + 'px');
-						}
+					// Detect if section height is lower than the content height
+					var headerContentHeight = 0;
 
-						// Justify the section content
-						if ( $header_image.hasClass('bottom')) {
-							if (headerContentHeight < sectionHeight ) {
-								$this_section.css('min-height', (headerContentHeight + 80) + 'px');
-								$header.css('min-height', (headerContentHeight + 80) + 'px');
-							}
-							$header.css('justify-content', 'flex-end');
-						}
+					if ($header_content.length) {
+						headerContentHeight += $header_content.outerHeight();
+					}
+					if ($header_image.length) {
+						headerContentHeight += $header_image.outerHeight();
+					}
+					if (headerContentHeight > sectionHeight ) {
+						$this_section.css('min-height', headerContentHeight + 'px');
+						$header.css('min-height', headerContentHeight + 'px');
 					}
 
+					// Justify the section content
+					if ( $header_image.hasClass('bottom')) {
+						if (headerContentHeight < sectionHeight ) {
+							$this_section.css('min-height', (headerContentHeight + 80) + 'px');
+							$header.css('min-height', (headerContentHeight + 80) + 'px');
+						}
+						$header.css('justify-content', 'flex-end');
+					}
 				}, timeout );
 			};
 			window.et_calculate_fullscreen_section_size = function(){
