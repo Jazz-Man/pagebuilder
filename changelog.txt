@@ -1,3 +1,36 @@
+version 3.19.6 ( updated 01-18-2019 )
+- Fix activation of the default view mode in the Visual Builder when the default is a mode other than desktop.
+- Fixed Uncaught ReferenceError: jQuery is not defined error that occurs whenever jQuery is used on on-page script.
+- Fixed Custom Fields editing when Email optin module is saved with Mailchimp provider.
+- Correctly disabled builder on Custom Post Type (CPT) which has no editor support (ie. CoursePress Plugin).
+- Fixed the issues when configuring Slider automatic animation in the Visual Builder.
+- Fixed an issue where a module would start to drag unexpectedly after updating Global Module in Visual Builder in some cases.
+- Fixed Multiselect reset when clicking outside the Builder App container.
+- Fixed the issue when tinyMCE Visual mode is unavailable on some servers with firewalls.
+- Fixed incorrect location after selected items are moved to new location and improve bulk DND process.
+- Fixed Inline Editor position on Posts.
+- Fixed Code Editor replacing '||' with newlines.
+- Fix a bug in the Email Opt-in Module that caused form submissions to fail when the list id was equal to zero.
+- Fix issue with the Number Counter module where it would not appear when using the Divi Builder Plugin.
+- Fixed quick actions & help icon position on side snapped page settings bar.
+- Fixed broken parallax background images on Firefox.
+- Fixed inability to find and replace the title option in the Fullwidth Header module.
+- Fixed flickering of the Quick Actions insert new module placeholder.
+- Improved Go To Quick Actions search results without selecting the parent action.
+- Fixed help button not appearing when module options filter is active.
+- Fix automatic cache purge on Siteground.
+	* core/components/init.php
+	* core/ui/utils/frames.js
+	* core/ui/utils/property-resolver.js
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/view.php
+	* includes/builder/functions.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* includes/builder/styles/frontend-builder-global-style.css
+	* includes/builder/styles/frontend-builder-style.less
+
 version 3.19.5 ( updated 01-11-2019 )
 - Fixed issues with switching from tablet to hover tab on range controls.
 - Disabled the New Divi Experience warning for non-admin users.

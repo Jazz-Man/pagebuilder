@@ -131,6 +131,9 @@ function et_core_clear_wp_cache( $post_id = '' ) {
 			if ( is_object( $sg_cachepress_supercacher ) && method_exists( $sg_cachepress_supercacher, 'purge_cache' ) ) {
 				$sg_cachepress_supercacher->purge_cache( true );
 			}
+
+		} else if ( function_exists( 'sg_cachepress_purge_cache' ) ) {
+			sg_cachepress_purge_cache();
 		}
 
 		// WP Engine

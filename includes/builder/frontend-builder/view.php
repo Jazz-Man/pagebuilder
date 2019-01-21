@@ -156,7 +156,7 @@ add_filter( 'admin_body_class', 'et_fb_add_admin_body_class' );
 
 /**
  * Remove visual builder preloader classname on BFB because BFB spins the preloader on parent level to avoid flash of unstyled elements
- * 
+ *
  * @param string builder preloader classname
  * @return string modified builder preloader classname
  */
@@ -197,7 +197,7 @@ function et_builder_inject_preboot_script() {
 	}
 
 	echo "
-		<script>
+		<script id='et-builder-preboot'>
 			var et_fb_preboot = { debug: {$is_debug}, is_BFB: {$is_BFB} };
 
 			// Disable Google Tag Manager

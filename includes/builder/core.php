@@ -227,6 +227,50 @@ function et_builder_get_default_post_types() {
  * @return array<string>
  */
 function et_builder_get_third_party_post_types() {
+	$third_party_post_types = array();
+
+	// WooCommerce (https://wordpress.org/plugins/woocommerce/):
+	if ( class_exists( 'WooCommerce' ) ) {
+		$third_party_post_types[] = 'product';
+	}
+
+	// The Events Calendar (https://wordpress.org/plugins/the-events-calendar/):
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		$third_party_post_types[] = 'tribe_events';
+	}
+
+	// Popup Maker (https://wordpress.org/plugins/popup-maker/):
+	if ( class_exists( 'Popup_Maker' ) ) {
+		$third_party_post_types[] = 'popup';
+	}
+
+	// All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/):
+	if ( function_exists( 'ai1ec_initiate_constants' ) ) {
+		$third_party_post_types[] = 'ai1ec_event';
+	}
+
+	// Events Manager (https://wordpress.org/plugins/events-manager/):
+	if ( function_exists( 'em_plugins_loaded' ) ) {
+		$third_party_post_types[] = 'event';
+		$third_party_post_types[] = 'location';
+	}
+
+	// Portfolio Post Type (https://wordpress.org/plugins/portfolio-post-type/):
+	if ( function_exists( 'portfolio_post_type_init' ) ) {
+		$third_party_post_types[] = 'portfolio';
+	}
+
+	// LifterLMS (https://wordpress.org/plugins/lifterlms/):
+	if ( class_exists( 'LifterLMS' ) ) {
+		$third_party_post_types[] = 'course';
+	}
+
+	// LearnDash (https://www.learndash.com/wordpress-course-plugin-features/):
+	if ( class_exists( 'Semper_Fi_Module' ) ) {
+		$third_party_post_types[] = 'sfwd-courses';
+		$third_party_post_types[] = 'sfwd-lessons';
+	}
+
 	/**
 	 * Array of third-party registered post types that should have support enabled by default.
 	 *
@@ -234,33 +278,7 @@ function et_builder_get_third_party_post_types() {
 	 *
 	 * @param array<string>
 	 */
-	return apply_filters( 'et_builder_third_party_post_types', array(
-		// WooCommerce (https://wordpress.org/plugins/woocommerce/):
-		'product',
-
-		// The Events Calendar (https://wordpress.org/plugins/the-events-calendar/):
-		'tribe_events',
-
-		// Popup Maker (https://wordpress.org/plugins/popup-maker/):
-		'popup',
-
-		// All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/):
-		'ai1ec_event',
-
-		// Events Manager (https://wordpress.org/plugins/events-manager/):
-		'event',
-		'location',
-
-		// Portfolio Post Type (https://wordpress.org/plugins/portfolio-post-type/):
-		'portfolio',
-
-		// LifterLMS (https://wordpress.org/plugins/lifterlms/):
-		'course',
-
-		// LearnDash (https://www.learndash.com/wordpress-course-plugin-features/):
-		'sfwd-courses',
-		'sfwd-lessons',
-	) );
+	return apply_filters( 'et_builder_third_party_post_types', $third_party_post_types );
 }
 
 /**
@@ -397,7 +415,7 @@ function et_builder_get_enabled_builder_post_types() {
 	$filtered = array();
 
 	foreach ( $options as $post_type => $state ) {
-		if ( 'on' === $state && ! in_array( $post_type, et_builder_get_blacklisted_post_types() ) ) {
+		if ( 'on' === $state && in_array( $post_type, array_keys( et_get_registered_post_type_options() ) ) && ! in_array( $post_type, et_builder_get_blacklisted_post_types() ) ) {
 			$filtered[] = $post_type;
 		}
 	}
@@ -2360,7 +2378,7 @@ function et_pb_submit_subscribe_form() {
 		et_core_die( esc_html__( 'Please input a valid email address.', 'et_builder' ) );
 	}
 
-	if ( empty( $args['list_id'] ) ) {
+	if ( '' === (string) $args['list_id'] ) {
 		et_core_die( esc_html__( 'Configuration Error: No list has been selected for this form.', 'et_builder' ) );
 	}
 

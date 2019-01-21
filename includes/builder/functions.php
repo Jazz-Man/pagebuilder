@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.5' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.6' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -744,7 +744,7 @@ function et_fb_conditional_tag_params() {
 		'is_wrapped_styles'           => et_builder_has_limitation( 'use_wrapped_styles' ),
 		'is_gutenberg'                => et_core_is_gutenberg_active(),
 		'is_custom_post_type'         => et_builder_is_post_type_custom( $post_type ),
-		'is_rich_editor'              => user_can_richedit(),
+		'is_rich_editor'              => 'false' === apply_filters( 'user_can_richedit', get_user_option( 'rich_editing' ) ) ? 'no' : 'yes',
 	);
 
 	return apply_filters( 'et_fb_conditional_tag_params', $conditional_tags );
