@@ -282,6 +282,34 @@ function et_builder_get_third_party_post_types() {
 }
 
 /**
+ * Look for builder's registered third party post type that isn't publicly queryable
+ *
+ * @since ??
+ *
+ * @return array
+ */
+function et_builder_get_third_party_unqueryable_post_types() {
+	// Save the value in static variable so if post type's publicly_queryable is modified due to current
+	// request is BFB request, this function still return correct value
+	static $unqueryable_post_types = array();
+
+	if ( empty( $unqueryable_post_types ) ) {
+		// Get third party's unqueryable post types only as default post types have been handled properly
+		$valid_third_party_post_types = array_diff(
+			et_builder_get_builder_post_types(),
+			et_builder_get_default_post_types()
+		);
+
+		$unqueryable_post_types = array_intersect(
+			$valid_third_party_post_types,
+			get_post_types( array('publicly_queryable' => false ) )
+		);
+	}
+
+	return apply_filters( 'et_builder_get_third_party_unqueryable_post_types', $unqueryable_post_types );
+}
+
+/**
  * Get the list of registered Post Types options.
  *
  * @since 3.18
@@ -4477,6 +4505,33 @@ if ( ! function_exists( 'et_fb_get_builder_url' ) ) :
 			'et_bfb'    => 'bfb' === $builder ? '1' : false,
 			'PageSpeed' => 'off',
 		);
+
+		// Additional info need to be appended via query strings if current request is used to get
+		// BFB URL and the given page's custom post type has its publicly_queryable setting is set
+		// to false. These additional information is be used to deterimined whether the BFB page
+		// request needs to modify its global $query and rewrite_rule configuration so correct BFB
+		// page can be rendered for valid user
+		if ( 'bfb' === $builder && ! $url ) {
+			$post_id   = get_the_ID();
+			$post_type = get_post_type();
+
+			// 'page' and 'et_pb_layout' are not queryable so post type needs to be checked against
+			// third party post types first to avoid false positive for these default post types
+			$is_third_party_post_type = in_array( $post_type, et_builder_get_third_party_post_types() );
+			$is_unqueryable           = $is_third_party_post_type && in_array(
+				$post_type,
+				get_post_types( array( 'publicly_queryable' => false ) )
+			);
+
+			// These post id & post type query strings should only be added if current post type
+			// has false publicly_queryable setting
+			if ( $post_id && $post_type && is_user_logged_in() && $is_unqueryable  ) {
+				$args['et_post_id']         = $post_id;
+				$args['et_post_id_nonce']   = wp_create_nonce( 'et_post_id_' . $post_id );
+				$args['et_post_type']       = $post_type;
+				$args['et_post_type_nonce'] = wp_create_nonce( 'et_post_type_' . $post_type );
+			}
+		}
 
 		return add_query_arg( $args, et_fb_prepare_ssl_link( $url ? $url : get_the_permalink() ) );
 	}

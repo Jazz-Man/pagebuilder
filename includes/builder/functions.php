@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.8' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.9' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -930,7 +930,13 @@ function et_fb_unsynced_preferences() {
 
 function et_fb_app_preferences() {
 	$app_preferences = et_fb_app_preferences_settings();
-	$limited_prefix = et_builder_is_limited_mode() ? 'limited_' : '';
+	if (et_is_builder_plugin_active()) {
+		// Since Divi Builder Plugin is always 'limited', need to use a different
+		// condition to prefix the options when BFB is used.
+		$limited_prefix = et_builder_bfb_enabled() ? 'limited_' : '';
+	} else {
+		$limited_prefix = et_builder_is_limited_mode() ? 'limited_' : '';
+	}
 
 	foreach ( $app_preferences as $preference_key => $preference ) {
 		$option_name = 'et_fb_pref_' . $preference_key;
@@ -2908,7 +2914,7 @@ function et_pb_before_main_editor( $post ) {
 		);
 
 		// add in the visual builder button only on appropriate post types
-		if ( et_pb_is_allowed( 'use_visual_builder' ) && ! et_is_extra_library_layout( $post->ID ) ) {
+		if ( et_builder_fb_enabled_for_post( $post->ID ) && et_pb_is_allowed( 'use_visual_builder' ) && ! et_is_extra_library_layout( $post->ID ) ) {
 			$buttons .= sprintf('<a href="%1$s" id="et_pb_fb_cta" class="button button-primary button-large%3$s%4$s">%2$s</a>',
 				esc_url( et_fb_get_vb_url() ),
 				esc_html__( 'Build On The Front End', 'et_builder' ),
