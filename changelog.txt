@@ -1,3 +1,14 @@
+version 3.19.7 ( updated 01-21-2019 )
+- Improved Slider and Fullwidth Slider Module editing in Visual Builder.
+- Fixed an issue where draggable padding UI doesn't use larger breakpoint value as fallback/default value when custom padding of current preview mode is empty.
+- Fixed Yoast content analysis in Backend Builder and The New Divi Builder.
+- Fixed incorrect settings modal content scroll when field group toggle is clicked on general tab which has module items UI (ie. slider, accordion, etc).
+- Fixed Copy Paste Styles not working on right click when copying entire module styles.
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+
 version 3.19.6 ( updated 01-18-2019 )
 - Fix activation of the default view mode in the Visual Builder when the default is a mode other than desktop.
 - Fixed Uncaught ReferenceError: jQuery is not defined error that occurs whenever jQuery is used on on-page script.

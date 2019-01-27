@@ -238,6 +238,16 @@
 						return;
 					}
 
+					// Slider animation can be dynamically paused with et_pb_pause_slider
+					// Make sure animation will start when class is removed by checking clas existence every 2 seconds.
+					if ($et_slider.hasClass('et_pb_pause_slider')) {
+						setTimeout(function() {
+							et_slider_auto_rotate();
+						}, 2000);
+
+						return;
+					}
+
 					if ( settings.slideshow && et_slides_number > 1 && ! $et_slider.hasClass( 'et_slider_hovered' ) ) {
 						et_slider_timer = setTimeout( function() {
 							$et_slider.et_slider_move_to( 'next' );

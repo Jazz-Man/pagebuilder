@@ -2595,35 +2595,6 @@ if ( ! function_exists( 'et_is_yoast_seo_plugin_active' ) ) :
 endif;
 
 /**
- * Ajax callback used by BB to render builder shortcode content for use by
- * Yoast to generate a preview description.
- *
- * @return void
- */
-function et_pb_yoast_execute_content_shortcodes() {
-	if ( ! wp_verify_nonce( $_POST['et_admin_load_nonce'], 'et_admin_load_nonce' ) ) {
-		die( -1 );
-	}
-
-	if ( ! current_user_can( 'edit_posts' ) ) {
-		die( -1 );
-	}
-
-	// this is only for yoast support
-	if ( et_is_yoast_seo_plugin_active() ) {
-		die( -1 );
-	}
-
-	$unprocessed_data = str_replace( '\\', '', $_POST['et_pb_unprocessed_data'] );
-
-	// Remove any non-builder shortcodes, since were just trying to generate a yoast preview description here. We just need Yoast to be able to pick up a few sentences.
-	$unprocessed_data = et_pb_enforce_builder_shortcode( $unprocessed_data );
-
-	die( et_core_intentionally_unescaped( do_shortcode( $unprocessed_data ), 'html' ) );
-}
-add_action( 'wp_ajax_et_pb_yoast_execute_content_shortcodes', 'et_pb_yoast_execute_content_shortcodes' );
-
-/**
  * Remove all non-builder shortcodes from builder built post content.
  *
  * @param string $content Builder built post content.
