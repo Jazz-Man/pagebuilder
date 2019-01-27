@@ -602,6 +602,138 @@ function et_builder_load_framework() {
 }
 endif;
 
+/**
+ * Checking whether current page is BFB page based on its query string only; Suitable for basic
+ * early check BEFORE $wp_query global is generated in case builder need to alter query
+ * configuration. This is needed because BFB layout is basically loaded in front-end
+ *
+ * @since ??
+ *
+ * @return bool
+ */
+function et_bfb_maybe_bfb_url() {
+	$has_bfb_query_string = ! empty( $_GET['et_fb'] ) && ! empty( $_GET['et_bfb'] );
+	$has_vb_permission    = et_pb_is_allowed( 'use_visual_builder' );
+
+	// This check assumes that $wp_query isn't ready (to be used before query is parsed) so any
+	// query based check such as is_single(), etc don't exist yet. Thus BFB URL might valid if:
+	// 1. not admin page
+	// 2. user has logged in
+	// 3. has `et_fb` & `et_bfb` query string
+	// 4. has visual builder permission
+	return ! is_admin() && is_user_logged_in() && $has_bfb_query_string && $has_vb_permission;
+}
+
+/**
+ * Get verified query string value for et_bfb_make_post_type_queryable()
+ *
+ * @since ??
+ *
+ * @param string $param_name
+ *
+ * @return string|number|bool
+ */
+function et_bfb_get_make_queryable_param( $param_name ) {
+	$param             = isset( $_GET[ "et_{$param_name}" ] ) ? $_GET[ "et_{$param_name}" ] : false;
+	$param_nonce       = isset( $_GET[ "et_{$param_name}_nonce" ] ) ? $_GET[ "et_{$param_name}_nonce"] : false;
+	$verified_param    = $param && $param_nonce && wp_verify_nonce(
+		$param_nonce,
+		"et_{$param_name}_{$param}"
+	);
+
+	return $verified_param ? $param : false;
+}
+
+/**
+ * Set builder's registered post type's publicly_queryable property to true (if needed) so publicly
+ * hidden post type can render BFB page on backend edit screen
+ *
+ * @see WP->parse_request() on how request is parsed
+ *
+ * @since ??
+ *
+ * @return void
+ */
+function et_bfb_make_post_type_queryable() {
+	// Valid query isn't available at this point so builder will guess whether current request is
+	// BFB based on available value; Stop if this might not be BFB url
+	if ( ! et_bfb_maybe_bfb_url() ) {
+		return;
+	}
+
+	$get_post_id   = absint( et_bfb_get_make_queryable_param( 'post_id' ) );
+	$get_post_type = sanitize_text_field( et_bfb_get_make_queryable_param( 'post_type' ) );
+
+	// Stop if no valid post id / post type for make queryable found on query string
+	if ( ! $get_post_id || ! $get_post_type ) {
+		return;
+	}
+
+	$post_type_object = get_post_type_object( $get_post_type );
+
+	// Stop if requested post type doesn't exist
+	if ( is_null( $post_type_object ) ) {
+		return;
+	}
+
+	$unqueryable_post_type    = et_builder_get_third_party_unqueryable_post_types();
+	$is_post_type_unqueryable = in_array( $get_post_type, $unqueryable_post_type );
+
+	// CPT's version of edit_post is always available on cap->edit_post regardless CPT's meta_map_cap
+	// or capability_type setting are set or not. If meta_map_cap is set to true, WordPress
+	// automatically translates it into edit_post. Otherwise, CPT version of edit_post is sent as
+	// it is and it is plugin / post type registrant's responsibility to add the capability to role
+	// and map it into primitive capabilities on map_meta_cap()
+	$capability               = isset( $post_type_object->cap->edit_post ) ? $post_type_object->cap->edit_post : 'edit_post';
+	$can_edit_this_post       = current_user_can( $capability, $get_post_id );
+
+	// Flip publicly_queryable of current request so BFB layout page can be rendered.
+	// Note: post_type existence have been verified on is_null( $post_type_object ) check above
+	if ( $is_post_type_unqueryable && $can_edit_this_post ) {
+		global $wp_post_types;
+
+		$wp_post_types[ $get_post_type ]->publicly_queryable = true;
+	}
+}
+add_action( 'init', 'et_bfb_make_post_type_queryable' );
+
+/**
+ * Modify rewrite rule's redirect of current BFB request if its post type's `publicly_queryable`
+ * is set to false and its `query_var` is NOT set to `false`. When this situation happens, current
+ * BFB page cannot be rendered because rewrite rule's redirect value doesn't have `post_type`
+ * param which makes page query gets incorrect page value
+ *
+ * @since ??
+ *
+ * @return void
+ */
+function et_bfb_make_cpt_rewrite_rule_queryable( $value ) {
+	// Get verified make queryable post_type param from query string
+	$unqueryable_post_type = et_bfb_get_make_queryable_param( 'post_type' );
+
+	// Make sure that value is array, current request might be BFB, and verified post_type from
+	// query string exist. Note: need to use early return otherwise the rest need multiple stack
+	// if/else condition
+	if ( ! is_array( $value ) || ! et_bfb_maybe_bfb_url() || ! $unqueryable_post_type ) {
+		return $value;
+	}
+
+	$rewrite_regex        = $unqueryable_post_type . '/([^/]+)(?:/([0-9]+))?/?$';
+	$rewrite_redirect     = isset( $value[ $rewrite_regex ] ) ? $value[ $rewrite_regex ] : false;
+	$has_post_type_substr = $rewrite_redirect && strpos( $rewrite_redirect, '?post_type=' ) !== false;
+	$post_type_object     = get_post_type_object( $unqueryable_post_type );
+
+	// If current page's post type object `query_var` isn't falsey and no `post_type=` substring is
+	// found on current page's post type rewrite rule redirect value, modify the rewrite rule
+	// redirect value so it can picks up current post type when query is parsed
+	if ( $post_type_object->query_var && ! $has_post_type_substr ) {
+		$value[ $rewrite_regex ] = 'index.php?post_type=' . $unqueryable_post_type . '&name=$matches[1]&page=$matches[2]';
+	}
+
+	return $value;
+}
+add_filter( 'option_rewrite_rules', 'et_bfb_make_cpt_rewrite_rule_queryable' );
+
 if ( ! function_exists( 'et_bfb_wpe_heartbeat_allowed_pages' ) ):
 function et_bfb_wpe_heartbeat_allowed_pages( $pages ) {
 	global $pagenow;

@@ -1,3 +1,16 @@
+version 3.19.9 ( updated 01-24-2019 )
+- Fixed the position of preloader in the New Divi Builder to make sure its always visible.
+- Fixed copy/paste module styles that were not working from right click menu in some cases.
+- Divi Builder Plugin now uses separate settings for VB and BFB.
+- Fixed a bug with Global Section ordering.
+- Fix a crash that occurred in the Divi Builder when Drop Loading files.
+- Removed unwanted Selective Sync option when editing Global Rows and Sections from Library.
+- Added Divi Builder support for custom post type (CPT) which can't be publicly queryable.
+	* includes/builder/core.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+
 version 3.19.8 ( updated 01-23-2019 )
 - Improved performance when searching Divi Layouts.
 - Fixed first tab being selected when trying to edit other tabs content via inline editor.
