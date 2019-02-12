@@ -247,6 +247,12 @@ if ( ! function_exists( 'et_update_option' ) ) {
 		if ( $is_new_global_setting && '' !== $global_setting_main_name && '' !== $global_setting_sub_name ) {
 			$global_setting = get_option( $global_setting_main_name, array() );
 
+			// $global_setting has to be array otherwise setting can't be saved so it needs
+			// to be treated as empty array
+			if ( ! is_array( $global_setting ) ) {
+				$global_setting = array();
+			}
+
 			$global_setting[ $global_setting_sub_name ] = $new_value;
 
 			update_option( $global_setting_main_name, $global_setting );

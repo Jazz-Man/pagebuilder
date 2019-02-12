@@ -184,7 +184,6 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 							'max'  => 20,
 							'step' => 1,
 							'min_limit' => 0,
-							'max_limit' => 20,
 						),
 						'default'        => '1x',
 						'fixed_unit'     => 'x',

@@ -949,7 +949,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 				}
 
 				// Reset Google Maps API Key
-				update_option( 'et_google_api_settings', '' );
+				update_option( 'et_google_api_settings', array() );
 
 				// Resets WordPress custom CSS which is synced with Options Custom CSS as of WP 4.7
 				if ( function_exists( 'wp_get_custom_css' ) ) {

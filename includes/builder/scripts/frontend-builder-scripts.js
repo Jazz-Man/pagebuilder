@@ -568,26 +568,35 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 			et_hash_module_param_seperator = '|';
 
 		function process_et_hashchange( hash ) {
-			if ( ( hash.indexOf( et_hash_module_seperator, 0 ) ) !== -1 ) {
-				modules = hash.split( et_hash_module_seperator );
-				for ( var i = 0; i < modules.length; i++ ) {
-					var module_params = modules[i].split( et_hash_module_param_seperator );
-					var element = module_params[0];
+			// Bail early when hash is empty
+			if (! hash.length) {
+				return;
+			}
+
+			var modules;
+			var module_params;
+			var element;
+
+			if ((hash.indexOf(et_hash_module_seperator, 0)) !== - 1) {
+				modules = hash.split(et_hash_module_seperator);
+				for (var i = 0; i < modules.length; i ++) {
+					module_params = modules[i].split(et_hash_module_param_seperator);
+					element = module_params[0];
 					module_params.shift();
-					if ( $('#' + element ).length ) {
-						$('#' + element ).trigger({
-							type: "et_hashchange",
+					if (element.length && $('#' + element).length) {
+						$('#' + element).trigger({
+							type:   "et_hashchange",
 							params: module_params
 						});
 					}
 				}
 			} else {
-				module_params = hash.split( et_hash_module_param_seperator );
-				var element = module_params[0];
+				module_params = hash.split(et_hash_module_param_seperator);
+				element = module_params[0];
 				module_params.shift();
-				if ( $('#' + element ).length ) {
-					$('#' + element ).trigger({
-						type: "et_hashchange",
+				if (element.length && $('#' + element).length) {
+					$('#' + element).trigger({
+						type:   "et_hashchange",
 						params: module_params
 					});
 				}

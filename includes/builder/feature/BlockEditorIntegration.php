@@ -316,19 +316,17 @@ class ET_Builder_Block_Editor_Integration {
 	/**
 	 * Ensures that Divi enabled CPTs support 'custom-fields'.
 	 *
-	 * @param array $args CPT definition.
-	 * @param object $post_type CPT type.
+	 * @since 3.19.12
 	 *
-	 * @return array
 	 */
-	public function register_post_type_args( $args, $post_type ) {
-		if ( et_builder_enabled_for_post_type( $post_type ) ) {
-			$supports = empty( $args['supports'] ) ? array() : $args['supports'];
-			if ( ! in_array( 'custom-fields', $supports ) ) {
-				$args['supports'] = array_merge( $supports, array( 'custom-fields' ) );
+	public function ensure_post_type_supports() {
+		$post_types = et_builder_get_builder_post_types();
+
+		foreach ( $post_types as $post_type ) {
+			if ( ! post_type_supports( $post_type, 'custom-fields' ) ) {
+				add_post_type_support( $post_type, 'custom-fields' );
 			}
 		}
-		return $args;
 	}
 
 	/**
@@ -530,7 +528,7 @@ class ET_Builder_Block_Editor_Integration {
 		}
 
 		add_filter( 'et_fb_load_raw_post_content', array( $this, 'et_fb_load_raw_post_content' ) );
-		add_filter( 'register_post_type_args', array( $this, 'register_post_type_args' ), 10, 2 );
+		add_filter( 'init', array( $this, 'ensure_post_type_supports' ), 100 );
 
 		// This is one of the most idiot things I had to do ever and its due to
 		// a 10 month old-yet not fixed WP bug: https://core.trac.wordpress.org/ticket/42069

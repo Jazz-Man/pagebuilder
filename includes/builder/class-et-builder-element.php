@@ -1833,7 +1833,7 @@ class ET_Builder_Element {
 			if ( $module_class ) {
 				et_builder_handle_link_options_data( array(
 					'class'  => trim( $module_class ),
-					'url'    => esc_url( $link_option_url ),
+					'url'    => esc_url_raw( $link_option_url ),
 					'target' => 'on' === $link_option_url_new_window ? '_blank' : '_self',
 				) );
 			}

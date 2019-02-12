@@ -317,22 +317,27 @@ function et_builder_get_third_party_unqueryable_post_types() {
  * @return array
  */
 function et_get_registered_post_type_options( $usort = false ) {
-	$blacklist      = et_builder_get_blacklisted_post_types();
+	static $post_type_options = null;
 
-	// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
-	$blacklist      = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
-	$raw_post_types = get_post_types( array(
-		'show_ui' => true,
-	), 'objects' );
+	if ( ! is_null( $post_type_options ) ) {
+		return $post_type_options;
+	}
+
+	$blacklist      = et_builder_get_blacklisted_post_types();
+	$whitelist      = et_builder_get_third_party_post_types();
+	$raw_post_types = get_post_types( array( 'show_ui' => true ), 'objects' );
 	$post_types     = array();
 
-	foreach ( $raw_post_types as $post_type ) {
-		$is_explicitly_supported = in_array( $post_type->name, et_builder_get_third_party_post_types() );
-		$is_blacklisted          = in_array( $post_type->name, $blacklist );
-		$supports_editor         = post_type_supports( $post_type->name, 'editor' );
-		$is_public               = et_builder_is_post_type_public( $post_type->name );
+	// Extra and Library layouts shouldn't appear in Theme Options as configurable post types.
+	$blacklist = array_merge( $blacklist, array( 'et_pb_layout', 'layout' ) );
 
-		if ( ! $is_explicitly_supported && ( $is_blacklisted || ! $supports_editor || ! $is_public ) ) {
+	foreach ( $raw_post_types as $post_type ) {
+		$is_whitelisted  = in_array( $post_type->name, $whitelist );
+		$is_blacklisted  = in_array( $post_type->name, $blacklist );
+		$supports_editor = post_type_supports( $post_type->name, 'editor' );
+		$is_public       = et_builder_is_post_type_public( $post_type->name );
+
+		if ( ! $is_whitelisted && ( $is_blacklisted || ! $supports_editor || ! $is_public ) ) {
 			continue;
 		}
 

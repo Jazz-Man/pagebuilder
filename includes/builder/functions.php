@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.11' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.13' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -1021,6 +1021,7 @@ function et_fb_current_page_params() {
 		'commentsCount'            => esc_html( $comment_count ),
 		'paged'                    => is_front_page() ? $et_paged : $paged,
 		'post_modified'            => isset( $post->ID ) ? esc_attr( $post->post_modified ) : '',
+		'lang'                     => get_locale(),
 	);
 
 	return apply_filters( 'et_fb_current_page_params', $current_page );

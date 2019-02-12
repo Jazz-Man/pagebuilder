@@ -591,7 +591,7 @@ function et_builder_load_framework() {
 	}
 
 	if ( isset( $builder_settings_loaded ) ) {
-		et_builder_settings_init();
+		add_action( 'init', 'et_builder_settings_init', 100 );
 	}
 
 	add_action( $action_hook, 'et_builder_load_frontend_builder' );
