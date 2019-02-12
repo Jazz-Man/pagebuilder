@@ -284,7 +284,7 @@ function et_builder_get_third_party_post_types() {
 /**
  * Look for builder's registered third party post type that isn't publicly queryable
  *
- * @since ??
+ * @since 3.19.9
  *
  * @return array
  */
@@ -2162,6 +2162,7 @@ function et_builder_email_get_fields_from_post_data( $provider_slug ) {
 
 	$fields = ET_Core_API_Email_Providers::instance()->account_fields( $provider_slug );
 	$result = array();
+	$protocol = is_ssl() ? 'https' : 'http';
 
 	if ( ! $fields ) {
 		// If there are no fields to check then the check passes.
@@ -2171,8 +2172,17 @@ function et_builder_email_get_fields_from_post_data( $provider_slug ) {
 	foreach ( $fields as $field_name => $field_info ) {
 		$key = "et_{$provider_slug}_{$field_name}";
 
-		if ( empty( $_POST[$key] ) && ! isset( $field_info['not_required'] ) ) {
-			return false;
+		if ( empty( $_POST[$key] ) ) {
+			$required = true;
+
+			if ( isset( $field_info['required'] ) ) {
+				// Field can be required only when https or http
+				$required = $field_info['required'] === $protocol;
+			}
+
+			if ( $required && ! isset( $field_info['not_required'] ) ) {
+				return false;
+			}
 		}
 
 		$result[ $field_name ] = sanitize_text_field( $_POST[ $key ] );
@@ -4186,7 +4196,7 @@ function et_fb_get_posts_list() {
 			'id'    => $post->ID,
 			'title' => $post->post_title,
 			'link'  => array(
-				'vb'  => et_fb_get_vb_url( $post->ID ),
+				'vb'  => et_fb_get_vb_url( get_permalink( $post->ID ) ),
 				'bfb' => add_query_arg( array( 'post' => $post->ID, 'action' => 'edit', 'classic-editor' => '1' ),  admin_url( 'post.php' ) ),
 			),
 		);
@@ -5299,17 +5309,25 @@ function et_fb_dynamic_asset_exists( $prefix, $post_type = false ) {
 
 	$uploads = wp_upload_dir();
 	$prefix  = esc_attr( $prefix );
-	$files   = glob( sprintf( '%s/%s-%s-*.js', ET_Core_PageResource::get_cache_directory(), $prefix, $post_type ) );
+	$cache   = sprintf( '%s/%s', ET_Core_PageResource::get_cache_directory(), get_locale() );
+	$files   = glob( sprintf( '%s/%s-%s-*.js', $cache, $prefix, $post_type ) );
 
 	return is_array( $files ) && count( $files ) > 0;
 }
 
 if ( ! function_exists( 'et_fb_delete_builder_assets' ) ):
 function et_fb_delete_builder_assets() {
-	if ( $files = glob( sprintf( '%s/*.js', ET_Core_PageResource::get_cache_directory() ) ) ) {
-		foreach ( $files as $file ) {
-			@unlink( $file );
-		}
+	$cache = ET_Core_PageResource::get_cache_directory();
+
+	// Old cache location, make sure we clean that one too
+	$old_files = glob( sprintf( '%s/*.js', $cache ) );
+	$old_files = is_array( $old_files ) ? $old_files : array();
+	// New, per language location
+	$new_files = glob( sprintf( '%s/*/*.js', $cache ) );
+	$new_files = is_array( $new_files ) ? $new_files : array();
+
+	foreach ( array_merge( $old_files, $new_files ) as $file ) {
+		@unlink( $file );
 	}
 }
 endif;

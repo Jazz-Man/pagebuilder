@@ -102,7 +102,10 @@ function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false )
 	if ( ! in_array( $prefix, array( 'helpers', 'definitions' ) ) ) {
 		$prefix = '';
 	}
-	$cache  = ET_Core_PageResource::get_cache_directory();
+
+	// Per language Cache due to definitions/helpers being localized.
+	$lang   = get_locale();
+	$cache  = sprintf( '%s/%s', ET_Core_PageResource::get_cache_directory(), $lang );
 	$files  = glob( sprintf( '%s/%s-%s-*.js', $cache, $prefix, $post_type ) );
 	$exists = is_array( $files ) && count( $files ) > 0;
 
@@ -145,8 +148,9 @@ function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false )
 	}
 
 	$url = ! $exists ? false : sprintf(
-		'%s/%s-%s-%s.js',
+		'%s/%s/%s-%s-%s.js',
 		content_url( ET_Core_PageResource::get_cache_directory( 'relative' ) ),
+		$lang,
 		$prefix,
 		$post_type,
 		$uniq

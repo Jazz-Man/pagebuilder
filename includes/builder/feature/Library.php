@@ -397,8 +397,22 @@ class ET_Builder_Library {
 				}
 			}
 
-			$layout->name            = et_core_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
-			$layout->short_name      = et_core_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
+			$layout->name = $layout->short_name = '';
+
+			if ( $title ) {
+				// Remove periods since we use dot notation to retrieve translation
+				str_replace( '.', '', $title );
+
+				$layout->name = et_core_intentionally_unescaped( self::__( $title, '@layoutsLong' ), 'react_jsx' );
+			}
+
+			if ( $short_name ) {
+				// Remove periods since we use dot notation to retrieve translation
+				str_replace( '.', '', $title );
+
+				$layout->short_name = et_core_intentionally_unescaped( self::__( $short_name, '@layoutsShort' ), 'react_jsx' );
+			}
+
 			$layout->slug            = $post->post_name;
 			$layout->url             = esc_url( wp_make_link_relative( get_permalink( $post ) ) );
 

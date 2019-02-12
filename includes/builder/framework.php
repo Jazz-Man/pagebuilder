@@ -607,7 +607,7 @@ endif;
  * early check BEFORE $wp_query global is generated in case builder need to alter query
  * configuration. This is needed because BFB layout is basically loaded in front-end
  *
- * @since ??
+ * @since 3.19.9
  *
  * @return bool
  */
@@ -627,7 +627,7 @@ function et_bfb_maybe_bfb_url() {
 /**
  * Get verified query string value for et_bfb_make_post_type_queryable()
  *
- * @since ??
+ * @since 3.19.9
  *
  * @param string $param_name
  *
@@ -650,7 +650,7 @@ function et_bfb_get_make_queryable_param( $param_name ) {
  *
  * @see WP->parse_request() on how request is parsed
  *
- * @since ??
+ * @since 3.19.9
  *
  * @return void
  */
@@ -703,7 +703,7 @@ add_action( 'init', 'et_bfb_make_post_type_queryable' );
  * BFB page cannot be rendered because rewrite rule's redirect value doesn't have `post_type`
  * param which makes page query gets incorrect page value
  *
- * @since ??
+ * @since 3.19.9
  *
  * @return void
  */

@@ -74,7 +74,7 @@ class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 					%1$s
 				</div>
 			</div> <!-- .et_pb_fullwidth_code -->',
-			$this->content,
+			$this->fix_wptexturized_scripts( $this->content ),
 			$this->module_id(),
 			$this->module_classname( $render_slug ),
 			$video_background,
