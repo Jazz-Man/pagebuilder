@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.9' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.10' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -8620,7 +8620,12 @@ add_action( 'wp_ajax_et_fb_retrieve_builder_data', 'et_fb_retrieve_builder_data'
 function et_fb_get_asset_definitions( $content, $post_type ) {
 	return sprintf(
 		'window.ETBuilderBackend = jQuery.extend(true, %s, window.ETBuilderBackend)',
-		json_encode( et_fb_get_builder_definitions( $post_type ) )
+		str_replace(
+			// Remove protocol from local urls so that http and https generated content is the same.
+			str_replace( '/', '\/', get_site_url() ),
+			str_replace( '/', '\/', preg_replace( '#^\w+:#', '', get_site_url() ) ),
+			json_encode( et_fb_get_builder_definitions( $post_type ) )
+		)
 	);
 }
 add_filter( 'et_fb_get_asset_definitions', 'et_fb_get_asset_definitions', 10, 2 );

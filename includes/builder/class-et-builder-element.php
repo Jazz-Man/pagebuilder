@@ -2612,7 +2612,7 @@ class ET_Builder_Element {
 				$additional_options["{$option_name}_font"] = wp_parse_args( $option_settings['font'], array(
 					'label'           => sprintf( esc_html__( '%1$s Font', 'et_builder' ), $option_settings['label'] ),
 					'type'            => 'font',
-					'group_label'     => esc_html__( $option_settings['label'] ),
+					'group_label'     => et_core_esc_previously( $option_settings['label'] ),
 					'option_category' => 'font_option',
 					'tab_slug'        => $tab_slug,
 					'toggle_slug'     => $toggle_slug,
@@ -10544,6 +10544,18 @@ class ET_Builder_Element {
 		$shortcodes[] = $this->slug;
 
 		return $shortcodes;
+	}
+
+	function fix_wptexturized_script( $matches ) {
+		return str_replace( '&#038;', '&', $matches[0] );
+	}
+
+	function fix_wptexturized_scripts( $content ) {
+		return preg_replace_callback(
+			'/<script.*?>(.*?)<\/script>/mis',
+			array( $this, 'fix_wptexturized_script' ),
+			$content
+		);
 	}
 
 	static function compare_by_priority( $a, $b ) {

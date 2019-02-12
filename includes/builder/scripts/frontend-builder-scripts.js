@@ -1,8 +1,10 @@
+// Check whether current page is inside (visual) builder or not
+var isBuilder = 'object' === typeof window.ET_Builder;
+
 /*! ET frontend-builder-scripts.js */
 (function($){
 	var $et_window = $(window);
-	var $et_top_window = window.top ? window.top.jQuery(window.top) : $(window);
-	var isBuilder = $('body').hasClass('et-fb');
+	var $et_top_window = isBuilder ? window.top.jQuery(window.top) : $(window);
 	var isBFB = $('body').hasClass('et-bfb');
 	var isVB = isBuilder && !isBFB;
 	var isScrollOnAppWindow = function() {
@@ -38,7 +40,6 @@
 	};
 
 	window.et_pb_init_modules = function() {
-		isBuilder = $( 'body' ).hasClass( 'et-fb' );
 		isBFB     = $( 'body' ).hasClass( 'et-bfb' );
 		isVB      = isBuilder && !isBFB;
 
@@ -2708,7 +2709,7 @@
 
 			window.et_parallax_set_height = function() {
 				var $this = $(this);
-				var isFullscreen = window.top && $this.parent('.et_pb_fullscreen').length;
+				var isFullscreen = isBuilder && $this.parent('.et_pb_fullscreen').length;
 				var parallaxHeight = isFullscreen && $et_top_window.height() > $this.innerHeight() ? $et_top_window.height() : $this.innerHeight();
 				var bg_height = ( $et_top_window.height() * 0.3 + parallaxHeight );
 
@@ -2746,7 +2747,7 @@
 					return;
 				}
 
-				var topWindow = window.top || window;
+				var topWindow = isBuilder ? window.top : window;
 				var backgroundOffset = isBFB ? topWindow.jQuery('#et_pb_layout .inside').offset().top : 0;
 				var heightMultiplier = isBuilderModeZoom() ? 2 : 1;
 				var parentOffset = $this_parent.offset();
@@ -4786,7 +4787,7 @@
 
 			window.et_calc_fullscreen_section = function(event, section) {
 				var isResizing = typeof event === 'object' && event.type === 'resize',
-					topWindow = window.top || window,
+					topWindow = isBuilder ? window.top : window,
 					$et_window = $(topWindow),
 					$appWindow = $(window),
 					$this_section = section || $(this),
@@ -5004,7 +5005,7 @@
 
 			window.et_pb_parallax_init = function($this_parallax) {
 				var $this_parent = $this_parallax.parent();
-				var topWindow = window.top || window;
+				var topWindow = isBuilder ? window.top : window;
 
 				if ($this_parallax.hasClass('et_pb_parallax_css')) {
 					// Register faux CSS Parallax effect for builder modes with top window scroll

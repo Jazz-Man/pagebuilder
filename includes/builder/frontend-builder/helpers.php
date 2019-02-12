@@ -1932,7 +1932,12 @@ function et_fb_get_static_backend_helpers($post_type) {
 function et_fb_get_asset_helpers( $content, $post_type ) {
 	return sprintf(
 		'window.ETBuilderBackend = jQuery.extend(true, %s, window.ETBuilderBackendDynamic)',
-		json_encode( et_fb_get_static_backend_helpers( $post_type ) )
+		str_replace(
+			// Remove protocol from local urls so that http and https generated content is the same.
+			str_replace( '/', '\/', get_site_url() ),
+			str_replace( '/', '\/', preg_replace( '#^\w+:#', '', get_site_url() ) ),
+			json_encode( et_fb_get_static_backend_helpers( $post_type ) )
+		)
 	);
 }
 add_filter( 'et_fb_get_asset_helpers', 'et_fb_get_asset_helpers', 10, 2 );

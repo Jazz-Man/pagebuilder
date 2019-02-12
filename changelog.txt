@@ -1,3 +1,30 @@
+version 3.19.10 ( updated 01-29-2019 )
+- Fixed two crashes that would occur when viewing Saved Layouts in the Divi Builder in some cases.
+- Fixed Visual Builder reloading when being opened alternately over http and https.
+- Fixed Polylang plugin often causing Visual Builder to reload.
+- Fixed a bug with "&&" being sometimes replaced with other text when used inside a script tag in a code module.
+- Fixed Save To Library modal position when opened from Right Click menu.
+- Fixed broken front-end page if the page is loaded inside iframe.
+- Fixed incorrect URL for Quick Actions Open Pages/Posts.
+- Fixed a bug that caused a duplicate WordPress Admin Bar to appear when using the Divi Builder Plugin with certain themes.
+- Fixed broken front-end page if the page is loaded inside iframe.
+	* core/components/api/email/SalesForce.php
+	* core/ui/utils/frames.js
+	* core/ui/utils/property-resolver.js
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/Code.php
+	* includes/builder/module/FullwidthCode.php
+	* includes/builder/module/Signup.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* js/custom.js
+
 version 3.19.9 ( updated 01-24-2019 )
 - Fixed the position of preloader in the New Divi Builder to make sure its always visible.
 - Fixed copy/paste module styles that were not working from right click menu in some cases.

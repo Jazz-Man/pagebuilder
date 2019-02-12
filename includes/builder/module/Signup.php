@@ -331,15 +331,21 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		foreach ( $fields as $field_id => $field_info ) {
 			$field_id = "{$provider_slug}_{$field_id}";
 
+			$show_if_conditions = array(
+				$list_key => $show_if,
+			);
+
+			if ( isset( $field_info['show_if'] ) ) {
+				$show_if_conditions = array_merge( $show_if_conditions, $field_info['show_if']);
+			}
+
 			$account_fields[ $field_id ] = array(
 				'name'            => $field_id,
 				'label'           => et_core_esc_previously( $field_info['label'] ),
 				'type'            => 'text',
 				'option_category' => 'basic_option',
 				'description'     => sprintf( '<a target="_blank" href="https://www.elegantthemes.com/documentation/bloom/accounts#%1$s">%2$s</a>', $provider_slug, $description_text ),
-				'show_if'         => array(
-					$list_key => $show_if,
-				),
+				'show_if'         => $show_if_conditions,
 				'class'           => 'et_pb_email_' . $field_id,
 				'toggle_slug'     => 'provider',
 			);
@@ -669,11 +675,11 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 					'type'            => 'multiple_checkboxes',
 					'option_category' => 'configuration',
 					'options'         => array(
-						'name'       => esc_html__( 'Name' ),
-						'last_name'  => esc_html__( 'Last Name' ),
-						'email'      => esc_html__( 'Email' ),
-						'ip_address' => esc_html__( 'IP Address' ),
-						'css_id'     => esc_html__( 'CSS ID' ),
+						'name'       => esc_html__( 'Name', 'et_builder' ),
+						'last_name'  => esc_html__( 'Last Name', 'et_builder' ),
+						'email'      => esc_html__( 'Email', 'et_builder' ),
+						'ip_address' => esc_html__( 'IP Address', 'et_builder' ),
+						'css_id'     => esc_html__( 'CSS ID', 'et_builder' ),
 					),
 					'show_if'         => array(
 						'success_action' => 'redirect',
