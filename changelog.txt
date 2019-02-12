@@ -1,3 +1,41 @@
+version 3.19.13 ( updated 02-08-2019 )
+- Fixed bouncing component control tooltip of a module which is set as split test subject when subject is switched.
+- Fixed unwanted Visual Builder reloads when editing multi-language content after theme update.
+- Fixed insert module tooltip which unexpectedly scrolled to top 1 second after tooltip is opened.
+- Significantly improved performance in the Visual Builder and new Divi Builder experience, especially in Firefox where previous slowness was most noticeable.
+- Fixed Go To Quick Actions not getting updated after the layout import.
+- Fixed section divider horizontal repeat option to support any numerical value.
+- Fixed broken fullwidth slider and slider module in visual builder if WOOF - WooCommerce Products Filter is activated.
+- Fixed PHP error message when saving theme options after theme options settings are being reset.
+	* core/functions.php
+	* epanel/core_functions.php
+	* epanel/custom_functions.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/field/Divider.php
+
+version 3.19.12 ( updated 02-05-2019 )
+- Fixed PHP Fatal error: Call to undefined function lcfirst for PHP 5.2.
+- Fixed unwanted folded admin sidebar animation when loading the builder.
+- Added Gravityforms support into the New Divi Builder.
+- Fixed excessive loading lag in the WordPress Dashboard caused by post type compatibility check on page load.
+- Fixed incorrect copy & paste options on right click menu due to unexpected mouseenter/leave "bubbling" event.
+- Fixed Map Module not working in Visual Builder.
+- Fixed jQuery notice Empty string passed to getElementById() on Firefox.
+- Fixed module link escaping logic causing  issues with URLs with multiple parameters in certain cases.
+- Added missing text domain to "Choose a premade Layout" string.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/plugin-compat/gravityforms.php
+	* includes/builder/scripts/bfb_admin_script.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+
 version 3.19.11 ( updated 02-01-2019 )
 - Fixed shortcode rendering error in Visual Builder.
 - Fixed Visual Bulder not loading when using KeyCDN.

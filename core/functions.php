@@ -585,7 +585,7 @@ function et_core_security_check( $user_can = 'manage_options', $nonce_action = '
 		$passed = false;
 	} else if ( '' !== $user_can && ! current_user_can( $user_can ) ) {
 		$passed = false;
-	} else if ( '' !== $nonce_action && ! wp_verify_nonce( $nonce_location[ $nonce_key ], $nonce_action ) ) {
+	} else if ( '' !== $nonce_action && ! empty( $nonce_location[ $nonce_key ] ) && ! wp_verify_nonce( $nonce_location[ $nonce_key ], $nonce_action ) ) {
 		$passed = false;
 	}
 
