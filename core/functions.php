@@ -79,9 +79,9 @@ endif;
 
 if ( ! function_exists( 'et_core_clear_transients' ) ):
 function et_core_clear_transients() {
-	delete_site_transient( 'et_core_path' );
-	delete_site_transient( 'et_core_version' );
-	delete_site_transient( 'et_core_needs_old_theme_patch' );
+	delete_transient( 'et_core_path' );
+	delete_transient( 'et_core_version' );
+	delete_transient( 'et_core_needs_old_theme_patch' );
 }
 add_action( 'upgrader_process_complete', 'et_core_clear_transients', 10, 0 );
 add_action( 'switch_theme', 'et_core_clear_transients' );
@@ -445,7 +445,7 @@ function et_core_maybe_patch_old_theme() {
 		return;
 	}
 
-	if ( get_site_transient( 'et_core_needs_old_theme_patch' ) ) {
+	if ( get_transient( 'et_core_needs_old_theme_patch' ) ) {
 		add_action( 'after_setup_theme', 'ET_Core_Logger::disable_php_notices', 9 );
 		add_action( 'after_setup_theme', 'ET_Core_Logger::enable_php_notices', 11 );
 		return;
@@ -463,7 +463,7 @@ function et_core_maybe_patch_old_theme() {
 	if ( version_compare( $theme_version, $themes[ $current_theme ], '<' ) ) {
 		add_action( 'after_setup_theme', 'ET_Core_Logger::disable_php_notices', 9 );
 		add_action( 'after_setup_theme', 'ET_Core_Logger::enable_php_notices', 11 );
-		set_site_transient( 'et_core_needs_old_theme_patch', true, DAY_IN_SECONDS );
+		set_transient( 'et_core_needs_old_theme_patch', true, DAY_IN_SECONDS );
 	}
 }
 endif;

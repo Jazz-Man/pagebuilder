@@ -147,6 +147,7 @@ function et_fb_get_dynamic_backend_helpers() {
 	);
 
 	$helpers = array(
+		'site_url'                     => get_site_url(),
 		'debug'                        => defined( 'ET_DEBUG' ) && ET_DEBUG,
 		'postId'                       => $post_id,
 		'postTitle'                    => $post_title,
@@ -278,7 +279,6 @@ function et_fb_get_static_backend_helpers($post_type) {
 	 * @var array $helpers
 	 */
 	$helpers = array(
-		'site_url'                     => get_site_url(),
 		'blog_id'                      => get_current_blog_id(),
 		'autosaveInterval'             => et_builder_autosave_interval(),
 		'isCustomPostType'             => et_builder_is_post_type_custom( $post_type ) ? 'yes' : 'no',
