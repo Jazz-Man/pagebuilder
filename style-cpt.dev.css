@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.19.13
+Version: 3.19.14
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -21754,11 +21754,11 @@ span.comment_date {
 		font-size: 14px !important;
 	}
 
-	.et-db #et-boc .et_pb_post .et_pb_slide {
+	.et-db #et-boc .et_pb_post > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_slide {
 		min-height: 384px !important;
 	}
 
-	.et-db #et-boc .et_pb_blog_grid .et_pb_post .et_pb_slide {
+	.et-db #et-boc .et_pb_blog_grid > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_post .et_pb_slide {
 		min-height: 182px !important;
 	}
 
@@ -22196,11 +22196,11 @@ span.comment_date {
 		font-size: 14px !important;
 	}
 
-	.et-db #et-boc .et_pb_post .et_pb_slide {
+	.et-db #et-boc .et_pb_post > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_slide {
 		min-height: 222px !important;
 	}
 
-	.et-db #et-boc .et_pb_blog_grid .et_pb_post .et_pb_slide {
+	.et-db #et-boc .et_pb_blog_grid .et_pb_post > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_slide {
 		min-height: 222px !important;
 	}
 
@@ -22407,8 +22407,8 @@ span.comment_date {
 		padding: 35px 20px !important;
 	}
 
-	.et-db #et-boc .et_pb_post .et_pb_slide,
-	.et-db #et-boc .et_pb_blog_grid .et_pb_post .et_pb_slide {
+	.et-db #et-boc .et_pb_post > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_slide,
+	.et-db #et-boc .et_pb_blog_grid > .et_pb_gallery_post_type > .et_pb_slides > .et_pb_post .et_pb_slide {
 		min-height: 156px !important;
 	}
 

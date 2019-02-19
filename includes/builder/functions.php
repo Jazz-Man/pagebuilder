@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.13' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.14' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -2684,7 +2684,7 @@ function et_builder_maybe_ensure_heartbeat_script() {
 
 	if ( ! $heartbeat_okay ) {
 		$heartbeat_src = "/wp-includes/js/heartbeat{$suffix}.js";
-		wp_enqueue_script( 'heartbeat', $heartbeat_src, array( 'jquery' ), false, true );
+		wp_enqueue_script( 'heartbeat', $heartbeat_src, array( 'jquery', 'wp-hooks' ), false, true );
 		wp_localize_script( 'heartbeat', 'heartbeatSettings', apply_filters( 'heartbeat_settings', array() ) );
 	}
 
@@ -9076,26 +9076,32 @@ function et_fb_reset_shortcode_object_processing() {
 add_action( 'et_fb_enqueue_assets', 'et_fb_backend_helpers' );
 
 if ( ! function_exists( 'et_builder_maybe_flush_rewrite_rules' ) ) :
-function et_builder_maybe_flush_rewrite_rules( $setting_name ) {
-	if ( et_get_option( $setting_name ) ) {
+function et_builder_maybe_flush_rewrite_rules( $setting_name, $value = 'done' ) {
+	$string_value = (string) $value;
+	$saved_value = et_get_option( $setting_name );
+
+	if ( $saved_value && $saved_value === $string_value ) {
 		return;
 	}
 
 	flush_rewrite_rules();
 
-	et_update_option( $setting_name, 'done' );
+	et_update_option( $setting_name, $string_value );
 }
 endif;
 
 /**
- * Flush rewrite rules to fix the issue Layouts, not being visible on front-end,
+ * Flush rewrite rules to fix the issue Layouts, not being visible on front-end and visual builder,
  * if pretty permalinks were enabled
  * @return void
  */
-function et_pb_maybe_flush_3_0_rewrite_rules() {
-	et_builder_maybe_flush_rewrite_rules( '3_0_flush_rewrite_rules_' . ET_BUILDER_PRODUCT_VERSION );
+function et_pb_maybe_flush_rewrite_rules_library() {
+	// Run flush rewrite only when et_pb_layout post type registered.
+	if ( post_type_exists( 'et_pb_layout' ) ) {
+		et_builder_maybe_flush_rewrite_rules( 'et_flush_rewrite_rules_library', ET_BUILDER_PRODUCT_VERSION );
+	}
 }
-add_action( 'init', 'et_pb_maybe_flush_3_0_rewrite_rules', 9 );
+add_action( 'init', 'et_pb_maybe_flush_rewrite_rules_library', 9 );
 
 /**
  * Get list of shortcut available on BB and FB
