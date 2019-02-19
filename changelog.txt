@@ -1,3 +1,30 @@
+version 3.19.15 ( updated 02-15-2019 )
+- Updated webpack to latest version.
+- Fixed broken Split Test activation/deactivation sequence after recent performance update.
+- Fixed Yoast warning in console in some cases.
+- Fixed a bug that could prevent a Section from being saved as Global Module.
+- Fixed Google Maps control in The New Divi Builder.
+- Prevented Visual Builder reloads when some 3rd party Divi plugins were enabled.
+- Fixed Divi Builder plugin not working correctly with Onetone Pro theme.
+- Fixed Visual Builder sometimes reloading when site used multiple languages.
+- Fixed Progress Map by Code Spacing missing metabox by only prioritizing Divi Builder metabox order on custom post type which has Divi Builder enabled.
+- Fixed Google Maps sometimes not working in Visual Builder.
+- Fixed a bug where Video Slider thumbnail navigation was not showing up in some columns.
+- Fixed contact field module's field options type drag and drop UI which cannot be dragged.
+- Fixed Danish (da_DK) translation for 'Right Sidebar'.
+- Updated CSS to use default font family in input fields.
+	* css/main-styles.css
+	* et-pagebuilder/et-pagebuilder.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/scripts/frontend-builder-scripts.js
+	* lang/da_DK.mo
+	* lang/da_DK.po
+
 version 3.19.14 ( updated 02-11-2019 )
 - Fixed Post Slider, Fullwidth Post Slider and Blog module rendering in Visual Builder for websites with Chinese language.
 - Fixed incorrect slider / fullwidth slider's height on smaller device breakpoint(s) due to conflicting CSS of Gallery Post Format's slider min-height.

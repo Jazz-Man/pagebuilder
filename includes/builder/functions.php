@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.14' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.15' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -20,6 +20,18 @@ if ( ! defined( 'ET_BUILDER_DIR_RESOLVED_PATH' ) ) {
 // When set to true, the builder will use the new loading method
 if ( ! defined( 'ET_BUILDER_CACHE_ASSETS' ) ) {
 	define( 'ET_BUILDER_CACHE_ASSETS', ! isset( $_REQUEST['nocache'] ) );
+}
+
+if ( ! defined( 'ET_BUILDER_JSON_ENCODE_OPTIONS' ) ) {
+	define( 'ET_BUILDER_JSON_ENCODE_OPTIONS', 0 );
+}
+
+if ( ! defined( 'ET_BUILDER_KEEP_OLDEST_CACHED_ASSETS' ) ) {
+	define( 'ET_BUILDER_KEEP_OLDEST_CACHED_ASSETS', 0 );
+}
+
+if ( ! defined( 'ET_BUILDER_PURGE_OLD_CACHED_ASSETS' ) ) {
+	define( 'ET_BUILDER_PURGE_OLD_CACHED_ASSETS', 0 );
 }
 
 $et_fonts_queue = array();
@@ -2613,8 +2625,15 @@ function et_builder_override_meta_boxes_order( $value ) {
 function et_builder_prioritize_meta_box() {
 	global $wp_meta_boxes;
 
+	$screen = get_current_screen();
+
+	// Only prioritize Divi Builder metabox if current post type has Divi Builder enabled
+	if ( ! in_array( $screen->post_type, et_builder_get_enabled_builder_post_types() ) ) {
+		return;
+	}
+
 	// Get custom order
-	$page        = get_current_screen()->id;
+	$page        = $screen->id;
 	$option_name = "meta-box-order_$page";
 	$custom      = get_user_option( $option_name );
 
@@ -3335,6 +3354,9 @@ function et_bfb_enqueue_scripts() {
 
 	// Load timepicker script on admin page in case of BFB to make it work with modals loaded on WP admin DOM
 	wp_enqueue_script( 'et_bfb_admin_date_addon_js', ET_BUILDER_URI . '/scripts/ext/jquery-ui-timepicker-addon.js', array( $jQuery_ui ), ET_BUILDER_PRODUCT_VERSION, true );
+	
+	// Load google maps script on admin page in case of BFB to make it work with modals loaded on WP admin DOM
+	wp_enqueue_script( 'et_bfb_google_maps_api', esc_url( add_query_arg( array( 'key' => et_pb_get_google_api_key(), 'callback' => 'initMap' ), is_ssl() ? 'https://maps.googleapis.com/maps/api/js' : 'http://maps.googleapis.com/maps/api/js' ) ), array(), '3', true );
 
 	wp_enqueue_script( 'et_pb_media_library', ET_BUILDER_URI . '/scripts/ext/media-library.js', array( 'media-editor' ), ET_BUILDER_PRODUCT_VERSION, true );
 	wp_enqueue_script( 'et_bfb_admin_js', ET_BUILDER_URI . '/scripts/bfb_admin_script.js', array( 'jquery', 'et_pb_media_library' ), ET_BUILDER_PRODUCT_VERSION, true );
@@ -8625,7 +8647,7 @@ function et_fb_get_asset_definitions( $content, $post_type ) {
 			// Remove protocol from local urls so that http and https generated content is the same.
 			str_replace( '/', '\/', get_site_url() ),
 			str_replace( '/', '\/', preg_replace( '#^\w+:#', '', get_site_url() ) ),
-			json_encode( et_fb_get_builder_definitions( $post_type ) )
+			json_encode( et_fb_get_builder_definitions( $post_type ), ET_BUILDER_JSON_ENCODE_OPTIONS )
 		)
 	);
 }
