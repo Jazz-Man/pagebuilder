@@ -3715,6 +3715,12 @@ function et_fb_is_enabled( $post_id = false ) {
 		$post_id = isset( $post->ID ) ? $post->ID : false;
 	}
 
+	$check = apply_filters( 'et_fb_is_enabled', null, $post_id );
+
+	if ( null !== $check ) {
+		return $check;
+	}
+
 	if ( is_admin() ) {
 		return false;
 	}
@@ -3744,6 +3750,29 @@ function et_fb_is_enabled( $post_id = false ) {
 	}
 
 	return true;
+}
+endif;
+
+if ( ! function_exists( 'et_fb_is_builder_ajax' ) ) :
+/**
+ * Returns whether current request is a builder AJAX call.
+ *
+ * @return bool
+ */
+function et_fb_is_builder_ajax() {
+	// phpcs:disable WordPress.Security.NonceVerification.NoNonceVerification
+	if ( ! wp_doing_ajax() || empty( $_REQUEST['action'] ) ) {
+		return false;
+	}
+	// phpcs:enable
+
+	return in_array(
+		$_REQUEST['action'],
+		array(
+			'et_fb_update_builder_assets',
+			'et_fb_retrieve_builder_data',
+		)
+	);
 }
 endif;
 

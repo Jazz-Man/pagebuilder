@@ -254,7 +254,18 @@ class ET_Builder_Element {
 		$this->_is_official_module = self::_is_official_module( get_class( $this ) );
 
 		$this->make_options_filterable();
-		$this->set_fields();
+
+		if ( et_fb_is_builder_ajax() ) {
+			// Ensure `et_fb_is_enabled` returns true while setting fields to avoid
+			// 3rd party modules using the function to generate different
+			// definitions when they are updated via the AJAX call.
+			add_filter( 'et_fb_is_enabled', '__return_true' );
+			$this->set_fields();
+			remove_filter( 'et_fb_is_enabled', '__return_true' );
+		} else {
+			$this->set_fields();
+		}
+
 		$this->set_factory_objects();
 
 		$this->_additional_fields_options = array();

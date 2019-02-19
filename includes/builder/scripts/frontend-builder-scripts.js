@@ -710,25 +710,21 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 			}
 
 			function set_carousel_columns( $the_carousel ) {
-				var columns,
-					$carousel_parent = $the_carousel.parents('.et_pb_column'),
-					carousel_items_width = $carousel_items.width(),
-					carousel_item_count = $the_carousel_items.length;
+				var columns = 3;
+				var $carousel_parent = $the_carousel.parents('.et_pb_column:not(".et_pb_specialty_column")');
 
-				if ( $carousel_parent.hasClass('et_pb_column_4_4') || $carousel_parent.hasClass('et_pb_column_3_4') || $carousel_parent.hasClass('et_pb_column_2_3') ) {
-					if ( $et_window.width() < 768 ) {
-						columns = 3;
-					} else {
+				if ($carousel_parent.hasClass('et_pb_column_4_4') || $carousel_parent.hasClass('et_pb_column_3_4') || $carousel_parent.hasClass('et_pb_column_2_3')) {
+					if ($et_window.width() >= 768) {
 						columns = 4;
 					}
-				} else if ( $carousel_parent.hasClass('et_pb_column_1_2') || $carousel_parent.hasClass('et_pb_column_3_8') || $carousel_parent.hasClass('et_pb_column_1_3') ) {
-					columns = 3;
-				} else if ( $carousel_parent.hasClass('et_pb_column_1_4') ) {
-					if ( $et_window.width() > 480 && $et_window.width() < 980 ) {
-						columns = 3;
-					} else {
+				} else if ($carousel_parent.hasClass('et_pb_column_1_4')) {
+					if ($et_window.width() <= 480 && $et_window.width() >= 980) {
 						columns = 2;
 					}
+				} else if ($carousel_parent.hasClass('et_pb_column_3_5')) {
+					columns = 4;
+				} else if ($carousel_parent.hasClass('et_pb_column_1_5') || $carousel_parent.hasClass('et_pb_column_1_6')) {
+					columns = 2;
 				}
 
 				if ( columns === $carousel_items.data('portfolio-columns') ) {

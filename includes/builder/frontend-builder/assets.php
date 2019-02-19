@@ -96,15 +96,15 @@ function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false )
 		global $post;
 		$post_type = isset( $post->post_type ) ? $post->post_type : 'post';
 	}
-	
+
 	$post_type = sanitize_text_field( $post_type );
-	
+
 	if ( ! in_array( $prefix, array( 'helpers', 'definitions' ) ) ) {
 		$prefix = '';
 	}
 
 	// Per language Cache due to definitions/helpers being localized.
-	$lang   = get_locale();
+	$lang   = get_user_locale();
 	$cache  = sprintf( '%s/%s', ET_Core_PageResource::get_cache_directory(), $lang );
 	$files  = glob( sprintf( '%s/%s-%s-*.js', $cache, $prefix, $post_type ) );
 	$exists = is_array( $files ) && count( $files ) > 0;
@@ -132,10 +132,18 @@ function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false )
 		}
 		if ( ( $update || ! $exists ) ) {
 
-			foreach ( $files as $file ) {
-				// Delete old version.
-				@unlink( $file );
+			if ( ET_BUILDER_KEEP_OLDEST_CACHED_ASSETS && count( $files ) > 0 ) {
+				// Files are ordered by timestamp, first one is always the oldest
+				array_shift( $files );
 			}
+
+			if ( ET_BUILDER_PURGE_OLD_CACHED_ASSETS ) {
+				foreach ( $files as $file ) {
+					// Delete old version.
+					@unlink( $file );
+				}
+			}
+
 			// Write the file only if it did not exist or its content changed
 			$uniq = str_replace( '.', '', (string) microtime( true ) );
 			$file = sprintf( '%s/%s-%s-%s.js', $cache, $prefix, $post_type, $uniq );
