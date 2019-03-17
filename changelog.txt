@@ -1,3 +1,8 @@
+version 3.20.1 ( updated 03-07-2019 )
+- Fixed issue with dynamic content not rendering properly on the front end.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/functions.php
+
 version 3.20 ( updated 03-07-2019 )
 - Added Support Center, a new WP Admin page that provides System Status, Remote Access Support, and Documentation.
 - Improved the New Divi Builder loading speed.
