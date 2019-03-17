@@ -1,3 +1,29 @@
+version 3.19.16 ( updated 02-21-2019 )
+- Fixed Save Changes Dialog not appearing in some cases.
+- Fixed a crash in custom Divi Builder modules caused by loading multiple copies of ReactJS.
+- Fixed errors in Specialty Sections with Global Rows.
+- Fixed a case where mixing http and https could cause Visual Builder to reload itself.
+- Fixed Visual Builder not loading on some web hosting providers with WordPress < 5.0.
+- Removed non-working Calder Forms TinyMCE button from Visual Builder.
+- Fixed custom field update getting rendered one step behind on settings modal and layout area.
+- Fixed Divi Code Snippet Module Plugin causing Visual Builder to reload.
+- Fixed hidden Google Maps Icon being shown in Visual Builder.
+- Fixed styles reset generating incorrect attributes in the shortcode.
+- Fixed html paragraphs being sometimes replaced with a different tag when multiple code modules were used in the same page.
+	* core/admin/js/react-dom.production.min.js
+	* core/admin/js/react.production.min.js
+	* includes/builder/.github/main.workflow
+	* includes/builder/api/DiviExtension.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/plugin-compat/caldera-forms.php
+	* includes/builder/plugin-compat/divi-module-code-snippet.php
+	* includes/builder/scripts/builder.js
+
 version 3.19.15 ( updated 02-15-2019 )
 - Updated webpack to latest version.
 - Fixed broken Split Test activation/deactivation sequence after recent performance update.

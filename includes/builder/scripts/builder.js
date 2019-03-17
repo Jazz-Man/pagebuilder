@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.19.15';
+window.et_builder_version = '3.19.16';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -8458,6 +8458,10 @@ window.et_builder_product_name = 'Divi';
 						module_settings = _.extend(module_settings, prefixed_attributes);
 					}
 
+					if ('section' === shortcode_name && 'on' === module_settings['et_pb_specialty']) {
+						shortcode_content = et_maybe_fix_specialty_columns(shortcode_content);
+					}
+
 					if (typeof module_settings['specialty_columns'] !== 'undefined') {
 						module_settings['layout_specialty'] = '1';
 						module_settings['specialty_columns'] = parseInt(module_settings['specialty_columns']);
@@ -13869,6 +13873,18 @@ window.et_builder_product_name = 'Divi';
 			}
 
 			return content.trim();
+		}
+
+		// Make sure Specialty Section contains inner rows and inner columns.
+		function et_maybe_fix_specialty_columns(content) {
+			return content.replace(/(\[et_pb_(row |row_inner) .*?\].*\[\/et_pb_(row |row_inner)\])/mis, et_fix_specialty_columns);
+		}
+
+		function et_fix_specialty_columns(rows) {
+			var fixed_content = rows.replace(/et_pb_row /g, 'et_pb_row_inner ').replace(/et_pb_row\]/g, 'et_pb_row_inner]');
+			fixed_content = fixed_content.replace(/et_pb_column /g, 'et_pb_column_inner ').replace(/et_pb_column\]/g, 'et_pb_column_inner]');
+
+			return fixed_content;
 		}
 
 		function et_get_editor_mode() {
