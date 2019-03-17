@@ -249,8 +249,8 @@ class ET_Builder_Module_Field_Border extends ET_Builder_Module_Field_Base {
 
 		$important = '';
 
-		if ( isset( $advanced_options['border']['css']['important'] ) ) {
-			if ( 'plugin_only' === $advanced_options['border']['css']['important'] ) {
+		if ( isset( $advanced_fields['border']['css']['important'] ) ) {
+			if ( 'plugin_only' === $advanced_fields['border']['css']['important'] ) {
 				$important = et_builder_has_limitation( 'force_use_global_important' ) ? '!important' : '';
 			} else {
 				$important = '!important';
@@ -296,8 +296,8 @@ class ET_Builder_Module_Field_Border extends ET_Builder_Module_Field_Base {
 
 		self::$_is_default = array();
 
-		if ( isset( $advanced_options['border']['css']['important'] ) ) {
-			if ( 'plugin_only' === $advanced_options['border']['css']['important'] ) {
+		if ( isset( $advanced_fields['border']['css']['important'] ) ) {
+			if ( 'plugin_only' === $advanced_fields['border']['css']['important'] ) {
 				$important = et_builder_has_limitation( 'force_use_global_important' ) ? '!important' : '';
 			} else {
 				$important = '!important';

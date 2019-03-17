@@ -47,18 +47,18 @@ function et_builder_should_load_framework() {
 	$post_id = (int) et_()->array_get( $_GET, 'post', 0 );
 	
 	$bfb_settings = get_option( 'et_bfb_settings' );
-	$is_bfb = isset( $bfb_settings['enable_bfb'] ) && 'on' === $bfb_settings['enable_bfb'];
+	$is_bfb = et_pb_is_allowed( 'use_visual_builder' ) && isset( $bfb_settings['enable_bfb'] ) && 'on' === $bfb_settings['enable_bfb'];
 	$is_bfb_used = 'on' === get_post_meta( $post_id, '_et_pb_use_builder', true ) && $is_bfb;
 
 	$is_edit_library_page = in_array( $pagenow, array( 'edit.php', 'post.php', 'post-new.php' ) ) && ( ( isset( $_GET['post_type'] ) && 'et_pb_layout' === $_GET['post_type'] ) || ( $post_id && 'et_pb_layout' === get_post_type( $post_id ) ) );
 	$is_extra_builder = $post_id && 'layout' === get_post_type( $post_id );
-	$is_bfb_edit_page = 'post.php' === $pagenow && $is_bfb_used;
+	$is_edit_page_not_bfb = in_array( $pagenow, array( 'post-new.php', 'post.php' ) ) && !$is_bfb_used;
 	$is_role_editor_page = 'admin.php' === $pagenow && isset( $_GET['page'] ) && apply_filters( 'et_divi_role_editor_page', 'et_divi_role_editor' ) === $_GET['page'];
 	$is_import_page = 'admin.php' === $pagenow && isset( $_GET['import'] ) && 'wordpress' === $_GET['import']; // Page Builder files should be loaded on import page as well to register the et_pb_layout post type properly
 	$is_wpml_page = 'admin.php' === $pagenow && isset( $_GET['page'] ) && 'sitepress-multilingual-cms/menu/languages.php' === $_GET['page']; // Page Builder files should be loaded on WPML clone page as well to register the custom taxonomies properly
 	$is_edit_layout_category_page = 'edit-tags.php' === $pagenow && isset( $_GET['taxonomy'] ) && ( 'layout_category' === $_GET['taxonomy'] || 'layout_pack' === $_GET['taxonomy'] );
 
-	if ( ! $is_admin || ( $is_admin && in_array( $pagenow, $required_admin_pages ) && ( ! in_array( $pagenow, $specific_filter_pages ) || $is_edit_library_page || $is_role_editor_page || $is_edit_layout_category_page || $is_import_page || $is_wpml_page || !$is_bfb_edit_page || $is_extra_builder ) ) ) {
+	if ( ! $is_admin || ( $is_admin && in_array( $pagenow, $required_admin_pages ) && ( ! in_array( $pagenow, $specific_filter_pages ) || $is_edit_library_page || $is_role_editor_page || $is_edit_layout_category_page || $is_import_page || $is_wpml_page || $is_edit_page_not_bfb || $is_extra_builder ) ) ) {
 		$should_load = true;
 	} else {
 		$should_load = false;

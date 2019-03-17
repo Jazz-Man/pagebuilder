@@ -756,6 +756,14 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 					$updates_options = get_option( 'et_automatic_updates_options', array() );
 				}
 
+				// Network Admins can edit options like Super Admins but content will be filtered
+				// (eg `>` in custom CSS would be encoded to `&gt;`) so we have to disable kses filtering
+				// while saving epanel options.
+				$skip_kses = ! current_user_can( 'unfiltered_html' );
+				if ( $skip_kses ) {
+					kses_remove_filters();
+				}
+
 				foreach ( $options as $value ) {
 					$et_option_name   = $et_option_new_value = false;
 					$is_builder_field = isset( $value['is_builder_field'] ) && $value['is_builder_field'];
@@ -927,6 +935,11 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 							}
 						}
 					}
+				}
+
+				if ( $skip_kses ) {
+					// Enable kses filters again
+					kses_init_filters();
 				}
 
 				$redirect_url = add_query_arg( 'saved', 'true', $redirect_url );

@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20.2' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.21' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -6690,6 +6690,10 @@ function et_pb_get_builder_settings_fields( $options ) {
 function et_pb_builder_settings_hidden_inputs( $post_id ) {
 	$settings = ET_Builder_Settings::get_fields();
 	$defaults = et_pb_get_builder_settings_configuration_default();
+
+	if ( empty( $settings ) ) {
+		return;
+	}
 
 	foreach ( $settings as $setting ) {
 		$setting = wp_parse_args( $setting, $defaults );

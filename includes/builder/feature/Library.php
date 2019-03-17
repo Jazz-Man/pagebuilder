@@ -996,6 +996,12 @@ class ET_Builder_Library {
 
 		@file_put_contents( $tmp_file, $response );
 
+		// Remove any previous buffered content since we're setting `Content-Length` header
+		// based on $response value only.
+		while ( ob_get_level() ) {
+			ob_end_clean();
+		}
+
 		header( 'Content-Length: ' . @filesize( $tmp_file ) );
 
 		@unlink( $tmp_file );
