@@ -58,16 +58,6 @@ function et_fb_enqueue_main_assets() {
 }
 add_action( 'wp_enqueue_scripts', 'et_fb_enqueue_main_assets' );
 
-function et_fb_enqueue_open_sans() {
-	$protocol = is_ssl() ? 'https' : 'http';
-	$query_args = array(
-		'family' => 'Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800',
-		'subset' => 'latin,latin-ext',
-	);
-
-	wp_enqueue_style( 'et-fb-fonts', esc_url_raw( add_query_arg( $query_args, "$protocol://fonts.googleapis.com/css" ) ), array(), null );
-}
-
 function et_fb_enqueue_google_maps_dependency( $dependencies ) {
 
 	if ( et_pb_enqueue_google_maps_script() ) {
@@ -369,7 +359,7 @@ if ( ! function_exists( 'et_fb_enqueue_react' ) ):
 function et_fb_enqueue_react() {
 	$DEBUG         = defined( 'ET_DEBUG' ) && ET_DEBUG;
 	$core_scripts  = ET_CORE_URL . 'admin/js';
-	$react_version = '16.8.2';
+	$react_version = '16.7.0';
 
 	wp_dequeue_script( 'react' );
 	wp_dequeue_script( 'react-dom' );

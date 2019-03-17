@@ -21,6 +21,11 @@ class ET_Builder_Settings {
 	/**
 	 * @var array
 	 */
+	protected static $_PAGE_SETTINGS_FIELDS_META_KEY_MAP = array();
+
+	/**
+	 * @var array
+	 */
 	protected static $_PAGE_SETTINGS_IS_DEFAULT;
 
 	/**
@@ -471,6 +476,36 @@ class ET_Builder_Settings {
 		return $fields;
 	}
 
+	/**
+	 * Get page setting fields' meta_key map. Most page settings' field meta key is identical to
+	 * its field['id'] but some fields use different meta_key. Map might need in some situations
+	 *
+	 * @since 3.20
+	 *
+	 * @param bool $meta_key_to_id reverse mapping if set to false
+	 *
+	 * @return array
+	 */
+	public static function get_page_setting_meta_key_map( $meta_key_to_id = true ) {
+		static $map = array();
+
+		// Less likely to change, populate it once will be sufficient
+		if ( empty( $map ) ) {
+			foreach ( self::_get_page_settings_fields() as $field_id => $field ) {
+				if ( isset( $field['meta_key'] ) ) {
+					// The map can be reversed if needed
+					if ( $meta_key_to_id ) {
+						$map[ $field['meta_key'] ] = $field_id;
+					} else {
+						$map[ $field_id ] = $field['meta_key'];
+					}
+				}
+			}
+		}
+
+		return $map;
+	}
+
 	protected static function _get_page_settings_values( $post_id ) {
 		$post_id = $post_id ? $post_id : get_the_ID();
 
@@ -517,6 +552,7 @@ class ET_Builder_Settings {
 		$is_default[]                        = strtolower( $et_pb_content_area_background_color ) === $default ? 'et_pb_content_area_background_color' : '';
 
 		$section_background_color            = get_post_meta( $post_id, '_et_pb_section_background_color', true );
+
 		$default                             = $fields['et_pb_section_background_color']['default'];
 		$et_pb_section_background_color      = '' !== $section_background_color ? $section_background_color : $default;
 		$is_default[]                        = strtolower( $et_pb_section_background_color ) === $default ? 'et_pb_section_background_color' : '';
@@ -699,6 +735,10 @@ class ET_Builder_Settings {
 		$class = get_class( $this );
 
 		if ( ! is_admin() ) {
+			// Setup post meta callback registration on preview page. Priority has to be less than 10
+			// so get_post_meta used on self::_get_page_settings_values() are affected
+			add_action( 'wp', array( $this, '_register_preview_post_metadata' ), 5 );
+
 			return;
 		}
 
@@ -1062,6 +1102,100 @@ class ET_Builder_Settings {
 		}
 
 		return self::$_BUILDER_SETTINGS_VALUES[ $setting ];
+	}
+
+	/**
+	 * Register filter callback for modifying page settings post meta value based on current
+	 * autosave data if current page is valid builder preview page
+	 *
+	 * @since 3.20
+	 *
+	 * @return void
+	 */
+	public static function _register_preview_post_metadata() {
+		if ( ! is_user_logged_in() || ! is_preview() || ! et_pb_is_pagebuilder_used() ) {
+			return;
+		}
+
+		// Populate page settings fields meta_key map. Most page setting field id is identical (sans
+		// `_` prefix) to its meta_key name but some field has completely different meta_key name
+		foreach ( self::$_PAGE_SETTINGS_FIELDS as $field_id => $field ) {
+			$meta_key = isset( $field['meta_key'] ) ? $field['meta_key'] : '_' . $field_id;
+
+			self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ] = $field_id;
+		}
+
+		// Register filter for modifying page setting's post_meta value
+		add_filter( 'get_post_metadata', array( 'ET_Builder_Settings', 'modify_preview_post_metadata' ), 10, 4 );
+	}
+
+	/**
+	 * Get page settings' post meta value in preview page. This method should only be called on
+	 * preview page only
+	 *
+	 * @since 3.20
+	 *
+	 * @return array
+	 */
+	public static function get_preview_post_metadata() {
+		static $preview_post_metadata = null;
+
+		// Value retrieval should only be done once
+		if ( is_null( $preview_post_metadata ) ) {
+			// Get autosave data of current post of current user
+			$current_user_id    = get_current_user_id();
+			$preview_post_metadata = get_post_meta(
+				get_the_ID(),
+				"_et_builder_settings_autosave_{$current_user_id}",
+				true
+			);
+
+			// Returned value should be array
+			if ( ! is_array( $preview_post_metadata ) ) {
+				$preview_post_metadata = array();
+			}
+		}
+
+		return $preview_post_metadata;
+	}
+
+	/**
+	 * Modify page settings' post meta value in preview page. This should only be hooked after
+	 * checking whether current page is valid preview page or not
+	 *
+	 * @see get_metadata()
+	 *
+	 * @since 3.20
+	 *
+	 * @param null|array|string $value
+	 * @param int               $object_id
+	 * @param string            $meta_key
+	 * @param bool              $single
+	 *
+	 * @return null|array|string
+	 */
+	public static function modify_preview_post_metadata( $value, $object_id, $meta_key, $single ) {
+		$current_user_id = get_current_user_id();
+
+		// Bail if $meta_key value is equal to meta_key value used to save current page autosave data
+		if ( "_et_builder_settings_autosave_{$current_user_id}" === $meta_key ) {
+			return $value;
+		}
+
+		// Bail if $meta_key is not page settings field's meta key
+		if ( ! isset( self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ] ) ) {
+			return $value;
+		}
+
+		// Bail if current $meta_key value doesn't exist on preview page autosave data
+		$preview_post_meta_key = self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ];
+		$preview_post_metadata = self::get_preview_post_metadata();
+
+		if ( ! isset( $preview_post_metadata[ $preview_post_meta_key ] ) ) {
+			return $value;
+		}
+
+		return $preview_post_metadata[ $preview_post_meta_key ];
 	}
 }
 

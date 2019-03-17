@@ -750,7 +750,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 										: '';
 
 									$comments = 'on' === $args['show_comments']
-										? mb_convert_encoding( sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) ), 'UTF-8' )
+										? et_core_maybe_convert_to_utf_8( sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) ) )
 										: '';
 
 									printf( '<p class="post-meta">%1$s %2$s %3$s %4$s %5$s %6$s %7$s</p>',

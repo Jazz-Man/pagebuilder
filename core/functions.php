@@ -814,6 +814,25 @@ function et_core_replace_enqueued_style( $old_src, $new_src, $regex = false ) {
 }
 endif;
 
+if ( ! function_exists( 'et_core_is_safe_mode_active' ) ):
+/**
+ * Check whether the Support Center's Safe Mode is active
+ *
+ * @since ?.?
+ *
+ * @see ET_Support_Center::toggle_safe_mode
+ *
+ * @return bool
+ */
+function et_core_is_safe_mode_active() {
+	$is_safe_mode_active = false;
+	if ( 'on' === get_user_meta( get_current_user_id(), '_et_support_center_safe_mode', true ) ) {
+		$is_safe_mode_active = true;
+	};
+	return $is_safe_mode_active;
+}
+endif;
+
 if ( ! function_exists( 'et_core_load_component' ) ) :
 /**
  * =============================

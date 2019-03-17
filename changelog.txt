@@ -1,3 +1,86 @@
+version 3.20 ( updated 03-07-2019 )
+- Added Support Center, a new WP Admin page that provides System Status, Remote Access Support, and Documentation.
+- Improved the New Divi Builder loading speed.
+- Fixed Section Dividers default background color not considering previous/next Section background color.
+- Fixed a compatibility issue with the Visual Builder and Toolset View Plugin.
+- Added Multiselect support to Visual Builder Global Clipboard.
+- Fixed an error that would sometimes show in console when Visual Builder page lost focus while still loading.
+- Fixed Inline Editor Popup position when Admin Bar is disabled.
+- Optimized Yoast Sitemaps generation.
+- Fixed an error that occurred when running 3rd-Party Divi Extensions in development mode.
+- Fixed options values update after pasting in Settings Modal.
+- Fixed hover mode reset when closing Settings Modal.
+- Fixed page settings' Custom CSS which didn't get updated when previewing an edited page.
+- Fixed Theme Customizer Styles not being applied to password protected posts.
+- Fixed a bug that would prevent Visual Builder from loading when certain script content was embedded in a custom widget.
+- Fixed Fullscreen Menu not working correctly in the Visual Builder when switching to Tablet / Phone View.
+- Added Instagram icon support to the theme header and footer.
+- Improved search.
+	* core/admin/css/core.css
+	* core/admin/css/support-center.css
+	* core/admin/js/support-center.js
+	* core/components/PageResource.php
+	* core/components/SupportCenter.php
+	* core/components/SupportCenterMUAutoloader.php
+	* core/components/init.php
+	* core/components/mu-plugins/SupportCenterSafeModeDisablePlugins.php
+	* core/functions.php
+	* css/main-styles.css
+	* epanel/css/panel.css
+	* epanel/custom_functions.php
+	* epanel/js/functions-init.js
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-settings.php
+	* includes/builder/core.php
+	* includes/builder/feature/BlockEditorIntegration.php
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/functions.php
+	* includes/builder/plugin-compat/wordpress-seo.php
+	* includes/builder/plugin-compat/wp-views.php
+	* includes/builder/styles/bb_bfb_common.css
+	* includes/social_icons.php
+	* js/custom.js
+	* options_divi.php
+
+version 3.19.18 ( updated 02-26-2019 )
+- Fixed an issue with Divi Library Import caused by custom configuration for temporary directory.
+- Fix disappearing content on custom module with no module_classname() usage when animation style is used.
+- Fixed Text Options not highlighting Tabs that include modified values.
+- Fixed module items' label on settings modal not being updated when being changed.
+- Fixed warning message on console when previewing video input from Vimeo / Daily Motion on settings modal.
+- Fixed a case where Builder would still try to use Rich Editor even when it was disabled.
+- Fixed PHP error in PHP < 5.3.
+- Fixed a bug that could remove backslashes from Page Settings.
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/functions.php
+	* includes/builder/module/PricingTablesItem.php
+	* includes/builder/plugin-compat/landing-pages.php
+	* includes/builder/scripts/bfb_admin_script.js
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/ext/jquery-ui-timepicker-addon.js
+	* includes/builder/scripts/ext/wp-color-picker-alpha.js
+
+version 3.19.17 ( updated 02-22-2019 )
+- Fixed cursors being forced to the end of inputs when editing text and settings in the builder.
+- Fixed error in Firefox that caused in the Classic Builder to crash in some cases.
+- Fixed a PHP error that occurred on some websites due to missing PHP module.
+	* core/admin/js/react-dom.production.min.js
+	* core/admin/js/react.production.min.js
+	* core/components/data/init.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/frontend-builder/assets.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/module/Blog.php
+	* includes/builder/module/FullwidthPostSlider.php
+	* includes/builder/module/PostSlider.php
+
 version 3.19.16 ( updated 02-21-2019 )
 - Fixed Save Changes Dialog not appearing in some cases.
 - Fixed a crash in custom Divi Builder modules caused by loading multiple copies of ReactJS.

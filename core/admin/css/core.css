@@ -190,6 +190,32 @@ body.rtl.et-db:not(.et-fb-no-rtl) button.et-core-button {
 	background: #D22902 !important;
 }
 
+/* Safe Mode Indicator */
+.et-safe-mode-indicator,
+.et-safe-mode-indicator:hover,
+.et-safe-mode-indicator:focus {
+	box-shadow: 0 5px 10px rgba(41,196,169,.15);
+	background: #29C4A9;
+	color: #ffffff;
+	font-size: 14px;
+	font-weight: 600;
+	padding:12px;
+	line-height: 16px;
+	border-radius: 3px;
+	position: fixed;
+	bottom: 30px;
+	right: 30px;
+	z-index: 999999;
+	text-decoration: none;
+	font-family: "Open Sans", sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+/* Padding for Safe Mode Indicator */
+.wp-admin.et-safe-mode-active #wpcontent {
+	padding-bottom: 90px;
+}
+
 /*-----------------------------------------------------------------------------
   4.0 - Modal
 ------------------------------------------------------------------------------*/

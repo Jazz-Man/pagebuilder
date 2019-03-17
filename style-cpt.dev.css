@@ -7,7 +7,7 @@
 /*!
 Theme Name: Divi
 Theme URI: http://www.elegantthemes.com/gallery/divi/
-Version: 3.19.16
+Version: 3.20
 Description: Smart. Flexible. Beautiful. Divi is the most powerful theme in our collection.
 Author: Elegant Themes
 Author URI: http://www.elegantthemes.com
@@ -4161,8 +4161,12 @@ ul.et_pb_side_nav .side_nav_item a.active {
 	width: 100%;
 	padding-top: 70px;
 	opacity: 0;
-	-webkit-transition: 1s ease-in-out;
-	transition: 1s ease-in-out;
+	-webkit-transition: 1s ease-in-out, padding-top 0s;
+	transition: 1s ease-in-out, padding-top 0s;
+}
+
+.et-has-admin-bar .et_header_style_fullscreen .et_slide_in_menu_container {
+	top: 32px;
 }
 
 .et_header_style_fullscreen .et_slide_in_menu_container.et_pb_fullscreen_menu_opened {
@@ -7055,6 +7059,28 @@ a.et_pb_more_button:after,
 
 .et_pb_bg_layout_dark .et_pb_widget li a {
 	color: inherit;
+}
+
+/* Safe Mode Indicator */
+.et-safe-mode-indicator,
+.et-safe-mode-indicator:hover,
+.et-safe-mode-indicator:focus {
+	position: fixed;
+	z-index: 999999;
+	right: 30px;
+	bottom: 30px;
+	padding: 12px;
+	border-radius: 3px;
+	color: #fff;
+	background: #29c4a9;
+	box-shadow: 0 5px 10px rgba(41, 196, 169, 0.15);
+	font-family: "Open Sans", sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	line-height: 16px;
+	text-decoration: none;
 }
 
 /* Button Styles */
@@ -13186,6 +13212,7 @@ span.comment_date {
 	/* Mega Menu */
 	/* Mobile Menu */
 	/* Widgets */
+	/* Safe Mode Indicator */
 	/* Button Styles */
 	/* Button Hover */
 	/* Button Hover Light Text */
@@ -13768,6 +13795,27 @@ span.comment_date {
 
 .et-db #et-boc .et_pb_bg_layout_dark .et_pb_widget li a {
 	color: inherit;
+}
+
+.et-db #et-boc .et-safe-mode-indicator,
+.et-db #et-boc .et-safe-mode-indicator:hover,
+.et-db #et-boc .et-safe-mode-indicator:focus {
+	position: fixed;
+	z-index: 999999;
+	right: 30px;
+	bottom: 30px;
+	padding: 12px;
+	border-radius: 3px;
+	color: #fff;
+	background: #29c4a9;
+	box-shadow: 0 5px 10px rgba(41, 196, 169, 0.15);
+	font-family: "Open Sans", sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	line-height: 16px;
+	text-decoration: none;
 }
 
 .et-db #et-boc .et_pb_button {

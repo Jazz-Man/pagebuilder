@@ -1933,7 +1933,7 @@ function et_fb_get_asset_helpers( $content, $post_type ) {
 	$helpers = et_fb_get_static_backend_helpers( $post_type );
 	return sprintf(
 		'window.ETBuilderBackend = jQuery.extend(true, %s, window.ETBuilderBackendDynamic)',
-		et_fb_remove_site_url_protocol( json_encode( $helpers, ET_BUILDER_JSON_ENCODE_OPTIONS ) )
+		et_fb_remove_site_url_protocol( wp_json_encode( $helpers, ET_BUILDER_JSON_ENCODE_OPTIONS ) )
 	);
 }
 add_filter( 'et_fb_get_asset_helpers', 'et_fb_get_asset_helpers', 10, 2 );

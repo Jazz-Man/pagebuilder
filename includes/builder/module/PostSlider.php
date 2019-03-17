@@ -629,7 +629,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 				$query->posts[ $post_index ]->post_author_name    = get_the_author_meta( 'display_name', $post_author_id );
 				$query->posts[ $post_index ]->post_date_readable  = get_the_date();
 				$query->posts[ $post_index ]->categories          = $categories;
-				$query->posts[ $post_index ]->post_comment_popup  = mb_convert_encoding( sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) ), 'UTF-8' );
+				$query->posts[ $post_index ]->post_comment_popup  = et_core_maybe_convert_to_utf_8( sprintf( esc_html( _nx( '%s Comment', '%s Comments', get_comments_number(), 'number of comments', 'et_builder' ) ), number_format_i18n( get_comments_number() ) ) );
 
 				$post_content = et_strip_shortcodes( get_the_content(), true );
 

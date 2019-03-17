@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.19.16' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -756,7 +756,7 @@ function et_fb_conditional_tag_params() {
 		'is_wrapped_styles'           => et_builder_has_limitation( 'use_wrapped_styles' ),
 		'is_gutenberg'                => et_core_is_gutenberg_active(),
 		'is_custom_post_type'         => et_builder_is_post_type_custom( $post_type ),
-		'is_rich_editor'              => 'false' === apply_filters( 'user_can_richedit', get_user_option( 'rich_editing' ) ) ? 'no' : 'yes',
+		'is_rich_editor'              => 'true' === apply_filters( 'user_can_richedit', get_user_option( 'rich_editing' ) ) ? 'yes' : 'no',
 	);
 
 	return apply_filters( 'et_fb_conditional_tag_params', $conditional_tags );
@@ -1427,17 +1427,17 @@ function et_fb_ajax_save() {
 
 	if ( ! isset( $_POST['skip_post_update'] ) ) {
 		$shortcode_data = json_decode( stripslashes( $_POST['modules'] ), true );
-	
+
 		if ( ! $built_for_type = get_post_meta( $post_id, '_et_pb_built_for_post_type', true ) ) {
 			update_post_meta( $post_id, '_et_pb_built_for_post_type', 'page' );
 		}
-	
+
 		$post_content = et_fb_process_to_shortcode( $shortcode_data, $_POST['options'], $layout_type );
-	
+
 		// Store a copy of the sanitized post content in case wpkses alters it since that
 		// would cause our check at the end of this function to fail.
 		$sanitized_content = sanitize_post_field( 'post_content', $post_content, $post_id, 'db' );
-	
+
 		$update = wp_update_post( array(
 			'ID'           => $post_id,
 			'post_content' => $post_content,
@@ -1500,6 +1500,8 @@ function et_fb_ajax_save() {
 		et_pb_ab_remove_stats( $post_id );
 		et_pb_ab_clear_cache_handler( $post_id );
 	}
+
+	do_action( 'et_save_post', $post_id );
 
 	if ( $update ) {
 		if ( ! empty( $_POST['et_builder_version'] ) ) {
@@ -2788,6 +2790,8 @@ function et_pb_metabox_settings_save_details( $post_id, $post ){
 		delete_post_meta( $post_id, '_et_builder_version' );
 	}
 
+	do_action( 'et_save_post', $post_id );
+
 	// Do not process Page Settings if BFB is enabled. Were saving it via ajax.
 	if ( et_builder_bfb_enabled() ) {
 		// But we still need to save old content
@@ -2908,10 +2912,10 @@ function et_pb_before_main_editor( $post ) {
 	$is_builder_used           = 'on' === $_et_builder_use_builder;
 	$last_builder_version_used = get_post_meta( $post->ID, '_et_builder_version', true ); // Examples: 'BB|Divi|3.0.30' 'VB|Divi|3.0.30'
 
-	$_et_builder_use_ab_testing = get_post_meta( $post->ID, '_et_pb_use_ab_testing', true );
-	$_et_builder_ab_stats_refresh_interval = et_pb_ab_get_refresh_interval( $post->ID );
-	$_et_builder_ab_subjects = get_post_meta( $post->ID, '_et_pb_ab_subjects', true );
-	$_et_builder_ab_goal_module = et_pb_ab_get_goal_module( $post->ID );
+	$_et_builder_use_ab_testing = et_builder_bfb_enabled() ? false : get_post_meta( $post->ID, '_et_pb_use_ab_testing', true );
+	$_et_builder_ab_stats_refresh_interval = et_builder_bfb_enabled() ? false : et_pb_ab_get_refresh_interval( $post->ID );
+	$_et_builder_ab_subjects = et_builder_bfb_enabled() ? false : get_post_meta( $post->ID, '_et_pb_ab_subjects', true );
+	$_et_builder_ab_goal_module = et_builder_bfb_enabled() ? false : et_pb_ab_get_goal_module( $post->ID );
 
 	$builder_always_enabled = apply_filters('et_builder_always_enabled', false, $post->post_type, $post );
 	if ( 'et_pb_layout' === $post->post_type ) {
@@ -2959,12 +2963,14 @@ function et_pb_before_main_editor( $post ) {
 		);
 	}
 
-	$module_fields_dependencies = json_encode( ET_Builder_Element::get_field_dependencies( $post->post_type ) );
+	if ( ! et_builder_bfb_enabled() ) {
+		$module_fields_dependencies = json_encode( ET_Builder_Element::get_field_dependencies( $post->post_type ) );
 
-	echo et_core_esc_previously("
-		<script>
-			window.et_pb_module_field_dependencies = JSON.parse( '{$module_fields_dependencies}' );
-		</script>");
+		echo et_core_esc_previously("
+			<script>
+				window.et_pb_module_field_dependencies = JSON.parse( '{$module_fields_dependencies}' );
+			</script>");
+	}
 
 	?>
 	<p class="et_pb_page_settings" style="display: none;">
@@ -2976,7 +2982,7 @@ function et_pb_before_main_editor( $post ) {
 		<input type="hidden" autocomplete="off" id="_et_pb_ab_stats_refresh_interval" name="et_pb_ab_stats_refresh_interval" value="<?php echo esc_attr( $_et_builder_ab_stats_refresh_interval ); ?>">
 		<input type="hidden" autocomplete="off" id="et_pb_ab_subjects" name="et_pb_ab_subjects" value="<?php echo esc_attr( $_et_builder_ab_subjects ); ?>">
 		<input type="hidden" autocomplete="off" id="et_pb_ab_goal_module" name="et_pb_ab_goal_module" value="<?php echo esc_attr( $_et_builder_ab_goal_module ); ?>">
-		<?php et_pb_builder_settings_hidden_inputs( $post->ID ); ?>
+		<?php et_builder_fb_enabled_for_post( $post->ID ) ? et_pb_builder_settings_hidden_inputs( $post->ID ) : false; ?>
 		<?php et_pb_builder_global_library_inputs( $post->ID ); ?>
 
 		<textarea id="et_pb_old_content" name="et_pb_old_content"><?php echo esc_attr( get_post_meta( $post->ID, '_et_pb_old_content', true ) ); ?></textarea>
@@ -3061,10 +3067,23 @@ function et_pb_admin_scripts_styles( $hook ) {
 				'legacy_current' => esc_html__( 'Current Color', 'et_builder' ),
 			) ) );
 
-  			wp_enqueue_script( 'wp-color-picker-alpha' );
- 			wp_enqueue_style('wp-color-picker');
+			wp_enqueue_script( 'wp-color-picker-alpha' );
+			wp_enqueue_style( 'wp-color-picker' );
 
-			et_fb_enqueue_main_assets();
+			$ver    = ET_BUILDER_VERSION;
+			$root   = ET_BUILDER_URI;
+			$assets = ET_BUILDER_URI . '/frontend-builder/assets';
+ 				wp_register_style( 'et_pb_admin_date_css', "{$root}/styles/jquery-ui-1.10.4.custom.css", array(), $ver );
+
+			et_fb_enqueue_open_sans();
+
+			// Enqueue the appropriate bundle CSS (hot/start/build)
+			et_fb_enqueue_bundle( 'et-frontend-builder', 'bundle.css', array(
+				'et_pb_admin_date_css',
+				'wp-mediaelement',
+				'wp-color-picker',
+				'et-core-admin'
+			) );
 
 			if ( $secondary_css_bundles = glob( ET_BUILDER_DIR . 'frontend-builder/build/bundle.*.css' ) ) {
 				$bundles = array( 'et-frontend-builder' );
@@ -3164,14 +3183,143 @@ function et_pb_fix_builder_shortcodes( $content ) {
 }
 add_filter( 'the_content', 'et_pb_fix_builder_shortcodes' );
 
-function et_pb_the_content_prep_code_module_for_wpautop( $content ) {
+/**
+ * Parse shortcode to prepare its argument list
+ * @see do_shortcode()
+ *
+ * @since 3.20
+ *
+ * @param string $content
+ *
+ * @return string prepared $content
+ */
+function et_pb_prepare_module_shortcode_tags( $content ) {
+	// Get module slugs (shortcode tags) of current post type
+	$module_slugs = ET_Builder_Element::get_module_slugs_by_post_type( get_post_type() );
+
+	// Find all registered tag names in $content.
+	preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $content, $matches );
+
+	$tagnames = array_intersect( $module_slugs, $matches[1] );
+
+	// Get regex of current module slug
+	$pattern = get_shortcode_regex( $tagnames );
+
+	// Parse content and filter its shortcode argument list
+	$content = preg_replace_callback( "/$pattern/", 'et_pb_prepare_module_shortcode_attrs', $content );
+
+	return $content;
+}
+
+/**
+ * Callback for matching result of et_pb_prepare_module_shortcode_tags() which also recursively call
+ * et_pb_prepare_module_shortcode_tags() to prepare argument list from section to module item level
+ *
+ * @since 3.20
+ *
+ * @param array $matches {
+ *     shortcode which has been parsed against module regex pattern
+ *
+ *     @type string [0] Current module's shortcode layout that is being parsed against regex
+ *     @type string [1] Empty string (for general shortcode, this is used for extra [ to allow
+ *                      for escaping shortcodes with double [[]] )
+ *     @type string [2] Shortcode name
+ *     @type string [3] Shortcode argument list
+ *     @type string [4] Empty string (for general shortcode, this is used for self closing /)
+ *     @type string [5] Current module's content shortcode layout
+ *     @type string [6] Empty string (for general shortcode, this is used for extra ] to allow for
+ *                      escaping shortcodes with double [[]])
+ * }
+ */
+function et_pb_prepare_module_shortcode_attrs( $matches ) {
+	$childless_module_slugs = ET_Builder_Element::get_childless_module_slugs( get_post_type() );
+	$content_has_module     = ! in_array( $matches[2], $childless_module_slugs );
+
+	// Append shortcode content which its content has no module (ie. et_pb_cta, et_pb_slide) shortcode
+	// by HTML comment to avoid unclosed HTML like content (ie unclosed `<`) being incorrectly parsed
+	// by wp_html_split() inside do_shortcodes_in_html_tags() inside do_shortcode()
+	$module_content         = $content_has_module || '' === $matches[5] ? $matches[5] : sprintf(
+		' %1$s <!-- et_pb_content_end -->',
+		et_core_esc_previously( $matches[5] )
+	);
+
+	// Return prepared shortcode layout
+	return '['.$matches[2] . et_pb_prepare_module_shortcode_argument_list( $matches[3] ) . ']'
+		. et_pb_prepare_module_shortcode_tags( $module_content )
+	.'[/'.$matches[2].']';
+}
+
+/**
+ * Filter & format shortcode argument list so it is ready for WordPress default formatting
+ * @see get_shortcode_regex()
+ *
+ * @since 3.20
+ *
+ * @param string  argument list
+ *
+ * @return string prepared argument list
+ */
+function et_pb_prepare_module_shortcode_argument_list ( $argument_list = '' ) {
+	// Regex pattern for capturing argument list that is being texturized by wptexturize. Generally,
+	// attribute value that contains `<` character with no closing `>` and `>` which isn't started
+	// by `<` fail the shortcode check which make the argument list ends up being texturized by
+	// WordPress' wptexturize filter.
+
+	$regex = '/(?<==\")'        // Positive look behind; Exclude equal sign and opening double quote
+		.'(?:'                  // Non-capturing group
+			.'([^<"]*?>[^"]*?)' // `>` with no opening `<`
+			.'|'                //
+			.'([^"]*?<+[^>"]*)' // `<` with no closing `>`
+			.'|'
+			.'([^"]*?<[^\/"]*?>[^<"]*>[^"]*?)' // `< > >` structure and its variation
+		.')'                    //
+	.'(?=\")/';                 // Positive look ahead; Exclude closing double quote
+
+	$argument_list = preg_replace_callback( $regex, 'et_pb_prepare_escape_attribute_value', $argument_list );
+
+	return $argument_list;
+}
+
+/**
+ * Callback for replacing attribute value which matches et_pb_prepare_module_shortcode_argument_list()
+ * pattern with its escaped value
+ *
+ * @since 3.20
+ *
+ * @param array $matches substring which matches et_pb_prepare_module_shortcode_argument_list() regex
+ *
+ * @return string escaped string of matched value
+ */
+function et_pb_prepare_escape_attribute_value( $matches ) {
+	// Only need to escape the first array element as it contains the match info of the regex pattern
+	return esc_attr( $matches[0] );
+}
+
+/**
+ * Prepare builder's post_content so WordPress' default formatting won't unexpectedly change the output
+ *
+ * @since 3.17.3
+ * @since 3.20 renamed et_pb_the_content_prep_code_module_for_wpautop() into et_pb_the_content_preparation()
+ *
+ * @param string $content
+ *
+ * @return string formatted $content
+ */
+function et_pb_the_content_preparation( $content ) {
 	if ( is_singular() && 'on' === get_post_meta( get_the_ID(), '_et_pb_use_builder', true ) ) {
 		$content = et_pb_prep_code_module_for_wpautop( $content );
+
+		// WordPress' wptexturize filter is called before do_shortcode and might unexpectedly
+		// escape shortcode argument list (ie. ` title="Your Title Here >"`) if its attribute value
+		// contains unclosed `<` and `>` which isn't opened by `<`. This causes shortcode parser
+		// incorrectly parse the argument list which ends up rendering broken module output.
+		// Thus, builder needs to escape the "bad" attribute value first
+		$content = et_pb_prepare_module_shortcode_tags( $content );
 	}
 
 	return $content;
 }
-add_filter( 'the_content', 'et_pb_the_content_prep_code_module_for_wpautop', 0 );
+add_filter( 'the_content', 'et_pb_the_content_preparation', 0 );
 
 // generate the html for "Add new template" Modal in Library
 if ( ! function_exists( 'et_pb_generate_new_layout_modal' ) ) {
@@ -3356,7 +3504,7 @@ function et_bfb_enqueue_scripts() {
 
 	// Load timepicker script on admin page in case of BFB to make it work with modals loaded on WP admin DOM
 	wp_enqueue_script( 'et_bfb_admin_date_addon_js', ET_BUILDER_URI . '/scripts/ext/jquery-ui-timepicker-addon.js', array( $jQuery_ui ), ET_BUILDER_PRODUCT_VERSION, true );
-	
+
 	// Load google maps script on admin page in case of BFB to make it work with modals loaded on WP admin DOM
 	wp_enqueue_script( 'et_bfb_google_maps_api', esc_url( add_query_arg( array( 'key' => et_pb_get_google_api_key(), 'callback' => 'initMap' ), is_ssl() ? 'https://maps.googleapis.com/maps/api/js' : 'http://maps.googleapis.com/maps/api/js' ) ), array(), '3', true );
 
@@ -4022,7 +4170,7 @@ if ( ! function_exists( 'et_pb_get_global_module_content' ) ) {
 		if (in_array( $shortcode_name, array( 'et_pb_code', 'et_pb_fullwidth_code' ) ) ) {
 			return et_pb_extract_shortcode_content( $content, $shortcode_name );
 		}
-		
+
 		$original_code_modules = array();
 		$shortcode_content = et_pb_extract_shortcode_content( $content, $shortcode_name );
 
@@ -4040,7 +4188,7 @@ if ( ! function_exists( 'et_pb_get_global_module_content' ) ) {
 		// Replace content modified by wpautop for code and fullwidth code modules with original content.
 		if ( ! empty( $original_code_modules ) ) {
 			global $et_pb_global_code_replacements;
-			
+
 			$et_pb_global_code_replacements = $original_code_modules[0];
 			$global_content = preg_replace_callback( '/(\[et_pb(_fullwidth_code|_code).+?\[\/et_pb(_fullwidth_code|_code)\])/s', 'et_builder_get_global_code_replacement', $global_content );
 		}
@@ -4499,7 +4647,7 @@ function et_pb_pagebuilder_meta_box() {
 
 		$is_switch_to_classic_allowed = et_pb_is_allowed( 'divi_builder_control' ) && current_user_can( 'manage_options' );
 		$additional_bfb_class = ! $is_switch_to_classic_allowed ? ' et_divi_builder_bottom_margin' : '';
-		
+
 		echo "
 			<div class='et_divi_builder et-bfb-page-preloading{$additional_bfb_class}'>
 				<script>
@@ -4509,6 +4657,7 @@ function et_pb_pagebuilder_meta_box() {
 					iframe.src       = '{$bfb_url}';
 
 					document.body.classList.add('et-db');
+					document.body.classList.add('et-bfb');
 
 					document.addEventListener('DOMContentLoaded', function() {
 						var outer = jQuery('<div>', {id: 'et-boc', className: 'et-boc'});
@@ -7626,6 +7775,8 @@ function et_pb_all_role_options() {
 		),
 	);
 
+	$all_role_options = apply_filters( 'add_et_builder_role_options', $all_role_options );
+
 	$all_role_options['general_capabilities']['options'] = array_merge( $all_role_options['general_capabilities']['options'], $theme_only_options );
 
 	// Set portability capabilities.
@@ -8665,7 +8816,7 @@ function et_fb_get_asset_definitions( $content, $post_type ) {
 	$definitions = et_fb_get_builder_definitions( $post_type );
 	return sprintf(
 		'window.ETBuilderBackend = jQuery.extend(true, %s, window.ETBuilderBackend)',
-		et_fb_remove_site_url_protocol( json_encode( $definitions, ET_BUILDER_JSON_ENCODE_OPTIONS ) )
+		et_fb_remove_site_url_protocol( wp_json_encode( $definitions, ET_BUILDER_JSON_ENCODE_OPTIONS ) )
 	);
 }
 add_filter( 'et_fb_get_asset_definitions', 'et_fb_get_asset_definitions', 10, 2 );
@@ -8880,7 +9031,9 @@ function et_fb_process_shortcode( $content, $parent_address = '', $global_parent
 			$global_parent_type = '';
 		}
 
-		$attr = shortcode_parse_atts( $match[3] );
+		// Prepare argument list before parsing it using shortcode_parse_attr() because the function
+		// rejects attribute value which contains unclosed HTML tag-like value
+		$attr = shortcode_parse_atts( et_pb_prepare_module_shortcode_argument_list( $match[3] ) );
 
 		if ( ! is_array( $attr ) ) {
 			$attr = array();
@@ -9141,6 +9294,29 @@ function et_pb_maybe_flush_rewrite_rules_library() {
 	}
 }
 add_action( 'init', 'et_pb_maybe_flush_rewrite_rules_library', 9 );
+
+/**
+ * Remove et_builder_maybe_flush_rewrite_rules flag if flush_rewrite_rules() is called while
+ * `et_pb_layout` post type hasn't been registered
+ *
+ * @since 3.19.18
+ *
+ * @param string|array $old_value
+ * @param string|array $value
+ * @param string       $option
+ */
+function et_pb_maybe_remove_flush_rewrite_rules_library_flag( $old_value, $value, $option ) {
+	// rewrite rules for CPT that are rebuilt by flush_rewrite_rules() are based on
+	// get_post_types( array( '_builtin' => false ) ) value; Hence if flush_rewrite_rules() is
+	// executed while `et_pb_layout` CPT hasn't been registered (usually by third party plugin)
+	// et_pb_maybe_flush_rewrite_rules_library() flag has to be removed to trigger flush_rewrite_rules()
+	// via et_pb_maybe_flush_rewrite_rules_library() which contains `et_pb_layout` rewrite rules
+	// because et_pb_maybe_flush_rewrite_rules_library() checks for `et_pb_layout` first.
+	if ( '' === $value && ! post_type_exists( 'et_pb_layout' ) ) {
+		et_update_option( 'et_flush_rewrite_rules_library', '' );
+	}
+}
+add_action( 'update_option_rewrite_rules', 'et_pb_maybe_remove_flush_rewrite_rules_library_flag', 10, 3 );
 
 /**
  * Get list of shortcut available on BB and FB

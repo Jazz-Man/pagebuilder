@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.19.16';
+window.et_builder_version = '3.20';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -9438,18 +9438,18 @@ window.et_builder_product_name = 'Divi';
 				// It's possible that several requests will be started at the same time and now() will return the same value, so append random number.
 				var iframeID = 'et-fb-preview-' + Date.now() + '-' + Math.floor((Math.random() * 1000) + 1);
 				var previewUrl = et_pb_options.preview_url + '&et_pb_preview=true&et_pb_preview_nonce=' + et_pb_options.et_pb_preview_nonce + '&iframe_id=' + iframeID;
-				
+
 				// Roll in the next lifecycle to get correct shortcode wrapper's width
 				setTimeout(function() {
 				  var $shortcodeWrapper = $('*[data-shortcode-id="' + shortcodeID +'"]');
 				  var shortcodeWidth = $shortcodeWrapper.length ? $shortcodeWrapper.width() + 'px' : '100%';
-			
+
 				  var $iframe = jQuery('<iframe />', {
 					id: iframeID,
 					src: previewUrl,
 					style: `position: absolute; bottom: 0; left: 0; opacity: 0; pointer-events: none; width: ${shortcodeWidth}; height: 100%;`
 				  });
-			
+
 				  var hasRenderPage = false;
 				  var request_data = {
 					et_pb_preview_nonce : et_pb_options.et_pb_preview_nonce,
@@ -9457,13 +9457,13 @@ window.et_builder_product_name = 'Divi';
 					post_title          : $('#title').val(),
 					post_id             : et_pb_options.postId
 				  };
-			
+
 				  /**
 				   * Append iframe to body.
 				   * component DOM hasn't ready at this point so it needs to be appended to <body>
 				   */
 				  $('body').append($iframe);
-			
+
 					/**
 					 * Load iframe's content into page
 					 */
@@ -9474,33 +9474,33 @@ window.et_builder_product_name = 'Divi';
 						if (hasRenderPage) {
 						return;
 						}
-				
+
 						var preview = document.getElementById(iframeID);
-				
+
 						/**
 						 * IE9 below fix (They have postMessage, but it has to be in string)
 						 */
 						if (!_.isUndefined(msie) && msie < 10) {
 							request_data = JSON.stringify(request_data);
 						}
-				
+
 						/**
 						 * Pass shortcode structure to iFrame to be displayed
 						 */
 						preview.contentWindow.postMessage(request_data, previewUrl);
-				
+
 						/**
 						 * Flag to prevent unnecessary load
 						 */
 						hasRenderPage = true;
-				
+
 						/**
 						 * Create IE compatible event handler
 						 */
 						var childListenerMethod = window.addEventListener ? "addEventListener" : "attachEvent";
 						var childListener = window[childListenerMethod];
 						var childListenerEvent = childListenerMethod == "attachEvent" ? "onmessage" : "message";
-				
+
 						/**
 						 * Listen to message from child window
 						 */
@@ -9516,7 +9516,7 @@ window.et_builder_product_name = 'Divi';
 						}, false);
 					});
 				}, 0);
-			
+
 				return;
 			},
 
@@ -9529,10 +9529,10 @@ window.et_builder_product_name = 'Divi';
 				var content                 = et_pb_get_content( 'content', true );
 				var _loadingSpinnerHTML     = '<svg class="yoast-svg-icon et-pb-yoast-loading yoast-svg-icon-loading-spinner SvgIcon__StyledSvg-jBzRth mPAyu" aria-hidden="true" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 66 66" fill="#64a60a" style="position: absolute; background: #fff; border-radius: 5px;"><circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg>';
 				var $yoastAnalysisContainer = $('#yoast-readability-analysis-collapsible-metabox');
-				
+
 				// Add loader icon on top of the Yoast icon to show the progress
 				$yoastAnalysisContainer.find('svg').first().after(_loadingSpinnerHTML);
-		
+
 				// Parse the current content from builder and force Yoast to reload with updated data
 				this.parseShortcode(content, function(response) {
 					var pageHTML = !_.isUndefined(response.html) ? response.html : '';
@@ -13877,7 +13877,7 @@ window.et_builder_product_name = 'Divi';
 
 		// Make sure Specialty Section contains inner rows and inner columns.
 		function et_maybe_fix_specialty_columns(content) {
-			return content.replace(/(\[et_pb_(row |row_inner) .*?\].*\[\/et_pb_(row |row_inner)\])/mis, et_fix_specialty_columns);
+			return content.replace(/(\[et_pb_(row |row_inner) [\s\S]*?\][\s\S]*\[\/et_pb_(row |row_inner)\])/mi, et_fix_specialty_columns);
 		}
 
 		function et_fix_specialty_columns(rows) {
@@ -19194,10 +19194,10 @@ window.et_builder_product_name = 'Divi';
 			 */
 			ET_PB_Yoast_Content.prototype.et_pb_update_content = function( data ) {
 				var final_content = et_pb_processed_yoast_content || et_pb_options.yoast_content;
-				
+
 				// Remove our loader
 				$('.et-pb-yoast-loading').remove();
-				
+
 				return final_content;
 			};
 
