@@ -1,3 +1,40 @@
+version 3.20.2 ( updated 03-11-2019 )
+- Security Update: Fixed a vulnerability that could allow some cross-site request forgery checks within our core product framework to be bypassed. In all cases, these checks were also hardened by user permission checks, however, user permissions checks alone are not sufficient to protect against all CSRF vectors. View the full disclosure here: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=917542a075.
+- Fixed an issue with Paid Membership Pro Plugin.
+- Fixed a display glitch when dragging sections in Wireframe View.
+- Added support for third party modules to use Dynamic Content.
+- Fixed Builder app overflow by header in some cases.
+- Fixed locking/unlocking multiple Global Modules in the same page not working correctly.
+- Fixed "Add Media Modal" appearance in Divi Builder Plugin when uploading media.
+- Fixed an issue where Support Center documentation videos would start at the five second mark.
+- Added a message that appears in the System Status card when all system checks have passed.
+- Fixed how we compare some system settings against our recommended values in Support Center.
+- Fixed a JavaScript error that loaded YouTube player code outside of the Support Center.
+- Fixed an issue where Support Center helper functions were loaded for all site visitors, rather than only users with Admin access.
+- Fixed an issue where the ET Support Plugin can trigger a fatal error when auto-deactivated by the Support Center.
+	* core/admin/css/support-center.css
+	* core/admin/js/support-center.js
+	* core/components/Logger.php
+	* core/components/SupportCenter.php
+	* core/components/Updates.php
+	* core/functions.php
+	* et-pagebuilder/et-pagebuilder.php
+	* functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/class-et-builder-value.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/feature/dynamic-content.php
+	* includes/builder/framework.php
+	* includes/builder/frontend-builder/assets/css/fb-top-window.css
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/i18n/library.php
+	* includes/builder/functions.php
+	* includes/builder/plugin-compat/paid-memberships-pro.php
+	* includes/builder/scripts/builder.js
+	* includes/builder/scripts/frontend-builder-scripts.js
+
 version 3.20.1 ( updated 03-07-2019 )
 - Fixed issue with dynamic content not rendering properly on the front end.
 	* includes/builder/class-et-builder-element.php

@@ -5912,7 +5912,7 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 
 					$('<style />', {
 						'id' : 'et_fix_html_margin',
-						'text' : 'html.js { margin-top: 0px !important; }'
+						'text' : 'html.js.et-fb-top-html { margin-top: 0px !important; }'
 					}).appendTo('head');
 				}, 0);
 			}

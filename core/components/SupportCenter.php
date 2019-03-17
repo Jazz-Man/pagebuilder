@@ -284,8 +284,28 @@ class ET_Support_Center {
 	 */
 	public function deactivate_conflicting_plugins() {
 		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-		require_once( ABSPATH . 'wp-admin/includes/user.php' );
-		deactivate_plugins( '/elegant-themes-support/elegant-themes-support.php' );
+
+		// Load WP user management functions
+		if ( is_multisite() ) {
+			require_once( ABSPATH . 'wp-admin/includes/ms.php' );
+		} else {
+			require_once( ABSPATH . 'wp-admin/includes/user.php' );
+		}
+
+		// Verify that WP user management functions are available
+		$can_delete_user = false;
+		if ( is_multisite() && function_exists( 'wpmu_delete_user' ) ) {
+			$can_delete_user = true;
+		}
+		if ( ! is_multisite() && function_exists( 'wp_delete_user' ) ) {
+			$can_delete_user = true;
+		}
+
+		if ( $can_delete_user ) {
+			deactivate_plugins( '/elegant-themes-support/elegant-themes-support.php' );
+		} else {
+			et_error( 'Support Center: Unable to deactivate the ET Support Plugin.' );
+		}
 	}
 
 	/**
@@ -511,6 +531,11 @@ class ET_Support_Center {
 	 * @return void
 	 */
 	public function enqueue_scripts_styles( $hook ) {
+		// We only need to add this for authenticated users on the frontend
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
 		// Support Center JS
 		wp_enqueue_script( 'et-support-center',
 			$this->local_path . 'admin/js/support-center.js',
@@ -895,67 +920,88 @@ class ET_Support_Center {
 		/** @var array Collection of system settings to run diagnostic checks on. */
 		$system_diagnostics_settings = array(
 			array(
-				'name'        => esc_attr__( 'PHP Version', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '7.2 or higher',
-				'actual'      => (float) phpversion(),
-				'help_text'   => et_core_intentionally_unescaped( __( 'We recommend using the latest stable version of PHP. This will not only ensure compatibility with Divi, but it will also greatly speed up your website leading to less memory and CPU related issues.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/releases/',
+				'name'           => esc_attr__( 'PHP Version', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'version',
+				'pass_minus_one' => false,
+				'pass_zero'      => false,
+				'minimum'        => null,
+				'recommended'    => '7.2 or higher',
+				'actual'         => (float) phpversion(),
+				'help_text'      => et_core_intentionally_unescaped( __( 'We recommend using the latest stable version of PHP. This will not only ensure compatibility with Divi, but it will also greatly speed up your website leading to less memory and CPU related issues.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/releases/',
 			),
 			array(
-				'name'        => esc_attr__( 'memory_limit', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '128M',
-				'actual'      => ini_get( 'memory_limit' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'By default, memory limits set by your host or by WordPress may be too low. This will lead to applications crashing as PHP reaches the artificial limit. You can adjust your memory limit within your <a href="http://php.net/manual/en/ini.core.php#ini.memory-limit" target="_blank">php.ini file</a>, or by contacting your host for assistance. You may also need to define a memory limited in <a href="https://codex.wordpress.org/Editing_wp-config.php" target=_blank">wp-config.php</a>.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/ini.core.php#ini.memory-limit',
+				'name'           => esc_attr__( 'memory_limit', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'size',
+				'pass_minus_one' => true,
+				'pass_zero'      => false,
+				'minimum'        => null,
+				'recommended'    => '128M',
+				'actual'         => ini_get( 'memory_limit' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'By default, memory limits set by your host or by WordPress may be too low. This will lead to applications crashing as PHP reaches the artificial limit. You can adjust your memory limit within your <a href="http://php.net/manual/en/ini.core.php#ini.memory-limit" target="_blank">php.ini file</a>, or by contacting your host for assistance. You may also need to define a memory limited in <a href="https://codex.wordpress.org/Editing_wp-config.php" target=_blank">wp-config.php</a>.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/ini.core.php#ini.memory-limit',
 			),
 			array(
-				'name'        => esc_attr__( 'post_max_size', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '64M',
-				'actual'      => ini_get( 'post_max_size' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'Post Max Size limits how large a page or file can be on your website. If your page is larger than the limit set in PHP, it will fail to load. Post sizes can become quite large when using the Divi Builder, so it is important to increase this limit. It also affects file size upload/download, which can prevent large layouts from being imported into the builder. You can adjust your max post size within your <a href="http://php.net/manual/en/ini.core.php#ini.post-max-size" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/ini.core.php#ini.post-max-size',
+				'name'           => esc_attr__( 'post_max_size', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'size',
+				'pass_minus_one' => false,
+				'pass_zero'      => true,
+				'minimum'        => null,
+				'recommended'    => '64M',
+				'actual'         => ini_get( 'post_max_size' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'Post Max Size limits how large a page or file can be on your website. If your page is larger than the limit set in PHP, it will fail to load. Post sizes can become quite large when using the Divi Builder, so it is important to increase this limit. It also affects file size upload/download, which can prevent large layouts from being imported into the builder. You can adjust your max post size within your <a href="http://php.net/manual/en/ini.core.php#ini.post-max-size" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/ini.core.php#ini.post-max-size',
 			),
 			array(
-				'name'        => esc_attr__( 'max_execution_time', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '180',
-				'actual'      => ini_get( 'max_execution_time' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'Max Execution Time affects how long a page is allowed to load before it times out. If the limit is too low, you may not be able to import large layouts and files into the builder. You can adjust your max execution time within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-execution-time">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time',
+				'name'           => esc_attr__( 'max_execution_time', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'seconds',
+				'pass_minus_one' => false,
+				'pass_zero'      => true,
+				'minimum'        => null,
+				'recommended'    => '180',
+				'actual'         => ini_get( 'max_execution_time' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'Max Execution Time affects how long a page is allowed to load before it times out. If the limit is too low, you may not be able to import large layouts and files into the builder. You can adjust your max execution time within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-execution-time">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/info.configuration.php#ini.max-execution-time',
 			),
 			array(
-				'name'        => esc_attr__( 'upload_max_filesize', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '64M',
-				'actual'      => ini_get( 'upload_max_filesize' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'Upload Max File Size determines that maximum file size that you are allowed to upload to your server. If the limit is too low, you may not be able to import large collections of layouts into the Divi Library. You can adjust your max file size within your <a href="http://php.net/manual/en/ini.core.php#ini.upload-max-filesize" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/ini.core.php#ini.upload-max-filesize',
+				'name'           => esc_attr__( 'upload_max_filesize', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'size',
+				'pass_minus_one' => false,
+				'pass_zero'      => false,
+				'minimum'        => null,
+				'recommended'    => '64M',
+				'actual'         => ini_get( 'upload_max_filesize' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'Upload Max File Size determines that maximum file size that you are allowed to upload to your server. If the limit is too low, you may not be able to import large collections of layouts into the Divi Library. You can adjust your max file size within your <a href="http://php.net/manual/en/ini.core.php#ini.upload-max-filesize" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/ini.core.php#ini.upload-max-filesize',
 			),
 			array(
-				'name'        => esc_attr__( 'max_input_time', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '180',
-				'actual'      => ini_get( 'max_input_time' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'This sets the maximum time in seconds a script is allowed to parse input data. If the limit is too low, the Divi Builder may time out before it is allowed to load. You can adjust your max input time within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-input-time" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/info.configuration.php#ini.max-input-time',
+				'name'           => esc_attr__( 'max_input_time', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'seconds',
+				'pass_minus_one' => true,
+				'pass_zero'      => true,
+				'minimum'        => null,
+				'recommended'    => '180',
+				'actual'         => ini_get( 'max_input_time' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'This sets the maximum time in seconds a script is allowed to parse input data. If the limit is too low, the Divi Builder may time out before it is allowed to load. You can adjust your max input time within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-input-time" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/info.configuration.php#ini.max-input-time',
 			),
 			array(
-				'name'        => esc_attr__( 'max_input_vars', 'et-core' ),
-				'environment' => 'server',
-				'minimum'     => null,
-				'recommended' => '3000',
-				'actual'      => ini_get( 'max_input_vars' ),
-				'help_text'   => et_core_intentionally_unescaped( __( 'This setting affects how many input variables may be accepted. If the limit is too low, it may prevent the Divi Builder from loading. You can adjust your max input variables within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-input-vars" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
-				'learn_more'  => 'http://php.net/manual/en/info.configuration.php#ini.max-input-vars',
+				'name'           => esc_attr__( 'max_input_vars', 'et-core' ),
+				'environment'    => 'server',
+				'type'           => 'size',
+				'pass_minus_one' => false,
+				'pass_zero'      => false,
+				'minimum'        => null,
+				'recommended'    => '3000',
+				'actual'         => ini_get( 'max_input_vars' ),
+				'help_text'      => et_core_intentionally_unescaped( __( 'This setting affects how many input variables may be accepted. If the limit is too low, it may prevent the Divi Builder from loading. You can adjust your max input variables within your <a href="http://php.net/manual/en/info.configuration.php#ini.max-input-vars" target="_blank">php.ini file</a>, or by contacting your host for assistance.', 'et-core' ), 'html' ),
+				'learn_more'     => 'http://php.net/manual/en/info.configuration.php#ini.max-input-vars',
 			),
 		);
 
@@ -975,10 +1021,16 @@ class ET_Support_Center {
 			if ( ! is_null( $scan['recommended'] ) ) {
 				$system_diagnostics_settings[ $i ]['pass_fail'] = 'fail';
 			}
-			if ( ! is_null( $scan['minimum'] ) && $this->get_size_in_bytes( $scan['minimum'] ) <= $this->get_size_in_bytes( $scan['actual'] ) ) {
+			if ( ! is_null( $scan['minimum'] ) && $this->value_is_at_least( $scan['minimum'], $scan['actual'], $scan['type'] ) ) {
 				$system_diagnostics_settings[ $i ]['pass_fail'] = 'minimal';
 			}
-			if ( ! is_null( $scan['recommended'] ) && $this->get_size_in_bytes( $scan['recommended'] ) <= $this->get_size_in_bytes( $scan['actual'] ) ) {
+			if ( ! is_null( $scan['recommended'] ) && $this->value_is_at_least( $scan['recommended'], $scan['actual'], $scan['type'] ) ) {
+				$system_diagnostics_settings[ $i ]['pass_fail'] = 'pass';
+			}
+			if ( $scan['pass_minus_one'] && ( -1 === (int) $scan['actual'] ) ) {
+				$system_diagnostics_settings[ $i ]['pass_fail'] = 'pass';
+			}
+			if ( $scan['pass_zero'] && ( 0 === (int) $scan['actual'] ) ) {
 				$system_diagnostics_settings[ $i ]['pass_fail'] = 'pass';
 			}
 
@@ -1104,7 +1156,11 @@ class ET_Support_Center {
 					  . $report;
 		}
 		if ( 'div' === $format ) {
-			$report = '<div class="et-system-status-report">' . $report . '</div>';
+			$report = sprintf( '<div class="%3$s-report">%1$s</div><p class="%3$s-congratulations">%2$s</p>',
+				$report,
+				esc_html__( 'Congratulations, all system checks have passed. Your hosting configuration is compatible with Divi.', 'et-core' ),
+				'et-system-status'
+			);
 		}
 
 		return $report;
@@ -1159,6 +1215,29 @@ class ET_Support_Center {
 		}
 
 		return round( $bytes, $precision ) . $units[ $i ];
+	}
+
+	/**
+	 * Size comparisons between two values using a variety of calculation methods.
+	 *
+	 * @since 3.20.2
+	 *
+	 * @param string|int|float $a Value to compare against
+	 * @param string|int|float $b Value being compared
+	 * @param string $type Comparison type
+	 *
+	 * @return bool Whether the second value is equal to or greater than the first
+	 */
+	protected function value_is_at_least( $a, $b, $type = 'size' ) {
+		switch ( $type ) {
+			case 'version':
+				return (float) $a <= (float) $b;
+			case 'seconds':
+				return (int) $a <= (int) $b;
+			case 'size':
+			default:
+				return $this->get_size_in_bytes($a) <= $this->get_size_in_bytes($b);
+		}
 	}
 
 	/**

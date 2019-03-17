@@ -412,6 +412,7 @@ function et_fb_get_static_backend_helpers($post_type) {
 		'builderVersion'               => ET_BUILDER_PRODUCT_VERSION,
 		'failureNotification'          => et_builder_get_failure_notification_modal(),
 		'noBuilderSupportNotification' => et_builder_get_no_builder_notification_modal(),
+		'noBrowserSupportNotification' => et_builder_get_no_browser_notification_modal(),
 		'exitNotification'             => et_builder_get_exit_notification_modal(),
 		'browserAutosaveNotification'  => et_builder_get_browser_autosave_notification_modal(),
 		'serverAutosaveNotification'   => et_builder_get_server_autosave_notification_modal(),

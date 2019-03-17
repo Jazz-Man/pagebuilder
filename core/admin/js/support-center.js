@@ -1,32 +1,7 @@
-'use strict';
-
-// Load the IFrame Player API code asynchronously.
-var tag            = document.createElement('script');
-tag.src            = 'https://www.youtube.com/iframe_api';
-var firstScriptTag = document.getElementsByTagName('script')[0];
-firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-var docPlayer;
-
-function onYouTubeIframeAPIReady() {
-  docPlayer = new YT.Player('et_documentation_player', {
-    videoId:  'T-Oe01_J62c',
-    height:   '360',
-    width:    '640',
-    showinfo: 0,
-    controls: 0,
-    rel:      0
-  });
-
-  et_core_correct_video_proportions();
-}
-
-function et_core_correct_video_proportions() {
-  var parentHeight = (parseInt(jQuery('.et_docs_videos').first().width()) * .5625) + 'px';
-  jQuery('.et_docs_videos .wrapper').css('max-height', parentHeight);
-  jQuery('.et_docs_videos iframe').css('max-height', parentHeight);
-}
-
 (function($) {
+  'use strict';
+
+  var docPlayer;
   var resizeTimer;
   var showHideDelay                    = 300;
   var removeDelay                      = 500;
@@ -88,6 +63,30 @@ function et_core_correct_video_proportions() {
     timerContent = timerContent + minutes + (1 !== minutes ? ' minutes' : ' minute');
 
     $timer.html(timerContent);
+  }
+
+  // Documentation: Recalculate video dimensions (typically on viewport resize)
+  function et_core_correct_video_proportions() {
+    var parentHeight = (parseInt(jQuery('.et_docs_videos').first().width()) * .5625) + 'px';
+    jQuery('.et_docs_videos .wrapper').css('max-height', parentHeight);
+    jQuery('.et_docs_videos iframe').css('max-height', parentHeight);
+  }
+
+  // Documentation: Initialize YouTube Iframe player
+  function loadYouTubeIframe() {
+    if (('undefined' !== typeof YT) && YT && YT.Player) {
+      docPlayer = new YT.Player('et_documentation_player', {
+        videoId:  'T-Oe01_J62c',
+        height:   '360',
+        width:    '640',
+        showinfo: 0,
+        controls: 0,
+        rel:      0
+      });
+      et_core_correct_video_proportions();
+    } else {
+      setTimeout(loadYouTubeIframe, 100);
+    }
   }
 
   // Safe Mode: Activate/Deactivate
@@ -180,6 +179,11 @@ function et_core_correct_video_proportions() {
     /**
      * Support Center :: System Status
      */
+
+    // System Status: display message if all checks passed
+    if(0 === $('.et-system-status-report').children(':not(.et_system_status_pass)').length) {
+      $('.et-system-status-congratulations').show(showHideDelay);
+    }
 
     // System Status: Show Full Report
     $('.full_report_show').on('click', function() {
@@ -350,6 +354,14 @@ function et_core_correct_video_proportions() {
     /**
      * Support Center :: Documentation & Help
      */
+    if ($('body').is('.divi_page_et_support_center, .extra_page_et_support_center')) {
+      // Load the IFrame Player API code asynchronously.
+      var tag            = document.createElement('script');
+      tag.src            = 'https://www.youtube.com/iframe_api';
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+      loadYouTubeIframe();
+    }
 
     // Documentation & Help: YouTube Video Navigation
     $et_documentation_videos_list_li.on('click', function() {
@@ -358,7 +370,7 @@ function et_core_correct_video_proportions() {
       $et_documentation_videos_list_li.removeClass('active');
       $active.addClass('active');
 
-      docPlayer.cueVideoById($active.attr('data-ytid'), 5, 'large');
+      docPlayer.cueVideoById($active.attr('data-ytid'), 0, 'large');
     });
 
     /**

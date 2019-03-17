@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20.1' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20.2' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -4028,7 +4028,9 @@ if ( ! function_exists( 'et_pb_remove_shortcode_content' ) ) {
 		$shortcode_content = et_pb_extract_shortcode_content( $content, $shortcode_name );
 
 		if ( $shortcode_content ) {
-			return str_replace( $shortcode_content, '', $content );
+			// Anchor to the ][ brackets around the content so content that appears in
+			// attributes does not get removed as well.
+			return str_replace( ']' . $shortcode_content . '[', '][', $content );
 		}
 
 		return $content;

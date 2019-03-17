@@ -5,7 +5,7 @@ window.wp = window.wp || {};
 /**
  * The builder version and product name will be updated by grunt release task. Do not edit!
  */
-window.et_builder_version = '3.20.1';
+window.et_builder_version = '3.20.2';
 window.et_builder_product_name = 'Divi';
 
 ( function($) {
@@ -423,8 +423,13 @@ window.et_builder_product_name = 'Divi';
 		cleanContent       = cleanContent.replace(trimSpace, '');
 
 		try {
-			var parsedContent = JSON.parse(cleanContent);
+			// Test for encoded dynamic content.
+			if (/^@ET-DC@(.*?)@$/.test(cleanContent)) {
+				return true;
+			}
 
+			// Test for legacy JSON-encoded dynamic content.
+			var parsedContent = JSON.parse(cleanContent);
 			if (typeof parsedContent.dynamic !== 'undefined' && true === parsedContent.dynamic) {
 				return true;
 			}
@@ -433,7 +438,7 @@ window.et_builder_product_name = 'Divi';
 		}
 
 		return false;
-	}
+	};
 
 	$( document ).ready( function() {
 
@@ -9447,7 +9452,7 @@ window.et_builder_product_name = 'Divi';
 				  var $iframe = jQuery('<iframe />', {
 					id: iframeID,
 					src: previewUrl,
-					style: `position: absolute; bottom: 0; left: 0; opacity: 0; pointer-events: none; width: ${shortcodeWidth}; height: 100%;`
+					style: 'position: absolute; bottom: 0; left: 0; opacity: 0; pointer-events: none; width:' + shortcodeWidth + '; height: 100%;'
 				  });
 
 				  var hasRenderPage = false;
