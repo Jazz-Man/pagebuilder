@@ -801,6 +801,11 @@ class ET_Core_PageResource {
 			return $tag;
 		}
 
+		/** @see ET_Support_Center::toggle_safe_mode */
+		if ( et_core_is_safe_mode_active() ) {
+			return $tag;
+		}
+
 		$existing_onerror = "/(?<=onerror=')(.*?)(;?')/";
 		$existing_onload  = "/(?<=onload=')(.*?)(;?')/"; // Internet Explorer :face_with_rolling_eyes:
 

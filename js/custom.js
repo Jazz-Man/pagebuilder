@@ -904,6 +904,10 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 			et_set_right_vertical_menu();
 		} );
 
+		if (isBuilder && jQuery('.et_header_style_fullscreen .et_slide_in_menu_container').length > 0) {
+			jQuery(window).resize(et_pb_resize_fullscreen_menu);
+		}
+
 		$( window ).ready( function(){
 			if ( $.fn.fitVids ) {
 				$( '#main-content' ).fitVids( { customSelector: "iframe[src^='http://www.hulu.com'], iframe[src^='http://www.dailymotion.com'], iframe[src^='http://www.funnyordie.com'], iframe[src^='https://embed-ssl.ted.com'], iframe[src^='http://embed.revision3.com'], iframe[src^='https://flickr.com'], iframe[src^='http://blip.tv'], iframe[src^='http://www.collegehumor.com']"} );
@@ -1521,6 +1525,7 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 
 		$menu_container.toggleClass( 'et_pb_fullscreen_menu_opened' );
 		$( 'body' ).toggleClass( 'et_pb_fullscreen_menu_active' );
+		et_pb_resize_fullscreen_menu();
 
 		if ( $menu_container.hasClass( 'et_pb_fullscreen_menu_opened' ) ) {
 			$menu_container.addClass( 'et_pb_fullscreen_menu_animated' );
@@ -1531,6 +1536,22 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 			setTimeout( function() {
 				$menu_container.removeClass( 'et_pb_fullscreen_menu_animated' );
 			}, 1000 );
+		}
+	}
+
+	function et_pb_resize_fullscreen_menu(e) {
+		if (isBuilder) {
+			var $menu = jQuery('.et_header_style_fullscreen .et_slide_in_menu_container.et_pb_fullscreen_menu_opened');
+			if ($menu.length > 0) {
+				var height = jQuery(window.top).height();
+				// Account for padding
+				height -= parseInt($menu.css('padding-top'), 10);
+				// and AdminBar
+				if ($menu.closest('.admin-bar').length > 0) {
+					height -= 32;
+				}
+				$menu.find('.et_pb_fullscreen_nav_container').css('max-height', height);
+			}
 		}
 	}
 

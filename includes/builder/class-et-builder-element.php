@@ -162,6 +162,7 @@ class ET_Builder_Element {
 	private static $modules = array();
 	private static $parent_modules = array();
 	private static $child_modules = array();
+	private static $childless_module_slugs = array();
 	private static $current_module_index = 0;
 	private static $structure_modules = array();
 	private static $structure_module_slugs = array();
@@ -351,6 +352,14 @@ class ET_Builder_Element {
 				self::$child_modules[ $post_type ][ $this->slug ] = $this;
 			} else {
 				self::$parent_modules[ $post_type ][ $this->slug ] = $this;
+			}
+
+			// If a module is not structure element nor has child slug, its shortcode content might
+			// contain unclosed `<` character which pontentially incorrectly parsed by wp_html_split()
+			// inside do_shortcodes_in_html_tags() inside do_shortcode(). This module's content need
+			// to be adjusted hence being populated as childless module
+			if ( ! is_subclass_of( $this, 'ET_Builder_Structure_Element' ) && is_null( $this->child_slug ) ) {
+				self::$childless_module_slugs[ $post_type ][] = $this->slug;
 			}
 		}
 
@@ -649,7 +658,7 @@ class ET_Builder_Element {
 
 		$is_preview       = is_preview() || is_et_pb_preview();
 		$forced_in_footer = $post_id && et_builder_setting_is_on( 'et_pb_css_in_footer', $post_id );
-		$forced_inline    = ! $post_id || $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id );
+		$forced_inline    = ! $post_id || $is_preview || $forced_in_footer || et_builder_setting_is_off( 'et_pb_static_css_file', $post_id ) || et_core_is_safe_mode_active();
 		$unified_styles   = ! $forced_inline && ! $forced_in_footer;
 
 		$resource_owner = $unified_styles ? 'core' : 'builder';
@@ -1823,7 +1832,7 @@ class ET_Builder_Element {
 			}
 
 			// Try to apply old method for plugins without vb support
-			if ( 'on' !== $this->vb_support ) {
+			if ( ! $et_fb_processing_shortcode_object && 'on' !== $this->vb_support ) {
 				add_filter( "{$render_slug}_shortcode_output", array( $this, 'add_et_animated_class' ), 10, 2 );
 			}
 
@@ -1965,7 +1974,7 @@ class ET_Builder_Element {
 	 * @return string
 	 */
 	function add_et_animated_class( $output, $module_slug ) {
-		if ( in_array( $module_slug,  ET_Builder_Element::$uses_module_classname ) ) {
+		if ( ! is_string( $output ) || in_array( $module_slug,  ET_Builder_Element::$uses_module_classname ) ) {
 			return $output;
 		}
 
@@ -2162,7 +2171,7 @@ class ET_Builder_Element {
 				$fields = array_merge( $fields, $this->process_fields( $rendering_module->fields_unprocessed ) );
 			}
 		}
-		
+
 		$output_render_slug = $render_slug;
 
 		// When rendering specialty columns we should make sure correct tags are used for inner content
@@ -2222,7 +2231,7 @@ class ET_Builder_Element {
 						$global_content = et_pb_get_global_module_content( $global_module_data, 'et_pb_row', true );
 					}
 				}
-				
+
 				// remove the shortcode content to avoid conflicts of parent attributes with similar attrs from child modules
 				if ( false !== $global_content ) {
 					$global_content_processed = str_replace( $global_content, '', $global_module_data );
@@ -11090,6 +11099,23 @@ class ET_Builder_Element {
 		}
 
 		return apply_filters( 'et_builder_get_child_modules', $child_modules, $post_type );
+	}
+
+	/**
+	 * Get list of module slugs which doesn't contains other module inside of its content
+	 *
+	 * @since 3.20
+	 *
+	 * @param string $post_type
+	 *
+	 * @return array
+	 */
+	static function get_childless_module_slugs( $post_type = '' ) {
+		$childless_module_slugs = ! empty( $post_type ) && isset( self::$childless_module_slugs[ $post_type ] )
+			? self::$childless_module_slugs[ $post_type ]
+			: array();
+
+		return apply_filters( 'et_builder_get_childless_module_slugs', $childless_module_slugs, $post_type );
 	}
 
 	/**

@@ -906,10 +906,10 @@ function et_builder_parse_dynamic_content( $content ) {
 	        <\/?p>                # The root of all evil.
 	    )*
 	~xi', '$1$2', $json );
-	
+
 	// Remove line-breaks which break the json strings.
 	$json               = preg_replace( '/\r|\n/', '', $json );
-	
+
 	// Strip wrapping <p></p> tag as it appears in shortcode content in certain cases (e.g. BB preview).
 	$json               = preg_replace( '/^<p>(.*)<\/p>$/i', '$1', trim( $json ) );
 

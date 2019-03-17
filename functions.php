@@ -101,6 +101,11 @@ function et_setup_theme() {
 add_action( 'after_setup_theme', 'et_setup_theme' );
 
 function et_divi_load_unminified_scripts( $load ) {
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return true;
+	}
+
 	if ( 'false' === et_get_option( 'divi_minify_combine_scripts' ) ) {
 		return true;
 	}
@@ -109,6 +114,11 @@ function et_divi_load_unminified_scripts( $load ) {
 }
 
 function et_divi_load_unminified_styles( $load ) {
+	/** @see ET_Support_Center::toggle_safe_mode */
+	if ( et_core_is_safe_mode_active() ) {
+		return true;
+	}
+
 	if ( 'false' === et_get_option( 'divi_minify_combine_styles' ) ) {
 		return true;
 	}
@@ -6056,7 +6066,7 @@ function et_divi_add_customizer_css() {
 		$disabled_global = 'off' === et_get_option( 'et_pb_static_css_file', 'on' );
 		$disabled_post   = $disabled_global || ( $is_singular && 'off' === get_post_meta( $post_id, '_et_pb_static_css_file', true ) );
 
-		$forced_inline     = $is_preview || $disabled_global || $disabled_post;
+		$forced_inline     = $is_preview || $disabled_global || $disabled_post || post_password_required();
 		$builder_in_footer = 'on' === et_get_option( 'et_pb_css_in_footer', 'off' );
 
 		$unified_styles = $is_singular && ! $forced_inline && ! $builder_in_footer && et_core_is_builder_used_on_current_request();
@@ -9381,6 +9391,24 @@ function et_pb_check_options_access() {
 }
 
 /**
+ * Divi Support Center
+ *
+ * @since ??
+ */
+function et_add_divi_support_center(){
+	// Make sure we don't load it twice
+	if ( class_exists( 'ET_Support_Center' ) ) {
+		return;
+	}
+
+	include_once 'core/components/SupportCenter.php';
+
+	$support_center = new ET_Support_Center('divi_theme');
+	$support_center->init();
+}
+add_action('init', 'et_add_divi_support_center' );
+
+/**
  * Allowing blog and portfolio module pagination to work in non-hierarchical singular page.
  * Normally, WP_Query based modules wouldn't work in non-hierarchical single post type page
  * due to canonical redirect to prevent page duplication which could lead to SEO penalty.
@@ -9538,6 +9566,19 @@ function et_divi_theme_body_class( $classes ) {
 }
 add_filter( 'body_class', 'et_divi_theme_body_class' );
 
+/**
+ * Determine if it's a fresh Divi install by checking for the existence of 'divi_logo' key in 'et_divi' options array.
+ *
+ * @since ??
+ *
+ * @return bool
+ */
+if ( ! function_exists( 'et_divi_is_fresh_install' ) ):
+function et_divi_is_fresh_install() {
+    return false === et_get_option( 'divi_logo' );
+}
+endif;
+
 if ( ! function_exists( 'et_get_original_footer_credits' ) ) :
 function et_get_original_footer_credits() {
 	return sprintf( __( 'Designed by %1$s | Powered by %2$s', 'Divi' ), '<a href="http://www.elegantthemes.com" title="Premium WordPress Themes">Elegant Themes</a>', '<a href="http://www.wordpress.org">WordPress</a>' );
@@ -9612,6 +9653,94 @@ function et_divi_filter_enabled_builder_post_type_options( $options ) {
 }
 endif;
 add_filter( 'et_builder_enabled_builder_post_type_options', 'et_divi_filter_enabled_builder_post_type_options' );
+
+/**
+ * Caches expensive generation of truncate_post content
+ *
+ * @since 3.17.3
+ *
+ * @param bool $custom
+ * @param string $content
+ * @param WP_Post $post
+ *
+ * @return string
+ */
+if ( ! function_exists( 'et_divi_truncate_post_use_custom_content' ) ) :
+function et_divi_truncate_post_use_custom_content( $custom, $content, $post ) {
+	// If post doesn't use builder, no need to compute a custom value
+	if ( ! et_pb_is_pagebuilder_used( $post->ID ) ) {
+		return false;
+	}
+
+	$cached = get_post_meta( $post->ID, '_et_pb_truncate_post', true );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	$custom = apply_filters( 'the_content', $content );
+	// Save the result because expensive to compute.
+	update_post_meta( $post->ID, '_et_pb_truncate_post', $custom );
+
+	return $custom;
+}
+endif;
+add_filter( 'et_truncate_post_use_custom_content', 'et_divi_truncate_post_use_custom_content', 10, 3 );
+
+/**
+ * Caches expensive generation of et_first_image
+ *
+ * @since 3.17.3
+ *
+ * @param bool $custom
+ * @param string $content
+ * @param WP_Post $post
+ *
+ * @return string
+ */
+if ( ! function_exists( 'et_divi_first_image_use_custom_content' ) ) :
+function et_divi_first_image_use_custom_content( $custom, $content, $post ) {
+	// If post doesn't use builder, no need to compute a custom value
+	if ( ! et_pb_is_pagebuilder_used( $post->ID ) ) {
+		return false;
+	}
+
+	$cached = get_post_meta( $post->ID, '_et_pb_first_image', true );
+
+	if ( $cached ) {
+		return $cached;
+	}
+
+	$custom = apply_filters( 'the_content', $content );
+	// Save the result because expensive to compute.
+	update_post_meta( $post->ID, '_et_pb_first_image', $custom );
+
+	return $custom;
+}
+endif;
+add_filter( 'et_first_image_use_custom_content', 'et_divi_first_image_use_custom_content', 10, 3 );
+
+/**
+ * Fired when post is saved in VB / BFB / BB
+ *
+ * @since 3.17.3
+ *
+ * @param integer $post_id
+ *
+ * @return void
+ */
+if ( ! function_exists( 'et_divi_save_post' ) ) :
+function et_divi_save_post( $post_id ) {
+	if ( ! $post_id ) {
+		return;
+	}
+
+	// Unset cache
+	update_post_meta( $post_id, '_et_pb_first_image', false );
+	update_post_meta( $post_id, '_et_pb_truncate_post', false );
+}
+endif;
+add_action( 'et_save_post', 'et_divi_save_post', 1 );
 
 if ( ! function_exists( 'et_divi_footer_active_sidebars' ) ):
 	function et_divi_footer_active_sidebars() {
