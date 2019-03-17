@@ -1,3 +1,29 @@
+version 3.21 ( updated 03-14-2019 )
+- Added CSS transform options to all sections, rows, and modules, allowing users to scale, rotate, skew, and offset the position of any element.
+- Fixed copy/paste altering the wrong setting under some circumstances.
+- Fixed a case where pasting the same styles multiple times could result in them to be reset.
+- Fixed a bug that could cause loading a layout from existing pages not to work correctly.
+- Fixed Events Manager compatibility.
+- Fixed issue with rendering multiple of the same module in the category builder.
+- Fixed an encoding issue that could occur while saving options as Network Admin.
+- Fixed a compatibility issue with Events Schedule Plugin.
+- Improved logging of informational messages for Support Center functionality.
+- Fixed a PHP warning that occurred when trying to locate and use a file from the wrong directory when using multiple ET products.
+	* core/admin/js/support-center.js
+	* core/components/SupportCenter.php
+	* core/components/SupportCenterMUAutoloader.php
+	* core/components/mu-plugins/SupportCenterSafeModeDisablePlugins.php
+	* epanel/core_functions.php
+	* includes/builder/class-et-builder-element.php
+	* includes/builder/core.php
+	* includes/builder/feature/Library.php
+	* includes/builder/frontend-builder/bundle.js
+	* includes/builder/frontend-builder/helpers.php
+	* includes/builder/frontend-builder/i18n/library.php
+	* includes/builder/functions.php
+	* includes/builder/module/field/Border.php
+	* includes/builder/module/field/Transform.php
+
 version 3.20.2 ( updated 03-11-2019 )
 - Security Update: Fixed a vulnerability that could allow some cross-site request forgery checks within our core product framework to be bypassed. In all cases, these checks were also hardened by user permission checks, however, user permissions checks alone are not sufficient to protect against all CSRF vectors. View the full disclosure here: https://us7.campaign-archive.com/?u=9ae7aa91c578052b052b864d6&id=917542a075.
 - Fixed an issue with Paid Membership Pro Plugin.

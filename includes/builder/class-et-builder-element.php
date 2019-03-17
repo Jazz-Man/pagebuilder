@@ -270,6 +270,7 @@ class ET_Builder_Element {
 
 		$this->_additional_fields_options = array();
 		$this->_add_additional_fields();
+
 		$this->_add_custom_css_fields();
 
 		$this->_maybe_add_global_defaults();
@@ -2581,6 +2582,8 @@ class ET_Builder_Element {
 
 		$this->_add_box_shadow_fields();
 
+		$this->_add_transforms_fields();
+
 		$this->_add_text_fields();
 
 		$this->_add_max_width_fields();
@@ -2597,6 +2600,8 @@ class ET_Builder_Element {
 		$this->_add_animation_fields();
 
 		$this->_add_additional_transition_fields();
+
+		$this->_add_additional_z_index_fields();
 
 		// Add text shadow fields to all modules
 		$this->_add_text_shadow_fields();
@@ -3316,6 +3321,36 @@ class ET_Builder_Element {
 			$message = "You're Doing It Wrong! '_add_additional_border_fields' is deprecated. All the Border settings should be defined via provided API";
 			et_debug( $message );
 		}
+	}
+
+	protected function _add_transforms_fields() {
+		$this->advanced_fields['transform'] = self::$_->array_get( $this->advanced_fields, 'transform', array() );
+
+		// Transforms Disabled
+		if ( false === $this->advanced_fields['transform'] ) {
+			return;
+		}
+
+		// Transforms settings have to be array
+		if ( ! is_array( $this->advanced_fields['transform'] ) ) {
+			return;
+		}
+
+		if ( isset( $this->type ) && 'child' === $this->type ) {
+			return;
+		}
+
+		$this->settings_modal_toggles['advanced']['toggles']['transform'] = array(
+			'title'    => esc_html__( 'Transform', 'et_builder' ),
+			'priority' => 109,
+		);
+
+		$this->_additional_fields_options = array_merge(
+			$this->_additional_fields_options,
+			/** @see ET_Builder_Module_Field_Transform::get_fields() */
+			ET_Builder_Module_Fields_Factory::get( 'Transform' )->get_fields()
+		);
+
 	}
 
 	protected function _add_max_width_fields() {
@@ -4524,6 +4559,45 @@ class ET_Builder_Element {
 		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
 	}
 
+	private function _add_additional_z_index_fields() {
+
+		$this->advanced_fields['z_index'] = self::$_->array_get( $this->advanced_fields, 'z_index', array() );
+
+		$additional_options = array();
+
+		$additional_options['z_index'] = array(
+			'label'            => esc_html__( 'Z Index', 'et_builder' ),
+			'type'             => 'range',
+			'range_settings'   => array(
+				'min'  => 0,
+				'max'  => 999,
+				'step' => 1,
+			),
+			'option_category'  => 'layout',
+			'default'          => '0',
+			'default_on_child' => true,
+			'tab_slug'         => 'custom_css',
+			'toggle_slug'      => 'visibility',
+			'unitless'         => true,
+			'hover'            => 'tabs',
+			'responsive'       => true,
+			'mobile_options'   => true,
+			'description'      => esc_html__( 'Control element position on the z axis', 'et_builder' ),
+		);
+
+		$skip = array(
+			'type'        => 'skip',
+			'tab_slug'    => 'custom_css',
+			'toggle_slug' => 'visibility',
+		);
+
+		$additional_options['z_index_tablet']      = $skip;
+		$additional_options['z_index_phone']       = $skip;
+		$additional_options['z_index_last_edited'] = $skip;
+
+		$this->_additional_fields_options = array_merge( $this->_additional_fields_options, $additional_options );
+	}
+
 	/**
 	 * Add CSS filter controls (i.e. saturation, brightness, opacity) to the `_additional_fields_options` array.
 	 *
@@ -5180,6 +5254,20 @@ class ET_Builder_Element {
 		);
 	}
 
+	public function get_transition_transform_css_props( $module = null ) {
+		$key      = empty( $module ) ? '' : "$module.";
+		$suffix   = empty( $module ) ? '' : "_$module";
+		$selector = self::$_->array_get( $this->advanced_fields, "transform.{$key}css.main", '%%order_class%%' );
+		/** @var ET_Builder_Module_Field_Transform */
+		$defaults = array( 'scale', 'translate', 'rotate', 'skew', 'origin' );
+		$fields   = array();
+		foreach ( $defaults as $name ) {
+			$fields += array( "transform_{$name}{$suffix}" => array( 'transform' => implode( ', ', (array) $selector ) ) );
+		}
+
+		return $fields;
+	}
+
 	public function get_transition_font_fields_css_props() {
 		$items = self::$_->array_get( $this->advanced_fields, 'fonts' );
 
@@ -5306,6 +5394,7 @@ class ET_Builder_Element {
 		$fields = array_merge( $this->get_transition_button_fields_css_props(), $fields );
 		$fields = array_merge( $this->get_transition_font_fields_css_props(), $fields );
 		$fields = array_merge( $this->get_transition_gutter_fields_css_props(), $fields );
+		$fields = array_merge( $this->get_transition_transform_css_props(), $fields );
 
 		return apply_filters( 'et_builder_hover_transitions_map', $fields );
 	}
@@ -8684,6 +8773,10 @@ class ET_Builder_Element {
 
 		$this->process_box_shadow( $function_name );
 
+		$this->process_transform( $function_name );
+
+		$this->process_z_index( $function_name );
+
 		$this->setup_hover_transitions( $function_name );
 	}
 
@@ -9530,6 +9623,124 @@ class ET_Builder_Element {
 			// Backwards Compatibility
 			// Call it after processing default fields because it's additional processing and is not replacement.
 			$this->process_advanced_border_options( $function_name );
+		}
+	}
+
+	function process_transform( $function_name ) {
+
+		$transform = self::$_->array_get( $this->advanced_fields, 'transform', array() );
+
+		if ( false === $transform || ! is_array( $transform ) ) {
+			return;
+		}
+
+		$selector            = self::$_->array_get( $transform, 'css.main', '%%order_class%%' );
+		$important           = self::$_->array_get( $transform, 'css.important', false );
+		$hover               = et_pb_hover_options();
+		$isHoverEnabled      = $hover->is_enabled( 'transform_styles', $this->props, '' );
+		$isResponsiveEnabled = isset( $this->props['transform_styles_last_edited'] )
+							   && et_pb_get_responsive_status( $this->props['transform_styles_last_edited'] );
+
+		/** @var $class ET_Builder_Module_Field_Transform */
+		$class = ET_Builder_Module_Fields_Factory::get( 'Transform' );
+		$class->set_props( $this->props );
+
+		$views = array( 'desktop' );
+		if ( $isHoverEnabled ) {
+			array_push( $views, 'hover' );
+		}
+		if ( $isResponsiveEnabled ) {
+			array_push( $views, 'tablet', 'phone' );
+		}
+		foreach ( $views as $view ) {
+			$viewSelector = $selector;
+			$media_query  = array();
+			if ( 'hover' === $view ) {
+				$viewSelector = $selector . ':hover';
+			} elseif ( 'tablet' === $view ) {
+				$media_query = array(
+					'media_query' => ET_Builder_Element::get_media_query( 'max_width_980' ),
+				);
+			} elseif ( 'phone' === $view ) {
+				$media_query = array(
+					'media_query' => ET_Builder_Element::get_media_query( 'max_width_767' ),
+				);
+			}
+			$declaration = $class->get_declaration( $important, $view );
+			if ( ! empty( $declaration ) ) {
+				self::set_style( $function_name,
+					array(
+						'selector'    => $viewSelector,
+						'declaration' => $declaration,
+						'priority'    => $this->_style_priority,
+					) + $media_query );
+			}
+		}
+	}
+
+	function process_z_index( $function_name ) {
+		$setting             = 'z_index';
+		$selector            = '%%order_class%%';
+		$hover               = et_pb_hover_options();
+		$isHoverEnabled      = $hover->is_enabled( $setting, $this->props, '' );
+		$isResponsiveEnabled = isset( $this->props["${setting}_last_edited"] )
+							   && et_pb_get_responsive_status( $this->props["${setting}_last_edited"] );
+		$settingDefault      = '0';
+		$views               = array( 'desktop' );
+
+		if ( $isHoverEnabled ) {
+			array_push( $views, 'hover' );
+		}
+
+		if ( $isResponsiveEnabled ) {
+			array_push( $views, 'tablet', 'phone' );
+		}
+
+		foreach ( $views as $view ) {
+			$viewSelector = $selector;
+			$media_query  = array();
+			$suffix       = '';
+			if ( 'hover' === $view ) {
+				$viewSelector .= ':hover';
+				$suffix       = '__hover';
+			} elseif ( 'tablet' === $view ) {
+				$media_query = array(
+					'media_query' => ET_Builder_Element::get_media_query( 'max_width_980' ),
+				);
+				$suffix      = '_tablet';
+			} elseif ( 'phone' === $view ) {
+				$media_query = array(
+					'media_query' => ET_Builder_Element::get_media_query( 'max_width_767' ),
+				);
+				$suffix      = '_phone';
+			}
+
+			$optionValue = isset( $this->props[ $setting . $suffix ] ) && ! empty( $this->props[ $setting . $suffix ] ) ?
+				$this->props[ $setting . $suffix ] : $settingDefault;
+
+			$defaultValue = $settingDefault;
+			if ( 'hover' === $view && isset( $this->props[ $setting ] ) ) {
+				$defaultValue = empty( $this->props[ $setting ] ) ? $settingDefault : $this->props[ $setting ];
+				if ( ! isset( $this->props[ $setting . $suffix ] ) || empty( $this->props[ $setting . $suffix ] ) ) {
+					$optionValue = $defaultValue;
+				}
+			} elseif ( 'tablet' === $view && isset( $this->props[ $setting ] ) ) {
+				$defaultValue = empty( $this->props[ $setting ] ) ? $settingDefault : $this->props[ $setting ];
+			} elseif ( 'phone' === $view && isset( $this->props[ $setting . '_tablet' ] ) ) {
+				$defaultValue = empty( $this->props[ $setting . '_tablet' ] ) ? 'none' : $this->props[ $setting . '_tablet' ];
+				if ( 'none' === $defaultValue ) {
+					$defaultValue = ! isset( $this->props[ $setting ] )
+									|| empty( $this->props[ $setting ] ) ? $settingDefault : $this->props[ $setting ];
+				}
+			}
+			if ( $defaultValue != $optionValue || $isHoverEnabled ) {
+				self::set_style( $function_name,
+					array(
+						'selector'    => $viewSelector,
+						'declaration' => "z-index: $optionValue;",
+						'priority'    => $this->_style_priority,
+					) + $media_query );
+			}
 		}
 	}
 

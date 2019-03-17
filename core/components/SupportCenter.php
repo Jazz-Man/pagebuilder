@@ -56,7 +56,7 @@ class ET_Support_Center {
 	 *
 	 * @type string
 	 */
-	protected $DEBUG = false;
+	protected $DEBUG_ET_SUPPORT_CENTER = false;
 
 	/**
 	 * Identifier for the parent theme or plugin activating the Support Center.
@@ -162,8 +162,8 @@ class ET_Support_Center {
 	 * @param string $parent Identifier for the parent theme or plugin activating the Support Center.
 	 */
 	public function __construct( $parent = '' ) {
-		// Set our flag for `ET_DEBUG`
-		$this->DEBUG = defined( 'ET_DEBUG' ) && ET_DEBUG;
+		// Verbose logging: only log if `wp-config.php` has defined `ET_DEBUG='support_center'`
+		$this->DEBUG_ET_SUPPORT_CENTER = defined( 'ET_DEBUG' ) && 'support_center' === ET_DEBUG;
 
 		// Set the identifier for the parent theme or plugin activating the Support Center.
 		$this->parent = $parent;
@@ -197,7 +197,11 @@ class ET_Support_Center {
 
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
+
+		// SC scripts are only used in FE for the "Turn Off Divi Safe Mode" floating button.
+		if ( et_core_is_safe_mode_active() ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
+		}
 
 		// Make sure that our Support Account's roles are set up
 		add_filter( 'add_et_builder_role_options', array( $this, 'support_user_add_role_options' ), 10, 1 );
@@ -314,8 +318,8 @@ class ET_Support_Center {
 	 * @since 3.20
 	 */
 	public function maybe_add_mu_autoloader() {
-		$file_name  = '/SupportCenterMUAutoloader.php';
-		$file_path  = ET_CORE_PATH . '/components';
+		$file_name = '/SupportCenterMUAutoloader.php';
+		$file_path = dirname( __FILE__ );
 
 		// Exit if the `mu-plugins` directory doesn't exist & we're unable to create it
 		if ( ! et_()->ensure_directory_exists( WPMU_PLUGIN_DIR ) ) {
@@ -324,16 +328,15 @@ class ET_Support_Center {
 			return;
 		}
 
-		$pathname_to = WPMU_PLUGIN_DIR . $file_name;
+		$pathname_to   = WPMU_PLUGIN_DIR . $file_name;
+		$pathname_from = $file_path . $file_name;
 
 		// Exit if we can't find the mu-plugins autoloader
-		if ( ! file_exists( $file_path ) ) {
+		if ( ! file_exists( $pathname_from ) ) {
 			et_error( 'Support Center Safe Mode: mu-plugin autoloader not found.' );
 
 			return;
 		}
-
-		$pathname_from = $file_path . $file_name;
 
 		// Try to create a new subdirectory for our mu-plugins; if it fails, log an error message
 		$pathname_plugins_from = dirname( __FILE__ ) . '/mu-plugins';
@@ -356,7 +359,7 @@ class ET_Support_Center {
 
 				$copy_file = copy( $plugin, $new_file_path );
 
-				if ( ! $this->DEBUG ) {
+				if ( ! $this->DEBUG_ET_SUPPORT_CENTER ) {
 					continue;
 				}
 
@@ -377,7 +380,7 @@ class ET_Support_Center {
 
 		$copy_file = copy( $pathname_from, $pathname_to );
 
-		if ( $this->DEBUG ) {
+		if ( $this->DEBUG_ET_SUPPORT_CENTER ) {
 			if ( $copy_file ) {
 				et_error( 'Support Center Safe Mode: mu-plugin installed.' );
 			} else {

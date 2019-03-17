@@ -27,10 +27,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return array
  */
 function et_safe_mode_maybe_disable_plugins( $plugins = array() ) {
-	$DEBUG = defined( 'ET_DEBUG' ) && ET_DEBUG;
+	// Verbose logging: only log if `wp-config.php` has defined `ET_DEBUG='support_center'`
+	$DEBUG_ET_SUPPORT_CENTER = defined( 'ET_DEBUG' ) && 'support_center' === ET_DEBUG;
 
 	if ( ! isset( $_COOKIE['et-support-center-safe-mode'] ) ) {
-		if ( $DEBUG ) {
+		if ( $DEBUG_ET_SUPPORT_CENTER ) {
 			error_log( 'ET Support Center :: Safe Mode: No cookie found' );
 		}
 
@@ -40,7 +41,7 @@ function et_safe_mode_maybe_disable_plugins( $plugins = array() ) {
 	$verify = get_option( 'et-support-center-safe-mode-verify' );
 
 	if ( ! $verify ) {
-		if ( $DEBUG ) {
+		if ( $DEBUG_ET_SUPPORT_CENTER ) {
 			error_log( 'ET Support Center :: Safe Mode: No option found to verify cookie' );
 		}
 
@@ -48,7 +49,7 @@ function et_safe_mode_maybe_disable_plugins( $plugins = array() ) {
 	}
 
 	if ( $_COOKIE['et-support-center-safe-mode'] !== $verify ) {
-		if ( $DEBUG ) {
+		if ( $DEBUG_ET_SUPPORT_CENTER ) {
 			error_log( 'ET Support Center :: Safe Mode: Cookie/Option mismatch' );
 		}
 
@@ -63,7 +64,7 @@ function et_safe_mode_maybe_disable_plugins( $plugins = array() ) {
 	foreach ( $clean_plugins as $key => &$plugin ) {
 		// Check whether this plugin appears in our whitelist
 		if ( ! in_array( $plugin, $plugins_whitelist ) ) {
-			if ( $DEBUG ) {
+			if ( $DEBUG_ET_SUPPORT_CENTER ) {
 				error_log( 'ET Support Center :: Safe Mode: Unsetting plugin: ' . json_encode( $plugin ) );
 			}
 			unset( $clean_plugins[ $key ] );
