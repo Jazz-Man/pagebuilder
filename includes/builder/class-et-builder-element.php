@@ -162,7 +162,6 @@ class ET_Builder_Element {
 	private static $modules = array();
 	private static $parent_modules = array();
 	private static $child_modules = array();
-	private static $childless_module_slugs = array();
 	private static $current_module_index = 0;
 	private static $structure_modules = array();
 	private static $structure_module_slugs = array();
@@ -352,14 +351,6 @@ class ET_Builder_Element {
 				self::$child_modules[ $post_type ][ $this->slug ] = $this;
 			} else {
 				self::$parent_modules[ $post_type ][ $this->slug ] = $this;
-			}
-
-			// If a module is not structure element nor has child slug, its shortcode content might
-			// contain unclosed `<` character which pontentially incorrectly parsed by wp_html_split()
-			// inside do_shortcodes_in_html_tags() inside do_shortcode(). This module's content need
-			// to be adjusted hence being populated as childless module
-			if ( ! is_subclass_of( $this, 'ET_Builder_Structure_Element' ) && is_null( $this->child_slug ) ) {
-				self::$childless_module_slugs[ $post_type ][] = $this->slug;
 			}
 		}
 
@@ -2116,7 +2107,7 @@ class ET_Builder_Element {
 	 * Used as a callback function in {@self::et_pb_maybe_fix_specialty_columns} when fixing content of Specialty Sections
 	 *
 	 * @since 3.19.16
-	 * 
+	 *
 	 * @return string Shortcode string.
 	 */
 	public function et_pb_fix_specialty_columns( $rows ) {
@@ -2128,9 +2119,9 @@ class ET_Builder_Element {
 
 	/**
 	 * Run regex against the Specialty Section content to find and fix invalid inner shortcodes
-	 * 
+	 *
 	 * @since 3.19.16
-	 * 
+	 *
 	 * @return string Shortcode string.
 	 */
 	public function et_pb_maybe_fix_specialty_columns( $section_content ) {
@@ -11099,23 +11090,6 @@ class ET_Builder_Element {
 		}
 
 		return apply_filters( 'et_builder_get_child_modules', $child_modules, $post_type );
-	}
-
-	/**
-	 * Get list of module slugs which doesn't contains other module inside of its content
-	 *
-	 * @since 3.20
-	 *
-	 * @param string $post_type
-	 *
-	 * @return array
-	 */
-	static function get_childless_module_slugs( $post_type = '' ) {
-		$childless_module_slugs = ! empty( $post_type ) && isset( self::$childless_module_slugs[ $post_type ] )
-			? self::$childless_module_slugs[ $post_type ]
-			: array();
-
-		return apply_filters( 'et_builder_get_childless_module_slugs', $childless_module_slugs, $post_type );
 	}
 
 	/**

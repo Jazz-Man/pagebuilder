@@ -2,7 +2,7 @@
 
 if ( ! defined( 'ET_BUILDER_PRODUCT_VERSION' ) ) {
 	// Note, this will be updated automatically during grunt release task.
-	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20' );
+	define( 'ET_BUILDER_PRODUCT_VERSION', '3.20.1' );
 }
 
 if ( ! defined( 'ET_BUILDER_VERSION' ) ) {
@@ -3183,143 +3183,14 @@ function et_pb_fix_builder_shortcodes( $content ) {
 }
 add_filter( 'the_content', 'et_pb_fix_builder_shortcodes' );
 
-/**
- * Parse shortcode to prepare its argument list
- * @see do_shortcode()
- *
- * @since 3.20
- *
- * @param string $content
- *
- * @return string prepared $content
- */
-function et_pb_prepare_module_shortcode_tags( $content ) {
-	// Get module slugs (shortcode tags) of current post type
-	$module_slugs = ET_Builder_Element::get_module_slugs_by_post_type( get_post_type() );
 
-	// Find all registered tag names in $content.
-	preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $content, $matches );
-
-	$tagnames = array_intersect( $module_slugs, $matches[1] );
-
-	// Get regex of current module slug
-	$pattern = get_shortcode_regex( $tagnames );
-
-	// Parse content and filter its shortcode argument list
-	$content = preg_replace_callback( "/$pattern/", 'et_pb_prepare_module_shortcode_attrs', $content );
-
-	return $content;
-}
-
-/**
- * Callback for matching result of et_pb_prepare_module_shortcode_tags() which also recursively call
- * et_pb_prepare_module_shortcode_tags() to prepare argument list from section to module item level
- *
- * @since 3.20
- *
- * @param array $matches {
- *     shortcode which has been parsed against module regex pattern
- *
- *     @type string [0] Current module's shortcode layout that is being parsed against regex
- *     @type string [1] Empty string (for general shortcode, this is used for extra [ to allow
- *                      for escaping shortcodes with double [[]] )
- *     @type string [2] Shortcode name
- *     @type string [3] Shortcode argument list
- *     @type string [4] Empty string (for general shortcode, this is used for self closing /)
- *     @type string [5] Current module's content shortcode layout
- *     @type string [6] Empty string (for general shortcode, this is used for extra ] to allow for
- *                      escaping shortcodes with double [[]])
- * }
- */
-function et_pb_prepare_module_shortcode_attrs( $matches ) {
-	$childless_module_slugs = ET_Builder_Element::get_childless_module_slugs( get_post_type() );
-	$content_has_module     = ! in_array( $matches[2], $childless_module_slugs );
-
-	// Append shortcode content which its content has no module (ie. et_pb_cta, et_pb_slide) shortcode
-	// by HTML comment to avoid unclosed HTML like content (ie unclosed `<`) being incorrectly parsed
-	// by wp_html_split() inside do_shortcodes_in_html_tags() inside do_shortcode()
-	$module_content         = $content_has_module || '' === $matches[5] ? $matches[5] : sprintf(
-		' %1$s <!-- et_pb_content_end -->',
-		et_core_esc_previously( $matches[5] )
-	);
-
-	// Return prepared shortcode layout
-	return '['.$matches[2] . et_pb_prepare_module_shortcode_argument_list( $matches[3] ) . ']'
-		. et_pb_prepare_module_shortcode_tags( $module_content )
-	.'[/'.$matches[2].']';
-}
-
-/**
- * Filter & format shortcode argument list so it is ready for WordPress default formatting
- * @see get_shortcode_regex()
- *
- * @since 3.20
- *
- * @param string  argument list
- *
- * @return string prepared argument list
- */
-function et_pb_prepare_module_shortcode_argument_list ( $argument_list = '' ) {
-	// Regex pattern for capturing argument list that is being texturized by wptexturize. Generally,
-	// attribute value that contains `<` character with no closing `>` and `>` which isn't started
-	// by `<` fail the shortcode check which make the argument list ends up being texturized by
-	// WordPress' wptexturize filter.
-
-	$regex = '/(?<==\")'        // Positive look behind; Exclude equal sign and opening double quote
-		.'(?:'                  // Non-capturing group
-			.'([^<"]*?>[^"]*?)' // `>` with no opening `<`
-			.'|'                //
-			.'([^"]*?<+[^>"]*)' // `<` with no closing `>`
-			.'|'
-			.'([^"]*?<[^\/"]*?>[^<"]*>[^"]*?)' // `< > >` structure and its variation
-		.')'                    //
-	.'(?=\")/';                 // Positive look ahead; Exclude closing double quote
-
-	$argument_list = preg_replace_callback( $regex, 'et_pb_prepare_escape_attribute_value', $argument_list );
-
-	return $argument_list;
-}
-
-/**
- * Callback for replacing attribute value which matches et_pb_prepare_module_shortcode_argument_list()
- * pattern with its escaped value
- *
- * @since 3.20
- *
- * @param array $matches substring which matches et_pb_prepare_module_shortcode_argument_list() regex
- *
- * @return string escaped string of matched value
- */
-function et_pb_prepare_escape_attribute_value( $matches ) {
-	// Only need to escape the first array element as it contains the match info of the regex pattern
-	return esc_attr( $matches[0] );
-}
-
-/**
- * Prepare builder's post_content so WordPress' default formatting won't unexpectedly change the output
- *
- * @since 3.17.3
- * @since 3.20 renamed et_pb_the_content_prep_code_module_for_wpautop() into et_pb_the_content_preparation()
- *
- * @param string $content
- *
- * @return string formatted $content
- */
-function et_pb_the_content_preparation( $content ) {
+function et_pb_the_content_prep_code_module_for_wpautop( $content ) {
 	if ( is_singular() && 'on' === get_post_meta( get_the_ID(), '_et_pb_use_builder', true ) ) {
 		$content = et_pb_prep_code_module_for_wpautop( $content );
-
-		// WordPress' wptexturize filter is called before do_shortcode and might unexpectedly
-		// escape shortcode argument list (ie. ` title="Your Title Here >"`) if its attribute value
-		// contains unclosed `<` and `>` which isn't opened by `<`. This causes shortcode parser
-		// incorrectly parse the argument list which ends up rendering broken module output.
-		// Thus, builder needs to escape the "bad" attribute value first
-		$content = et_pb_prepare_module_shortcode_tags( $content );
 	}
-
 	return $content;
 }
-add_filter( 'the_content', 'et_pb_the_content_preparation', 0 );
+add_filter( 'the_content', 'et_pb_the_content_prep_code_module_for_wpautop', 0 );
 
 // generate the html for "Add new template" Modal in Library
 if ( ! function_exists( 'et_pb_generate_new_layout_modal' ) ) {
@@ -9031,9 +8902,7 @@ function et_fb_process_shortcode( $content, $parent_address = '', $global_parent
 			$global_parent_type = '';
 		}
 
-		// Prepare argument list before parsing it using shortcode_parse_attr() because the function
-		// rejects attribute value which contains unclosed HTML tag-like value
-		$attr = shortcode_parse_atts( et_pb_prepare_module_shortcode_argument_list( $match[3] ) );
+		$attr = shortcode_parse_atts( $match[3] );
 
 		if ( ! is_array( $attr ) ) {
 			$attr = array();
