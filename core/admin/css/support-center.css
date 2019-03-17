@@ -87,6 +87,10 @@
   font-weight: 600;
 }
 
+#et_support_center #epanel .et-system-status-congratulations {
+  display:none;
+}
+
 #et_support_center #epanel .et_system_status_row .results a {
   color: #2b87da;
   font-weight: 600;

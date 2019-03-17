@@ -202,7 +202,7 @@ class ET_Builder_Element {
 		self::$current_module_index++;
 
 		if ( ! self::$_deprecations ) {
-			self::$_deprecations = require ET_BUILDER_DIR . 'deprecations.php';
+			self::$_deprecations = require_once ET_BUILDER_DIR . 'deprecations.php';
 			self::$_deprecations = self::$_deprecations['classes']['\ET_Builder_Module_Blurb'];
 		}
 
@@ -1104,11 +1104,12 @@ class ET_Builder_Element {
 	 * Double quote are saved as "%22" in shortcode attributes.
 	 * Decode them back into "
 	 *
-	 * @param array $enabled_dynamic_attributes
+	 * @param array<string> $enabled_dynamic_attributes
+	 * @param bool $et_fb_processing_shortcode_object
 	 *
 	 * @return void
 	 */
-	private function _decode_double_quotes( $enabled_dynamic_attributes ) {
+	private function _decode_double_quotes( $enabled_dynamic_attributes, $et_fb_processing_shortcode_object ) {
 		if ( ! isset( $this->props ) ) {
 			return;
 		}
@@ -1120,6 +1121,12 @@ class ET_Builder_Element {
 		$font_icon_options = array( 'font_icon', 'button_icon', 'button_one_icon', 'button_two_icon', 'hover_icon' );
 
 		foreach ( $this->props as $attribute_key => $attribute_value ) {
+			if ( $et_fb_processing_shortcode_object && in_array( $attribute_key, $enabled_dynamic_attributes, true ) ) {
+				// Do not decode dynamic content values when preparing them for VB.
+				$shortcode_attributes[ $attribute_key ] = $attribute_value;
+				continue;
+			}
+
 			// decode HTML entities and remove trailing and leading quote if needed
 			$processed_attr_value = $need_html_entities_decode ? trim( htmlspecialchars_decode( $attribute_value, ENT_QUOTES ), '"' ) : $attribute_value;
 
@@ -1136,11 +1143,9 @@ class ET_Builder_Element {
 				$processed_attr_value = '';
 			}
 
+
 			// URLs are weird since they can allow non-ascii characters so we escape those separately.
-			// Also make sure the attribute is not powered by dynamic content so we do not escape
-			// the JSON value as if it is a raw url.
-			$is_dynamic_content_attribute = $this->_is_dynamic_value( $attribute_key, $attribute_value, $enabled_dynamic_attributes );
-			if ( ! $is_dynamic_content_attribute && in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
+			if ( in_array( $attribute_key, array( 'url', 'button_link', 'button_url' ), true ) ) {
 				$shortcode_attributes[ $attribute_key ] = esc_url_raw( $processed_attr_value );
 			} else {
 				$shortcode_attributes[ $attribute_key ] = str_replace( array( '%22', '%92', '%91', '%93' ), array( '"', '\\', '&#91;', '&#93;' ), $processed_attr_value );
@@ -1525,9 +1530,9 @@ class ET_Builder_Element {
 	 *
 	 * @since 3.17.2
 	 *
-	 * @param  array  $attrs              List of attributes
-	 *
-	 * @return array                      Processed attributes with resolved dynamic values.
+	 * @param  array  $original_attrs List of attributes
+	 * 
+	 * @return array                  Processed attributes with resolved dynamic values.
 	 */
 	function process_dynamic_attrs( $original_attrs ) {
 		global $et_fb_processing_shortcode_object;
@@ -1568,15 +1573,17 @@ class ET_Builder_Element {
 	function _render( $attrs, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '', $parent_type = '' ) {
 		global $et_fb_processing_shortcode_object, $et_pb_current_parent_type;
 
-		$this->attrs_unprocessed = $attrs;
-
 		$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $attrs );
+
+		$attrs = $this->_encode_legacy_dynamic_content( $attrs, $enabled_dynamic_attributes );
+
+		$this->attrs_unprocessed = $attrs;
 
 		$attrs = $this->process_dynamic_attrs( $attrs );
 
 		$this->props = shortcode_atts( $this->resolve_conditional_defaults($attrs, $render_slug), $attrs );
 
-		$this->_decode_double_quotes( $enabled_dynamic_attributes );
+		$this->_decode_double_quotes( $enabled_dynamic_attributes, $et_fb_processing_shortcode_object );
 
 		$this->_maybe_remove_global_default_values_from_props();
 
@@ -1671,6 +1678,7 @@ class ET_Builder_Element {
 				// cleanup the shortcode string to avoid the attributes messing with content
 				$global_content_processed = false !== $global_content ? str_replace( $global_content, '', $global_module_data ) : $global_module_data;
 				$global_atts = shortcode_parse_atts( et_pb_remove_shortcode_content( $global_content_processed, $this->slug ) );
+				$global_atts = $this->_encode_legacy_dynamic_content( $global_atts, $enabled_dynamic_attributes );
 
 				// reset module addresses because global items will be processed once again and address will be incremented wrongly
 				if ( false !== strpos( $render_slug, '_section' ) ) {
@@ -1709,11 +1717,9 @@ class ET_Builder_Element {
 					}
 				}
 
-				$enabled_dynamic_attributes_global = $this->_get_enabled_dynamic_attributes( $this->props );
-
 				$this->props = $this->process_dynamic_attrs( $this->props );
 
-				$this->_decode_double_quotes( $enabled_dynamic_attributes_global );
+				$this->_decode_double_quotes( array(), $et_fb_processing_shortcode_object );
 			}
 		}
 
@@ -1721,8 +1727,12 @@ class ET_Builder_Element {
 
 		$this->before_render();
 
-		$this->content_unprocessed = (false !== $global_content ? $global_content : $content);
-		$content = $this->_resolve_value(
+		$this->content_unprocessed  = $this->_encode_legacy_dynamic_content_value(
+			'content',
+			false !== $global_content ? $global_content : $content,
+			$enabled_dynamic_attributes
+		);
+		$content                    = $this->_resolve_value(
 			$this->get_the_ID(),
 			'content',
 			$this->content_unprocessed,
@@ -2243,6 +2253,27 @@ class ET_Builder_Element {
 
 				// Run et_pb_module_shortcode_attributes filter to apply migration system on attributes of global module
 				$global_atts = apply_filters( 'et_pb_module_shortcode_attributes', $global_atts, $atts, $this->slug, $this->generate_element_address( $render_slug ), $content );
+
+				// Parse dynamic content in global attributes.
+				$enabled_dynamic_attributes = $this->_get_enabled_dynamic_attributes( $global_atts );
+				$global_atts = $this->_encode_legacy_dynamic_content( $global_atts, $enabled_dynamic_attributes );
+				$global_atts = $this->process_dynamic_attrs( $global_atts );
+
+				// Parse dynamic content in global content.
+				if ( false !== $global_content ) {
+					$global_content = $this->_encode_legacy_dynamic_content_value(
+						'content',
+						$global_content,
+						$enabled_dynamic_attributes
+					);
+					$global_content = $this->_resolve_value(
+						$this->get_the_ID(),
+						'content',
+						$global_content,
+						$this->_get_enabled_dynamic_attributes( $global_atts ),
+						true
+					);
+				}
 
 				foreach( $this->props as $single_attr => $value ) {
 					if ( isset( $global_atts[$single_attr] ) && ! in_array( $single_attr, $unsynced_options ) ) {
@@ -12806,6 +12837,50 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Re-encode legacy dynamic content values in an attrs array.
+	 *
+	 * @since 3.20.2
+	 *
+	 * @param array<string, string> $attrs
+	 * @param array<string> $enabled_dynamic_attributes
+	 *
+	 * @return array<string, string>
+	 */
+	protected function _encode_legacy_dynamic_content( $attrs, $enabled_dynamic_attributes ) {
+		if ( is_array( $attrs ) ) {
+			foreach ( $attrs as $field => $value ) {
+				$attrs[ $field ] = $this->_encode_legacy_dynamic_content_value( $field, $value, $enabled_dynamic_attributes );
+			}
+		}
+
+		return $attrs;
+	}
+
+	/**
+	 * Re-encode legacy dynamic content value.
+	 *
+	 * @since 3.20.2
+	 *
+	 * @param string $field
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	protected function _encode_legacy_dynamic_content_value( $field, $value, $enabled_dynamic_attributes ) {
+		if ( ! in_array( $field, $enabled_dynamic_attributes ) ) {
+			return $value;
+		}
+
+		$json = et_builder_clean_dynamic_content( $value );
+
+		if ( preg_match( '/^@ET-DC@(.*?)@$/', $json ) ) {
+			return $value;
+		}
+
+		return $this->_resolve_value_from_json( $field, $json, $enabled_dynamic_attributes );
+	}
+
+	/**
 	 * Resolve a value, be it static or dynamic to a static one.
 	 *
 	 * @since 3.17.2
@@ -12830,6 +12905,62 @@ class ET_Builder_Element {
 		}
 
 		return $builder_value->resolve( $post_id );
+	}
+
+	/**
+	 * Resolve a value from the legacy JSON format of dynamic content.
+	 * This is essentially a migration but is implemented separately
+	 * as it needs to parse every field of every module and do it
+	 * before actual migrations are ran.
+	 *
+	 * @since 3.20.2
+	 *
+	 * @param integer $post_id
+	 * @param string $field
+	 * @param string $value
+	 * @param array<string> $enabled_dynamic_attributes
+	 * @param boolean $serialize
+	 *
+	 * @return string
+	 */
+	protected function _resolve_value_from_json( $field, $value, $enabled_dynamic_attributes ) {
+		if ( ! in_array( $field, $enabled_dynamic_attributes ) ) {
+			return $value;
+		}
+
+		$json = et_builder_clean_dynamic_content( $value );
+
+		// Replace encoded quotes.
+		$json = str_replace( array( '&#8220;', '&#8221;', '&#8243;', "%22" ), '"', $json );
+
+		// Strip <p></p> artifacts from wpautop in before/after settings. Example:
+		// {"dynamic":true,"content":"post_title","settings":{"before":"</p>
+		// <h1>","after":"</h1>
+		// <p>"}}
+		// This is a rough solution implemented due to time constraints.
+		$json = preg_replace( '~
+			("(?:before|after)":")    # $1 = Anchor to the before/after settings.
+			(?:                       # Match cases where the value starts with the offending tag.
+				<\/?p>                # The root of all evil.
+				[\r\n]+               # Whitespace follows the tag.
+			)*
+			(?:                       # Match cases where the value ends with the offending tag.
+				([^"]*)               # $2 = The preceeding value.
+				[\r\n]+               # Whitespace preceedes the tag.
+				<\/?p>                # The root of all evil.
+			)*
+		~xi', '$1$2', $json );
+
+		// Remove line-breaks which break the json strings.
+		$json = preg_replace( '/\r|\n/', '', $json );
+
+		$json_value = et_builder_parse_dynamic_content_json( $json );
+
+		if ( null === $json_value ) {
+			return $value;
+		}
+
+		return $json_value->serialize();
 	}
 
 	/**

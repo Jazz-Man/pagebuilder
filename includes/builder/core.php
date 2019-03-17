@@ -2976,6 +2976,29 @@ function et_builder_get_no_builder_notification_modal() {
 }
 endif;
 
+if ( ! function_exists( 'et_builder_get_no_browser_notification_modal' ) ) :
+function et_builder_get_no_browser_notification_modal() {
+	$output = sprintf(
+		'<div class="et-core-modal-overlay et-builder-timeout et-core-active">
+			<div class="et-core-modal">
+				<div class="et-core-modal-header">
+					<h3 class="et-core-modal-title">%1$s</h3>
+					<a href="#" class="et-core-modal-close" data-et-core-modal="close"></a>
+				</div>
+
+				<div class="et-core-modal-content">
+					<p><strong>%2$s</strong></p>
+				</div>
+			</div>
+		</div>',
+		esc_html__( 'Your Browser Is Not Supported', 'et_builder' ),
+		esc_html__( 'The Divi Builder does not support the browser you are using. Your browser is no longer being developed, so it is time to switch to something new! The Divi Builder works best in the most recent versions of Chrome, Firefox, Safari, Opera and Edge.', 'et_builder' )
+	);
+
+	return $output;
+}
+endif;
+
 if ( ! function_exists( 'et_builder_get_exit_notification_modal' ) ) :
 function et_builder_get_exit_notification_modal() {
 	$output = sprintf(

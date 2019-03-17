@@ -10,7 +10,7 @@ function et_setup_builder() {
 	define( 'ET_BUILDER_VERSION', $theme_version );
 
 	load_theme_textdomain( 'et_builder', ET_BUILDER_DIR . 'languages' );
-	require ET_BUILDER_DIR . 'framework.php';
+	require_once ET_BUILDER_DIR . 'framework.php';
 
 	et_pb_register_posttypes();
 }
