@@ -1565,8 +1565,8 @@ class ET_Builder_Element {
 	 *
 	 * @return string                     The module's HTML output.
 	 */
-	function _render( $attrs, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
-		global $et_fb_processing_shortcode_object;
+	function _render( $attrs, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '', $parent_type = '' ) {
+		global $et_fb_processing_shortcode_object, $et_pb_current_parent_type;
 
 		$this->attrs_unprocessed = $attrs;
 
@@ -1640,7 +1640,10 @@ class ET_Builder_Element {
 
 		//override module attributes for global module. Skip that step while processing Frontend Builder object
 		if ( ! empty( $global_module_id ) && ! $et_fb_processing_shortcode_object ) {
-			$global_module_data = et_pb_load_global_module( $global_module_id );
+			// Update render_slug when rendering global rows inside Specialty sections.
+			$render_slug = 'et_pb_specialty_column' === $et_pb_current_parent_type && 'et_pb_row' === $render_slug ? 'et_pb_row_inner' : $render_slug;
+
+			$global_module_data = et_pb_load_global_module( $global_module_id, $render_slug );
 
 			if ( '' !== $global_module_data ) {
 				$unsynced_global_attributes = get_post_meta( $global_module_id, '_et_pb_excluded_global_options' );
@@ -1656,7 +1659,9 @@ class ET_Builder_Element {
 				}
 
 				if ( $content_synced ) {
-					$global_content = et_pb_get_global_module_content( $global_module_data, $render_slug );
+					// Set the flag showing if we load inner row
+					$load_inner_row = 'et_pb_row_inner' === $render_slug;
+					$global_content = et_pb_get_global_module_content( $global_module_data, $render_slug, $load_inner_row );
 				}
 
 				if ( in_array($render_slug, array('et_pb_code', 'et_pb_fullwidth_code')) ) {
@@ -1871,8 +1876,21 @@ class ET_Builder_Element {
 			}
 		}
 
+		if ( ! $et_fb_processing_shortcode_object ) {
+			if ( 'et_pb_section' === $render_slug ) {
+				$et_pb_current_parent_type = isset( $this->props['specialty'] ) && 'on' === $this->props['specialty'] ? 'et_pb_specialty_section' : 'et_pb_section';
+			} else if ( 'et_pb_specialty_section' === $et_pb_current_parent_type && 'et_pb_column' === $render_slug ) {
+				$et_pb_current_parent_type = 'et_pb_specialty_column';
+			}
+
+			// Make sure content of Specialty Section is valid and has correct structure. Fix inner shortcode tags if needed.
+			if ( 'et_pb_specialty_section' === $et_pb_current_parent_type ) {
+				$content = $this->et_pb_maybe_fix_specialty_columns( $content );
+			}
+		}
+
 		$render_method = $et_fb_processing_shortcode_object ? 'render_as_builder_data' : 'render';
-		$output        = $this->{$render_method}( $attrs, $content, $render_slug, $parent_address, $global_parent, $global_parent_type );
+		$output        = $this->{$render_method}( $attrs, $content, $render_slug, $parent_address, $global_parent, $global_parent_type, $parent_type );
 
 		// Wrap 3rd party module rendered output with proper module wrapper
 		// @TODO implement module wrapper on official module
@@ -2085,6 +2103,32 @@ class ET_Builder_Element {
 	}
 
 	/**
+	 * Replace the et_pb_row with et_pb_row_inner and et_pb_column with et_pb_column_inner.
+	 * Used as a callback function in {@self::et_pb_maybe_fix_specialty_columns} when fixing content of Specialty Sections
+	 *
+	 * @since 3.19.16
+	 * 
+	 * @return string Shortcode string.
+	 */
+	public function et_pb_fix_specialty_columns( $rows ) {
+		$sanitized_shortcode = str_replace( array( 'et_pb_row ', 'et_pb_row]' ), array( 'et_pb_row_inner ', 'et_pb_row_inner]' ), $rows[0] );
+		$sanitized_shortcode = str_replace( array( 'et_pb_column ', 'et_pb_column]' ), array( 'et_pb_column_inner ', 'et_pb_column_inner]' ), $rows[0] );
+
+		return $sanitized_shortcode;
+	}
+
+	/**
+	 * Run regex against the Specialty Section content to find and fix invalid inner shortcodes
+	 * 
+	 * @since 3.19.16
+	 * 
+	 * @return string Shortcode string.
+	 */
+	public function et_pb_maybe_fix_specialty_columns( $section_content ) {
+		return preg_replace_callback('/(\[et_pb_(row |row_inner) .*?\].*\[\/et_pb_(row |row_inner)\])/mis', array( $this, 'et_pb_fix_specialty_columns' ), $section_content );
+	}
+
+	/**
 	 * Generates data used to render the module in the builder.
 	 * See {@see self::render()} for parameter info.
 	 *
@@ -2093,7 +2137,7 @@ class ET_Builder_Element {
 	 *
 	 * @return array|string An array when called during AJAX request, an empty string otherwise.
 	 */
-	public function render_as_builder_data( $atts, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '' ) {
+	public function render_as_builder_data( $atts, $content = null, $render_slug, $parent_address = '', $global_parent = '', $global_parent_type = '', $parent_type = '' ) {
 		global $post;
 
 		// this is called during pageload, but we want to ignore that round, as this data will be built and returned on separate ajax request instead
@@ -2118,6 +2162,20 @@ class ET_Builder_Element {
 				$fields = array_merge( $fields, $this->process_fields( $rendering_module->fields_unprocessed ) );
 			}
 		}
+		
+		$output_render_slug = $render_slug;
+
+		// When rendering specialty columns we should make sure correct tags are used for inner content
+		// Global Rows inside may break it in some cases, so handle it.
+		if ( 'et_pb_specialty_column' === $parent_type && 'et_pb_row' === $render_slug ) {
+			$output_render_slug = 'et_pb_row_inner';
+			$function_name_processed = 'et_pb_row_inner';
+		}
+
+		if ( 'et_pb_row_inner' === $parent_type && 'et_pb_column' === $render_slug ) {
+			$output_render_slug = 'et_pb_column_inner';
+			$function_name_processed = 'et_pb_column_inner';
+		}
 
 		$post_id = isset( $post->ID ) ? $post->ID : intval( self::$_->array_get( $_POST, 'et_post_id' ) );
 		$post_type = isset( $post->post_type ) ? $post->post_type : sanitize_text_field( self::$_->array_get( $_POST, 'et_post_type' ) );
@@ -2141,7 +2199,7 @@ class ET_Builder_Element {
 				$use_updated_global_sync_method = ! empty( $unsynced_global_attributes );
 			}
 
-			$global_module_data = et_pb_load_global_module( $global_module_id );
+			$global_module_data = et_pb_load_global_module( $global_module_id, $function_name_processed );
 
 			if ( '' !== $global_module_data ) {
 				$unsynced_options = ! empty( $unsynced_global_attributes[0] ) ? json_decode( $unsynced_global_attributes[0], true ) : array() ;
@@ -2161,10 +2219,10 @@ class ET_Builder_Element {
 					// When saving global rows from specialty sections, they get saved as et_pb_row instead of et_pb_row_inner.
 					// Handle this special case when parsing to avoid empty global row content.
 					if ( empty( $global_content ) && 'et_pb_row_inner' === $function_name_processed ) {
-						$global_content = et_pb_get_global_module_content( $global_module_data, 'et_pb_row' );
+						$global_content = et_pb_get_global_module_content( $global_module_data, 'et_pb_row', true );
 					}
 				}
-
+				
 				// remove the shortcode content to avoid conflicts of parent attributes with similar attrs from child modules
 				if ( false !== $global_content ) {
 					$global_content_processed = str_replace( $global_content, '', $global_module_data );
@@ -2290,7 +2348,23 @@ class ET_Builder_Element {
 		}
 
 		$processed_content = false !== $global_content ? $global_content : $this->content;
-		$content = array_key_exists( 'content', $this->fields_unprocessed ) || 'et_pb_code' === $function_name_processed || 'et_pb_fullwidth_code' === $function_name_processed ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type );
+
+		// Determine the parent type to send it down the tree while processing shortcode
+		// Main purpose is to know when we rendering Specialty Section content.
+		if ( 'et_pb_section' === $render_slug ) {
+			$parent_type = isset( $attrs['specialty'] ) && 'on' === $attrs['specialty'] ? 'et_pb_specialty_section' : 'et_pb_section';
+		} else if ( 'et_pb_specialty_section' === $parent_type && 'et_pb_column' === $render_slug ) {
+			$parent_type = 'et_pb_specialty_column';
+		} else {
+			$parent_type = $render_slug;
+		}
+
+		// Make sure content of Specialty Section is valid and has correct structure. Fix inner shortcode tags if needed.
+		if ( 'et_pb_specialty_section' === $parent_type ) {
+			$processed_content = $this->et_pb_maybe_fix_specialty_columns( $processed_content );
+		}
+
+		$content = array_key_exists( 'content', $this->fields_unprocessed ) || 'et_pb_code' === $function_name_processed || 'et_pb_fullwidth_code' === $function_name_processed ? $processed_content : et_fb_process_shortcode( $processed_content, $address, $global_parent, $global_parent_type, $parent_type );
 
 		// Global Code module content should be decoded before passing to VB.
 		$is_global_code = in_array( $function_name_processed, array( 'et_pb_code', 'et_pb_fullwidth_code' ) );
@@ -2342,7 +2416,7 @@ class ET_Builder_Element {
 			'vb_support'                  => $this->vb_support,
 			'parent_address'              => $parent_address,
 			'shortcode_index'             => $render_count,
-			'type'                        => $render_slug,
+			'type'                        => $output_render_slug,
 			'component_path'              => $component_path,
 			'main_css_element'            => $this->main_css_element,
 			'attrs'                       => $attrs,
@@ -9475,7 +9549,7 @@ class ET_Builder_Element {
 			$max_width_tablet      = self::$_->array_get( $this->props, 'max_width_tablet', '' );
 			$max_width_phone       = self::$_->array_get( $this->props, 'max_width_phone', '' );
 			$max_width_hover       = $hover->get_value( 'max_width', $this->props, '' );
-			$max_width_last_edited = $this->props['max_width_last_edited'];
+			$max_width_last_edited = self::$_->array_get( $this->props, 'max_width_last_edited', '' );
 			$max_width_responsive_active = et_pb_get_responsive_status( $max_width_last_edited );
 
 			if ( $max_width_responsive_active ) {
