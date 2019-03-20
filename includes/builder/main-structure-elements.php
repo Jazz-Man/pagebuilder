@@ -608,7 +608,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 			$global_content = et_pb_load_global_module( $global_module, '', $prev_background_color, $next_background_color );
 
 			if ( '' !== $global_content ) {
-				return do_shortcode( et_pb_fix_shortcodes( wpautop( $global_content ) ) );
+				return app_do_shortcode($global_content );
 			}
 		}
 
@@ -1020,6 +1020,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		// Otherwise order classes messed up with internal sections if exist
 		$module_classes = $this->module_classname( $function_name );
 
+
 		$output = sprintf(
 			'<div%4$s class="%3$s"%8$s>
 				%9$s
@@ -1030,7 +1031,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 				%6$s
 				%10$s
 			</div> <!-- .et_pb_section -->',
-			do_shortcode( et_pb_fix_shortcodes( $content ) ), // 1
+            app_do_shortcode( $content ), // 1
 			$background_video, // 2
 			$module_classes, // 3
 			$this->module_id(), // 4
@@ -1867,7 +1868,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			$global_content = et_pb_load_global_module( $global_module, $function_name );
 
 			if ( '' !== $global_content ) {
-				return do_shortcode( et_pb_fix_shortcodes( wpautop( $global_content ) ) );
+				return app_do_shortcode( $global_content );
 			}
 		}
 
@@ -2380,7 +2381,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		$module_classes = $this->module_classname( $function_name );
 
 		// Inner content shortcode parsing has to be done after all classname addition/removal
-		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
+		$inner_content = app_do_shortcode( $content );
 		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_row_empty' : '';
 
 		// reset the global column settings to make sure they are not affected by internal content
@@ -2924,7 +2925,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			$global_content = et_pb_load_global_module( $global_module, $function_name );
 
 			if ( '' !== $global_content ) {
-				return do_shortcode( et_pb_fix_shortcodes( wpautop( $global_content ) ) );
+				return app_do_shortcode( $global_content );
 			}
 		}
 
@@ -3281,7 +3282,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		$module_classes = $this->module_classname( $function_name );
 
 		// Inner content shortcode parsing has to be done after all classname addition/removal
-		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
+		$inner_content = app_do_shortcode( $content );
 		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_row_empty' : '';
 
 		// reset the global column settings to make sure they are not affected by internal content
@@ -3738,7 +3739,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		$module_classname = $this->module_classname( $function_name );
 
 		// Inner content shortcode parsing has to be done after all classname addition/removal
-		$inner_content = do_shortcode( et_pb_fix_shortcodes( $content ) );
+		$inner_content = app_do_shortcode( $content );
 
 		// Inner content dependant class in column shouldn't use add_classname/remove_classname method
 		$content_dependent_classname = '' === trim( $inner_content ) ? ' et_pb_column_empty' : '';

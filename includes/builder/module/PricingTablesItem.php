@@ -426,7 +426,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 			$this->module_classname( $render_slug ),
 			( '' !== $title ? sprintf( '<%2$s class="et_pb_pricing_title">%1$s</%2$s>', et_core_esc_previously( $title ), et_pb_process_header_level( $header_level, 'h2' ) ) : '' ),
 			( '' !== $subtitle ? sprintf( '<span class="et_pb_best_value">%1$s</span>', et_core_esc_previously( $subtitle ) ) : '' ),
-			do_shortcode( et_pb_fix_shortcodes( et_pb_extract_items( $content ) ) ),
+            app_do_shortcode( et_pb_extract_items( $content ) ),
 			$button,
 			( '' !== $currency ? sprintf( '<span class="et_pb_dollar_sign">%1$s</span>', et_core_esc_previously( $currency ) ) : '' ),
 			( '' !== $sum ? sprintf( '<span class="et_pb_sum">%1$s</span>', et_core_esc_previously( $sum ) ) : '' ),

@@ -57,9 +57,9 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 				'body'   => array(
 					'label'    => esc_html__( 'Body', 'et_builder' ),
 					'css'      => array(
-						'line_height' => "{$this->main_css_element}",
-						'main' => "{$this->main_css_element} .et_pb_slide_content, {$this->main_css_element} .et_pb_slide_content div",
-						'important' => 'all',
+                        'line_height' => (string)($this->main_css_element),
+                        'main' => "{$this->main_css_element} .et_pb_slide_content, {$this->main_css_element} .et_pb_slide_content div",
+                        'important' => 'all',
 					),
 				),
 				'meta'   => array(
@@ -308,7 +308,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 					if ( et_pb_is_pagebuilder_used( get_the_ID() ) ) {
 
 						// do_shortcode for Divi Plugin instead of applying `the_content` filter to avoid conflicts with 3rd party themes
-						$builder_post_content = et_is_builder_plugin_active() ? do_shortcode( $post_content ) : apply_filters( 'the_content', $post_content );
+						$builder_post_content = et_is_builder_plugin_active() ? app_do_shortcode( $post_content ) : apply_filters( 'the_content', $post_content );
 
 						// Overwrite default content, in case the content is protected
 						$query->posts[ $post_index ]->post_content = $builder_post_content;
@@ -316,13 +316,13 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 						$more = null; // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 
 						// Overwrite default content, in case the content is protected
-						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? do_shortcode( get_the_content('') ) : apply_filters( 'the_content', get_the_content('') );
+						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? app_do_shortcode( get_the_content('') ) : apply_filters( 'the_content', get_the_content('') );
 					}
 				} else {
 					if ( has_excerpt() && 'off' !== $args['use_manual_excerpt'] ) {
-						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? do_shortcode( et_strip_shortcodes( get_the_excerpt(), true ) ) : apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
+						$query->posts[ $post_index ]->post_content = et_is_builder_plugin_active() ? app_do_shortcode( et_strip_shortcodes( get_the_excerpt(), true ) ) : apply_filters( 'the_content', et_strip_shortcodes( get_the_excerpt(), true ) );
 					} else {
-						$query->posts[ $post_index ]->post_content = strip_shortcodes( truncate_post( intval( $args['excerpt_length'] ), false, '', true ) );
+						$query->posts[ $post_index ]->post_content = strip_shortcodes( truncate_post( (int)$args['excerpt_length'], false, '', true ) );
 					}
 				}
 

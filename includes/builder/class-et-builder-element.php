@@ -1757,7 +1757,7 @@ class ET_Builder_Element {
 				$content = et_builder_convert_line_breaks( et_builder_replace_code_content_entities( $content ) );
 			}
 
-			$this->props['content'] = $this->content = ! ( isset( $this->is_structure_element ) && $this->is_structure_element ) ? do_shortcode( et_pb_fix_shortcodes( $content, $this->use_raw_content ) ) : '';
+			$this->props['content'] = $this->content = ! ( isset( $this->is_structure_element ) && $this->is_structure_element ) ? app_do_shortcode( $content ) : '';
 		}
 
 		// Restart classname on shortcode callback. Module class is only called once, not on every
@@ -12151,7 +12151,7 @@ class ET_Builder_Element {
 			return false;
 		}
 
-		return do_shortcode( sprintf( '
+		return app_do_shortcode( sprintf( '
 			<video loop="loop" autoplay playsinline muted %3$s%4$s>
 				%1$s
 				%2$s

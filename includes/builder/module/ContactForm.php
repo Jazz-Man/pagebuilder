@@ -490,7 +490,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		);
 
 		if ( '' === trim( $content ) ) {
-			$content = do_shortcode( $this->predefined_child_modules() );
+			$content = app_do_shortcode( $this->predefined_child_modules() );
 		}
 
 		if ( $et_contact_error ) {

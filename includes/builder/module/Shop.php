@@ -507,7 +507,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		// https://github.com/woocommerce/woocommerce/issues/17769
 		$post = $GLOBALS['post'];
 
-		$shop = do_shortcode(
+		$shop = app_do_shortcode(
 			sprintf( '[%1$s per_page="%2$s" orderby="%3$s" columns="%4$s" %5$s order="%6$s"]',
 				esc_html( $woocommerce_shortcodes_types[ $type ] ),
 				esc_attr( $posts_number ),

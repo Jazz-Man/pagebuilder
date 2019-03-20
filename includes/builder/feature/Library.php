@@ -970,7 +970,7 @@ class ET_Builder_Library {
 				if ( ! isset( $_POST['is_BB'] ) ) {
 					$result['savedShortcode'] = et_fb_process_shortcode( $result['savedShortcode'] );
 				} else {
-					$post_content_processed = do_shortcode( $result['shortcode'] );
+					$post_content_processed = app_do_shortcode( $result['shortcode'] );
 					$result['migrations'] = ET_Builder_Module_Settings_Migration::$migrated;
 				}
 

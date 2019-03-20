@@ -380,8 +380,7 @@ class ET_Builder_Block_Editor_Integration {
 		$ids       = preg_match_all( '/data-id="(\d+)"/i', $gallery, $matches ) ? $matches[1] : array();
 		$columns   = preg_match( '/<ul class="wp-block-gallery columns-(\d)[^"]*?">/i', $gallery, $matches ) ? $matches[1] : 3;
 		$shortcode = sprintf(
-			'[gallery columns="%s" ids="%s"]',
-			intval( $columns ),
+			'[gallery columns="%s" ids="%s"]', (int)$columns,
 			implode( ',', array_map( 'intval', $ids ) )
 		);
 
@@ -425,7 +424,7 @@ class ET_Builder_Block_Editor_Integration {
 			// Found a GB gallery
 			if ( apply_filters( 'et_gb_gallery_to_shortcode', true ) ) {
 				// Return as shortcode
-				return do_shortcode( $this->gb_gallery_to_shortcode( $matches[0] ) );
+				return app_do_shortcode( $this->gb_gallery_to_shortcode( $matches[0] ) );
 			}
 			// Return it as is
 			return $matches[0];

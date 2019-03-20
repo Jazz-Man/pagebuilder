@@ -324,7 +324,7 @@ function et_box($atts, $content = null) {
 
 	$output = "<div{$id} class='et-box{$class} et-{$type}'>
 					<div class='et-box-content'>";
-	$output .= do_shortcode($content);
+	$output .= app_do_shortcode($content);
 	$output .= "</div></div>";
 
 	return $output;
@@ -943,7 +943,7 @@ if ( ! function_exists( 'et_paragraph_br_fix' ) ){
 
 if ( ! function_exists( 'et_content_helper' ) ){
 	function et_content_helper($content,$paragraph_tag=false,$br_tag=false){
-		return et_paragraph_br_fix( do_shortcode(shortcode_unautop($content)), $paragraph_tag, $br_tag );
+		return et_paragraph_br_fix( app_do_shortcode(shortcode_unautop($content)), $paragraph_tag, $br_tag );
 	}
 }
 

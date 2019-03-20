@@ -278,7 +278,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		remove_all_filters( 'wp_audio_shortcode' );
 		remove_all_filters( 'wp_audio_shortcode_class' );
 
-		return do_shortcode( sprintf( '[audio src="%s" /]', $args['audio'] ) );
+		return app_do_shortcode( sprintf( '[audio src="%s" /]', $args['audio'] ) );
 	}
 
 	function render( $attrs, $content = null, $render_slug ) {

@@ -57,7 +57,7 @@ $post = get_post( $post_id );
 
 							// process content for builder plugin
 							if ( et_is_builder_plugin_active() ) {
-								$content = do_shortcode( wp_unslash( $_POST['shortcode'] ) );
+								$content = app_do_shortcode( wp_unslash( $_POST['shortcode'] ) );
 								$content = str_replace( ']]>', ']]&gt;', $content );
 
 								$outer_class   = apply_filters( 'et_builder_outer_content_class', array( 'et-boc' ) );

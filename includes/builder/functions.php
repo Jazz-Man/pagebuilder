@@ -1318,7 +1318,7 @@ function et_fb_ajax_render_shortcode() {
 	// take shortcode string and ensure it's properly sanitized for the purposes of this function.
 	$shortcode = et_pb_enforce_builder_shortcode( $shortcode );
 
-	$output = do_shortcode( $shortcode );
+	$output = app_do_shortcode( $shortcode );
 
 	$styles = ET_Builder_Element::get_style();
 
@@ -1819,7 +1819,7 @@ function et_pb_extract_items( $content ) {
 			( '-' === $first_character ? 'off' : 'on' )
 		);
 	}
-	return do_shortcode( $output );
+	return app_do_shortcode( $output );
 }
 endif;
 
@@ -3429,7 +3429,7 @@ function et_pb_add_builder_page_js_css(){
 	// save the original content of $post variable
 	$post_original = $post;
 	// get the content for yoast
-	$post_content_processed = do_shortcode( $post->post_content );
+	$post_content_processed = app_do_shortcode( $post->post_content );
 	// set the $post to the original content to make sure it wasn't changed by do_shortcode()
 	$post = $post_original; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited -- were restoring it to what it was beforea few lines above.
 	// END Process shortcodes
@@ -7015,7 +7015,7 @@ function et_pb_get_audio_player() {
 		// first attached audio file is automatically appended on post's format content
 		if ( 'audio' === $shortcode_match ) {
 			$_et_pbgap_audio_to_remove = $matches[0][0];
-			$shortcode_audio = do_shortcode( $_et_pbgap_audio_to_remove );
+			$shortcode_audio = app_do_shortcode( $_et_pbgap_audio_to_remove );
 			break;
 		}
 	}
@@ -7208,7 +7208,7 @@ function et_get_first_video() {
 
 			add_filter( 'the_content', 'et_delete_post_video' );
 
-			$first_video = do_shortcode( et_pb_fix_shortcodes( $first_video ) );
+			$first_video = app_do_shortcode( $first_video );
 		}
 	}
 
@@ -7489,7 +7489,7 @@ function et_pb_gallery_images( $force_gallery_layout = '' ) {
 	} else {
 		add_filter( 'et_gallery_layout_enable', 'et_gallery_layout_turn_on' );
 		printf(
-			do_shortcode( '%1$s' ),
+            app_do_shortcode( '%1$s' ),
 			et_core_intentionally_unescaped( get_post_gallery(), 'html' )
 		);
 		remove_filter( 'et_gallery_layout_enable', 'et_gallery_layout_turn_on' );

@@ -520,7 +520,7 @@ function et_builder_resolve_dynamic_content( $name, $settings, $post_id, $contex
 	 */
 	$content = apply_filters( "et_builder_resolve_dynamic_content_{$name}", $content, $settings, $post_id, $context, $overrides );
 
-	return $is_content ? do_shortcode( $content ) : $content;
+	return $is_content ? app_do_shortcode( $content ) : $content;
 }
 
 /**
