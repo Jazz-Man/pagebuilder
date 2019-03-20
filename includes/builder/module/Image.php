@@ -273,7 +273,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 	}
 
 	public function get_alignment() {
-		$alignment = isset( $this->props['align'] ) ? $this->props['align'] : '';
+		$alignment = $this->props['align'] ?? '';
 
 		return et_pb_get_alignment( $alignment );
 	}

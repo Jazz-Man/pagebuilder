@@ -260,7 +260,7 @@ class ET_Builder_Module_Field_Border extends ET_Builder_Module_Field_Base {
 		// Border Radius CSS
 		$value_suffix = true === $is_hover ? et_pb_hover_options()->get_suffix() : '';
 		$settings     = $advanced_fields["border{$suffix}"]["border_radii{$suffix}"];
-		$radii        = isset( $atts["border_radii{$suffix}{$value_suffix}"] ) ? $atts["border_radii{$suffix}{$value_suffix}"] : false;
+		$radii        = $atts["border_radii{$suffix}{$value_suffix}"] ?? false;
 
 		if ( true === $is_hover && false === $radii ) {
 			return '';

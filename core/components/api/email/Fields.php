@@ -379,7 +379,7 @@ class ET_Core_API_Email_Fields {
 		$options = array( 'none' => esc_html__( 'Choose a field...', 'et_core' ) );
 
 		foreach ( $custom_fields as $field ) {
-			$field_id             = isset( $field['group_id'] ) ? $field['group_id'] : $field['field_id'];
+			$field_id             = $field['group_id'] ?? $field['field_id'];
 			$options[ $field_id ] = $field['name'];
 		}
 

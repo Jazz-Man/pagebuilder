@@ -124,10 +124,10 @@ class ET_Core_API_Email_Providers {
 
 	public function account_fields( $provider = 'all' ) {
 		if ( 'all' !== $provider ) {
-			return isset( self::$_fields[ $provider ] ) ? self::$_fields[ $provider ] : array();
-		}
+			return self::$_fields[$provider] ?? [];
+        }
 
-		return self::$_fields;
+        return self::$_fields;
 	}
 
 	public function custom_fields_data() {

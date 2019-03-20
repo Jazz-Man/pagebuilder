@@ -333,12 +333,13 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 
 		$et_error_message = '';
 		$et_contact_error = false;
-		$current_form_fields = isset( $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] : '';
-		$hidden_form_fields = isset( $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] ) ? $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] : false;
+		$current_form_fields = $_POST['et_pb_contact_email_fields_' . $et_pb_contact_form_num] ?? '';
+		$hidden_form_fields = $_POST['et_pb_contact_email_hidden_fields_' . $et_pb_contact_form_num] ?? false;
 		$contact_email = '';
 		$processed_fields_values = array();
 
-		$nonce_result = isset( $_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num] ) && wp_verify_nonce( $_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num], 'et-pb-contact-form-submit' ) ? true : false;
+		$nonce_result = (isset($_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num]) && wp_verify_nonce($_POST['_wpnonce-et-pb-contact-form-submitted-' . $et_pb_contact_form_num],
+                'et-pb-contact-form-submit'));
 
 		// check that the form was submitted and et_pb_contactform_validate field is empty to protect from spam
 		if ( $nonce_result && isset( $_POST['et_pb_contactform_submit_' . $et_pb_contact_form_num] ) && empty( $_POST['et_pb_contactform_validate_' . $et_pb_contact_form_num] ) ) {
@@ -427,7 +428,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 				}
 			} else {
 				// use default message pattern if custom pattern is not defined
-				$message_pattern = isset( $processed_fields_values['message']['value'] ) ? $processed_fields_values['message']['value'] : '';
+				$message_pattern = $processed_fields_values['message']['value'] ?? '';
 
 				// Add all custom fields into the message body by default
 				foreach ( $processed_fields_values as $key => $value ) {

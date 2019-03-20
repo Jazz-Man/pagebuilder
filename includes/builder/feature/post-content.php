@@ -8,7 +8,7 @@
  */
 function et_builder_ajax_resolve_post_content() {
 	$_         = ET_Core_Data_Utils::instance();
-	$nonce     = isset( $_POST['nonce'] ) ? $_POST['nonce'] : '';
+	$nonce     = $_POST['nonce'] ?? '';
 	$nonce     = sanitize_text_field( $nonce );
 	$post_id   = isset( $_POST['post_id'] ) ? (int) $_POST['post_id'] : 0;
 	$groups    = isset( $_POST['groups'] ) && is_array( $_POST['groups'] ) ? $_POST['groups'] : array();

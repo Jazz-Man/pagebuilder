@@ -127,7 +127,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 	}
 
 	public function get_button_alignment() {
-		$text_orientation = isset( $this->props['button_alignment'] ) ? $this->props['button_alignment'] : '';
+		$text_orientation = $this->props['button_alignment'] ?? '';
 
 		return et_pb_get_alignment( $text_orientation );
 	}

@@ -120,9 +120,9 @@ function et_fb_get_dynamic_backend_helpers() {
 	$layout_scope = '';
 	$layout_built_for = '';
 
-	$post_type    = isset( $post->post_type ) ? $post->post_type : false;
-	$post_id      = isset( $post->ID ) ? $post->ID : false;
-	$post_status  = isset( $post->post_status ) ? $post->post_status : false;
+	$post_type    = $post->post_type ?? false;
+	$post_id      = $post->ID ?? false;
+	$post_status  = $post->post_status ?? false;
 	$post_title   = isset( $post->post_title ) ? esc_attr( $post->post_title ) : false;
 	$current_user = wp_get_current_user();
 
@@ -1942,11 +1942,11 @@ add_filter( 'et_fb_get_asset_helpers', 'et_fb_get_asset_helpers', 10, 2 );
 
 function et_fb_backend_helpers() {
 	global $post;
-	$post_type = isset( $post->post_type ) ? $post->post_type : 'post';
+	$post_type = $post->post_type ?? 'post';
 
-	if ( wp_script_is( 'et-dynamic-asset-helpers', 'enqueued' ) ) {
+	if ( wp_script_is( 'et-dynamic-asset-helpers') ) {
 		// New loading method
-		$post_id = isset( $post->ID ) ? $post->ID : false;
+		$post_id = $post->ID ?? false;
 		$layout_type = '';
 
 		if ( 'et_pb_layout' === $post_type ) {

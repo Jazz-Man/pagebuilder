@@ -138,7 +138,7 @@ class ET_Builder_Plugin_Compat_Advanced_Custom_Fields extends ET_Builder_Plugin_
 
 		switch ( $field['type'] ) {
 			case 'image':
-				$format = isset( $field['return_format'] ) ? $field['return_format'] : 'url';
+				$format = $field['return_format'] ?? 'url';
 				switch ( $format ) {
 					case 'array':
 						$value = esc_url( wp_get_attachment_url((int)$value['id']) );
@@ -155,7 +155,7 @@ class ET_Builder_Plugin_Compat_Advanced_Custom_Fields extends ET_Builder_Plugin_
 				$value_labels = array();
 
 				foreach ( $value as $value_key ) {
-					$choice_label = isset( $field['choices'][ $value_key ] ) ? $field['choices'][ $value_key ] : '';
+					$choice_label = $field['choices'][$value_key] ?? '';
 					if ( ! empty( $choice_label ) ) {
 						$value_labels[] = $choice_label;
 					}

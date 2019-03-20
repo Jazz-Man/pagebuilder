@@ -283,8 +283,8 @@ function et_builder_get_built_in_dynamic_content_fields( $post_id = 0 ) {
 		$fields[ $key ]['custom'] = false;
 
 		if ( 'text' === $field['type'] ) {
-			$settings = isset( $field['fields'] ) ? $field['fields'] : array();
-			$settings = array_merge( array(
+			$settings = $field['fields'] ?? [];
+            $settings = array_merge( array(
 				'before' => array(
 					'label'   => esc_html__( 'Before', 'et_builder' ),
 					'type'    => 'text',
@@ -579,14 +579,14 @@ function et_builder_filter_resolve_default_dynamic_content( $content, $name, $se
 
 	switch ( $name ) {
 		case 'post_title':
-			$content = isset( $overrides[ $name ] ) ? $overrides[ $name ] : get_the_title( $post_id );
+			$content = $overrides[$name] ?? get_the_title($post_id);
 			$content = esc_html( $content );
 			break;
 
 		case 'post_excerpt':
 			$words      = (int) $_->array_get( $settings, 'words', $def( $post_id, $name, 'words' ) );
 			$read_more  = $_->array_get( $settings, 'read_more_label', $def( $post_id, $name, 'read_more_label' ) );
-			$content    = isset( $overrides[ $name ] ) ? $overrides[ $name ] : get_the_excerpt( $post_id );
+			$content    = $overrides[$name] ?? get_the_excerpt($post_id);
 
 			if ( $words > 0 ) {
 				$content = wp_trim_words( $content, $words );
@@ -642,7 +642,7 @@ function et_builder_filter_resolve_default_dynamic_content( $content, $name, $se
 			$separator = ! empty( $separator ) ? $separator : $def( $post_id, $name, 'separator' );
 			$taxonomy  = $_->array_get( $settings, 'category_type', '' );
 			$taxonomy  = isset( $post_taxonomies[ $taxonomy ] ) ? $taxonomy : $def( $post_id, $name, 'category_type' );
-			$ids_key   = isset( $overrides_map[ $taxonomy ] ) ? $overrides_map[ $taxonomy ] : '';
+			$ids_key   = $overrides_map[$taxonomy] ?? '';
 			$ids       = isset( $overrides[ $ids_key ] ) ? array_filter( array_map( 'intval', explode( ',', $overrides[ $ids_key ] ) ) ) : array();
 			$terms     = ! empty( $ids ) ? get_terms( array( 'taxonomy' => $taxonomy, 'include'  => $ids ) ) : get_the_terms( $post_id, $taxonomy );
 			if ( is_array( $terms ) ) {

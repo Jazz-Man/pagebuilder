@@ -109,11 +109,7 @@ class ET_Core_API_Email_CampaignMonitor extends ET_Core_API_Email_Provider {
 				continue;
 			}
 
-			if ( isset( $this->response->DATA['TotalActiveSubscribers'] ) ) {
-				$with_counts[ $list_id ]['subscribers_count'] = $this->response->DATA['TotalActiveSubscribers'];
-			} else {
-				$with_counts[ $list_id ]['subscribers_count'] = 0;
-			}
+            $with_counts[$list_id]['subscribers_count'] = $this->response->DATA['TotalActiveSubscribers'] ?? 0;
 
 			usleep( 500000 ); // 0.5 seconds
 		}

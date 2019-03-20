@@ -84,12 +84,12 @@ class ET_Builder_Module_Settings_Migration_Animation extends ET_Builder_Module_S
 
 				// Map animation style to provided configuration, otherwise it is 'slide' style
 				if ( 'animation_style' === $field_name ) {
-					return isset( $this->fields['animation_style']['map'][ $current_value ] ) ? $this->fields['animation_style']['map'][ $current_value ] : 'slide';
+					return $this->fields['animation_style']['map'][$current_value] ?? 'slide';
 				}
 
 				// Map animation direction to provided configuration, otherwise keep current value
 				if ( 'animation_direction' === $field_name ) {
-					return isset( $this->fields['animation_direction']['map'][ $current_value ] ) ? $this->fields['animation_direction']['map'][ $current_value ] : $current_value;
+					return $this->fields['animation_direction']['map'][$current_value] ?? $current_value;
 				}
 			}
 		}

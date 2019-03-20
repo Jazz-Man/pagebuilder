@@ -231,7 +231,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 			// Automatically append responsive field
 			foreach ( $structure[ "{$placement}_divider" ]['controls'] as $field_name => $field ) {
 				if ( isset( $field['mobile_options'] ) && $field['mobile_options'] ) {
-					$responsive_field_default = isset( $field['default'] ) ? $field['default'] : '';
+					$responsive_field_default = $field['default'] ?? '';
 
 					// Tablet field
 					$structure["{$placement}_divider"]['controls']["{$field_name}_tablet"] = array(

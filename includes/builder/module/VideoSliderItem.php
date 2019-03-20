@@ -169,7 +169,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 	}
 
 	static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
-		$post_id = isset( $current_page['id'] ) ? $current_page['id'] : self::get_current_post_id();
+		$post_id = $current_page['id'] ?? self::get_current_post_id();
 		$defaults = array(
 			'image_src' => '',
 			'src' => '',

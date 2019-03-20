@@ -103,15 +103,15 @@ class ET_Core_API_OAuthHelper {
 	 * @param array $urls {@see self::__construct()}
 	 */
 	private function _initialize( $data, $urls ) {
-		$this->consumer_key        = isset( $data['consumer_key'] ) ? $data['consumer_key'] : '';
-		$this->consumer_secret     = isset( $data['consumer_secret'] ) ? $data['consumer_secret'] : '';
-		$this->access_token        = isset( $data['access_key'] ) ? $data['access_key'] : '';
-		$this->access_token_secret = isset( $data['access_secret'] ) ? $data['access_secret'] : '';
+		$this->consumer_key        = $data['consumer_key'] ?? '';
+		$this->consumer_secret     = $data['consumer_secret'] ?? '';
+		$this->access_token        = $data['access_key'] ?? '';
+		$this->access_token_secret = $data['access_secret'] ?? '';
 
 		$this->REQUEST_TOKEN_URL = $urls['request_token_url'];
 		$this->AUTHORIZATION_URL = $urls['authorization_url'];
 		$this->ACCESS_TOKEN_URL  = $urls['access_token_url'];
-		$this->REDIRECT_URL      = isset( $urls['redirect_url'] ) ? $urls['redirect_url'] : '';
+		$this->REDIRECT_URL      = $urls['redirect_url'] ?? '';
 	}
 
 	protected function _get_oauth2_parameters( $args ) {

@@ -740,7 +740,7 @@ class ET_Builder_Library {
 
 						$post_status_object         = get_post_status_object( $post->post_status );
 
-						$layout->status             = isset( $post_status_object->label ) ? $post_status_object->label : $post->post_status;
+						$layout->status             = $post_status_object->label ?? $post->post_status;
 
 						$layouts[ $layout_index++ ] = $layout;
 
@@ -952,7 +952,7 @@ class ET_Builder_Library {
 		$result = array();
 		$post   = get_post( $id );
 
-		$post_type = isset( $post->post_type ) ? $post->post_type : ET_BUILDER_LAYOUT_POST_TYPE;
+		$post_type = $post->post_type ?? ET_BUILDER_LAYOUT_POST_TYPE;
 
 		switch ( $post_type ) {
 			case ET_BUILDER_LAYOUT_POST_TYPE:

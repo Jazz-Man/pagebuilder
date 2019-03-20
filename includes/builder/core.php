@@ -615,9 +615,9 @@ function et_pb_get_role_settings() {
 	global $et_pb_role_settings;
 
 	// if we don't have saved global variable, then get the value from WPDB
-	$et_pb_role_settings = isset( $et_pb_role_settings ) ? $et_pb_role_settings : get_option( 'et_pb_role_settings', array() );
+	$et_pb_role_settings = $et_pb_role_settings ?? get_option('et_pb_role_settings', []);
 
-	return $et_pb_role_settings;
+    return $et_pb_role_settings;
 }
 
 /**
@@ -1277,16 +1277,16 @@ function et_pb_save_layout() {
 	}
 
 	$args = array(
-		'layout_type'          => isset( $_POST['et_layout_type'] ) ? sanitize_text_field( $_POST['et_layout_type'] ) : 'layout',
-		'layout_selected_cats' => isset( $_POST['et_layout_cats'] ) ? sanitize_text_field( $_POST['et_layout_cats'] ) : '',
-		'built_for_post_type'  => isset( $_POST['et_post_type'] ) ? sanitize_text_field( $_POST['et_post_type'] ) : 'page',
-		'layout_new_cat'       => isset( $_POST['et_layout_new_cat'] ) ? sanitize_text_field( $_POST['et_layout_new_cat'] ) : '',
-		'columns_layout'       => isset( $_POST['et_columns_layout'] ) ? sanitize_text_field( $_POST['et_columns_layout'] ) : '0',
-		'module_type'          => isset( $_POST['et_module_type'] ) ? sanitize_text_field( $_POST['et_module_type'] ) : 'et_pb_unknown',
-		'layout_scope'         => isset( $_POST['et_layout_scope'] ) ? sanitize_text_field( $_POST['et_layout_scope'] ) : 'not_global',
-		'module_width'         => isset( $_POST['et_module_width'] ) ? sanitize_text_field( $_POST['et_module_width'] ) : 'regular',
-		'layout_content'       => isset( $_POST['et_layout_content'] ) ? $_POST['et_layout_content'] : '',
-		'layout_name'          => isset( $_POST['et_layout_name'] ) ? sanitize_text_field( $_POST['et_layout_name'] ) : '',
+        'layout_type'          => isset( $_POST['et_layout_type'] ) ? sanitize_text_field( $_POST['et_layout_type'] ) : 'layout',
+        'layout_selected_cats' => isset( $_POST['et_layout_cats'] ) ? sanitize_text_field( $_POST['et_layout_cats'] ) : '',
+        'built_for_post_type'  => isset( $_POST['et_post_type'] ) ? sanitize_text_field( $_POST['et_post_type'] ) : 'page',
+        'layout_new_cat'       => isset( $_POST['et_layout_new_cat'] ) ? sanitize_text_field( $_POST['et_layout_new_cat'] ) : '',
+        'columns_layout' => isset( $_POST['et_columns_layout'] ) ? sanitize_text_field( $_POST['et_columns_layout'] ) : '0',
+        'module_type'    => isset( $_POST['et_module_type'] ) ? sanitize_text_field( $_POST['et_module_type'] ) : 'et_pb_unknown',
+        'layout_scope'   => isset( $_POST['et_layout_scope'] ) ? sanitize_text_field( $_POST['et_layout_scope'] ) : 'not_global',
+        'module_width'   => isset( $_POST['et_module_width'] ) ? sanitize_text_field( $_POST['et_module_width'] ) : 'regular',
+        'layout_content' => $_POST['et_layout_content'] ?? '',
+        'layout_name'    => isset($_POST['et_layout_name'] ) ? sanitize_text_field($_POST['et_layout_name'] ) : '',
 	);
 
 	$new_layout_meta = et_pb_submit_layout( $args );
@@ -1367,9 +1367,9 @@ function et_pb_update_layout() {
 		die( -1 );
 	}
 
-	$post_id = isset( $_POST['et_template_post_id'] ) ? absint( $_POST['et_template_post_id'] ) : '';
-	$new_content = isset( $_POST['et_layout_content'] ) ? $_POST['et_layout_content'] : '';
-	$layout_type = isset( $_POST['et_layout_type'] ) ? sanitize_text_field( $_POST['et_layout_type'] ) : '';
+	$post_id     = isset( $_POST['et_template_post_id'] ) ? absint( $_POST['et_template_post_id'] ) : '';
+	$new_content = $_POST['et_layout_content'] ?? '';
+    $layout_type = isset($_POST['et_layout_type'] ) ? sanitize_text_field($_POST['et_layout_type'] ) : '';
 
 	if ( empty( $post_id ) || ! current_user_can( 'edit_post', $post_id ) ) {
 		die( -1 );
@@ -1924,11 +1924,11 @@ function et_fb_heartbeat_autosave( $response, $data ) {
 		$has_focus = !empty( $_POST['has_focus'] ) && 'true' === $_POST['has_focus'];
 		$force_autosave = !empty( $data['et'] ) && !empty( $data['et']['force_autosave'] ) && 'true' === $data['et']['force_autosave'];
 
-		$editor_1 = 'fb' === $data['et']['built_by'] ? 'fb' : 'bb';
-		$editor_2 = 'fb' === $editor_1 ? 'bb' : 'fb';
-		$editor_1_editing_cookie = isset( $_COOKIE[ 'et-editing-post-' . $post_id . '-' . $editor_1 ] ) ? $_COOKIE[ 'et-editing-post-' . $post_id . '-' . $editor_1 ] : false;
-		$editor_2_editor_available_cookie = isset( $_COOKIE[ 'et-editor-available-post-' . $post_id . '-' . $editor_2 ] ) ? $_COOKIE[ 'et-editor-available-post-' . $post_id . '-' . $editor_2 ] : false;
-		$editor_1_autosavable = !empty( $editor_1_editing_cookie ) && empty( $editor_2_editor_available_cookie );
+		$editor_1                         = 'fb' === $data['et']['built_by'] ? 'fb' : 'bb';
+		$editor_2                         = 'fb' === $editor_1 ? 'bb' : 'fb';
+		$editor_1_editing_cookie          = $_COOKIE['et-editing-post-' . $post_id . '-' . $editor_1] ?? false;
+        $editor_2_editor_available_cookie = $_COOKIE['et-editor-available-post-' . $post_id . '-' . $editor_2] ?? false;
+        $editor_1_autosavable             = !empty( $editor_1_editing_cookie ) && empty( $editor_2_editor_available_cookie );
 
 		if ( !$has_focus && !$force_autosave && !$editor_1_autosavable ) {
 			$response['et_fb_autosave'] = array( 'success' => false, 'message' => __( 'Not saved, editor out of focus', 'et_builder' ) );
@@ -2317,13 +2317,13 @@ function et_builder_email_maybe_migrate_accounts() {
 	foreach ( $migrations as $product => $completed ) {
 		if ( 'builder' === $product ) {
 			$account_name      = 'Divi Builder Plugin';
-			$mailchimp_api_key = isset( $builder_options['newsletter_main_mailchimp_key'] ) ? $builder_options['newsletter_main_mailchimp_key'] : '';
+			$mailchimp_api_key = $builder_options['newsletter_main_mailchimp_key'] ?? '';
 
-			$consumer_key    = isset( $builder_options['aweber_consumer_key'] ) ? $builder_options['aweber_consumer_key'] : '';
-			$consumer_secret = isset( $builder_options['aweber_consumer_secret'] ) ? $builder_options['aweber_consumer_secret'] : '';
-			$access_key      = isset( $builder_options['aweber_access_key'] ) ? $builder_options['aweber_access_key'] : '';
-			$access_secret   = isset( $builder_options['aweber_access_secret'] ) ? $builder_options['aweber_access_secret'] : '';
-		} else if ( 'divi' === $product ) {
+            $consumer_key    = $builder_options['aweber_consumer_key'] ?? '';
+            $consumer_secret = $builder_options['aweber_consumer_secret'] ?? '';
+            $access_key      = $builder_options['aweber_access_key'] ?? '';
+            $access_secret   = $builder_options['aweber_access_secret'] ?? '';
+        } else if ('divi' === $product ) {
 			$account_name      = 'Divi Builder';
 			$mailchimp_api_key = et_get_option( 'divi_mailchimp_api_key' );
 
@@ -3549,7 +3549,7 @@ function et_pb_ab_get_visitor_cookie( $post_id, $record_type ) {
 	$unique_test_id = get_post_meta( $post_id, '_et_pb_ab_testing_id', true );
 	$cookie_name    = "et_pb_ab_{$record_type}_{$post_id}{$unique_test_id}";
 
-	return isset( $_COOKIE[ $cookie_name ] ) ? $_COOKIE[ $cookie_name ] : false;
+	return $_COOKIE[$cookie_name] ?? false;
 }
 
 /**
@@ -3640,11 +3640,11 @@ function et_pb_ab_get_subject_id() {
 	$subjects_cache = get_post_meta( $test_id, 'et_pb_subjects_cache', true );
 
 	$result = array(
-		'id'      => $current_ab_module_id,
-		'content' => isset( $subjects_cache[ $current_ab_module_id ] ) ? $subjects_cache[ $current_ab_module_id ] : '',
-	);
+        'id'      => $current_ab_module_id,
+        'content' => $subjects_cache[$current_ab_module_id] ?? '',
+    );
 
-	die( wp_json_encode( $result ) );
+    die( wp_json_encode( $result ) );
 }
 add_action( 'wp_ajax_et_pb_ab_get_subject_id', 'et_pb_ab_get_subject_id' );
 add_action( 'wp_ajax_nopriv_et_pb_ab_get_subject_id', 'et_pb_ab_get_subject_id' );
@@ -3754,10 +3754,10 @@ function et_fb_is_enabled( $post_id = false ) {
 	if ( ! $post_id ) {
 		global $post;
 
-		$post_id = isset( $post->ID ) ? $post->ID : false;
-	}
+		$post_id = $post->ID ?? false;
+    }
 
-	$check = apply_filters( 'et_fb_is_enabled', null, $post_id );
+    $check = apply_filters( 'et_fb_is_enabled', null, $post_id );
 
 	if ( null !== $check ) {
 		return $check;
@@ -4230,9 +4230,9 @@ function et_fb_get_posts_list() {
 	et_core_security_check( 'edit_posts', 'et_fb_get_posts_list' );
 
 	$post_types = et_get_registered_post_type_options();
-	$post_type = isset( $_POST['post_type'] ) ? $_POST['post_type'] : false;
+	$post_type = $_POST['post_type'] ?? false;
 
-	if ( empty( $post_type ) || ! isset( $post_types[ $post_type ] ) ) {
+    if (empty( $post_type ) || ! isset($post_types[$post_type ] ) ) {
 		wp_send_json_error();
 	}
 
@@ -4445,10 +4445,10 @@ function et_pb_add_font( $font_files, $font_name, $font_settings ) {
 
 	if ( ! empty( $font_settings ) ) {
 		$all_custom_fonts[ $font_name ]['styles'] = ! isset( $font_settings['font_weights'] ) || 'all' === $font_settings['font_weights'] ? '100,200,300,400,500,600,700,800,900' : $font_settings['font_weights'];
-		$all_custom_fonts[ $font_name ]['type'] = isset( $font_settings['generic_family'] ) ? $font_settings['generic_family'] : 'serif';
-	}
+		$all_custom_fonts[ $font_name ]['type'] = $font_settings['generic_family'] ?? 'serif';
+    }
 
-	update_option( 'et_uploaded_fonts', $all_custom_fonts );
+    update_option( 'et_uploaded_fonts', $all_custom_fonts );
 	// Need to update cached assets because custom fonts are included in static helpers.
 	et_fb_delete_builder_assets();
 
@@ -4668,9 +4668,9 @@ if ( ! function_exists( 'et_builder_option' ) ) :
 function et_builder_option( $name ) {
 	$options = et_builder_options();
 
-	$option = isset( $options[ $name ] ) ? $options[ $name ] : false;
+	$option = $options[$name] ?? false;
 
-	return apply_filters( "et_builder_option_{$name}", $option );
+    return apply_filters( "et_builder_option_{$name}", $option );
 }
 endif;
 
@@ -5374,14 +5374,14 @@ function et_fb_dynamic_asset_exists( $prefix, $post_type = false ) {
 	// Get post type if it isn't being defined
 	if ( ! $post_type ) {
 		if ( wp_doing_ajax() ) {
-			$post_type = isset( $_REQUEST['et_post_type'] ) ? $_REQUEST['et_post_type'] : 'post';
-			$post_type = sanitize_text_field( $post_type );
+			$post_type = $_REQUEST['et_post_type'] ?? 'post';
+            $post_type = sanitize_text_field( $post_type );
 		} else {
 			global $post;
 
-			$post_type = isset( $post->post_type ) ? $post->post_type : 'post';
-		}
-	}
+			$post_type = $post->post_type ?? 'post';
+        }
+    }
 
 	$uploads = wp_upload_dir();
 	$prefix  = esc_attr( $prefix );

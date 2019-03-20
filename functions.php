@@ -9471,7 +9471,7 @@ function et_divi_maybe_change_frontend_locale( $locale ) {
 	$option_name   = 'divi_disable_translations';
 	$theme_options = get_option( 'et_divi' );
 
-	$disable_translations = isset ( $theme_options[ $option_name ] ) ? $theme_options[ $option_name ] : false;
+	$disable_translations = $theme_options[$option_name] ?? false;
 
 	if ( 'on' === $disable_translations ) {
 		return 'en_US';

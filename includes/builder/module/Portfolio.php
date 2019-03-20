@@ -686,8 +686,7 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 			$video_background, // #5
 			$parallax_image_background,
 			$fullwidth ? '' : '<div class="et_pb_portfolio_grid_items">',
-			$fullwidth ? '' : '</div>',
-			isset( $pagination ) ? $pagination : '',
+			$fullwidth ? '' : '</div>', $pagination ?? '',
 			et_core_esc_previously( $data_background_layout ), // #10
 			et_core_esc_previously( $data_background_layout_hover )
 		);

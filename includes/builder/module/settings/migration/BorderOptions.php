@@ -55,11 +55,7 @@ class ET_Builder_Module_Settings_Migration_BorderOptions extends ET_Builder_Modu
 			$default_key = $module_slug;
 		}
 
-		if ( isset( $this->defaults[ $default_key ][ $field_name ] ) ) {
-			$default = $this->defaults[ $default_key ][ $field_name ];
-		} else {
-			$default = $this->defaults['all_modules'][ $field_name ];
-		}
+        $default = $this->defaults[$default_key][$field_name] ?? $this->defaults['all_modules'][$field_name];
 
 		return $default;
 	}
@@ -264,11 +260,8 @@ class ET_Builder_Module_Settings_Migration_BorderOptions extends ET_Builder_Modu
 						$current_value = 'solid';
 						break;
 					case 'border_color_all_fields_focus' :
-						$color = '#ffffff';
-						if ( isset( $attrs['focus_border_color'] ) ) {
-							$color = $attrs['focus_border_color'];
-						}
-						$current_value = $color;
+						$color         = $attrs['focus_border_color'] ?? '#ffffff';
+                        $current_value = $color;
 						break;
 					default :
 						$current_value = '';

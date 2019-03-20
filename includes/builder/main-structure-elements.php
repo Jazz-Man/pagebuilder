@@ -620,9 +620,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 
 			$et_pb_all_column_settings_backup = $et_pb_all_column_settings;
 
-			$et_pb_all_column_settings = ! isset( $et_pb_all_column_settings ) ?  array() : $et_pb_all_column_settings;
+			$et_pb_all_column_settings = $et_pb_all_column_settings ?? [];
 
-			if ('on' === $make_equal) {
+            if ('on' === $make_equal) {
 				$this->add_classname( 'et_pb_equal_columns' );
 			}
 
@@ -1859,9 +1859,9 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 
 		global $et_pb_all_column_settings, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
-		$et_pb_all_column_settings = ! isset( $et_pb_all_column_settings ) ?  array() : $et_pb_all_column_settings;
+		$et_pb_all_column_settings = $et_pb_all_column_settings ?? [];
 
-		$et_pb_all_column_settings_backup = $et_pb_all_column_settings;
+        $et_pb_all_column_settings_backup = $et_pb_all_column_settings;
 
 		$keep_column_padding_mobile = $column_padding_mobile;
 
@@ -2263,17 +2263,17 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 			// old version of Rows support only top and bottom padding, so we need to handle it along with the full padding in the recent version
 			if ( 2 === count( $padding_values ) ) {
 				$padding_settings = array(
-					'top' => isset( $padding_values[0] ) ? $padding_values[0] : '',
-					'bottom' => isset( $padding_values[1] ) ? $padding_values[1] : '',
-				);
-			} else {
+                    'top'    => $padding_values[0] ?? '',
+                    'bottom' => $padding_values[1] ?? '',
+                );
+            } else {
 				$padding_settings = array(
-					'top' => isset( $padding_values[0] ) ? $padding_values[0] : '',
-					'right' => isset( $padding_values[1] ) ? $padding_values[1] : '',
-					'bottom' => isset( $padding_values[2] ) ? $padding_values[2] : '',
-					'left' => isset( $padding_values[3] ) ? $padding_values[3] : '',
-				);
-			}
+                    'top'    => $padding_values[0] ?? '',
+                    'right'  => $padding_values[1] ?? '',
+                    'bottom' => $padding_values[2] ?? '',
+                    'left'   => $padding_values[3] ?? '',
+                );
+            }
 
 			foreach( $padding_settings as $padding_side => $value ) {
 				if ( '' !== $value ) {
@@ -2307,12 +2307,12 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				}
 
 				$padding_mobile_values_processed[ $device ] = array(
-					'padding-top'    => isset( $padding_mobile_values[$device][0] ) ? $padding_mobile_values[$device][0] : '',
-					'padding-right'  => isset( $padding_mobile_values[$device][1] ) ? $padding_mobile_values[$device][1] : '',
-					'padding-bottom' => isset( $padding_mobile_values[$device][2] ) ? $padding_mobile_values[$device][2] : '',
-					'padding-left'   => isset( $padding_mobile_values[$device][3] ) ? $padding_mobile_values[$device][3] : '',
-				);
-			}
+                    'padding-top'    => $padding_mobile_values[$device][0] ?? '',
+                    'padding-right'  => $padding_mobile_values[$device][1] ?? '',
+                    'padding-bottom' => $padding_mobile_values[$device][2] ?? '',
+                    'padding-left'   => $padding_mobile_values[$device][3] ?? '',
+                );
+            }
 
 			if ( ! empty( $padding_mobile_values_processed ) ) {
 				et_pb_generate_responsive_css( $padding_mobile_values_processed, '%%order_class%%.et_pb_row', '', $function_name, ' !important; ' );
@@ -2917,9 +2917,9 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 
 		global $et_pb_all_column_settings_inner, $et_pb_rendering_column_content, $et_pb_rendering_column_content_row;
 
-		$et_pb_all_column_settings_inner = ! isset( $et_pb_all_column_settings_inner ) ?  array() : $et_pb_all_column_settings_inner;
+		$et_pb_all_column_settings_inner = $et_pb_all_column_settings_inner ?? [];
 
-		$et_pb_all_column_settings_backup = $et_pb_all_column_settings_inner;
+        $et_pb_all_column_settings_backup = $et_pb_all_column_settings_inner;
 
 		$keep_column_padding_mobile = $column_padding_mobile;
 
@@ -3166,19 +3166,19 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 			// old version of Rows support only top and bottom padding, so we need to handle it along with the full padding in the recent version
 			if ( 2 === count( $padding_values ) ) {
 				$padding_settings = array(
-					'top' => isset( $padding_values[0] ) ? $padding_values[0] : '',
-					'bottom' => isset( $padding_values[1] ) ? $padding_values[1] : '',
-				);
-			} else {
+                    'top'    => $padding_values[0] ?? '',
+                    'bottom' => $padding_values[1] ?? '',
+                );
+            } else {
 				$padding_settings = array(
-					'top' => isset( $padding_values[0] ) ? $padding_values[0] : '',
-					'right' => isset( $padding_values[1] ) ? $padding_values[1] : '',
-					'bottom' => isset( $padding_values[2] ) ? $padding_values[2] : '',
-					'left' => isset( $padding_values[3] ) ? $padding_values[3] : '',
-				);
-			}
+                    'top'    => $padding_values[0] ?? '',
+                    'right'  => $padding_values[1] ?? '',
+                    'bottom' => $padding_values[2] ?? '',
+                    'left'   => $padding_values[3] ?? '',
+                );
+            }
 
-			foreach( $padding_settings as $padding_side => $value ) {
+            foreach( $padding_settings as $padding_side => $value ) {
 				if ( '' !== $value ) {
 					$element_style = array(
 						'selector'    => '.et_pb_column %%order_class%%',
@@ -3210,14 +3210,14 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 				}
 
 				$padding_mobile_values_processed[ $device ] = array(
-					'padding-top'    => isset( $padding_mobile_values[$device][0] ) ? $padding_mobile_values[$device][0] : '',
-					'padding-right'  => isset( $padding_mobile_values[$device][1] ) ? $padding_mobile_values[$device][1] : '',
-					'padding-bottom' => isset( $padding_mobile_values[$device][2] ) ? $padding_mobile_values[$device][2] : '',
-					'padding-left'   => isset( $padding_mobile_values[$device][3] ) ? $padding_mobile_values[$device][3] : '',
-				);
-			}
+                    'padding-top'    => $padding_mobile_values[$device][0] ?? '',
+                    'padding-right'  => $padding_mobile_values[$device][1] ?? '',
+                    'padding-bottom' => $padding_mobile_values[$device][2] ?? '',
+                    'padding-left'   => $padding_mobile_values[$device][3] ?? '',
+                );
+            }
 
-			if ( ! empty( $padding_mobile_values_processed ) ) {
+            if ( ! empty( $padding_mobile_values_processed ) ) {
 				et_pb_generate_responsive_css( $padding_mobile_values_processed, '.et_pb_column %%order_class%%', '', $function_name, ' !important; ' );
 			}
 		}
@@ -3409,28 +3409,28 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		// Last column is when sum of column type value equals to 1
 		$is_last_column = 1 === $et_pb_column_completion;
 
-		$background_color = isset( $backgrounds_array[$array_index]['color'] ) ? $backgrounds_array[$array_index]['color'] : '';
-		$background_img = isset( $backgrounds_array[$array_index]['image'] ) ? $backgrounds_array[$array_index]['image'] : '';
-		$background_size = isset( $backgrounds_array[$array_index]['image_size'] ) ? $backgrounds_array[$array_index]['image_size'] : '';
-		$background_position = isset( $backgrounds_array[$array_index]['image_position'] ) ? $backgrounds_array[$array_index]['image_position'] : '';
-		$background_repeat = isset( $backgrounds_array[$array_index]['image_repeat'] ) ? $backgrounds_array[$array_index]['image_repeat'] : '';
-		$background_blend = isset( $backgrounds_array[$array_index]['image_blend'] ) ? $backgrounds_array[$array_index]['image_blend'] : '';
-		$background_gradient_overlays_image = isset( $background_gradient['overlays_image'] ) ? $background_gradient['overlays_image'] : '';
+		$background_color                   = $backgrounds_array[$array_index]['color'] ?? '';
+        $background_img                     = $backgrounds_array[$array_index]['image'] ?? '';
+        $background_size                    = $backgrounds_array[$array_index]['image_size'] ?? '';
+        $background_position                = $backgrounds_array[$array_index]['image_position'] ?? '';
+        $background_repeat                  = $backgrounds_array[$array_index]['image_repeat'] ?? '';
+        $background_blend                   = $backgrounds_array[$array_index]['image_blend'] ?? '';
+        $background_gradient_overlays_image = $background_gradient['overlays_image'] ?? '';
 
-		$padding_values = isset( $paddings_array[$array_index] ) ? $paddings_array[$array_index] : array();
-		$padding_mobile_values = isset( $paddings_mobile_array[$array_index] ) ? $paddings_mobile_array[$array_index] : array();
-		$padding_last_edited = isset( $padding_mobile_values['last_edited'] ) ? $padding_mobile_values['last_edited'] : 'off|desktop';
-		$padding_responsive_active = et_pb_get_responsive_status( $padding_last_edited );
-		$parallax_method = isset( $column_parallax[$array_index][0] ) && 'on' === $column_parallax[$array_index][0] ? $column_parallax[$array_index][1] : '';
-		$custom_css_class = isset( $column_css_array['css_class'][$array_index] ) ? ' ' . $column_css_array['css_class'][$array_index] : '';
-		$custom_css_id = isset( $column_css_array['css_id'][$array_index] ) ? $column_css_array['css_id'][$array_index] : '';
-		$custom_css_before = isset( $column_css_array['custom_css_before'][$array_index] ) ? $column_css_array['custom_css_before'][$array_index] : '';
-		$custom_css_main = isset( $column_css_array['custom_css_main'][$array_index] ) ? $column_css_array['custom_css_main'][$array_index] : '';
-		$custom_css_after = isset( $column_css_array['custom_css_after'][$array_index] ) ? $column_css_array['custom_css_after'][$array_index] : '';
+        $padding_values            = $paddings_array[$array_index] ?? [];
+        $padding_mobile_values     = $paddings_mobile_array[$array_index] ?? [];
+        $padding_last_edited       = $padding_mobile_values['last_edited'] ?? 'off|desktop';
+        $padding_responsive_active = et_pb_get_responsive_status( $padding_last_edited );
+		$parallax_method           = isset( $column_parallax[$array_index][0] ) && 'on' === $column_parallax[$array_index][0] ? $column_parallax[$array_index][1] : '';
+		$custom_css_class          = isset( $column_css_array['css_class'][$array_index] ) ? ' ' . $column_css_array['css_class'][$array_index] : '';
+		$custom_css_id             = $column_css_array['css_id'][$array_index] ?? '';
+        $custom_css_before         = $column_css_array['custom_css_before'][$array_index] ?? '';
+        $custom_css_main           = $column_css_array['custom_css_main'][$array_index] ?? '';
+        $custom_css_after          = $column_css_array['custom_css_after'][$array_index] ?? '';
 
-		$custom_css_before_hover = self::$_->array_get( $column_css_array, "custom_css_before_hover.[$array_index]", '' );
-		$custom_css_main_hover = self::$_->array_get( $column_css_array, "custom_css_main_hover.[$array_index]", '' );
-		$custom_css_after_hover = self::$_->array_get( $column_css_array, "custom_css_after_hover.[$array_index]", '' );
+        $custom_css_before_hover = self::$_->array_get( $column_css_array, "custom_css_before_hover.[$array_index]", '' );
+		$custom_css_main_hover   = self::$_->array_get( $column_css_array, "custom_css_main_hover.[$array_index]", '' );
+		$custom_css_after_hover  = self::$_->array_get( $column_css_array, "custom_css_after_hover.[$array_index]", '' );
 
 		$background_images = array();
 
@@ -3609,14 +3609,14 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 				}
 
 				$padding_mobile_values_processed[ $device ] = array(
-					'padding-top'    => isset( $padding_mobile_values[$device][0] ) ? $padding_mobile_values[$device][0] : '',
-					'padding-right'  => isset( $padding_mobile_values[$device][1] ) ? $padding_mobile_values[$device][1] : '',
-					'padding-bottom' => isset( $padding_mobile_values[$device][2] ) ? $padding_mobile_values[$device][2] : '',
-					'padding-left'   => isset( $padding_mobile_values[$device][3] ) ? $padding_mobile_values[$device][3] : '',
-				);
-			}
+                    'padding-top'    => $padding_mobile_values[$device][0] ?? '',
+                    'padding-right'  => $padding_mobile_values[$device][1] ?? '',
+                    'padding-bottom' => $padding_mobile_values[$device][2] ?? '',
+                    'padding-left'   => $padding_mobile_values[$device][3] ?? '',
+                );
+            }
 
-			if ( ! empty( $padding_mobile_values_processed ) ) {
+            if ( ! empty( $padding_mobile_values_processed ) ) {
 				$padding_mobile_selector = 'et_pb_column_inner' !== $function_name ? '.et_pb_row > .et_pb_column%%order_class%%' : '.et_pb_row_inner > .et_pb_column%%order_class%%';
 				et_pb_generate_responsive_css( $padding_mobile_values_processed, $padding_mobile_selector, '', $function_name );
 			}

@@ -256,8 +256,8 @@ abstract class ET_Core_API_Service {
 		$username_key = $this->http_auth['username'];
 		$password_key = $this->http_auth['password'];
 
-		$username = isset( $this->data[ $username_key ] ) ? $this->data[ $username_key ] : $username_key;
-		$password = isset( $this->data[ $password_key ] ) ? $this->data[ $password_key ] : $password_key;
+		$username = $this->data[$username_key] ?? $username_key;
+		$password = $this->data[$password_key] ?? $password_key;
 
 		$this->request->HEADERS['Authorization'] = 'Basic ' . base64_encode( "{$username}:{$password}" );
 	}
@@ -428,7 +428,7 @@ abstract class ET_Core_API_Service {
 	public function get_error_message() {
 		if ( ! empty( $this->data_keys['error'] ) ) {
 			$data = $this->transform_data_to_our_format( $this->response->DATA, 'error' );
-			return isset( $data['error_message'] ) ? $data['error_message'] : '';
+			return $data['error_message'] ?? '';
 		}
 
 		return $this->response->ERROR_MESSAGE;

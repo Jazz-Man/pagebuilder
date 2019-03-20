@@ -316,7 +316,7 @@ class ET_Builder_Module_Settings_Migration_OptionsHarmony extends ET_Builder_Mod
 			'on'  => 'off',
 		) );
 
-		return isset( $map[ $value ] ) ? $map[ $value ] : $default;
+		return $map[$value] ?? $default;
 	}
 
 	public function migrate( $field_name, $current_value, $module_slug, $saved_value, $saved_field_name, $attrs, $content ) {

@@ -674,8 +674,8 @@ function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $
 			foreach ( $analysis_types as $analysis_type ) {
 				$numerator_event   = $analysis_formulas[ $analysis_type  ]['numerator'];
 				$denominator_event = $analysis_formulas[ $analysis_type  ]['denominator'];
-				$numerator         = isset( $stats['subjects_totals'][ $subject_log_id ][ $numerator_event ] ) ? $stats['subjects_totals'][ $subject_log_id ][ $numerator_event ] : 0;
-				$denominator       = isset( $stats['subjects_totals'][ $subject_log_id ][ $denominator_event ] ) ? $stats['subjects_totals'][ $subject_log_id ][ $denominator_event ] : 0;
+				$numerator         = $stats['subjects_totals'][$subject_log_id][$numerator_event] ?? 0;
+				$denominator       = $stats['subjects_totals'][$subject_log_id][$denominator_event] ?? 0;
 				$analysis          = $denominator === 0 ? 0 : (float)number_format(($numerator / $denominator) * 100,
                     2);
 
@@ -1129,7 +1129,7 @@ function et_pb_ab_get_refresh_interval_duration( $post_id, $default = 'day' ) {
 
 	$interval = et_pb_ab_get_refresh_interval( $post_id );
 
-	$interval_duration = isset( $durations[ $interval ] ) ? $durations[ $interval ] : $default;
+	$interval_duration = $durations[$interval] ?? $default;
 
 	return apply_filters( 'et_pb_ab_get_refresh_interval_duration', $interval_duration, $post_id );
 }
@@ -1168,7 +1168,7 @@ function et_pb_create_ab_cron() {
  */
 function et_pb_ab_cron( $args ) {
 	$all_tests = et_pb_ab_get_all_tests();
-	$interval = isset( $args ) ? $args : 'hourly';
+	$interval = $args ?? 'hourly';
 
 	if ( empty( $all_tests ) ) {
 		return;

@@ -121,12 +121,8 @@ class ET_Builder_Plugin_Compat_WooCommerce extends ET_Builder_Plugin_Compat_Base
 			'_sale_price'    => esc_html__( 'Product Sale Price', 'et_builder' ),
 		);
 
-		if ( isset( $custom_labels[ $key ] ) ) {
-			return $custom_labels[ $key ];
-		}
-
-		return $label;
-	}
+        return $custom_labels[$key] ?? $label;
+    }
 
 	/**
 	 * Format WooCommerce meta values accordingly.

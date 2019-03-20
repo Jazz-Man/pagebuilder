@@ -209,7 +209,7 @@ function et_sanitize_font_icon( $font_icon, $symbols_function = 'default' ) {
 	// the font icon value is saved in the following format: %%index_number%%
 	// strip the %'s to get to end result: index_number
 	$icon_index = (int) str_replace( '%', '', $font_icon );
-	return isset( $icon_symbols[ $icon_index ] ) ? $icon_symbols[ $icon_index ] : '';
+	return $icon_symbols[$icon_index] ?? '';
 }
 
 /**

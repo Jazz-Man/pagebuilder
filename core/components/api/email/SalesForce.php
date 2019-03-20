@@ -241,7 +241,7 @@ class ET_Core_API_Email_SalesForce extends ET_Core_API_Email_Provider {
 			return false;
 		}
 
-		return isset( $response->DATA['records'][0]['Id'] ) ? $response->DATA['records'][0]['Id'] : false;
+		return $response->DATA['records'][0]['Id'] ?? false;
 	}
 
 	/**

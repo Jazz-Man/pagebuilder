@@ -309,18 +309,16 @@ class ET_Builder_Module_Field_BoxShadow extends ET_Builder_Module_Field_Base {
 	public function get_preset( $name ) {
 		$presets = $this->get_presets();
 
-		return isset( $presets[ $name ] )
-			? $presets[ $name ]
-			: array(
-				"horizontal" => 0,
-				"vertical"   => 0,
-				"blur"       => 0,
-				"spread"     => 0,
-				"position"   => 'outer',
-			);
-	}
+		return $presets[$name] ?? [
+                "horizontal" => 0,
+                "vertical"   => 0,
+                "blur"       => 0,
+                "spread"     => 0,
+                "position"   => 'outer',
+            ];
+    }
 
-	public function get_style( $selector, array $atts = array(), array $args = array() ) {
+    public function get_style( $selector, array $atts = array(), array $args = array() ) {
 		$value = $this->get_value( $atts, $args );
 
 		return array(

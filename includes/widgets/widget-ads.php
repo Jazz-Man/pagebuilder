@@ -10,8 +10,8 @@
 	function widget($args, $instance){
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? esc_html__( 'Advertisement', 'Divi' ) : esc_html( $instance['title'] ) );
-		$use_relpath = isset($instance['use_relpath']) ? $instance['use_relpath'] : false;
-		$new_window = isset($instance['new_window']) ? $instance['new_window'] : false;
+		$use_relpath = $instance['use_relpath'] ?? false;
+		$new_window = $instance['new_window'] ?? false;
 		$bannerPath[1] = empty($instance['bannerOnePath']) ? '' : $instance['bannerOnePath'];
 		$bannerUrl[1] = empty($instance['bannerOneUrl']) ? '' : $instance['bannerOneUrl'];
 		$bannerTitle[1] = empty($instance['bannerOneTitle']) ? '' : $instance['bannerOneTitle'];

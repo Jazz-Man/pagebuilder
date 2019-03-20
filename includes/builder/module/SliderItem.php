@@ -457,7 +457,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		if ( ! empty( $et_pb_slider ) && ! is_admin() && ! et_fb_is_enabled() ) {
 			foreach ( $et_pb_slider as $slider_attr => $slider_attr_value ) {
 				// Get default value
-				$default = isset( $this->fields_unprocessed[ $slider_attr ][ 'default' ] ) ? $this->fields_unprocessed[ $slider_attr ][ 'default' ] : '';
+				$default = $this->fields_unprocessed[$slider_attr]['default'] ?? '';
 
 				// Slide item isn't empty nor default
 				if ( ! in_array( self::$_->array_get( $this->props, $slider_attr, '' ), array( '', $default ) ) ) {

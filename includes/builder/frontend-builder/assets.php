@@ -84,7 +84,7 @@ function et_fb_get_dynamic_asset( $prefix, $post_type = false, $update = false )
 
 	if ( false === $post_type ) {
 		global $post;
-		$post_type = isset( $post->post_type ) ? $post->post_type : 'post';
+		$post_type = $post->post_type ?? 'post';
 	}
 
 	$post_type = sanitize_text_field( $post_type );
@@ -347,7 +347,7 @@ function et_fb_output_wp_auth_check_html() {
 
 function et_fb_set_editor_available_cookie() {
 	global $post;
-	$post_id = isset( $post->ID ) ? $post->ID : false;
+	$post_id = $post->ID ?? false;
 	if ( ! headers_sent() && !empty( $post_id ) ) {
 		setcookie( 'et-editor-available-post-' . $post_id . '-fb', 'fb', time() + ( MINUTE_IN_SECONDS * 30 ), SITECOOKIEPATH, false, is_ssl() );
 	}

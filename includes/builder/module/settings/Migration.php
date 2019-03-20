@@ -199,9 +199,9 @@ abstract class ET_Builder_Module_Settings_Migration {
 						$unprocessed_attrs[ $field_name ] = $attrs[ $affected_field ];
 					}
 
-					$current_value = isset( $unprocessed_attrs[ $field_name ] ) ? $unprocessed_attrs[ $field_name ] : '';
+					$current_value = $unprocessed_attrs[$field_name] ?? '';
 
-					$saved_value = isset( $attrs[ $field_name ] ) ? $attrs[ $field_name ] : '';
+					$saved_value = $attrs[$field_name] ?? '';
 
 					$new_value = $migration->migrate( $field_name, $current_value, $module_slug, $saved_value, $affected_field, $attrs, $content );
 

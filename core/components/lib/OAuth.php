@@ -351,7 +351,7 @@ class ET_Core_LIB_OAuthRequest extends ET_Core_LIB_OAuthBase {
 	 * @return string|null
 	 */
 	public function get_parameter( $name ) {
-		return isset( $this->parameters[ $name ] ) ? $this->parameters[ $name ] : null;
+		return $this->parameters[$name] ?? null;
 	}
 
 	/**

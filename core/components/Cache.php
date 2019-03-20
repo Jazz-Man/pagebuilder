@@ -121,12 +121,8 @@ final class ET_Core_Cache {
 	 * @return false|mixed False on failure to retrieve contents or the cache contents on success.
 	 */
 	public static function get_group( $group ) {
-		if ( isset( self::$cache[ $group ] ) ) {
-			return self::$cache[ $group ];
-		}
-
-		return false;
-	}
+        return self::$cache[$group] ?? false;
+    }
 
 	/**
 	 * Check the cache contents, if given key and (optional) group exists.

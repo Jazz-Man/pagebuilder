@@ -267,15 +267,13 @@ if ( ! function_exists( 'et_core_page_resource_get' ) ):
  * @return ET_Core_PageResource
  */
 function et_core_page_resource_get( $owner, $slug, $post_id = null, $priority = 10, $location = 'head-late', $type = 'style' ) {
-	$post_id = $post_id ? $post_id : et_core_page_resource_get_the_ID();
+	$post_id = $post_id ?: et_core_page_resource_get_the_ID();
 	$global  = 'global' === $post_id ? '-global' : '';
 	$_slug   = "et-{$owner}-{$slug}{$global}-cached-inline-{$type}s";
 
 	$all_resources = ET_Core_PageResource::get_resources();
 
-	return isset( $all_resources[ $_slug ] )
-		? $all_resources[ $_slug ]
-		: new ET_Core_PageResource( $owner, $slug, $post_id, $priority, $location, $type );
+	return $all_resources[$_slug] ?? new ET_Core_PageResource($owner, $slug, $post_id, $priority, $location, $type);
 }
 endif;
 

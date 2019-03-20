@@ -24,9 +24,9 @@ add_action( 'init', 'et_setup_builder', 0 );
  * @return array modified custom data-* attributes for builder's section
  */
 function et_divi_section_data_attributes( $attributes, $atts, $num ) {
-	$custom_padding        = isset( $atts['custom_padding'] ) ? $atts['custom_padding'] : '';
-	$custom_padding_tablet = isset( $atts['custom_padding_tablet'] ) ? $atts['custom_padding_tablet'] : '';
-	$custom_padding_phone  = isset( $atts['custom_padding_phone'] ) ? $atts['custom_padding_phone'] : '';
+	$custom_padding        = $atts['custom_padding'] ?? '';
+	$custom_padding_tablet = $atts['custom_padding_tablet'] ?? '';
+	$custom_padding_phone  = $atts['custom_padding_phone'] ?? '';
 	$is_first_section      = 0 === $num;
 	$is_transparent_nav    = et_divi_is_transparent_primary_nav();
 

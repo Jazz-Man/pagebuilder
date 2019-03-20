@@ -677,8 +677,8 @@ class ET_Builder_Settings {
 		// ASCII has a total of 127 characters, so 500 as the interval
 		// should be a sufficiently high number.
 		$rank_priority = array( 'page' => 1500, 'post' => 1000, 'project' => 500 );
-		$a_rank = isset( $rank_priority[ $a->name ] ) ? $rank_priority[ $a->name ] : 0;
-		$b_rank = isset( $rank_priority[ $b->name ] ) ? $rank_priority[ $b->name ] : 0;
+		$a_rank = $rank_priority[$a->name] ?? 0;
+		$b_rank = $rank_priority[$b->name] ?? 0;
 
 		return strcasecmp( $a->label, $b->label ) - $a_rank + $b_rank;
 	}
@@ -974,7 +974,7 @@ class ET_Builder_Settings {
 	public static function get_title() {
 		global $post;
 
-		$post_type     = isset( $post->post_type ) ? $post->post_type : 'page';
+		$post_type     = $post->post_type ?? 'page';
 		$post_type_obj = get_post_type_object( $post_type );
 		$settings      = esc_html_x( '%s Settings', 'Page, Post, Product, etc.', 'et_builder' );
 
@@ -1120,7 +1120,7 @@ class ET_Builder_Settings {
 		// Populate page settings fields meta_key map. Most page setting field id is identical (sans
 		// `_` prefix) to its meta_key name but some field has completely different meta_key name
 		foreach ( self::$_PAGE_SETTINGS_FIELDS as $field_id => $field ) {
-			$meta_key = isset( $field['meta_key'] ) ? $field['meta_key'] : '_' . $field_id;
+			$meta_key = $field['meta_key'] ?? '_' . $field_id;
 
 			self::$_PAGE_SETTINGS_FIELDS_META_KEY_MAP[ $meta_key ] = $field_id;
 		}

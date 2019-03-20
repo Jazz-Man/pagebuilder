@@ -357,7 +357,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 
 				// Append value to query post
 				$query->posts[ $post_index ]->post_permalink             = get_permalink();
-				$query->posts[ $post_index ]->post_thumbnail             = isset( $thumbnail[0] ) ? $thumbnail[0] : false;
+				$query->posts[ $post_index ]->post_thumbnail             = $thumbnail[0] ?? false;
 				$query->posts[ $post_index ]->post_thumbnail_orientation = $orientation;
 				$query->posts[ $post_index ]->post_date_readable         = get_the_date();
 				$query->posts[ $post_index ]->post_class_name            = get_post_class( 'et_pb_portfolio_item et_pb_grid_item ' );

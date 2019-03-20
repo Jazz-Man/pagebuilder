@@ -183,8 +183,8 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		if ( ! empty( $args ) ) {
 			$background_video = self::get_video_background( $args );
 
-			$allow_player_pause     = isset( $args['allow_player_pause'] ) ? $args['allow_player_pause' ] : 'off';
-			$pause_outside_viewport = isset( $args['background_video_pause_outside_viewport'] ) ? $args['background_video_pause_outside_viewport'] : 'on';
+			$allow_player_pause     = $args['allow_player_pause'] ?? 'off';
+			$pause_outside_viewport = $args['background_video_pause_outside_viewport'] ?? 'on';
 		} else {
 			$background_video = self::get_video_background( array(
 				'background_video_mp4'    => $background_video_mp4,

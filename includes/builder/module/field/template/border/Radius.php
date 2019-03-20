@@ -58,7 +58,7 @@ class ET_Builder_Module_Field_Template_Border_Radius extends ET_Builder_Module_F
 			$value_close_tag = "%>";
 		?>
 		<?php $attr_name = $render_helper->get_type() === 'child' ? 'data.' . esc_attr( $name ) : esc_attr( $name ) ?>
-		<?php $default = isset( $field['default'] ) ? $field['default'] : 'on||||' ?>
+		<?php $default = $field['default'] ?? 'on||||' ?>
 		<input id="<?php echo esc_attr( $name ) ?>"
 			type="hidden"
 			name="<?php echo esc_attr( $name ) ?>"

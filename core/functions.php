@@ -816,9 +816,9 @@ function et_core_replace_enqueued_style( $old_src, $new_src, $regex = false ) {
 		}
 
 		$style_src   = $regex ? preg_replace( $old_src, $new_src, $style->src ) : $new_src;
-		$style_deps  = isset( $style->deps ) ? $style->deps : array();
-		$style_ver   = isset( $style->ver ) ? $style->ver : false;
-		$style_media = isset( $style->args ) ? $style->args : 'all';
+		$style_deps  = $style->deps ?? [];
+        $style_ver   = $style->ver ?? false;
+		$style_media = $style->args ?? 'all';
 
 		// Deregister first, so the handle can be re-enqueued.
 		wp_deregister_style( $style_handle );

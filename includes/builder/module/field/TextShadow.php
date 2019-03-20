@@ -148,7 +148,7 @@ class ET_Builder_Module_Field_TextShadow extends ET_Builder_Module_Field_Base {
 		$defaults = array();
 		foreach ( $presets as $preset ) {
 			$value              = $preset['value'];
-			$defaults[ $value ] = isset( $preset['fields'][ $field ] ) ? $preset['fields'][ $field ] : $default;
+			$defaults[ $value ] = $preset['fields'][$field] ?? $default;
 		}
 		return array(
 			$depend,

@@ -364,7 +364,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 
-		$et_pb_half_width_counter = ! isset( $et_pb_half_width_counter ) ? 0 : $et_pb_half_width_counter;
+		$et_pb_half_width_counter = $et_pb_half_width_counter ?? 0;
 
 		// count fields to add the et_pb_contact_field_last properly
 		if ( 'off' === $fullwidth_field ) {
@@ -523,7 +523,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 			$ruleset                 = array();
 
 			foreach ( $condition_rows as $condition_row ) {
-				$condition_value = isset( $condition_row->value ) ? $condition_row->value : '';
+				$condition_value = $condition_row->value ?? '';
 				$condition_value = trim( $condition_value );
 
 				$ruleset[] = array(
@@ -596,15 +596,15 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 				$checkbox_options = json_decode( $checkbox_options );
 
 				foreach ( $checkbox_options as $index => $option ) {
-					$is_checked   = 1 === $option->checked ? true : false;
+					$is_checked   = 1 === $option->checked;
 					$option_value = wp_strip_all_tags( $option->value );
-					$drag_id      = isset( $option->dragID ) ? $option->dragID : '';
-					$option_id    = isset( $option->id ) ? $option->id : $drag_id;
+					$drag_id      = $option->dragID ?? '';
+					$option_id    = $option->id ?? $drag_id;
 					$option_id    = sprintf( ' data-id="%1$s"', esc_attr( $option_id ) );
 					$option_link  = '';
 
 					if ( ! empty( $option->link_url ) ) {
-						$link_text   = isset( $option->link_text ) ? $option->link_text : '';
+						$link_text   = $option->link_text ?? '';
 						$option_link = sprintf( ' <a href="%1$s" target="_blank">%2$s</a>', esc_url( $option->link_url ), esc_html( $link_text ) );
 					}
 
@@ -648,14 +648,14 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 					$radio_options  = json_decode( $radio_options );
 
 					foreach ( $radio_options as $index => $option ) {
-						$is_checked  = 1 === $option->checked ? true : false;
-						$drag_id     = isset( $option->dragID ) ? $option->dragID : '';
-						$option_id   = isset( $option->id ) ? $option->id : $drag_id;
+						$is_checked  = 1 === $option->checked;
+						$drag_id     = $option->dragID ?? '';
+						$option_id   = $option->id ?? $drag_id;
 						$option_id   = sprintf( ' data-id="%1$s"', esc_attr( $option_id ) );
 						$option_link = '';
 
 						if ( ! empty( $option->link_url ) ) {
-							$link_text   = isset( $option->link_text ) ? $option->link_text : '';
+							$link_text   = $option->link_text ?? '';
 							$option_link = sprintf( ' <a href="%1$s" target="_blank">%2$s</a>', esc_url( $option->link_url ), esc_html( $link_text ) );
 						}
 

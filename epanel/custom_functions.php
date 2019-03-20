@@ -220,7 +220,7 @@ if ( ! function_exists( 'et_get_option' ) ) {
 			if ( ! isset( $et_theme_options ) || is_customize_preview() ) {
 				$et_theme_options = get_option( $et_theme_options_name );
 			}
-			$option_value = isset( $et_theme_options[$option_name] ) ? $et_theme_options[$option_name] : false;
+			$option_value = $et_theme_options[$option_name] ?? false;
 
 			$et_one_row_option_name = $et_theme_options_name . '_' . $option_name;
 		} else {
@@ -2201,9 +2201,8 @@ endif;
 if ( ! function_exists( 'et_pb_get_google_api_key' ) ) :
 function et_pb_get_google_api_key() {
 	$google_api_option = get_option( 'et_google_api_settings' );
-	$google_api_key = isset( $google_api_option['api_key'] ) ? $google_api_option['api_key'] : '';
 
-	return $google_api_key;
+    return $google_api_option['api_key'] ?? '';
 }
 endif;
 

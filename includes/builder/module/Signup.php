@@ -375,18 +375,18 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 			}
 
 			$fields[ $provider_slug . '_list' ] = array(
-				'label'           => sprintf( esc_html_x( '%s List', 'MailChimp, Aweber, etc', 'et_builder' ), $provider_name ),
-				'type'            => 'select_with_option_groups',
-				'option_category' => 'basic_option',
-				'options'         => isset( $lists[ $provider_slug ] ) ? $lists[ $provider_slug ] : $no_lists,
-				'description'     => esc_html__( 'Choose a list. If you don\'t see any lists, click "Add" to add an account.' ),
-				'show_if'         => array(
+                'label'           => sprintf( esc_html_x( '%s List', 'MailChimp, Aweber, etc', 'et_builder' ), $provider_name ),
+                'type'            => 'select_with_option_groups',
+                'option_category' => 'basic_option',
+                'options'         => $lists[$provider_slug] ?? $no_lists,
+                'description'     => esc_html__( 'Choose a list. If you don\'t see any lists, click "Add" to add an account.' ),
+                'show_if'         => array(
 					'provider' => $provider_slug,
 				),
-				'default'         => '0|none',
-				'default_on_front'=> '',
-				'toggle_slug'     => 'provider',
-				'after'           => array(
+                'default'         => '0|none',
+                'default_on_front'=> '',
+                'toggle_slug'     => 'provider',
+                'after'           => array(
 					array(
 						'type'  => 'button',
 						'class' => 'et_pb_email_add_account',
@@ -409,7 +409,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 						),
 					),
 				),
-				'attributes'      => array(
+                'attributes'      => array(
 					'data-confirm_remove_text'     => esc_attr__( 'The following account will be removed:', 'et_builder' ),
 					'data-adding_new_account_text' => esc_attr__( 'Use the fields below to add a new account.', 'et_builder' ),
 				),

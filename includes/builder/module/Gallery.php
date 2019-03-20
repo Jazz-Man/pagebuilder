@@ -438,7 +438,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 	}
 
 	public function get_pagination_alignment() {
-		$text_orientation = isset( $this->props['pagination_text_align'] ) ? $this->props['pagination_text_align'] : '';
+		$text_orientation = $this->props['pagination_text_align'] ?? '';
 
 		return et_pb_get_alignment( $text_orientation );
 	}

@@ -276,10 +276,10 @@ abstract class ET_Core_API_Email_Provider extends ET_Core_API_Service  {
 	public static function get_accounts() {
 		$options = (array) get_option( 'et_core_api_email_options' );
 
-		return isset( $options['accounts'] ) ? $options['accounts'] : array();
-	}
+		return $options['accounts'] ?? [];
+    }
 
-	/**
+    /**
 	 * @inheritDoc
 	 */
 	public function get_data_keymap( $keymap = array() ) {

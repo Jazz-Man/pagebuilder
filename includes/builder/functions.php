@@ -164,7 +164,7 @@ function et_pb_add_layout_filters() {
 
 		<select name="layout_type">
 		<?php
-			$selected = isset( $_GET['layout_type'] ) ? $_GET['layout_type'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$selected = $_GET['layout_type'] ?? ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			foreach ( $filter_layout_type as $value => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>',
 					esc_attr( $value ),
@@ -176,7 +176,7 @@ function et_pb_add_layout_filters() {
 
 		<select name="scope">
 		<?php
-			$selected = isset( $_GET['scope'] ) ? $_GET['scope'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$selected = $_GET['scope'] ?? ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			foreach ( $filter_scope as $value => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>',
 					esc_attr( $value ),
@@ -188,7 +188,7 @@ function et_pb_add_layout_filters() {
 
 		<select name="layout_category">
 		<?php
-			$selected = isset( $_GET['layout_category'] ) ? $_GET['layout_category'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$selected = $_GET['layout_category'] ?? ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			foreach ( $filter_category as $value => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>',
 					esc_attr( $value ),
@@ -200,7 +200,7 @@ function et_pb_add_layout_filters() {
 
 		<select name="layout_pack">
 			<?php
-			$selected = isset( $_GET['layout_pack'] ) ? $_GET['layout_pack'] : ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$selected = $_GET['layout_pack'] ?? ''; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			foreach ( $filter_pack as $value => $label ) {
 				printf( '<option value="%1$s"%2$s>%3$s</option>',
 					esc_attr( $value ),
@@ -611,7 +611,7 @@ function et_pb_process_font_icon( $font_icon, $symbols_function = 'default' ) {
 	// the font icon value is saved in the following format: %%index_number%%
 	$icon_index   = (int) str_replace( '%', '', $font_icon );
 	$icon_symbols = 'default' === $symbols_function ? et_pb_get_font_icon_symbols() : call_user_func( $symbols_function );
-	$font_icon    = isset( $icon_symbols[ $icon_index ] ) ? $icon_symbols[ $icon_index ] : '';
+	$font_icon    = $icon_symbols[$icon_index] ?? '';
 
 	return $font_icon;
 }
@@ -636,7 +636,7 @@ function et_pb_process_header_level( $new_level, $default ) {
 	}
 
 	// return default if defined. Fallback to h2 otherwise
-	return isset( $default ) ? $default : 'h2';
+	return $default ?? 'h2';
 }
 endif;
 
@@ -738,7 +738,7 @@ endif;
 function et_fb_conditional_tag_params() {
 	global $post;
 
-	$post_type = isset( $post->post_type ) ? $post->post_type : false;
+	$post_type = $post->post_type ?? false;
 
 	$conditional_tags = array(
 		'is_limited_mode'             => et_builder_is_limited_mode(),
@@ -1020,7 +1020,7 @@ function et_fb_current_page_params() {
         'url'                      => esc_url( $current_url ),
         'permalink'                => esc_url( remove_query_arg( 'et_fb', $current_url ) ),
         'backendBuilderUrl'        => esc_url( sprintf( admin_url('/post.php?post=%d&action=edit'), get_the_ID() ) ),
-        'id'                       => isset( $post->ID ) ? $post->ID : false,
+        'id'                       => $post->ID ?? false,
         'title'                    => esc_html( get_the_title() ),
         'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail_size ) ) : '',
         'thumbnailId'              => isset( $post->ID ) ? get_post_thumbnail_id( $post->ID ) : '',
@@ -1847,7 +1847,7 @@ function et_builder_get_acceptable_css_string_values( $property = 'all' ) {
 		return $acceptable_strings;
 	}
 
-	return isset( $acceptable_strings[ $property ] ) ? $acceptable_strings[ $property ] : array();
+	return $acceptable_strings[$property] ?? [];
 }
 
 if ( ! function_exists( 'et_builder_process_range_value' ) ) :
@@ -1949,20 +1949,20 @@ function et_builder_set_element_font( $font, $use_important = false, $default = 
 		$is_font_underline    = isset( $font_values[4] ) && 'on' === $font_values[4] ? true : false;
 		$is_font_small_caps   = isset( $font_values[5] ) && 'on' === $font_values[5] ? true : false;
 		$is_font_line_through = isset( $font_values[6] ) && 'on' === $font_values[6] ? true : false;
-		$font_line_color      = isset( $font_values[7] ) ? $font_values[7] : '';
-		$font_line_style      = isset( $font_values[8] ) ? $font_values[8] : '';
+		$font_line_color      = $font_values[7] ?? '';
+        $font_line_style      = $font_values[8] ?? '';
 
-		$font_name_default            = $font_values_default[0];
+        $font_name_default            = $font_values_default[0];
 		$font_weight_default          = isset( $font_values_default[1] ) && '' !== $font_values_default[1] ? $font_values_default[1] : '';
 		$is_font_italic_default       = isset( $font_values_default[2] ) && 'on' === $font_values_default[2] ? true : false;
 		$is_font_uppercase_default    = isset( $font_values_default[3] ) && 'on' === $font_values_default[3] ? true : false;
 		$is_font_underline_default    = isset( $font_values_default[4] ) && 'on' === $font_values_default[4] ? true : false;
 		$is_font_small_caps_default   = isset( $font_values_default[5] ) && 'on' === $font_values_default[5] ? true : false;
 		$is_font_line_through_default = isset( $font_values_default[6] ) && 'on' === $font_values_default[6] ? true : false;
-		$font_line_color_default      = isset( $font_values_default[7] ) ? $font_values_default[7] : '';
-		$font_line_style_default      = isset( $font_values_default[8] ) ? $font_values_default[8] : '';
+		$font_line_color_default      = $font_values_default[7] ?? '';
+        $font_line_style_default      = $font_values_default[8] ?? '';
 
-		if ( '' !== $font_name && $font_name_default !== $font_name ) {
+        if ('' !== $font_name && $font_name_default !== $font_name ) {
 			et_builder_enqueue_font( $font_name );
 
 			$style .= et_builder_get_font_family( $font_name, $use_important ) . ' ';
@@ -2130,24 +2130,24 @@ function et_builder_enqueue_user_fonts( $et_user_fonts ) {
 				// all the font formats have to be added in certain order to provide the best browser support
 				$uploaded_files = array(
 					'eot' => array(
-						'url'    => isset( $font_data['font_url']['eot'] ) ? $font_data['font_url']['eot'] : false,
-						'format' => 'embedded-opentype',
+                        'url'    => $font_data['font_url']['eot'] ?? false,
+                        'format' => 'embedded-opentype',
 					),
 					'woff2' => array(
-						'url'    => isset( $font_data['font_url']['woff2'] ) ? $font_data['font_url']['woff2'] : false,
-						'format' => 'woff2',
+                        'url'    => $font_data['font_url']['woff2'] ?? false,
+                        'format' => 'woff2',
 					),
 					'woff' => array(
-						'url'    => isset( $font_data['font_url']['woff'] ) ? $font_data['font_url']['woff'] : false,
-						'format' => 'woff',
+                        'url'    => $font_data['font_url']['woff'] ?? false,
+                        'format' => 'woff',
 					),
 					'ttf' => array(
-						'url'    => isset( $font_data['font_url']['ttf'] ) ? $font_data['font_url']['ttf'] : false,
-						'format' => 'truetype',
+                        'url'    => $font_data['font_url']['ttf'] ?? false,
+                        'format' => 'truetype',
 					),
 					'otf' => array(
-						'url'    => isset( $font_data['font_url']['otf'] ) ? $font_data['font_url']['otf'] : false,
-						'format' => 'opentype',
+                        'url'    => $font_data['font_url']['otf'] ?? false,
+                        'format' => 'opentype',
 					),
 				);
 
@@ -6702,9 +6702,9 @@ function et_pb_builder_settings_hidden_inputs( $post_id ) {
 			continue;
 		}
 
-		$id            = '_' . $setting['id'];
-		$meta_key      = isset( $setting['meta_key'] ) ? $setting['meta_key'] : $id;
-		$value         = get_post_meta( $post_id, $meta_key, true );
+		$id       = '_' . $setting['id'];
+		$meta_key = $setting['meta_key'] ?? $id;
+        $value    = get_post_meta( $post_id, $meta_key, true );
 
 		if ( ( ! $value || '' === $value ) && $setting['default'] ) {
 			$value = $setting['default'];
@@ -7186,10 +7186,10 @@ function et_get_first_video() {
 		// Gutenberg compatibility.
 		if ( ! has_shortcode( $content, 'video' ) && empty( $first_url ) ) {
 			preg_match( '/<!-- wp:video[^\]]+?class="wp-block-video"><video[^\]]+?src="([^\]]+?)"[^\]]+?<!-- \/wp:video -->/', $content, $gb_video );
-			$first_url = isset($gb_video[1]) ? $gb_video[1] : false;
-		}
+			$first_url = $gb_video[1] ?? false;
+        }
 
-		if ( ! has_shortcode( $content, 'video' ) && ! empty( $first_url ) ) {
+        if ( ! has_shortcode( $content, 'video' ) && ! empty( $first_url ) ) {
 			$video_shortcode = sprintf( '[video src="%1$s" /]', esc_attr( $first_url ) );
 
 			if ( ! empty( $gb_video ) ) {
@@ -7855,9 +7855,9 @@ function et_pb_allowed_modules_list( $role = '' ) {
 
 	$all_modules_array = ET_Builder_Element::get_modules_array( $typenow );
 
-	$saved_modules_capabilities = isset( $saved_capabilities[ $role ] ) ? $saved_capabilities[ $role ] : array();
+	$saved_modules_capabilities = $saved_capabilities[$role] ?? [];
 
-	$alowed_modules = "[";
+    $alowed_modules = "[";
 	foreach ( $all_modules_array as $module => $module_details ) {
 		if ( ! in_array( $module_details['label'], array( 'et_pb_section', 'et_pb_row', 'et_pb_row_inner', 'et_pb_column' ) ) ) {
 			// Add module into the list if it's not saved or if it's saved not with "off" state
@@ -8241,10 +8241,10 @@ endif;
 function et_pb_preview_comment_count( $count, $post_id ) {
 	if ( is_et_pb_preview() ) {
 		global $post;
-		$count = isset( $post->comment_count ) ? $post->comment_count : $count;
-	}
+		$count = $post->comment_count ?? $count;
+    }
 
-	return $count;
+    return $count;
 }
 add_filter( 'get_comments_number', 'et_pb_preview_comment_count', 10, 2 );
 
@@ -8920,8 +8920,8 @@ function et_fb_process_shortcode( $content, $parent_address = '', $global_parent
 		// set global parent and global parent tag if current module is global and can be a parent
 		$possible_global_parents = array( 'et_pb_section', 'et_pb_row', 'et_pb_row_inner' );
 		if ( '' === $global_parent && in_array( $tag, $possible_global_parents ) ) {
-			$global_parent = isset( $attr['global_module'] ) ? $attr['global_module'] : '';
-			$global_parent_type = $tag;
+			$global_parent      = $attr['global_module'] ?? '';
+            $global_parent_type = $tag;
 		}
 
 		$attr['_i'] = $index;
@@ -9077,7 +9077,7 @@ function et_fb_prepare_tag( $tag ) {
 		'et_pb_accordion_item' => 'et_pb_toggle',
 	));
 
-	return isset( $aliases[ $tag ] ) ? $aliases[ $tag ] : $tag;
+	return $aliases[$tag] ?? $tag;
 }
 
 if ( ! function_exists( 'et_strip_shortcodes' ) ) :
@@ -9650,8 +9650,8 @@ endif;
  */
 if ( ! function_exists( 'et_pb_get_value_unit' ) ) :
 function et_pb_get_value_unit( $value ) {
-	$value                   = isset( $value ) ? $value : '';
-	$valid_one_char_units    = array( "%", 'x' );
+	$value                   = $value ?? '';
+    $valid_one_char_units    = array("%", 'x' );
 	$valid_two_chars_units   = array( "em", "px", "cm", "mm", "in", "pt", "pc", "ex", "vh", "vw", "ms" );
 	$valid_three_chars_units = array( 'deg', 'rem' );
 	$important               = "!important";

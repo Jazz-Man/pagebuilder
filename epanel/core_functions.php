@@ -308,7 +308,7 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 																	$setting = get_option( $global_setting_main_name, array() );
 																}
 
-																$et_input_value = isset( $setting[ $global_setting_sub_name ] ) ? $setting[ $global_setting_sub_name ] : '';
+																$et_input_value = $setting[$global_setting_sub_name] ?? '';
 															} else {
 																$et_input_value = et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name );
 																$et_input_value = ! empty( $et_input_value ) ? $et_input_value : $value['std'];
@@ -463,7 +463,7 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 														call_user_func( $value['function_name'] ); ?>
 
 													<?php } elseif ( 'et_color_palette' === $value['type'] ) {
-															$items_amount = isset( $value['items_amount'] ) ? $value['items_amount'] : 1;
+															$items_amount = $value['items_amount'] ?? 1;
 															$et_input_value = et_get_option( $value['id'], '', '', false, $is_new_global_setting, $global_setting_main_name, $global_setting_sub_name );
 															$et_input_value_processed = str_replace( '|', '', $et_input_value );
 															$et_input_value = ! empty( $et_input_value_processed ) ? $et_input_value : $value['std'];
@@ -577,11 +577,8 @@ if ( ! function_exists( 'et_build_epanel' ) ) {
 														foreach ( $value_options as $option_key => $option ) {
 															$option_value = isset( $value['et_save_values'] ) && $value['et_save_values'] ? sanitize_text_field( $option_key ) : sanitize_text_field( $option );
 															$option_label = sanitize_text_field( $option );
-															$checked = isset( $defaults[ $option_value ] ) ? $defaults[ $option_value ] : 'off';
-															if ( isset( $stored_values[ $option_value ] ) ) {
-																$checked = $stored_values[ $option_value ];
-															}
-															$checked = 'on' === $checked ? 'checked="checked"' : '';
+                                                            $checked      = $stored_values[$option_value] ?? $defaults[$option_value] ?? 'off';
+                                                            $checked = 'on' === $checked ? 'checked="checked"' : '';
 															$checkbox_list_id = sanitize_text_field( $value['id'] . '-' . $option_key );
 															?>
 															<div class="et-box-content">
@@ -746,7 +743,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 		if ( isset($_POST['action']) ) {
 			do_action( 'et_epanel_changing_options' );
 
-			$epanel = isset( $_GET['page'] ) ? $_GET['page'] : basename( __FILE__ );
+			$epanel = $_GET['page'] ?? basename(__FILE__);
 			$redirect_url = esc_url_raw( add_query_arg( 'page', $epanel, admin_url( 'admin.php' ) ) );
 
 			if ( 'save_epanel' === $_POST['action'] ) {

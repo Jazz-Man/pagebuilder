@@ -634,8 +634,8 @@ function et_bfb_maybe_bfb_url() {
  * @return string|number|bool
  */
 function et_bfb_get_make_queryable_param( $param_name ) {
-	$param             = isset( $_GET[ "et_{$param_name}" ] ) ? $_GET[ "et_{$param_name}" ] : false;
-	$param_nonce       = isset( $_GET[ "et_{$param_name}_nonce" ] ) ? $_GET[ "et_{$param_name}_nonce"] : false;
+	$param             = $_GET["et_{$param_name}"] ?? false;
+	$param_nonce       = $_GET["et_{$param_name}_nonce"] ?? false;
 	$verified_param    = $param && $param_nonce && wp_verify_nonce(
 		$param_nonce,
 		"et_{$param_name}_{$param}"
@@ -684,7 +684,7 @@ function et_bfb_make_post_type_queryable() {
 	// automatically translates it into edit_post. Otherwise, CPT version of edit_post is sent as
 	// it is and it is plugin / post type registrant's responsibility to add the capability to role
 	// and map it into primitive capabilities on map_meta_cap()
-	$capability               = isset( $post_type_object->cap->edit_post ) ? $post_type_object->cap->edit_post : 'edit_post';
+	$capability               = $post_type_object->cap->edit_post ?? 'edit_post';
 	$can_edit_this_post       = current_user_can( $capability, $get_post_id );
 
 	// Flip publicly_queryable of current request so BFB layout page can be rendered.
@@ -719,7 +719,7 @@ function et_bfb_make_cpt_rewrite_rule_queryable( $value ) {
 	}
 
 	$rewrite_regex        = $unqueryable_post_type . '/([^/]+)(?:/([0-9]+))?/?$';
-	$rewrite_redirect     = isset( $value[ $rewrite_regex ] ) ? $value[ $rewrite_regex ] : false;
+	$rewrite_redirect     = $value[$rewrite_regex] ?? false;
 	$has_post_type_substr = $rewrite_redirect && strpos( $rewrite_redirect, '?post_type=' ) !== false;
 	$post_type_object     = get_post_type_object( $unqueryable_post_type );
 
@@ -759,7 +759,7 @@ function et_builder_load_frontend_builder() {
 if ( ! function_exists( 'et_pb_get_google_api_key' ) ) :
 function et_pb_get_google_api_key() {
 	$google_api_option = get_option( 'et_google_api_settings' );
-	$google_api_key = isset( $google_api_option['api_key'] ) ? $google_api_option['api_key'] : '';
+	$google_api_key = $google_api_option['api_key'] ?? '';
 
 	return $google_api_key;
 }
