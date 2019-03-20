@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Accordion extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Accordion', 'et_builder' );
 		$this->plural     = esc_html__( 'Accordions', 'et_builder' );
 		$this->slug       = 'et_pb_accordion';
@@ -109,7 +109,7 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'open_toggle_text_color' => array(
 				'label'             => esc_html__( 'Open Toggle Text Color', 'et_builder' ),
@@ -176,14 +176,14 @@ class ET_Builder_Module_Accordion extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_accordion_item_number, $et_pb_accordion_header_level;
 
 		$et_pb_accordion_item_number = 1;
 		$et_pb_accordion_header_level = $this->props['toggle_level'];
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$open_toggle_background_color         = $this->props['open_toggle_background_color'];
 		$open_toggle_background_color_hover   = $this->get_hover_value( 'open_toggle_background_color' );
 

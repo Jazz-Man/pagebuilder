@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Post_Title extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name             = esc_html__( 'Post Title', 'et_builder' );
 		$this->plural           = esc_html__( 'Post Titles', 'et_builder' );
 		$this->slug             = 'et_pb_post_title';
@@ -112,7 +112,7 @@ class ET_Builder_Module_Post_Title extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'             => esc_html__( 'Show Title', 'et_builder' ),
@@ -293,7 +293,7 @@ class ET_Builder_Module_Post_Title extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$title              = $this->props['title'];
 		$meta               = $this->props['meta'];
 		$author             = $this->props['author'];

@@ -15,7 +15,7 @@ class ET_Builder_Plugin_Compat_Divi_Layout_Injector extends ET_Builder_Plugin_Co
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = 'divi_layout_injector/divi_layout_injector.php';
 
 		$this->init_hooks();
@@ -26,7 +26,7 @@ class ET_Builder_Plugin_Compat_Divi_Layout_Injector extends ET_Builder_Plugin_Co
 	 *
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -37,7 +37,7 @@ class ET_Builder_Plugin_Compat_Divi_Layout_Injector extends ET_Builder_Plugin_Co
 		add_action( 'updated_post_meta', array( $this, 'updated_post_meta_cb' ), 10, 4 );
 	}
 
-	function maybe_filter_builder_used() {
+	public function maybe_filter_builder_used() {
 		$types       = array( 'layout', 'page' );
 		$will_inject = is_404() && in_array( get_option( 'sb_divi_fe_404_type', 'layout' ), $types );
 
@@ -50,19 +50,19 @@ class ET_Builder_Plugin_Compat_Divi_Layout_Injector extends ET_Builder_Plugin_Co
 		}
 	}
 
-	function updated_option_cb( $option, $old_value, $value ) {
+	public function updated_option_cb( $option, $old_value, $value ) {
 		if ( 0 === strpos( $option, 'sb_divi_fe' ) ) {
 			ET_Core_PageResource::remove_static_resources( 'all', 'all' );
 		}
 	}
 
-	function updated_post_meta_cb( $meta_id, $object_id, $meta_key, $_meta_value ) {
+	public function updated_post_meta_cb( $meta_id, $object_id, $meta_key, $_meta_value ) {
 		if ( 'sb_divi_fe_layout_overrides' === $meta_key ) {
 			ET_Core_PageResource::remove_static_resources( $object_id, 'all' );
 		}
 	}
 
-	function will_inject_layout() {
+	public function will_inject_layout() {
 		$locations = array( 'pre-header', 'post-menu', 'pre-content', 'post-content', 'pre-footer' );
 
 		foreach ( $locations as $location ) {

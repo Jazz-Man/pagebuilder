@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Video extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Video', 'et_builder' );
 		$this->plural     = esc_html__( 'Videos', 'et_builder' );
 		$this->slug       = 'et_pb_video';
@@ -77,7 +77,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'src' => array(
 				'label'              => esc_html__( 'Video MP4/URL', 'et_builder' ),
@@ -173,7 +173,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 		return $fields;
 	}
 
-	static function get_video( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_video( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
 			'src'      => '',
 			'src_webm' => '',
@@ -202,7 +202,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 		return $video_src;
 	}
 
-	static function get_video_cover_src( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_video_cover_src( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$post_id = $current_page['id'] ?? self::get_current_post_id();
 		$defaults = array(
 			'image_src' => '',
@@ -226,7 +226,7 @@ class ET_Builder_Module_Video extends ET_Builder_Module {
 		return $image_output;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$src                   = $this->props['src'];
 		$src_webm              = $this->props['src_webm'];
 		$image_src             = $this->props['image_src'];

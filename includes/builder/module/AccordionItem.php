@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                  = esc_html__( 'Accordion', 'et_builder' );
 		$this->plural                = esc_html__( 'Accordions', 'et_builder' );
 		$this->slug                  = 'et_pb_accordion_item';
@@ -106,7 +106,7 @@ class ET_Builder_Module_Accordion_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),

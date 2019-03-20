@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Circle Counter', 'et_builder' );
 		$this->plural     = esc_html__( 'Circle Counters', 'et_builder' );
 		$this->slug       = 'et_pb_circle_counter';
@@ -115,7 +115,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -183,7 +183,7 @@ class ET_Builder_Module_Circle_Counter extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		wp_enqueue_script( 'easypiechart' );
 
 		$number                          = $this->props['number'];

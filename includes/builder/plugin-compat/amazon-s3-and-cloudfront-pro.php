@@ -15,7 +15,7 @@ class ET_Builder_Plugin_Compat_WP_Offload_S3_Pro extends ET_Builder_Plugin_Compa
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = 'amazon-s3-and-cloudfront-pro/amazon-s3-and-cloudfront-pro.php';
 
 		$this->init_hooks();
@@ -28,7 +28,7 @@ class ET_Builder_Plugin_Compat_WP_Offload_S3_Pro extends ET_Builder_Plugin_Compa
 	 *
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -43,7 +43,7 @@ class ET_Builder_Plugin_Compat_WP_Offload_S3_Pro extends ET_Builder_Plugin_Compa
 	 *
 	 * @return bool
 	 */
-	function override_fb_ajax_save_verification( $verification ) {
+	public function override_fb_ajax_save_verification( $verification ) {
 		return true;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_CTA extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Call To Action', 'et_builder' );
 		$this->plural     = esc_html__( 'Call To Actions', 'et_builder' );
 		$this->slug       = 'et_pb_cta';
@@ -130,7 +130,7 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -181,13 +181,13 @@ class ET_Builder_Module_CTA extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function get_max_width_additional_css() {
+	public function get_max_width_additional_css() {
 		$additional_css = 'center' === $this->get_text_orientation() ? '; margin: 0 auto;' : '';
 
 		return $additional_css;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$title                           = $this->_esc_attr( 'title' );
 		$button_url                      = $this->props['button_url'];
 		$button_rel                      = $this->props['button_rel'];

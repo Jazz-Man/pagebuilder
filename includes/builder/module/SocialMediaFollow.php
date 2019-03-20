@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Social Media Follow', 'et_builder' );
 		$this->plural          = esc_html__( 'Social Media Follows', 'et_builder' );
 		$this->slug            = 'et_pb_social_media_follow';
@@ -114,7 +114,7 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'url_new_window' => array(
 				'label'           => esc_html__( 'Account Link Target', 'et_builder' ),
@@ -144,7 +144,7 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_social_media_follow_link;
 
 		$url_new_window    = $this->props['url_new_window'];
@@ -156,7 +156,7 @@ class ET_Builder_Module_Social_Media_Follow extends ET_Builder_Module {
 		);
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_social_media_follow_link;
 
 		$background_layout               = $this->props['background_layout'];

@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Filterable Portfolio', 'et_builder' );
 		$this->plural     = esc_html__( 'Filterable Portfolios', 'et_builder' );
 		$this->slug       = 'et_pb_filterable_portfolio';
@@ -199,7 +199,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'fullwidth' => array(
 				'label'           => esc_html__( 'Layout', 'et_builder' ),
@@ -328,7 +328,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		return $fields;
 	}
 
-	static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		global $et_fb_processing_shortcode_object;
 
 		$global_processing_original_value = $et_fb_processing_shortcode_object;
@@ -435,7 +435,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		return $query;
 	}
 
-	static function get_portfolio_terms( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_portfolio_terms( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$portfolio = self::get_portfolio_item( $args, $conditional_tags, $current_page );
 
 		$terms = array();
@@ -453,7 +453,7 @@ class ET_Builder_Module_Filterable_Portfolio extends ET_Builder_Module_Type_Post
 		return $terms;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$fullwidth                       = $this->props['fullwidth'];
 		$posts_number                    = $this->props['posts_number'];
 		$include_categories              = $this->props['include_categories'];

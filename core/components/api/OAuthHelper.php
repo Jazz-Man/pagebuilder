@@ -250,7 +250,7 @@ class ET_Core_API_OAuthHelper {
 	 *
 	 * @return \ET_Core_HTTPRequest
 	 */
-	function prepare_oauth_request( $request, $oauth2 = false ) {
+	public function prepare_oauth_request( $request, $oauth2 = false ) {
 		return $oauth2 ? $this->_prepare_oauth2_request( $request ) : $this->_prepare_oauth_request( $request );
 	}
 

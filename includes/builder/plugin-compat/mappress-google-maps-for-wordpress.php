@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_Mappress extends ET_Builder_Plugin_Compat_Base {
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = "mappress-google-maps-for-wordpress/mappress.php";
 		$this->init_hooks();
 	}
@@ -23,7 +23,7 @@ class ET_Builder_Plugin_Compat_Mappress extends ET_Builder_Plugin_Compat_Base {
 	 * Latest plugin version: 2.47.5
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -37,7 +37,7 @@ class ET_Builder_Plugin_Compat_Mappress extends ET_Builder_Plugin_Compat_Base {
 	 * Mappress loads the exact same Google Maps library Divi is using which causes an issue
 	 * @return void
 	 */
-	function dequeue_scripts() {
+	public function dequeue_scripts() {
 		// Check if current page is builder page and enqueueing Google Maps script
 		if ( is_singular() && et_pb_is_pagebuilder_used( get_the_ID() ) && et_pb_enqueue_google_maps_script() ) {
 			// Deregister MapPress' Google Maps

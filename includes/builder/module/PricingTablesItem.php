@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Pricing Table', 'et_builder' );
 		$this->plural                      = esc_html__( 'Pricing Tables', 'et_builder' );
 		$this->slug                        = 'et_pb_pricing_table';
@@ -207,7 +207,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'featured' => array(
 				'label'           => esc_html__( 'Make This Table Featured', 'et_builder' ),
@@ -324,7 +324,7 @@ class ET_Builder_Module_Pricing_Tables_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tables_button_rel, $et_pb_pricing_tables_header_level;
 
 		$featured                          = $this->props['featured'];

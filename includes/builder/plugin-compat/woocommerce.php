@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_WooCommerce extends ET_Builder_Plugin_Compat_Base
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = 'woocommerce/woocommerce.php';
 		$this->init_hooks();
 	}
@@ -22,7 +22,7 @@ class ET_Builder_Plugin_Compat_WooCommerce extends ET_Builder_Plugin_Compat_Base
 	 * Latest plugin version: 3.1.1
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found or needed functions do not exist
 		if (
 			! $this->get_plugin_version() ||
@@ -58,7 +58,7 @@ class ET_Builder_Plugin_Compat_WooCommerce extends ET_Builder_Plugin_Compat_Base
 	 *
 	 * @return bool
 	 */
-	function disable_et_grab_image_setting( $settings ) {
+	public function disable_et_grab_image_setting( $settings ) {
 		return ( is_cart() || is_account_page() ) ? false : $settings;
 	}
 

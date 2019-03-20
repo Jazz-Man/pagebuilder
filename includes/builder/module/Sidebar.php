@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Sidebar extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Sidebar', 'et_builder' );
 		$this->plural     = esc_html__( 'Sidebars', 'et_builder' );
 		$this->slug       = 'et_pb_sidebar';
@@ -81,7 +81,7 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'orientation' => array(
 				'label'             => esc_html__( 'Orientation', 'et_builder' ),
@@ -129,7 +129,7 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 		return $fields;
 	}
 
-	static function get_default_area() {
+	public static function get_default_area() {
 		global $wp_registered_sidebars;
 
 		if ( ! empty( $wp_registered_sidebars ) ) {
@@ -152,7 +152,7 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 	 *
 	 * @return string JSON encoded array of attachments data
 	 */
-	static function get_sidebar( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_sidebar( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
 			'area' => '',
 		);
@@ -180,7 +180,7 @@ class ET_Builder_Module_Sidebar extends ET_Builder_Module {
 		return $widgets;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$orientation                     = $this->props['orientation'];
 		$area                            = "" === $this->props['area'] ? self::get_default_area() : $this->props['area'];
 		$background_layout               = $this->props['background_layout'];

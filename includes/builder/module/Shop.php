@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Shop', 'et_builder' );
 		$this->plural     = esc_html__( 'Shops', 'et_builder' );
 		$this->slug       = 'et_pb_shop';
@@ -240,7 +240,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		<?php
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'type' => array(
 				'label'           => esc_html__( 'Type', 'et_builder' ),
@@ -440,13 +440,13 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		return $paged ? $paged : 1;
 	}
 
-	function add_product_class_name( $classes ) {
+	public function add_product_class_name( $classes ) {
 		$classes[] = 'product';
 
 		return $classes;
 	}
 
-	function get_shop( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public function get_shop( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		foreach ( $args as $arg => $value ) {
 			$this->props[ $arg ] = $value;
 		}
@@ -542,7 +542,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 	 * @param array   passed current page params
 	 * @return string HTML markup for shop module
 	 */
-	static function get_shop_html( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_shop_html( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$shop = new self();
 
 		do_action( 'et_pb_get_shop_html_before' );
@@ -566,7 +566,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 
 
 	// WooCommerce changed the title tag from h3 to h2 in 3.0.0
-	function get_title_selector() {
+	public function get_title_selector() {
 		$title_selector = 'li.product h3';
 
 		if ( class_exists( 'WooCommerce' ) ) {
@@ -609,7 +609,7 @@ class ET_Builder_Module_Shop extends ET_Builder_Module_Type_PostBased {
 		return false;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$type                    = $this->props['type'];
 		$include_categories      = $this->props['include_categories'];
 		$posts_number            = $this->props['posts_number'];

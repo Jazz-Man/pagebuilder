@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_DK_Pdf extends ET_Builder_Plugin_Compat_Base {
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = "dk-pdf/dk-pdf.php";
 		$this->init_hooks();
 	}
@@ -24,7 +24,7 @@ class ET_Builder_Plugin_Compat_DK_Pdf extends ET_Builder_Plugin_Compat_Base {
 	 * Latest plugin version: 1.9.3
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -49,7 +49,7 @@ class ET_Builder_Plugin_Compat_DK_Pdf extends ET_Builder_Plugin_Compat_Base {
 	 * Modify priority of et_builder_add_main_elements() hook so it'll be triggered before dk-pdf
 	 * @return int
 	 */
-	function fix_load_main_elements_priority( $priority ) {
+	public function fix_load_main_elements_priority( $priority ) {
 		return 7;
 	}
 
@@ -57,7 +57,7 @@ class ET_Builder_Plugin_Compat_DK_Pdf extends ET_Builder_Plugin_Compat_Base {
 	 * Modify DK PDF button if the page uses builder
 	 * @return void
 	 */
-	function fix_dkpdf_button_styling() {
+	public function fix_dkpdf_button_styling() {
 		global $post;
 
 		if ( isset( $post->ID ) && et_pb_is_pagebuilder_used( $post->ID ) ) {

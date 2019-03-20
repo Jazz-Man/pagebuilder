@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Image extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Image', 'et_builder' );
 		$this->plural     = esc_html__( 'Images', 'et_builder' );
 		$this->slug       = 'et_pb_image';
@@ -83,7 +83,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'src' => array(
 				'label'              => esc_html__( 'Image', 'et_builder' ),
@@ -278,7 +278,7 @@ class ET_Builder_Module_Image extends ET_Builder_Module {
 		return et_pb_get_alignment( $alignment );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$src                     = $this->props['src'];
 		$alt                     = $this->props['alt'];
 		$title_text              = $this->props['title_text'];

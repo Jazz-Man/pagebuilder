@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Slider extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Slider', 'et_builder' );
 		$this->plural          = esc_html__( 'Sliders', 'et_builder' );
 		$this->slug            = 'et_pb_slider';
@@ -153,7 +153,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'show_arrows'         => array(
 				'label'           => esc_html__( 'Show Arrows', 'et_builder' ),
@@ -220,7 +220,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_slider_has_video, $et_pb_slider_parallax, $et_pb_slider_parallax_method, $et_pb_slider_show_mobile, $et_pb_slider_custom_icon, $et_pb_slider_item_num, $et_pb_slider_button_rel;
 
 		$et_pb_slider_item_num = 0;
@@ -283,7 +283,7 @@ class ET_Builder_Module_Slider extends ET_Builder_Module {
 		$et_pb_slider[ $background_color_hover_key ]   = self::$_->array_get( $this->props, $background_color_hover_key, '' );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$show_arrows             = $this->props['show_arrows'];
 		$show_pagination         = $this->props['show_pagination'];
 		$parallax                = $this->props['parallax'];

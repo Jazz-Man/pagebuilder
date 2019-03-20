@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Blurb extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name             = esc_html__( 'Blurb', 'et_builder' );
 		$this->plural           = esc_html__( 'Blurbs', 'et_builder' );
 		$this->slug             = 'et_pb_blurb';
@@ -171,7 +171,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$et_accent_color = et_builder_accent_color();
 
 		$image_icon_placement = array(
@@ -459,7 +459,7 @@ class ET_Builder_Module_Blurb extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$title                           = $this->_esc_attr( 'title' );
 		$url                             = $this->props['url'];
 		$image                           = $this->props['image'];

@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Login extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Login', 'et_builder' );
 		$this->plural     = esc_html__( 'Logins', 'et_builder' );
 		$this->slug       = 'et_pb_login';
@@ -265,7 +265,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -349,7 +349,7 @@ class ET_Builder_Module_Login extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$module_id                         = $this->props['module_id'];
 		$title                             = $this->_esc_attr( 'title' );
 		$background_color                  = $this->props['background_color'];

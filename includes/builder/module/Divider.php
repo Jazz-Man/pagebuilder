@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Divider extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Divider', 'et_builder' );
 		$this->plural     = esc_html__( 'Dividers', 'et_builder' );
 		$this->slug       = 'et_pb_divider';
@@ -67,7 +67,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'color' => array(
 				'default'         => et_builder_accent_color(),
@@ -155,7 +155,7 @@ class ET_Builder_Module_Divider extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$color                       = $this->props['color'];
 		$color_hover                 = $this->get_hover_value( 'color' );
 		$show_divider                = $this->props['show_divider'];

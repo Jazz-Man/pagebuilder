@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Comments extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Comments', 'et_builder' );
 		$this->plural     = esc_html__( 'Comments', 'et_builder' );
 		$this->slug       = 'et_pb_comments';
@@ -192,7 +192,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 
 		$fields = array(
 			'show_avatar' => array(
@@ -245,7 +245,7 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 	 *
 	 * @return string of comment section markup
 	 */
-	static function get_comments( $header_level ) {
+	public static function get_comments( $header_level ) {
 		global $et_pb_comments_print, $et_comments_header_level;
 
 		// Globally flag that comment module is being printed
@@ -277,11 +277,11 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		return $comments_content;
 	}
 
-	function et_pb_comments_template() {
+	public function et_pb_comments_template() {
 		return realpath( dirname(__FILE__) . '/..' ) . '/comments_template.php';
 	}
 
-	function et_pb_comments_submit_button( $submit_button ) {
+	public function et_pb_comments_submit_button( $submit_button ) {
 		return sprintf(
 			'<button name="%1$s" type="submit" id="%2$s" class="%3$s">%4$s</button>',
 			esc_attr( 'submit' ),
@@ -291,12 +291,12 @@ class ET_Builder_Module_Comments extends ET_Builder_Module {
 		);
 	}
 
-	function et_pb_modify_comments_request( $params ) {
+	public function et_pb_modify_comments_request( $params ) {
 		// modify the request parameters the way it doesn't change the result just to make request with unique parameters
 		$params->query_vars['type__not_in'] = 'et_pb_comments_random_type_' . $this->et_pb_unique_comments_module_class;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$button_custom                   = $this->props['custom_button'];
 		$custom_icon                     = $this->props['button_icon'];
 		$form_background_color           = $this->props['form_background_color'];

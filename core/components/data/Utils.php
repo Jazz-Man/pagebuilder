@@ -205,7 +205,7 @@ class ET_Core_Data_Utils {
 	 *
 	 * @return array
 	 */
-	function array_flatten( array $array ) {
+	public function array_flatten( array $array ) {
 		$iterator = new RecursiveIteratorIterator( new RecursiveArrayIterator( $array ) );
 		$use_keys = true;
 
@@ -449,7 +449,7 @@ class ET_Core_Data_Utils {
 	 *
 	 * @param string $path Absolute path to parent directory.
 	 */
-	function remove_empty_directories( $path ) {
+	public function remove_empty_directories( $path ) {
 		$path = realpath( $path );
 
 		if ( empty( $path ) ) {
@@ -481,7 +481,7 @@ class ET_Core_Data_Utils {
 	 *
 	 * @return bool
 	 */
-	function includes( $haystack, $needle ) {
+	public function includes( $haystack, $needle ) {
 		if ( is_string( $haystack ) ) {
 			return false !== strpos( $haystack, $needle );
 		}

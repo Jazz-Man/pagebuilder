@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Social Network', 'et_builder' );
 		$this->plural                      = esc_html__( 'Social Networks', 'et_builder' );
 		$this->slug                        = 'et_pb_social_media_follow_network';
@@ -94,7 +94,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'social_network' => array(
 				'label'           => esc_html__( 'Social Network', 'et_builder' ),
@@ -228,7 +228,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function get_network_name( $network ) {
+	public function get_network_name( $network ) {
 		$all_fields = $this->get_fields();
 		$network_names_mapping = $all_fields['social_network']['options'];
 
@@ -239,7 +239,7 @@ class ET_Builder_Module_Social_Media_Follow_Item extends ET_Builder_Module {
 		return $network;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_social_media_follow_link;
 
 		$social_network        = $this->props['social_network'];

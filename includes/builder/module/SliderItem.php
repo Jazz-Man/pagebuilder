@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Slide', 'et_builder' );
 		$this->plural                      = esc_html__( 'Slides', 'et_builder' );
 		$this->slug                        = 'et_pb_slide';
@@ -197,7 +197,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'heading' => array(
 				'label'           => esc_html__( 'Heading', 'et_builder' ),
@@ -422,7 +422,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	static function get_video_embed( $args = array(), $conditonal_args = array(), $current_page = array() ) {
+	public static function get_video_embed( $args = array(), $conditonal_args = array(), $current_page = array() ) {
 		global $wp_embed;
 
 		$video_url = esc_url( $args['video_url'] );
@@ -444,7 +444,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		return $video_embed;
 	}
 
-	function maybe_inherit_values() {
+	public function maybe_inherit_values() {
 		// Inheriting slider attribute
 		global $et_pb_slider;
 
@@ -488,7 +488,7 @@ class ET_Builder_Module_Slider_Item extends ET_Builder_Module {
 		}
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$alignment                       = $this->props['alignment'];
 		// Allowing full html for backwards compatibility.
 		$heading                         = $this->_esc_attr( 'heading', 'full' );

@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Video Slider', 'et_builder' );
 		$this->plural          = esc_html__( 'Video Sliders', 'et_builder' );
 		$this->slug            = 'et_pb_video_slider';
@@ -82,7 +82,7 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'show_image_overlay' => array(
 				'label'           => esc_html__( 'Show Image Overlays on Main Video', 'et_builder' ),
@@ -159,7 +159,7 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_slider_image_overlay;
 
 		$show_image_overlay = $this->props['show_image_overlay'];
@@ -168,7 +168,7 @@ class ET_Builder_Module_Video_Slider extends ET_Builder_Module {
 
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$show_arrows             = $this->props['show_arrows'];
 		$show_thumbnails         = $this->props['show_thumbnails'];
 		$controls_color          = $this->props['controls_color'];

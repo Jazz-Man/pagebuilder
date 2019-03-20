@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Video', 'et_builder' );
 		$this->plural                      = esc_html__( 'Videos', 'et_builder' );
 		$this->slug                        = 'et_pb_video_slider_item';
@@ -61,7 +61,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'admin_title' => array(
 				'label'       => esc_html__( 'Admin Label', 'et_builder' ),
@@ -168,7 +168,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		return $src;
 	}
 
-	static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_oembed_thumbnail( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$post_id = $current_page['id'] ?? self::get_current_post_id();
 		$defaults = array(
 			'image_src' => '',
@@ -196,7 +196,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		}
 	}
 
-	static function is_oembed( $args = array(), $conditional_tags = array(), $current_page = array() ){
+	public static function is_oembed( $args = array(), $conditional_tags = array(), $current_page = array() ){
 		$defaults = array(
 			'src'
 		);
@@ -206,7 +206,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		return et_pb_check_oembed_provider( esc_url( $args['src'] ) );
 	}
 
- 	static function get_oembed( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+ 	public static function get_oembed( $args = array(), $conditional_tags = array(), $current_page = array() ) {
  		$defaults = array(
  			'src' => '',
 		);
@@ -219,7 +219,7 @@ class ET_Builder_Module_Video_Slider_Item extends ET_Builder_Module {
 		return $thumbnail_track_output;
  	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$src                             = $this->props['src'];
 		$src_webm                        = $this->props['src_webm'];
 		$image_src                       = $this->props['image_src'];

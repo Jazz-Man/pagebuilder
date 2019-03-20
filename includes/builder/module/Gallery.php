@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Gallery extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Gallery', 'et_builder' );
 		$this->plural     = esc_html__( 'Galleries', 'et_builder' );
 		$this->slug       = 'et_pb_gallery';
@@ -206,7 +206,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'gallery_ids' => array(
 				'label'            => esc_html__( 'Gallery Images', 'et_builder' ),
@@ -389,7 +389,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 	 *
 	 * @return array Attachments data
 	 */
-	static function get_gallery( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_gallery( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$attachments = array();
 
 		$defaults = array(
@@ -443,7 +443,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		return et_pb_get_alignment( $text_orientation );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$gallery_ids                     = $this->props['gallery_ids'];
 		$fullwidth                       = $this->props['fullwidth'];
 		$show_title_and_caption          = $this->props['show_title_and_caption'];

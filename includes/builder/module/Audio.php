@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Audio extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Audio', 'et_builder' );
 		$this->plural     = esc_html__( 'Audios', 'et_builder' );
 		$this->slug       = 'et_pb_audio';
@@ -197,7 +197,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'audio' => array(
 				'label'              => esc_html__( 'Audio', 'et_builder' ),
@@ -266,7 +266,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		return $fields;
 	}
 
-	static function get_audio( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_audio( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
 			'audio' => '',
 		);
@@ -281,7 +281,7 @@ class ET_Builder_Module_Audio extends ET_Builder_Module {
 		return app_do_shortcode( sprintf( '[audio src="%s" /]', $args['audio'] ) );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $wp_version;
 
 		$audio                           = $this->props['audio'];

@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Text extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Text', 'et_builder' );
 		$this->plural     = esc_html__( 'Texts', 'et_builder' );
 		$this->slug       = 'et_pb_text';
@@ -284,7 +284,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'content' => array(
 				'label'           => esc_html__( 'Content', 'et_builder' ),
@@ -440,7 +440,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function convert_embeds( $matches ) {
+	public function convert_embeds( $matches ) {
 		$pieces = explode( 'v=', $matches[1] );
 		return sprintf(
 			'<p><iframe width="1080" height="608" src="%s" allow="%s" allowfullscreen></iframe></p>',
@@ -449,7 +449,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 		);
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );
 		$background_layout_hover_enabled = et_pb_hover_options()->is_enabled( 'background_layout', $this->props );

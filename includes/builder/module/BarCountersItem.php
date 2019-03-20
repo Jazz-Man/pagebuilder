@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Bar Counter', 'et_builder' );
 		$this->plural                      = esc_html__( 'Bar Counters', 'et_builder' );
 		$this->slug                        = 'et_pb_counter';
@@ -100,7 +100,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'content' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -140,7 +140,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function get_parallax_image_background( $base_name = 'background' ) {
+	public function get_parallax_image_background( $base_name = 'background' ) {
 		global $et_pb_counters_settings;
 
 		// Parallax setting is only derived from parent if bar counter item has no background
@@ -171,7 +171,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		return $parallax_background;
 	}
 
-	function video_background( $args = array(), $base_name = 'background' ) {
+	public function video_background( $args = array(), $base_name = 'background' ) {
 		global $et_pb_counters_settings;
 
 		$use_counter_value       = '' !== $this->props['background_color'] || 'on' === $this->props['use_background_color_gradient'] || '' !== $this->props['background_image'] || '' !== $this->props['background_video_mp4'] || '' !== $this->props['background_video_webm'];
@@ -221,7 +221,7 @@ class ET_Builder_Module_Bar_Counters_Item extends ET_Builder_Module {
 		return $video_background;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_counters_settings;
 
 		$percent                       = $this->props['percent'];

@@ -54,7 +54,7 @@ class ET_Builder_Plugin_Compat_The_Events_Calendar extends ET_Builder_Plugin_Com
 	 *
 	 * @return void
 	 */
-	function register_spoofed_post_fix() {
+	public function register_spoofed_post_fix() {
 		// Bail if global $post doesn't exist for some reason. Just to be safe.
 		if ( ! isset( $GLOBALS['post'] ) ) {
 			return;
@@ -80,7 +80,7 @@ class ET_Builder_Plugin_Compat_The_Events_Calendar extends ET_Builder_Plugin_Com
 	 *
 	 * @return void
 	 */
-	function fix_post_query() {
+	public function fix_post_query() {
 		// Bail if global $post doesn't exist for some reason. Just to be safe.
 		if ( ! isset( $GLOBALS['post'] ) ) {
 			return;
@@ -98,7 +98,7 @@ class ET_Builder_Plugin_Compat_The_Events_Calendar extends ET_Builder_Plugin_Com
 	 *
 	 * @return void
 	 */
-	function respoofed_post_query() {
+	public function respoofed_post_query() {
 		$GLOBALS['post'] = $this->spoofed_post_query; // phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 	}
 }

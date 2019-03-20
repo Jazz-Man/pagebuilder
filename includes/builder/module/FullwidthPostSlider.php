@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Fullwidth Post Slider', 'et_builder' );
 		$this->plural     = esc_html__( 'Fullwidth Post Sliders', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_post_slider';
@@ -204,7 +204,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		);
 	}
 
-	static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array(), $is_ajax_request = true ) {
+	public static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array(), $is_ajax_request = true ) {
 		global $wp_query;
 
 		$defaults = array(
@@ -360,7 +360,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		return $query;
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'posts_number' => array(
 				'label'             => esc_html__( 'Posts Number', 'et_builder' ),
@@ -686,7 +686,7 @@ class ET_Builder_Module_Fullwidth_Post_Slider extends ET_Builder_Module_Type_Pos
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		/**
 		 * Cached $wp_filter so it can be restored at the end of the callback.
 		 * This is needed because this callback uses the_content filter / calls a function

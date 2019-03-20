@@ -1763,7 +1763,7 @@ class ET_Support_Center {
 		}
 	}
 
-	function support_user_update_via_ajax() {
+	public function support_user_update_via_ajax() {
 		// Verify nonce
 		if ( ! et_core_security_check_passed(
 			'manage_options',
@@ -1822,7 +1822,7 @@ class ET_Support_Center {
 	 *
 	 * @return void
 	 */
-	function safe_mode_update_via_ajax() {
+	public function safe_mode_update_via_ajax() {
 		// Verify nonce
 		if ( ! et_core_security_check_passed(
 			'manage_options',
@@ -1880,7 +1880,7 @@ class ET_Support_Center {
 	 *
 	 * @return void
 	 */
-	function set_safe_mode_cookie() {
+	public function set_safe_mode_cookie() {
 		if ( et_core_is_safe_mode_active() ) {
 			// This random string ensures old cookies aren't used to view the site in Safe Mode
 			$passport = md5( rand() );
@@ -1940,7 +1940,7 @@ class ET_Support_Center {
 	 *
 	 * @return false|string
 	 */
-	function maybe_disable_child_theme( $current_theme ) {
+	public function maybe_disable_child_theme( $current_theme ) {
 		// Don't do anything if the user isn't logged in
 		if ( ! is_user_logged_in() ) {
 			return $current_theme;
@@ -1965,7 +1965,7 @@ class ET_Support_Center {
 	 *
 	 * @since 3.20
 	 */
-	function maybe_disable_custom_css() {
+	public function maybe_disable_custom_css() {
 		// Don't do anything if the user isn't logged in
 		if ( ! is_user_logged_in() ) {
 			return;
@@ -1982,7 +1982,7 @@ class ET_Support_Center {
 	 *
 	 * @since 3.20
 	 */
-	function maybe_add_safe_mode_indicator() {
+	public function maybe_add_safe_mode_indicator() {
 		// Don't do anything if the user isn't logged in
 		if ( ! is_user_logged_in() ) {
 			return;

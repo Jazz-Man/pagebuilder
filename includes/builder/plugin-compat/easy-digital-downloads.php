@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_Easy_Digital_Downloads extends ET_Builder_Plugin_
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = "easy-digital-downloads/easy-digital-downloads.php";
 		$this->init_hooks();
 	}
@@ -23,7 +23,7 @@ class ET_Builder_Plugin_Compat_Easy_Digital_Downloads extends ET_Builder_Plugin_
 	 * Latest plugin version: 2.6.17
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -44,7 +44,7 @@ class ET_Builder_Plugin_Compat_Easy_Digital_Downloads extends ET_Builder_Plugin_
 	 * @param  array initial link configuration
 	 * @return array moodified link configuration
 	 */
-	function purchase_link_defaults ( $args ) {
+	public function purchase_link_defaults ( $args ) {
 		if ( isset( $args['class'] ) ) {
 			$args['class'] = $args['class'] . ' et_pb_button';
 		}
@@ -57,7 +57,7 @@ class ET_Builder_Plugin_Compat_Easy_Digital_Downloads extends ET_Builder_Plugin_
 	 * @param string of HTML of the button
 	 * @return string of modified HTML of the button
 	 */
-	function modify_edd_checkout_button_purchase( $button ) {
+	public function modify_edd_checkout_button_purchase( $button ) {
 		$button = str_replace( 'edd-submit', 'edd-submit et_pb_button', $button );
 
 		return $button;
@@ -67,7 +67,7 @@ class ET_Builder_Plugin_Compat_Easy_Digital_Downloads extends ET_Builder_Plugin_
 	 * Added additional styling & scripts for EDD on Divi
 	 * @return void
 	 */
-	function add_compatibility_scripts() {
+	public function add_compatibility_scripts() {
 		// Normalize UI for Divi Builder
 		if ( et_is_builder_plugin_active() ) {
 			wp_add_inline_style( 'et-builder-modules-style', "

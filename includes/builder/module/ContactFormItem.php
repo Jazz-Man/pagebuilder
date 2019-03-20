@@ -4,7 +4,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 	public $additional_shortcode_slugs = array( 'et_pb_signup_custom_field' );
 
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Field', 'et_builder' );
 		$this->plural          = esc_html__( 'Fields', 'et_builder' );
 		$this->slug            = 'et_pb_contact_field';
@@ -107,7 +107,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$labels = array(
 			'link_url'      => esc_html__( 'Link URL', 'et_builder' ),
 			'link_text'     => esc_html__( 'Link Text', 'et_builder' ),
@@ -324,7 +324,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_half_width_counter, $et_pb_contact_form_num;
 
 		et_core_nonce_verified_previously();

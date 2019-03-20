@@ -15,7 +15,7 @@ class ET_Builder_Plugin_Compat_WPML_Multilingual_CMS extends ET_Builder_Plugin_C
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = 'sitepress-multilingual-cms/sitepress.php';
 		$this->init_hooks();
 	}
@@ -27,7 +27,7 @@ class ET_Builder_Plugin_Compat_WPML_Multilingual_CMS extends ET_Builder_Plugin_C
 	 *
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -48,7 +48,7 @@ class ET_Builder_Plugin_Compat_WPML_Multilingual_CMS extends ET_Builder_Plugin_C
 	 *
 	 * @return array
 	 */
-	function override_wpml_configuration( $config ) {
+	public function override_wpml_configuration( $config ) {
 
 		if ( ! empty( $config['wpml-config']['custom-fields']['custom-field'] ) ) {
 

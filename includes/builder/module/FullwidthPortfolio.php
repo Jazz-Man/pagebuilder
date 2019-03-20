@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Fullwidth Portfolio', 'et_builder' );
 		$this->plural     = esc_html__( 'Fullwidth Portfolios', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_portfolio';
@@ -188,7 +188,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Portfolio Title', 'et_builder' ),
@@ -302,7 +302,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 	 * @param array  passed current page params
 	 * @return array portfolio item data
 	 */
-	static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_portfolio_item( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		$defaults = array(
 			'posts_number'       => '',
 			'include_categories' => '',
@@ -377,7 +377,7 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 		return $query;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$title                           = $this->_esc_attr( 'title' );
 		$fullwidth                       = $this->props['fullwidth'];
 		$include_categories              = $this->props['include_categories'];

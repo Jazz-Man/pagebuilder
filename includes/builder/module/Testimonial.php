@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Testimonial extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Testimonial', 'et_builder' );
 		$this->plural     = esc_html__( 'Testimonials', 'et_builder' );
 		$this->slug       = 'et_pb_testimonial';
@@ -164,7 +164,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'author' => array(
 				'label'           => esc_html__( 'Author Name', 'et_builder' ),
@@ -305,7 +305,7 @@ class ET_Builder_Module_Testimonial extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		// Allowing full html for backwards compatibility.
 		$author                            = $this->_esc_attr( 'author', 'full' );
 		$job_title                         = $this->_esc_attr( 'job_title' );

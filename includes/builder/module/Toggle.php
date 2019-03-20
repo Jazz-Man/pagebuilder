@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Toggle extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                       = esc_html__( 'Toggle', 'et_builder' );
 		$this->plural                     = esc_html__( 'Toggles', 'et_builder' );
 		$this->slug                       = 'et_pb_toggle';
@@ -116,7 +116,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -211,7 +211,7 @@ class ET_Builder_Module_Toggle extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$open                                 = $this->props['open'];
 
 		$open_toggle_background_color         = $this->props['open_toggle_background_color'];

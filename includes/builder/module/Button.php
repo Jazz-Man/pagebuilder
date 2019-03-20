@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Button extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Button', 'et_builder' );
 		$this->plural     = esc_html__( 'Buttons', 'et_builder' );
 		$this->slug       = 'et_pb_button';
@@ -82,7 +82,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'button_url' => array(
 				'label'            => esc_html__( 'Button Link URL', 'et_builder' ),
@@ -136,7 +136,7 @@ class ET_Builder_Module_Button extends ET_Builder_Module {
 		return array();
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$button_url                      = $this->props['button_url'];
 		$button_rel                      = $this->props['button_rel'];
 		$button_text                     = $this->_esc_attr( 'button_text', 'limited' );

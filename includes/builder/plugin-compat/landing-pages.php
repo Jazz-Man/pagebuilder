@@ -25,7 +25,7 @@ class ET_Builder_Plugin_Compat_Landing_Pages extends ET_Builder_Plugin_Compat_Ba
 		add_action( 'et_fb_framework_loaded', array( $this, 'fix_the_content_hooks' ) );
 	}
 
-	function fix_the_content_hooks() {
+	public function fix_the_content_hooks() {
 		$post_id   = et_core_page_resource_get_the_ID();
 		$post_type = get_post_type( $post_id );
 

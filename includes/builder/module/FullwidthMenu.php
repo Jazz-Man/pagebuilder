@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Fullwidth Menu', 'et_builder' );
 		$this->plural     = esc_html__( 'Fullwidth Menus', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_menu';
@@ -121,7 +121,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'menu_id' => array(
 				'label'           => esc_html__( 'Menu', 'et_builder' ),
@@ -240,7 +240,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 	 *
 	 * @return menu item object
 	 */
-	static function modify_fullwidth_menu_item( $menu_item ) {
+	public static function modify_fullwidth_menu_item( $menu_item ) {
 		if ( esc_url( home_url( '/' ) ) === $menu_item->url ) {
 			$fw_menu_custom_class = 'et_pb_menu_page_id-home';
 		} else {
@@ -256,7 +256,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 	 *
 	 * @return string of fullwidth menu markup
 	 */
-	static function get_fullwidth_menu( $args = array() ) {
+	public static function get_fullwidth_menu( $args = array() ) {
 		$defaults = array(
 			'submenu_direction' => '',
 			'menu_id'           => '',
@@ -335,7 +335,7 @@ class ET_Builder_Module_Fullwidth_Menu extends ET_Builder_Module {
 		return $menu;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$background_color                = $this->props['background_color'];
 		$background_layout               = $this->props['background_layout'];
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );

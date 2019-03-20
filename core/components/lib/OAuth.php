@@ -235,7 +235,7 @@ class ET_Core_LIB_OAuthConsumer {
 		$this->callback_url = $callback_url;
 	}
 
-	function __toString() {
+	public function __toString() {
 		$name = get_class( $this );
 		$key  = 'ET_Core_LIB_OAuthConsumer' === $name ? 'key' : 'id';
 

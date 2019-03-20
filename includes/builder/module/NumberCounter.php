@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Number Counter', 'et_builder' );
 		$this->plural     = esc_html__( 'Number Counters', 'et_builder' );
 		$this->slug       = 'et_pb_number_counter';
@@ -111,7 +111,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -151,7 +151,7 @@ class ET_Builder_Module_Number_Counter extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		wp_enqueue_script( 'easypiechart' );
 
 		$number                          = $this->props['number'];

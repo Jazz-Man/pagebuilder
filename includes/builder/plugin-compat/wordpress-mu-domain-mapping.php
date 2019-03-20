@@ -11,7 +11,7 @@ class ET_Builder_Plugin_Compat_Mu_Domain_Mapping extends ET_Builder_Plugin_Compa
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = 'wordpress-mu-domain-mapping/domain_mapping.php';
 
 		$this->init_hooks();
@@ -22,7 +22,7 @@ class ET_Builder_Plugin_Compat_Mu_Domain_Mapping extends ET_Builder_Plugin_Compa
 	 *
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;

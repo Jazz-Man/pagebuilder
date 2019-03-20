@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Fullwidth Code', 'et_builder' );
 		$this->plural          = esc_html__( 'Fullwidth Codes', 'et_builder' );
 		$this->slug            = 'et_pb_fullwidth_code';
@@ -44,7 +44,7 @@ class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 		add_filter( 'no_texturize_shortcodes', array( $this, 'disable_wptexturize' ) );
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'raw_content' => array(
 				'label'           => esc_html__( 'Content', 'et_builder' ),
@@ -60,7 +60,7 @@ class ET_Builder_Module_Fullwidth_Code extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
 

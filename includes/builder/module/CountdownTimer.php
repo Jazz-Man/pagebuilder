@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Countdown Timer', 'et_builder' );
 		$this->plural     = esc_html__( 'Countdown Timers', 'et_builder' );
 		$this->slug       = 'et_pb_countdown_timer';
@@ -126,7 +126,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Countdown Timer Title', 'et_builder' ),
@@ -148,7 +148,7 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$title                           = $this->_esc_attr( 'title' );
 		$date_time                       = $this->props['date_time'];
 		$background_layout               = $this->props['background_layout'];

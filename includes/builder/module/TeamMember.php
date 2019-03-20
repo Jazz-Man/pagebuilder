@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Team_Member extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Person', 'et_builder' );
 		$this->plural     = esc_html__( 'Persons', 'et_builder' );
 		$this->slug       = 'et_pb_team_member';
@@ -165,7 +165,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'name' => array(
 				'label'           => esc_html__( 'Name', 'et_builder' ),
@@ -255,7 +255,7 @@ class ET_Builder_Module_Team_Member extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$name                            = $this->_esc_attr( 'name' );
 		$position                        = $this->_esc_attr( 'position' );
 		$image_url                       = $this->props['image_url'];

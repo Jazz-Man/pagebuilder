@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Map extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Map', 'et_builder' );
 		$this->plural          = esc_html__( 'Maps', 'et_builder' );
 		$this->slug            = 'et_pb_map';
@@ -66,7 +66,7 @@ class ET_Builder_Module_Map extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'google_maps_script_notice' => array(
 				'type'              => 'warning',
@@ -190,7 +190,7 @@ class ET_Builder_Module_Map extends ET_Builder_Module {
 		return array_merge( $fields, $filters );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$address_lat             = $this->props['address_lat'];
 		$address_lng             = $this->props['address_lng'];
 		$zoom_level              = $this->props['zoom_level'];

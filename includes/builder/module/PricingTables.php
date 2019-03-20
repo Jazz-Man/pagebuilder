@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                 = esc_html__( 'Pricing Tables', 'et_builder' );
 		$this->plural               = esc_html__( 'Pricing Tables', 'et_builder' );
 		$this->slug                 = 'et_pb_pricing_tables';
@@ -218,7 +218,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'featured_table_background_color' => array(
 				'label'             => esc_html__( 'Featured Table Background Color', 'et_builder' ),
@@ -359,7 +359,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_pricing_tables_num, $et_pb_pricing_tables_icon, $et_pb_pricing_tab, $et_pb_pricing_tables_button_rel, $et_pb_pricing_tables_header_level;
 
 		$button_custom = $this->props['custom_button'];
@@ -373,7 +373,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		$et_pb_pricing_tables_header_level = 'h2' === $this->props['header_level'] ? '' : $this->props['header_level'];
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$featured_table_background_color              = $this->props['featured_table_background_color'];
 		$featured_table_background_color_hover        = $this->get_hover_value( 'featured_table_background_color' );
 
@@ -648,7 +648,7 @@ class ET_Builder_Module_Pricing_Tables extends ET_Builder_Module {
 		return $output;
 	}
 
-	function additional_render( $atts, $content = null, $function_name ) {
+	public function additional_render( $atts, $content = null, $function_name ) {
 		$attributes = shortcode_atts( array(
 			'available' => 'on',
 		), $atts );

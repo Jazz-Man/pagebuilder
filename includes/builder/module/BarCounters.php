@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Bar Counters', 'et_builder' );
 		$this->plural          = esc_html__( 'Bar Counters', 'et_builder' );
 		$this->slug            = 'et_pb_counters';
@@ -121,7 +121,7 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'bar_bg_color' => array(
 				'label'             => esc_html__( 'Bar Background Color', 'et_builder' ),
@@ -157,7 +157,7 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function before_render() {
+	public function before_render() {
 		global $et_pb_counters_settings;
 
 		$background_color          = $this->props['background_color'];
@@ -190,7 +190,7 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 		);
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$background_layout               = $this->props['background_layout'];
 		$bar_bg_hover_color              = et_pb_hover_options()->get_value( 'bar_bg_color', $this->props );
 		$background_layout_hover         = et_pb_hover_options()->get_value( 'background_layout', $this->props, 'light' );

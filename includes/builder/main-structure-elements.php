@@ -5,7 +5,7 @@
  * @since [version]
  */
 class ET_Builder_Section extends ET_Builder_Structure_Element {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Section', 'et_builder' );
 		$this->plural     = esc_html__( 'Sections', 'et_builder' );
 		$this->slug       = 'et_pb_section';
@@ -121,7 +121,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'inner_shadow' => array(
 				'label'           => esc_html__( 'Show Inner Shadow', 'et_builder' ),
@@ -463,7 +463,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 		return $fields;
 	}
 
-	function render( $atts, $content = null, $function_name ) {
+	public function render( $atts, $content = null, $function_name ) {
 		$background_image                             = $this->props['background_image'];
 		$background_color                             = $this->props['background_color'];
 		$background_video_mp4                         = $this->props['background_video_mp4'];
@@ -1128,7 +1128,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 new ET_Builder_Section;
 
 class ET_Builder_Row extends ET_Builder_Structure_Element {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Row', 'et_builder' );
 		$this->plural     = esc_html__( 'Rows', 'et_builder' );
 		$this->slug       = 'et_pb_row';
@@ -1262,7 +1262,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'make_fullwidth' => array(
 				'label'             => esc_html__( 'Make This Row Fullwidth', 'et_builder' ),
@@ -1607,7 +1607,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 		return $fields;
 	}
 
-	function render( $atts, $content = null, $function_name ) {
+	public function render( $atts, $content = null, $function_name ) {
 		$custom_padding                               = $this->props['custom_padding'];
 		$custom_padding_tablet                        = $this->props['custom_padding_tablet'];
 		$custom_padding_phone                         = $this->props['custom_padding_phone'];
@@ -2417,7 +2417,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 new ET_Builder_Row;
 
 class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Row', 'et_builder' );
 		$this->plural     = esc_html__( 'Rows', 'et_builder' );
 		$this->slug       = 'et_pb_row_inner';
@@ -2521,7 +2521,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'custom_padding' => array(
 				'label'           => esc_html__( 'Custom Padding', 'et_builder' ),
@@ -2748,7 +2748,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 		return $fields;
 	}
 
-	function render( $atts, $content = null, $function_name ) {
+	public function render( $atts, $content = null, $function_name ) {
 		$background_color_1                           = $this->props['background_color_1'];
 		$background_color_2                           = $this->props['background_color_2'];
 		$background_color_3                           = $this->props['background_color_3'];
@@ -3312,7 +3312,7 @@ class ET_Builder_Row_Inner extends ET_Builder_Structure_Element {
 new ET_Builder_Row_Inner;
 
 class ET_Builder_Column extends ET_Builder_Structure_Element {
-	function init() {
+	public function init() {
 		$this->name                       = esc_html__( 'Column', 'et_builder' );
 		$this->plural                     = esc_html__( 'Columns', 'et_builder' );
 		$this->slug                       = 'et_pb_column';
@@ -3328,7 +3328,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'type'                        => array(
 				'default_on_front' => '4_4',
@@ -3345,7 +3345,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		return $fields;
 	}
 
-	function render( $atts, $content = null, $function_name ) {
+	public function render( $atts, $content = null, $function_name ) {
 		$type                        = $this->props['type'];
 		$specialty_columns           = $this->props['specialty_columns'];
 		$saved_specialty_column_type = $this->props['saved_specialty_column_type'];

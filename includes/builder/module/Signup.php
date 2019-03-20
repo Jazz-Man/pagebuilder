@@ -20,7 +20,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		),
 	);
 
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Email Optin', 'et_builder' );
 		$this->plural     = esc_html__( 'Email Optins', 'et_builder' );
 		$this->slug       = 'et_pb_signup';
@@ -422,7 +422,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$name_field_only  = array_keys( self::providers()->names_by_slug( 'all', 'name_field_only' ) );
 		$no_custom_fields = array_keys( self::providers()->names_by_slug( 'all', 'no_custom_fields' ) );
 
@@ -956,7 +956,7 @@ class ET_Builder_Module_Signup extends ET_Builder_Module {
 		return self::$_providers;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_half_width_counter;
 
 		$et_pb_half_width_counter    = 0;

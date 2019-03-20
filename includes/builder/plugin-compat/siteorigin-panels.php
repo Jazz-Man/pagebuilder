@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_Siteorigin_Panels extends ET_Builder_Plugin_Compa
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = "siteorigin-panels/siteorigin-panels.php";
 		$this->init_hooks();
 	}
@@ -37,7 +37,7 @@ class ET_Builder_Plugin_Compat_Siteorigin_Panels extends ET_Builder_Plugin_Compa
 	 * If Divi Builder is used, disable siteorigin builder content alteration
 	 * @return bool
 	 */
-	function disable_siteorigin_builder_content( $status ) {
+	public function disable_siteorigin_builder_content( $status ) {
 		global $post;
 
 		if( isset( $post->ID ) && et_pb_is_pagebuilder_used( $post->ID ) ) {

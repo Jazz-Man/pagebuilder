@@ -1,13 +1,13 @@
 <?php class AboutMeWidget extends WP_Widget
 {
-	function __construct(){
+	public function __construct(){
 		$widget_ops = array( 'description' => esc_html__( 'Displays About Me Information', 'Divi' ) );
 		$control_ops = array( 'width' => 400, 'height' => 300 );
 		parent::__construct( false, $name = esc_html__( 'ET About Me Widget', 'Divi' ), $widget_ops, $control_ops );
 	}
 
 	/* Displays the Widget in the front-end */
-	function widget( $args, $instance ){
+	public function widget( $args, $instance ){
 		extract($args);
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? esc_html__( 'About Me', 'Divi' ) : esc_html( $instance['title'] ) );
 		$imagePath = empty( $instance['imagePath'] ) ? '' : esc_url( $instance['imagePath'] );
@@ -26,7 +26,7 @@
 	}
 
 	/*Saves the settings. */
-	function update( $new_instance, $old_instance ){
+	public function update( $new_instance, $old_instance ){
 		$instance = $old_instance;
 		$instance['title'] = sanitize_text_field( $new_instance['title'] );
 		$instance['imagePath'] = esc_url( $new_instance['imagePath'] );
@@ -36,7 +36,7 @@
 	}
 
 	/*Creates the form for the widget in the back-end. */
-	function form( $instance ){
+	public function form( $instance ){
 		//Defaults
 		$instance = wp_parse_args( (array) $instance, array( 'title' => esc_html__( 'About Me', 'Divi' ), 'imagePath' => '', 'aboutText' => '' ) );
 

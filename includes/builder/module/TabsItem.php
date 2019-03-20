@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name                        = esc_html__( 'Tab', 'et_builder' );
 		$this->plural                      = esc_html__( 'Tabs', 'et_builder' );
 		$this->slug                        = 'et_pb_tab';
@@ -87,7 +87,7 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -107,7 +107,7 @@ class ET_Builder_Module_Tabs_Item extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_tab_titles;
 		global $et_pb_tab_classes;
 

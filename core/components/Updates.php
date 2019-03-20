@@ -19,7 +19,7 @@ final class ET_Core_Updates {
 
 	private static $_this;
 
-	function __construct( $core_url, $product_version ) {
+	public function __construct( $core_url, $product_version ) {
 		// Don't allow more than one instance of the class
 		if ( isset( self::$_this ) ) {
 			wp_die( sprintf( esc_html__( '%s: You cannot create a second instance of this class.', 'et-core' ),
@@ -62,12 +62,12 @@ final class ET_Core_Updates {
 		add_action( 'admin_init', array( $this, 'remove_plugin_update_actions' ) );
 	}
 
-	function remove_theme_update_actions() {
+	public function remove_theme_update_actions() {
 		remove_filter( 'pre_set_site_transient_update_themes', 'et_check_themes_updates' );
 		remove_filter( 'site_transient_update_themes', 'et_add_themes_to_update_notification' );
 	}
 
-	function remove_plugin_update_actions() {
+	public function remove_plugin_update_actions() {
 		remove_filter( 'pre_set_site_transient_update_plugins', 'et_shortcodes_plugin_check_updates' );
 		remove_filter( 'site_transient_update_plugins', 'et_shortcodes_plugin_add_to_update_notification' );
 	}
@@ -78,7 +78,7 @@ final class ET_Core_Updates {
 	 *
 	 * @return void
 	 */
-	function remove_updater_plugin_actions() {
+	public function remove_updater_plugin_actions() {
 		if ( ! class_exists( 'ET_Automatic_Updates' ) ) {
 			return;
 		}
@@ -97,7 +97,7 @@ final class ET_Core_Updates {
 	 *
 	 * @return object
 	 */
-	static function get_this() {
+	public static function get_this() {
 		return self::$_this;
 	}
 
@@ -107,7 +107,7 @@ final class ET_Core_Updates {
 	 * @param array $send_to_api Data sent to server
 	 * @return array Modified data set if Username and API key are set, original data if not
 	 */
-	function maybe_add_automatic_updates_data( $send_to_api ) {
+	public function maybe_add_automatic_updates_data( $send_to_api ) {
 		if ( $this->options && isset( $this->options['username'] ) && isset( $this->options['api_key'] ) ) {
 			$send_to_api['automatic_updates'] = 'on';
 
@@ -125,7 +125,7 @@ final class ET_Core_Updates {
 	 *
 	 * @return void
 	 */
-	function get_options() {
+	public function get_options() {
 		if ( ! $this->options = get_site_option( 'et_automatic_updates_options' ) ) {
 			$this->options = get_option( 'et_automatic_updates_options' );
 		}
@@ -135,7 +135,7 @@ final class ET_Core_Updates {
 		}
 	}
 
-	function load_scripts_styles( $hook ) {
+	public function load_scripts_styles( $hook ) {
 		if ( 'plugin-install.php' !== $hook ) {
 			return;
 		}
@@ -148,7 +148,7 @@ final class ET_Core_Updates {
 	 *
 	 * @return void
 	 */
-	function maybe_update_account_status() {
+	public function maybe_update_account_status() {
 		$last_checked = get_site_option( 'et_account_status_last_checked' );
 
 		$timeout = 12 * HOUR_IN_SECONDS;
@@ -166,7 +166,7 @@ final class ET_Core_Updates {
 	 *
 	 * @return void
 	 */
-	function check_is_active_account() {
+	public function check_is_active_account() {
 		global $wp_version;
 
 		if ( ! isset( $this->options['username'] ) || '' === trim( $this->options['username'] ) ) {
@@ -205,7 +205,7 @@ final class ET_Core_Updates {
 		}
 	}
 
-	function check_plugins_updates( $update_transient ) {
+	public function check_plugins_updates( $update_transient ) {
 		global $wp_version;
 
 		if ( ! isset( $update_transient->checked ) ) {
@@ -258,7 +258,7 @@ final class ET_Core_Updates {
 		return $update_transient;
 	}
 
-	function add_plugins_to_update_notification( $update_transient ){
+	public function add_plugins_to_update_notification( $update_transient ){
 		$et_update_lb_plugin = get_site_transient( 'et_update_all_plugins' );
 
 		if ( ! is_object( $et_update_lb_plugin ) || ! isset( $et_update_lb_plugin->response ) ) {
@@ -302,7 +302,7 @@ final class ET_Core_Updates {
 	 * @param object $update_transient Update transient option
 	 * @return object Update transient option
 	 */
-	function check_themes_updates( $update_transient ){
+	public function check_themes_updates( $update_transient ){
 		global $wp_version;
 
 		$et_update_themes = get_site_transient( 'et_update_themes' );
@@ -375,7 +375,7 @@ final class ET_Core_Updates {
 	 * @param object $update_transient Update transient option
 	 * @return object Update transient option
 	 */
-	function add_themes_to_update_notification( $update_transient ){
+	public function add_themes_to_update_notification( $update_transient ){
 		$et_update_themes = get_site_transient( 'et_update_themes' );
 
 		if ( ! is_object( $et_update_themes ) || ! isset( $et_update_themes->response ) ) {
@@ -400,7 +400,7 @@ final class ET_Core_Updates {
 	 * @param string $domain Localization domain
 	 * @return string Error message or Default translated text
 	 */
-	function update_notifications( $default_translated_text, $original_text, $domain ) {
+	public function update_notifications( $default_translated_text, $original_text, $domain ) {
 		$message = '';
 
 		$messages = apply_filters( 'et_core_updates_notifications_messages', array(
@@ -435,7 +435,7 @@ final class ET_Core_Updates {
 		return $default_translated_text;
 	}
 
-	function maybe_show_expired_account_notice() {
+	public function maybe_show_expired_account_notice() {
 		if ( empty( $this->options['username'] ) || empty( $this->options['api_key'] ) ) {
 			return;
 		}
@@ -452,7 +452,7 @@ final class ET_Core_Updates {
 		);
 	}
 
-	function change_plugin_changelog_url( $url, $path ) {
+	public function change_plugin_changelog_url( $url, $path ) {
 		if ( 0 !== strpos( $path, 'plugin-install.php?tab=plugin-information&plugin=' ) ) {
 			return $url;
 		}

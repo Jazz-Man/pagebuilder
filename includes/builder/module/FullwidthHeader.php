@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name             = esc_html__( 'Fullwidth Header', 'et_builder' );
 		$this->plural           = esc_html__( 'Fullwidth Headers', 'et_builder' );
 		$this->slug             = 'et_pb_fullwidth_header';
@@ -222,7 +222,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'title' => array(
 				'label'           => esc_html__( 'Title', 'et_builder' ),
@@ -516,7 +516,7 @@ class ET_Builder_Module_Fullwidth_Header extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		// Allowing full html for backwards compatibility.
 		$title                             = $this->_esc_attr( 'title', 'full' );
 		// Allowing full html for backwards compatibility.

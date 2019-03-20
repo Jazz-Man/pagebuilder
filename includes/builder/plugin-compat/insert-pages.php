@@ -12,7 +12,7 @@ class ET_Builder_Plugin_Compat_Insert_Pages extends ET_Builder_Plugin_Compat_Bas
 	/**
 	 * Constructor
 	 */
-	function __construct() {
+	public function __construct() {
 		$this->plugin_id = "insert-pages/insert-pages.php";
 		$this->init_hooks();
 	}
@@ -23,7 +23,7 @@ class ET_Builder_Plugin_Compat_Insert_Pages extends ET_Builder_Plugin_Compat_Bas
 	 * Latest plugin version: 2.7.2
 	 * @return void
 	 */
-	function init_hooks() {
+	public function init_hooks() {
 		// Bail if there's no version found
 		if ( ! $this->get_plugin_version() ) {
 			return;
@@ -40,7 +40,7 @@ class ET_Builder_Plugin_Compat_Insert_Pages extends ET_Builder_Plugin_Compat_Bas
 	 *
 	 * @return void
 	 */
-	function disable_mce_buttons_on_builder() {
+	public function disable_mce_buttons_on_builder() {
 		global $insertPages_plugin;
 
 		if ( is_null( $insertPages_plugin ) ) {

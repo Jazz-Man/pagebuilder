@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Blog', 'et_builder' );
 		$this->plural     = esc_html__( 'Blogs', 'et_builder' );
 		$this->slug       = 'et_pb_blog';
@@ -201,7 +201,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'fullwidth' => array(
 				'label'             => esc_html__( 'Layout', 'et_builder' ),
@@ -525,7 +525,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 	 * @param array   arguments that is being used by et_pb_blog
 	 * @return string blog post markup
 	 */
-	static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		global $paged, $post, $wp_query, $et_fb_processing_shortcode_object, $et_pb_rendering_column_content;
 
 		$global_processing_original_value = $et_fb_processing_shortcode_object;
@@ -871,7 +871,7 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		return $posts;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $post;
 
 		// Stored current global post as variable so global $post variable can be restored

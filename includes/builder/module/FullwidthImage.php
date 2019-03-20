@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Fullwidth Image', 'et_builder' );
 		$this->plural     = esc_html__( 'Fullwidth Images', 'et_builder' );
 		$this->slug       = 'et_pb_fullwidth_image';
@@ -64,7 +64,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'src' => array(
 				'label'              => esc_html__( 'Image URL', 'et_builder' ),
@@ -208,7 +208,7 @@ class ET_Builder_Module_Fullwidth_Image extends ET_Builder_Module {
 		return array_merge( $fields, $filters );
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$src                 = $this->props['src'];
 		$alt                 = $this->props['alt'];
 		$title_text          = $this->props['title_text'];

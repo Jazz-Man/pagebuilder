@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name             = esc_html__( 'Post Navigation', 'et_builder' );
 		$this->plural           = esc_html__( 'Post Navigations', 'et_builder' );
 		$this->slug             = 'et_pb_post_nav';
@@ -104,7 +104,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'in_same_term' => array(
 				'label'           => esc_html__( 'In the same category', 'et_builder' ),
@@ -210,7 +210,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 	 *
 	 * @return string JSON encoded array of post's next and prev link
 	 */
-	static function get_posts_navigation( $args = array(), $conditional_tags = array(), $current_page = array() ) {
+	public static function get_posts_navigation( $args = array(), $conditional_tags = array(), $current_page = array() ) {
 		global $post;
 
 		$defaults = array(
@@ -306,7 +306,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 		return $posts_navigation;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$in_same_term  = $this->props['in_same_term'];
 		$taxonomy_name = $this->props['taxonomy_name'];
 		$show_prev     = $this->props['show_prev'];

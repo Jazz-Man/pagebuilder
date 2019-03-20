@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
-	function init() {
+	public function init() {
 		$this->name       = esc_html__( 'Post Slider', 'et_builder' );
 		$this->plural     = esc_html__( 'Post Sliders', 'et_builder' );
 		$this->slug       = 'et_pb_post_slider';
@@ -215,7 +215,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'posts_number' => array(
 				'label'             => esc_html__( 'Posts Number', 'et_builder' ),
@@ -550,7 +550,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		return $fields;
 	}
 
-	static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array(), $is_ajax_request = true ) {
+	public static function get_blog_posts( $args = array(), $conditional_tags = array(), $current_page = array(), $is_ajax_request = true ) {
 		global $wp_query;
 
 		$defaults = array(
@@ -707,7 +707,7 @@ class ET_Builder_Module_Post_Slider extends ET_Builder_Module_Type_PostBased {
 		return $query;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$show_arrows                     = $this->props['show_arrows'];
 		$show_pagination                 = $this->props['show_pagination'];
 		$parallax                        = $this->props['parallax'];

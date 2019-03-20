@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Tabs extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Tabs', 'et_builder' );
 		$this->plural          = esc_html__( 'Tabs', 'et_builder' );
 		$this->slug            = 'et_pb_tabs';
@@ -92,7 +92,7 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'active_tab_background_color' => array(
 				'label'             => esc_html__( 'Active Tab Background Color', 'et_builder' ),
@@ -123,7 +123,7 @@ class ET_Builder_Module_Tabs extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		$active_tab_background_color         = $this->props['active_tab_background_color'];
 		$active_tab_background_color_hover   = $this->get_hover_value( 'active_tab_background_color' );
 		$inactive_tab_background_color       = $this->props['inactive_tab_background_color'];

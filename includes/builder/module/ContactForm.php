@@ -1,7 +1,7 @@
 <?php
 
 class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
-	function init() {
+	public function init() {
 		$this->name            = esc_html__( 'Contact Form', 'et_builder' );
 		$this->plural          = esc_html__( 'Contact Forms', 'et_builder' );
 		$this->slug            = 'et_pb_contact_form';
@@ -143,7 +143,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		);
 	}
 
-	function get_fields() {
+	public function get_fields() {
 		$fields = array(
 			'captcha' => array(
 				'label'           => esc_html__( 'Display Captcha', 'et_builder' ),
@@ -249,7 +249,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		return $fields;
 	}
 
-	function predefined_child_modules() {
+	public function predefined_child_modules() {
 		$output = sprintf(
 			'[et_pb_contact_field field_title="%1$s" field_type="input" field_id="Name" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%2$s" field_type="email" field_id="Email" required_mark="on" fullwidth_field="off" /][et_pb_contact_field field_title="%3$s" field_type="text" field_id="Message" required_mark="on" fullwidth_field="on" /]',
 			esc_attr__( 'Name', 'et_builder' ),
@@ -260,7 +260,7 @@ class ET_Builder_Module_Contact_Form extends ET_Builder_Module {
 		return $output;
 	}
 
-	function render( $attrs, $content = null, $render_slug ) {
+	public function render( $attrs, $content = null, $render_slug ) {
 		global $et_pb_half_width_counter, $et_pb_contact_form_num;
 
 		$et_pb_half_width_counter = 0;
