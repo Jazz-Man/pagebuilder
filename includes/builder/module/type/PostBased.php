@@ -38,7 +38,7 @@ abstract class ET_Builder_Module_Type_PostBased extends ET_Builder_Module {
 		$valid_term_ids = array();
 
 		foreach ( $term_ids as $term_id ) {
-			$term_id = intval( $term_id );
+			$term_id = (int)$term_id;
 			$term = term_exists( $term_id, $taxonomy );
 			if ( ! empty( $term ) ) {
 				$valid_term_ids[] = $term_id;

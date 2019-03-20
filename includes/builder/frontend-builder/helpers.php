@@ -848,64 +848,65 @@ function et_fb_get_static_backend_helpers($post_type) {
 					'sub_toggle'      => 'column_%s',
 				),
 				'background_color_gradient_start_position_%s' => array(
-					'label'           => esc_html__( 'Column %s Start Position', 'et_builder' ),
-					'type'            => 'range',
-					'option_category' => 'configuration',
-					'range_settings'  => array(
+                    'label'           => esc_html__( 'Column %s Start Position', 'et_builder' ),
+                    'type'            => 'range',
+                    'option_category' => 'configuration',
+                    'range_settings'  => array(
 						'min'  => 0,
 						'max'  => 100,
 						'step' => 1,
 					),
-					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_start_position' ) ),
-					'validate_unit'   => true,
-					'fixed_unit'      => '%',
-					'fixed_range'     => true,
-					'depends_show_if' => 'on',
-					'depends_on'      => array(
+                    'default'         => (int)ET_Global_Settings::get_value('all_background_gradient_start_position'),
+                    'validate_unit'   => true,
+                    'fixed_unit'      => '%',
+                    'fixed_range'     => true,
+                    'depends_show_if' => 'on',
+                    'depends_on'      => array(
 						'use_background_color_gradient_%s',
 					),
-					'tab_slug'        => 'general',
-					'toggle_slug'     => 'background',
-					'sub_toggle'      => 'column_%s',
+                    'tab_slug'        => 'general',
+                    'toggle_slug'     => 'background',
+                    'sub_toggle'      => 'column_%s',
 				),
 				'background_color_gradient_end_position_%s' => array(
-					'label'           => esc_html__( 'Column %s End Position', 'et_builder' ),
-					'type'            => 'range',
-					'option_category' => 'configuration',
-					'range_settings'  => array(
+                    'label'           => esc_html__( 'Column %s End Position', 'et_builder' ),
+                    'type'            => 'range',
+                    'option_category' => 'configuration',
+                    'range_settings'  => array(
 						'min'  => 0,
 						'max'  => 100,
 						'step' => 1,
 					),
-					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_end_position' ) ),
-					'validate_unit'   => true,
-					'fixed_unit'      => '%',
-					'fixed_range'     => true,
-					'depends_show_if' => 'on',
-					'depends_on'      => array(
+                    'default'         => (int)ET_Global_Settings::get_value('all_background_gradient_end_position'),
+                    'validate_unit'   => true,
+                    'fixed_unit'      => '%',
+                    'fixed_range'     => true,
+                    'depends_show_if' => 'on',
+                    'depends_on'      => array(
 						'use_background_color_gradient_%s',
 					),
-					'tab_slug'        => 'general',
-					'toggle_slug'     => 'background',
-					'sub_toggle'      => 'column_%s',
+                    'tab_slug'        => 'general',
+                    'toggle_slug'     => 'background',
+                    'sub_toggle'      => 'column_%s',
 				),
 				'background_color_gradient_overlays_image_%s' => array(
-					'label'           => esc_html__( 'Column %s Place Gradient Above Background Image', 'et_builder' ),
-					'type'            => 'yes_no_button',
-					'option_category' => 'configuration',
-					'options'         => array(
+                    'label'           => esc_html__( 'Column %s Place Gradient Above Background Image', 'et_builder' ),
+                    'type'            => 'yes_no_button',
+                    'option_category' => 'configuration',
+                    'options'         => array(
 						'off' => esc_html__( 'No', 'et_builder' ),
 						'on'  => esc_html__( 'Yes', 'et_builder' ),
 
-					'default'         => intval( ET_Global_Settings::get_value( 'all_background_gradient_overlays_image' ) ) ),
-					'description'     => '',
-					'depends_show_if' => 'on',
-					'depends_on'      => array(
+					'default'         => (int)ET_Global_Settings::get_value('all_background_gradient_overlays_image')
+                    ),
+                    'description'     => '',
+                    'depends_show_if' => 'on',
+                    'depends_on'      => array(
 						'use_background_color_gradient_%s',
 					),
-					'tab_slug'        => 'general',
-					'toggle_slug'     => 'background',
-					'sub_toggle'      => 'column_%s',
+                    'tab_slug'        => 'general',
+                    'toggle_slug'     => 'background',
+                    'sub_toggle'      => 'column_%s',
 				),
 
 				'background_video_mp4_%s' => array(

@@ -343,7 +343,7 @@ class ET_Builder_Module_Search extends ET_Builder_Module {
 			$button_top    = $custom_margin[0];
 			$button_bottom = $custom_margin[2];
 			$custom_margin_left_unit = et_pb_get_value_unit( $custom_margin[3] );
-			$button_right  = ( 0 - floatval( $custom_margin[3] ) ) . $custom_margin_left_unit;
+			$button_right  = (0 - (float)$custom_margin[3]) . $custom_margin_left_unit;
 
 			$custom_margin_units = array(
 				et_pb_get_value_unit( $custom_margin[0] ),

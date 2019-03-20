@@ -2093,7 +2093,7 @@ class ET_Support_Center {
 								}
 							}
 
-							$support_user_active_state = ( intval( $is_et_support_user_active ) > 0 ) ? ' et_pb_on_state' : ' et_pb_off_state';
+							$support_user_active_state = ($is_et_support_user_active > 0 ) ? ' et_pb_on_state' : ' et_pb_off_state';
 
 							$expiry = '';
 							if ( ! empty( $this->support_user_options['date_created'] ) ) {
@@ -2126,8 +2126,8 @@ class ET_Support_Center {
 							);
 
 							// Toggle Support User role elevation (only visible if Support User is active)
-							$extra_css                   = ( intval( $is_et_support_user_active ) > 0 ) ? 'style="display:block;"' : '';
-							$support_user_elevated_state = ( intval( $is_et_support_user_active ) > 1 ) ? ' et_pb_on_state' : ' et_pb_off_state';
+							$extra_css                   = ((int)$is_et_support_user_active > 0 ) ? 'style="display:block;"' : '';
+							$support_user_elevated_state = ((int)$is_et_support_user_active > 1 ) ? ' et_pb_on_state' : ' et_pb_off_state';
 
 							$card_content .= sprintf( '<div class="et-support-user-elevated" %5$s><h4>%1$s</h4>'
 													  . '<div class="et_support_user_elevated_toggle">'
@@ -2151,7 +2151,7 @@ class ET_Support_Center {
 						// Add a "Copy Support Token" CTA if Remote Access is active
 						$site_id           = get_option( 'et_support_site_id' );
 						$support_token_cta = '';
-						if ( intval( $is_et_support_user_active ) > 0 && ! empty( $site_id ) && is_string( $site_id ) ) {
+						if ((int)$is_et_support_user_active > 0 && ! empty( $site_id ) && is_string( $site_id ) ) {
 							$account_settings  = get_option( $this->support_user_options_name );
 							$support_token_cta = '<a class="copy_support_token" data-token="'
 												 . esc_attr( $account_settings['token'] . '|' . $site_id )

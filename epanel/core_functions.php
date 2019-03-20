@@ -782,7 +782,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 								if ( isset( $value['validation_type'] ) ) {
 									// saves the value as integer
 									if ( 'number' === $value['validation_type'] ) {
-										$et_option_new_value = intval( stripslashes( $_POST[$value['id']] ) );
+										$et_option_new_value = (int)stripslashes($_POST[$value['id']]);
 									}
 
 									// makes sure the option is a url
@@ -814,7 +814,7 @@ if ( ! function_exists( 'epanel_save_data' ) ) {
 
 								// select boxes that list pages / categories should save page/category ID ( as integer )
 								if ( isset( $value['et_array_for'] ) && in_array( $value['et_array_for'], array( 'pages', 'categories' ) ) ) {
-									$et_option_new_value = intval( stripslashes( $_POST[$value['id']] ) );
+									$et_option_new_value = (int)stripslashes($_POST[$value['id']]);
 								} else { // html is not allowed in select boxes
 									$et_option_new_value = sanitize_text_field( stripslashes( $_POST[$value['id']] ) );
 								}

@@ -348,7 +348,7 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 		$conditional_logic_rules    = $this->props['conditional_logic_rules'];
 		$allowed_symbols            = $this->props['allowed_symbols'];
 		$render_count               = $this->render_count();
-		$current_module_num         = null === $et_pb_contact_form_num ? 0 : intval( $et_pb_contact_form_num ) + 1;
+		$current_module_num         = null === $et_pb_contact_form_num ? 0 : (int)$et_pb_contact_form_num + 1;
 
 		// set a field ID.
 		if ( '' === $field_id ) {
@@ -439,8 +439,8 @@ class ET_Builder_Module_Contact_Form_Item extends ET_Builder_Module {
 
 		$pattern         = '';
 		$title           = '';
-		$min_length      = intval( $min_length );
-		$max_length      = intval( $max_length );
+		$min_length      = (int)$min_length;
+		$max_length      = (int)$max_length;
 		$max_length_attr = '';
 		$symbols_pattern = '.';
 		$length_pattern  = '*';

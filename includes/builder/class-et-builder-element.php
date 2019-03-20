@@ -2188,7 +2188,7 @@ class ET_Builder_Element {
 			$function_name_processed = 'et_pb_column_inner';
 		}
 
-		$post_id = isset( $post->ID ) ? $post->ID : intval( self::$_->array_get( $_POST, 'et_post_id' ) );
+		$post_id = isset( $post->ID ) ? $post->ID : (int)self::$_->array_get($_POST, 'et_post_id');
 		$post_type = isset( $post->post_type ) ? $post->post_type : sanitize_text_field( self::$_->array_get( $_POST, 'et_post_type' ) );
 		$layout_type = isset( $post_type, $post_id ) && 'et_pb_layout' === $post_type ? et_fb_get_layout_type( $post_id ) : '';
 
@@ -2642,7 +2642,7 @@ class ET_Builder_Element {
 				'module' => array(
 					'label'       => esc_html__( 'Module', 'custom_module' ),
 					'line_height' => array(
-						'default' => floatval( et_get_option( 'body_font_height', '1.7' ) ) . 'em',
+                        'default' => (float)et_get_option('body_font_height', '1.7') . 'em',
 					),
 					'font_size'   => array(
 						'default' => absint( et_get_option( 'body_font_size', '14' ) ) . 'px',
@@ -2777,7 +2777,7 @@ class ET_Builder_Element {
 
 				// add reference to the obsolete color option if needed
 				if ( self::$_->array_get( $option_settings, 'text_color.old_option_ref' ) ) {
-					$additional_options["{$option_name}_text_color"]['attributes'] = array( 'data-old-option-ref' => "{$option_settings['text_color']['old_option_ref']}" );
+					$additional_options["{$option_name}_text_color"]['attributes'] = array( 'data-old-option-ref' => (string)$option_settings['text_color']['old_option_ref']);
 				}
 
 				// set default value if defined
@@ -2862,7 +2862,7 @@ class ET_Builder_Element {
 
 				// add reference to the obsolete color option if needed
 				if (self::$_->array_get($option_settings, 'text_color.old_option_ref')) {
-					$additional_options["{$option_name}_text_color"]['attributes'] = array( 'data-old-option-ref' => "{$option_settings['text_color']['old_option_ref']}" );
+					$additional_options["{$option_name}_text_color"]['attributes'] = array( 'data-old-option-ref' => (string)$option_settings['text_color']['old_option_ref']);
 				}
 
 				// set default value if defined
@@ -12158,8 +12158,8 @@ class ET_Builder_Element {
 			</video>',
 			( '' !== $args["{$base_name}_video_mp4"] ? sprintf( '<source type="video/mp4" src="%s" />', esc_url( $args["{$base_name}_video_mp4"] ) ) : '' ),
 			( '' !== $args["{$base_name}_video_webm"] ? sprintf( '<source type="video/webm" src="%s" />', esc_url( $args["{$base_name}_video_webm"] ) ) : '' ),
-			( '' !== $args["{$base_name}_video_width"] ? sprintf( ' width="%s"', esc_attr( intval( $args["{$base_name}_video_width"] ) ) ) : '' ),
-			( '' !== $args["{$base_name}_video_height"] ? sprintf( ' height="%s"', esc_attr( intval( $args["{$base_name}_video_height"] ) ) ) : '' )
+			( '' !== $args["{$base_name}_video_width"] ? sprintf( ' width="%s"', esc_attr((int)$args["{$base_name}_video_width"]) ) : '' ),
+			( '' !== $args["{$base_name}_video_height"] ? sprintf( ' height="%s"', esc_attr((int)$args["{$base_name}_video_height"]) ) : '' )
 		) );
 	}
 
@@ -12800,7 +12800,7 @@ class ET_Builder_Element {
 		$classname = is_array( $to_add ) ? $to_add : array( $to_add );
 
 		if ( is_numeric( $position ) ) {
-			array_splice($this->classname, intval( $position ), 0, $classname );
+			array_splice($this->classname, (int)$position, 0, $classname );
 		} else {
 			$this->classname = array_merge( $this->classname, $classname );
 		}
@@ -13713,9 +13713,9 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 			esc_attr( ET_Global_Settings::get_value( 'all_background_gradient_direction' ) ),
 			esc_attr( ET_Global_Settings::get_value( 'all_background_gradient_direction_radial' ) ), // #30
 			esc_attr( ET_Global_Settings::get_value( 'all_background_gradient_start_position' ) ),
-			esc_attr( intval( ET_Global_Settings::get_value( 'all_background_gradient_start_position' ) ) ),
+			esc_attr((int)ET_Global_Settings::get_value('all_background_gradient_start_position')),
 			esc_attr( ET_Global_Settings::get_value( 'all_background_gradient_end_position' ) ),
-			esc_attr( intval( ET_Global_Settings::get_value( 'all_background_gradient_end_position' ) ) ),
+			esc_attr((int)ET_Global_Settings::get_value('all_background_gradient_end_position')),
 			esc_html__( 'Place Gradient Above Background Image', 'et_builder' ) // #35
 		);
 

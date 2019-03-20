@@ -141,10 +141,10 @@ class ET_Builder_Plugin_Compat_Advanced_Custom_Fields extends ET_Builder_Plugin_
 				$format = isset( $field['return_format'] ) ? $field['return_format'] : 'url';
 				switch ( $format ) {
 					case 'array':
-						$value = esc_url( wp_get_attachment_url( intval( $value['id'] ) ) );
+						$value = esc_url( wp_get_attachment_url((int)$value['id']) );
 						break;
 					case 'id':
-						$value = esc_url( wp_get_attachment_url( intval( $value ) ) );
+						$value = esc_url( wp_get_attachment_url((int)$value) );
 						break;
 				}
 				break;

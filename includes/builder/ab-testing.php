@@ -298,7 +298,7 @@ function et_pb_ab_builder_data() {
 
 	$_post = wp_parse_args( $_POST, $defaults );
 
-	$_post['et_pb_ab_test_id'] = ! empty( $_post['et_pb_ab_test_id'] ) ? intval( $_post['et_pb_ab_test_id'] ) : '';
+	$_post['et_pb_ab_test_id'] = ! empty( $_post['et_pb_ab_test_id'] ) ? (int)$_post['et_pb_ab_test_id'] : '';
 
 	// Verify user permission
 	if ( empty( $_post['et_pb_ab_test_id'] ) || ! current_user_can( 'edit_post', $_post['et_pb_ab_test_id'] ) || ! et_pb_is_allowed( 'ab_testing' ) ) {
@@ -309,7 +309,7 @@ function et_pb_ab_builder_data() {
 	$duration = in_array( $_post['et_pb_ab_duration'], et_pb_ab_get_stats_data_duration() ) ? $_post['et_pb_ab_duration'] : $defaults['et_pb_ab_duration'];
 
 	// Get data
-	$output = et_pb_ab_get_stats_data( intval( $_post['et_pb_ab_test_id'] ), $duration );
+	$output = et_pb_ab_get_stats_data( (int)$_post['et_pb_ab_test_id'], $duration );
 
 	// Print output
 	die( et_core_esc_previously( wp_json_encode( $output ) ) );
@@ -453,7 +453,7 @@ function et_pb_ab_get_subjects_ranks( $post_id, $ranking_basis = 'engagements', 
 function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $force_update = false, $is_cron_task = false ) {
 	global $wpdb;
 
-	$post_id      = intval( $post_id );
+	$post_id      = (int)$post_id;
 	$goal_slug    = et_pb_ab_get_goal_module( $post_id );
 	$rank_metrics = in_array( $goal_slug, et_pb_ab_get_modules_have_conversions() ) ? 'conversions' : 'clicks';
 
@@ -676,7 +676,8 @@ function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $
 				$denominator_event = $analysis_formulas[ $analysis_type  ]['denominator'];
 				$numerator         = isset( $stats['subjects_totals'][ $subject_log_id ][ $numerator_event ] ) ? $stats['subjects_totals'][ $subject_log_id ][ $numerator_event ] : 0;
 				$denominator       = isset( $stats['subjects_totals'][ $subject_log_id ][ $denominator_event ] ) ? $stats['subjects_totals'][ $subject_log_id ][ $denominator_event ] : 0;
-				$analysis          = $denominator === 0 ? 0 : floatval( number_format( ( $numerator / $denominator ) * 100, 2 ) );
+				$analysis          = $denominator === 0 ? 0 : (float)number_format(($numerator / $denominator) * 100,
+                    2);
 
 				if ( $analysis_formulas[ $analysis_type ]['inverse'] && 0 !== $numerator && 0 !== $denominator_event ) {
 					$analysis = 100 - $analysis;
@@ -692,9 +693,10 @@ function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $
 				foreach ( $analysis_types as $analysis_type ) {
 					$numerator_event   = $analysis_formulas[ $analysis_type  ]['numerator'];
 					$denominator_event = $analysis_formulas[ $analysis_type  ]['denominator'];
-					$numerator         = isset( $stats['subjects_logs'][ $subject_log_id ][ $numerator_event ][ $log_date ] ) ? intval( $stats['subjects_logs'][ $subject_log_id ][ $numerator_event ][ $log_date ] ) : 0;
-					$denominator       = isset( $stats['subjects_logs'][ $subject_log_id ][ $denominator_event ][ $log_date ] ) ? intval( $stats['subjects_logs'][ $subject_log_id ][ $denominator_event ][ $log_date ] ) : 0;
-					$analysis          = $denominator === 0 ? 0 : floatval( number_format( ( $numerator / $denominator ) * 100, 2 ) );
+					$numerator         = isset( $stats['subjects_logs'][ $subject_log_id ][ $numerator_event ][ $log_date ] ) ? (int)$stats['subjects_logs'][$subject_log_id][$numerator_event][$log_date] : 0;
+					$denominator       = isset( $stats['subjects_logs'][ $subject_log_id ][ $denominator_event ][ $log_date ] ) ? (int)$stats['subjects_logs'][$subject_log_id][$denominator_event][$log_date] : 0;
+					$analysis          = $denominator === 0 ? 0 : (float)number_format(($numerator / $denominator) * 100,
+                        2);
 
 					if ( $analysis_formulas[ $analysis_type ]['inverse'] ) {
 						$analysis = 100 - $analysis;
@@ -713,7 +715,8 @@ function et_pb_ab_get_stats_data( $post_id, $duration = 'week', $time = false, $
 		foreach ( $analysis_types as $analysis_type ) {
 			$analysis_data = wp_list_pluck( $stats['subjects_totals'], $analysis_type );
 			$analysis_count = count( $analysis_data );
-			$stats['events_totals'][ $analysis_type ] = floatval( number_format( array_sum( $analysis_data ) / $analysis_count, 2 ) );
+			$stats['events_totals'][ $analysis_type ] = (float)number_format(array_sum($analysis_data) / $analysis_count,
+                2);
 		}
 
 		// Rank by engagement
@@ -1203,7 +1206,7 @@ function et_pb_ab_clear_cache() {
 		die( -1 );
 	}
 
-	$test_id = ! empty( $_POST['et_pb_test_id'] ) ? intval( $_POST['et_pb_test_id'] ) : '';
+	$test_id = ! empty( $_POST['et_pb_test_id'] ) ? (int)$_POST['et_pb_test_id'] : '';
 
 	// Verify user permission
 	if ( empty( $test_id ) || ! current_user_can( 'edit_post', $test_id ) || ! et_pb_is_allowed( 'ab_testing' ) ) {
@@ -1218,7 +1221,7 @@ function et_pb_ab_clear_cache() {
 		$duration = in_array( $_POST['et_pb_ab_duration'], et_pb_ab_get_stats_data_duration() ) ? $_POST['et_pb_ab_duration'] : 'day';
 
 		// Get data
-		$output = et_pb_ab_get_stats_data( intval( $_POST['et_pb_test_id'] ), $duration );
+		$output = et_pb_ab_get_stats_data( (int)$_POST['et_pb_test_id'], $duration );
 
 		// Print output
 		die( wp_json_encode( $output ) );
@@ -1256,7 +1259,7 @@ function et_pb_ab_clear_stats() {
 		die( -1 );
 	}
 
-	$test_id = ! empty( $_POST['et_pb_test_id'] ) ? intval( $_POST['et_pb_test_id'] ) : '';
+	$test_id = ! empty( $_POST['et_pb_test_id'] ) ? (int)$_POST['et_pb_test_id'] : '';
 
 	// Verify user permission
 	if ( empty( $test_id ) || ! current_user_can( 'edit_post', $test_id ) || ! et_pb_is_allowed( 'ab_testing' ) ) {
@@ -1280,7 +1283,7 @@ add_action( 'wp_ajax_et_pb_ab_clear_stats', 'et_pb_ab_clear_stats' );
 function et_pb_ab_remove_stats( $test_id ) {
 	global $wpdb;
 
-	$test_id = intval( $test_id );
+	$test_id = (int)$test_id;
 
 	et_pb_ab_clear_cache_handler( $test_id );
 

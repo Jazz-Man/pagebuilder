@@ -93,7 +93,7 @@ class ET_Builder_Module_Text extends ET_Builder_Module {
 						'color' => "{$this->main_css_element}.et_pb_text",
 					),
 					'line_height' => array(
-						'default' => floatval( et_get_option( 'body_font_height', '1.7' ) ) . 'em',
+                        'default' => (float)et_get_option('body_font_height', '1.7') . 'em',
 					),
 					'font_size' => array(
 						'default' => absint( et_get_option( 'body_font_size', '14' ) ) . 'px',

@@ -500,7 +500,7 @@ class ET_Builder_Module_Gallery extends ET_Builder_Module {
 		$background_class          = "et_pb_bg_layout_{$background_layout}";
 		$video_background          = $this->video_background();
 		$parallax_image_background = $this->get_parallax_image_background();
-		$posts_number              = 0 === intval( $posts_number ) ? 4 : intval( $posts_number );
+		$posts_number              = 0 === (int)$posts_number ? 4 : (int)$posts_number;
 
 		// Module classnames
 		$this->add_classname( array(

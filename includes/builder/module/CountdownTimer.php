@@ -159,8 +159,8 @@ class ET_Builder_Module_Countdown_Timer extends ET_Builder_Module {
 		$end_date                        = gmdate( 'M d, Y H:i:s', strtotime( $date_time ) );
 		$gmt_offset                      = get_option( 'gmt_offset' );
 		$gmt_divider                     = '-' === substr( $gmt_offset, 0, 1 ) ? '-' : '+';
-		$gmt_offset_hour                 = str_pad( abs( intval( $gmt_offset ) ), 2, "0", STR_PAD_LEFT );
-		$gmt_offset_minute               = str_pad( ( ( abs( $gmt_offset ) * 100 ) % 100 ) * ( 60 / 100 ), 2, "0", STR_PAD_LEFT );
+		$gmt_offset_hour                 = str_pad( abs((int)$gmt_offset), 2, '0', STR_PAD_LEFT );
+		$gmt_offset_minute               = str_pad( ( ( abs( $gmt_offset ) * 100 ) % 100 ) * ( 60 / 100 ), 2, '0', STR_PAD_LEFT );
 		$gmt                             = "GMT{$gmt_divider}{$gmt_offset_hour}{$gmt_offset_minute}";
 
 		if ( '' !== $title ) {

@@ -350,7 +350,7 @@ class ET_Builder_Module_Portfolio extends ET_Builder_Module_Type_PostBased {
 
 		// Conditionally get paged data
 		if ( defined( 'DOING_AJAX' ) && isset( $current_page[ 'paged'] ) ) {
-			$et_paged = intval( $current_page[ 'paged' ] );
+			$et_paged = (int)$current_page['paged'];
 		} else {
 			$et_paged = $is_front_page ? get_query_var( 'page' ) : get_query_var( 'paged' );
 		}

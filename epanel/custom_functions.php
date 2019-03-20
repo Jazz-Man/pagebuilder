@@ -940,11 +940,11 @@ if ( ! function_exists( 'get_pageId' ) ) {
 	function get_pageId( $page_name )
 	{
 		if ( is_numeric( $page_name ) ) {
-			$page_id = intval( $page_name );
+			$page_id = (int)$page_name;
 		} else {
 			$page_name = html_entity_decode( $page_name, ENT_QUOTES );
 			$page = get_page_by_title( $page_name );
-			$page_id = intval( $page->ID );
+			$page_id = (int)$page->ID;
 		}
 
 		// wpml compatibility
@@ -992,7 +992,7 @@ if ( ! function_exists( 'elegant_is_blog_posts_page' ) ) {
 		static $et_is_blog_posts_cached = null;
 
 		if ( null === $et_is_blog_posts_cached ) {
-			$et_is_blog_posts_cached = (bool) is_home() && 0 !== intval( get_option( 'page_for_posts', '0' ) );
+			$et_is_blog_posts_cached = (bool) is_home() && 0 !== (int)get_option('page_for_posts', '0');
 		}
 
 		return $et_is_blog_posts_cached;
@@ -1058,7 +1058,7 @@ if ( ! function_exists( 'elegant_titles_filter' ) ) {
 		#if the title is being displayed on single posts/pages
 		if ( ( ( is_single() || is_page() ) && ! is_front_page() ) || elegant_is_blog_posts_page() ) {
 			global $wp_query;
-			$postid = elegant_is_blog_posts_page() ? intval( get_option( 'page_for_posts' ) ) : $wp_query->post->ID;
+			$postid = elegant_is_blog_posts_page() ? (int)get_option('page_for_posts') : $wp_query->post->ID;
 			$key = et_get_option( $shortname . '_seo_single_field_title' );
 			$exists3 = get_post_meta( $postid, '' . $key . '', true );
 			if ( 'on' === et_get_option( $shortname . '_seo_single_title' ) && '' !== $exists3 ) {
@@ -1134,7 +1134,7 @@ if ( ! function_exists( 'elegant_description' ) ) {
 			global $wp_query;
 
 			if ( isset( $wp_query->post->ID ) || elegant_is_blog_posts_page() ) {
-				$postid = elegant_is_blog_posts_page() ? intval( get_option( 'page_for_posts' ) ) : $wp_query->post->ID;
+				$postid = elegant_is_blog_posts_page() ? (int)get_option('page_for_posts') : $wp_query->post->ID;
 			}
 
 			$key2 = et_get_option( $shortname.'_seo_single_field_description' );
@@ -1209,7 +1209,7 @@ if ( ! function_exists( 'elegant_keywords' ) ) {
 		if ( et_get_option( $shortname.'_seo_single_keywords' ) === 'on' ) {
 			global $wp_query;
 			if ( isset( $wp_query->post->ID ) || elegant_is_blog_posts_page() ) {
-				$postid = elegant_is_blog_posts_page() ? intval( get_option( 'page_for_posts' ) ) : $wp_query->post->ID;
+				$postid = elegant_is_blog_posts_page() ? (int)get_option('page_for_posts') : $wp_query->post->ID;
 			}
 
 			$key3 = et_get_option( $shortname.'_seo_single_field_keywords' );
@@ -1244,7 +1244,7 @@ if ( ! function_exists( 'elegant_canonical' ) ) {
 		if ( et_get_option( $shortname.'_seo_single_canonical' ) === 'on' ) {
 			global $wp_query;
 			if ( isset( $wp_query->post->ID ) || elegant_is_blog_posts_page() ) {
-				$postid = elegant_is_blog_posts_page() ? intval( get_option( 'page_for_posts' ) ) : $wp_query->post->ID;
+				$postid = elegant_is_blog_posts_page() ? (int)get_option('page_for_posts') : $wp_query->post->ID;
 			}
 
 			if ( ( is_single() || is_page() || elegant_is_blog_posts_page() ) && ! is_front_page() ) {

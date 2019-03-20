@@ -350,7 +350,7 @@ function exclude_premade_layouts_library_count( $views ) {
 			esc_url( $url ),
 			esc_attr( $class ),
 			esc_html__( 'Mine', 'et_builder' ),
-			esc_html( intval( $mine_posts_count ) )
+			esc_html((int)$mine_posts_count)
 		);
 	}
 
@@ -1017,23 +1017,23 @@ function et_fb_current_page_params() {
 	$thumbnail_size = isset( $post->ID ) && 'post' === get_post_type( $post->ID ) && 'et_full_width_page' === get_post_meta( $post->ID, '_et_pb_page_layout', true ) ? 'et-pb-post-main-image-fullwidth-large' : 'large';
 
 	$current_page = array(
-		'url'                      => esc_url( $current_url ),
-		'permalink'                => esc_url( remove_query_arg( 'et_fb', $current_url ) ),
-		'backendBuilderUrl'        => esc_url( sprintf( admin_url('/post.php?post=%d&action=edit'), get_the_ID() ) ),
-		'id'                       => isset( $post->ID ) ? $post->ID : false,
-		'title'                    => esc_html( get_the_title() ),
-		'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail_size ) ) : '',
-		'thumbnailId'              => isset( $post->ID ) ? get_post_thumbnail_id( $post->ID ) : '',
-		'authorName'               => esc_html( get_the_author() ),
-		'authorUrl'                => isset( $authordata->ID ) && isset( $authordata->user_nicename ) ? esc_html( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ) : false,
-		'authorUrlTitle'           => sprintf( esc_html__( 'Posts by %s', 'et_builder' ), get_the_author() ),
-		'date'                     => intval( get_the_time('U') ),
-		'categories'               => isset( $post->ID ) ? et_pb_get_post_categories( $post->ID ) : array(),
-		'commentsPopup'            => esc_html( $comment_count_text ),
-		'commentsCount'            => esc_html( $comment_count ),
-		'paged'                    => is_front_page() ? $et_paged : $paged,
-		'post_modified'            => isset( $post->ID ) ? esc_attr( $post->post_modified ) : '',
-		'lang'                     => get_locale(),
+        'url'                      => esc_url( $current_url ),
+        'permalink'                => esc_url( remove_query_arg( 'et_fb', $current_url ) ),
+        'backendBuilderUrl'        => esc_url( sprintf( admin_url('/post.php?post=%d&action=edit'), get_the_ID() ) ),
+        'id'                       => isset( $post->ID ) ? $post->ID : false,
+        'title'                    => esc_html( get_the_title() ),
+        'thumbnailUrl'             => isset( $post->ID ) ? esc_url( get_the_post_thumbnail_url( $post->ID, $thumbnail_size ) ) : '',
+        'thumbnailId'              => isset( $post->ID ) ? get_post_thumbnail_id( $post->ID ) : '',
+        'authorName'               => esc_html( get_the_author() ),
+        'authorUrl'                => isset( $authordata->ID ) && isset( $authordata->user_nicename ) ? esc_html( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ) : false,
+        'authorUrlTitle'           => sprintf( esc_html__( 'Posts by %s', 'et_builder' ), get_the_author() ),
+        'date'                     => (int)get_the_time('U'),
+        'categories'               => isset( $post->ID ) ? et_pb_get_post_categories( $post->ID ) : array(),
+        'commentsPopup'            => esc_html( $comment_count_text ),
+        'commentsCount'            => esc_html( $comment_count ),
+        'paged'                    => is_front_page() ? $et_paged : $paged,
+        'post_modified'            => isset( $post->ID ) ? esc_attr( $post->post_modified ) : '',
+        'lang'                     => get_locale(),
 	);
 
 	return apply_filters( 'et_fb_current_page_params', $current_page );
@@ -1853,7 +1853,7 @@ function et_builder_get_acceptable_css_string_values( $property = 'all' ) {
 if ( ! function_exists( 'et_builder_process_range_value' ) ) :
 function et_builder_process_range_value( $range, $option_type = '' ) {
 	$range = trim( $range );
-	$range_digit = floatval( $range );
+	$range_digit = (float)$range;
 	$range_string = str_replace( $range_digit, '', (string) $range );
 
 	if ( '' !== $option_type && in_array( $range, et_builder_get_acceptable_css_string_values( $option_type ) ) ) {
@@ -3045,7 +3045,7 @@ function et_pb_admin_scripts_styles( $hook ) {
 
 	$post_types = et_builder_get_builder_post_types();
 	$on_enabled_post_type = isset( $typenow ) && in_array( $typenow, $post_types );
-	$on_enabled_post = isset( $pagenow ) && 'post.php' === $pagenow && isset( $_GET['post'] ) && et_builder_enabled_for_post( intval( $_GET['post'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+	$on_enabled_post = isset( $pagenow ) && 'post.php' === $pagenow && isset( $_GET['post'] ) && et_builder_enabled_for_post((int)$_GET['post']); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 
 	if ( $on_enabled_post_type || $on_enabled_post ) {
 		wp_enqueue_style( 'et_bb_bfb_common', ET_BUILDER_URI . '/styles/bb_bfb_common.css', array(), ET_BUILDER_VERSION );
@@ -7334,7 +7334,7 @@ function et_get_gallery_attachments( $attr ) {
 		'link'       => '',
 	), $attr, 'gallery' );
 
-	$id = intval( $atts['id'] );
+	$id = (int)$atts['id'];
 	if ( 'RAND' === $atts['order'] ) {
 		$atts['orderby'] = 'none';
 	}
@@ -8287,7 +8287,7 @@ function et_pb_admin_excluded_shortcodes() {
 function et_pb_get_gmt_offset_string() {
 	$gmt_offset        = get_option( 'gmt_offset' );
 	$gmt_divider       = '-' === substr( $gmt_offset, 0, 1 ) ? '-' : '+';
-	$gmt_offset_hour   = str_pad( abs( intval( $gmt_offset ) ), 2, "0", STR_PAD_LEFT );
+	$gmt_offset_hour   = str_pad( abs((int)$gmt_offset), 2, "0", STR_PAD_LEFT );
 	$gmt_offset_minute = str_pad( ( ( abs( $gmt_offset ) * 100 ) % 100 ) * ( 60 / 100 ), 2, "0", STR_PAD_LEFT );
 	$gmt_offset_string = "GMT{$gmt_divider}{$gmt_offset_hour}{$gmt_offset_minute}";
 
@@ -9711,7 +9711,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	}
 
 	if ( in_array( substr( $value, -3, 3 ), $valid_three_chars_units ) ) {
-		$unit_value = floatval( $value ) . substr( $value, -3, 3 );
+		$unit_value = (float)$value . substr( $value, -3, 3 );
 
 		// Re-add !important tag
 		if ( $has_important && ! $auto_important ) {
@@ -9722,7 +9722,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	}
 
 	if ( in_array( substr( $value, -2, 2 ), $valid_two_chars_units ) ) {
-		$unit_value = floatval( $value ) . substr( $value, -2, 2 );
+		$unit_value = (float)$value . substr( $value, -2, 2 );
 
 		// Re-add !important tag
 		if ( $has_important && ! $auto_important ) {
@@ -9733,7 +9733,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 	}
 
 	if ( in_array( substr( $value, -1, 1 ), $valid_one_char_units ) ) {
-		$unit_value = floatval( $value ) . substr( $value, -1, 1 );
+		$unit_value = (float)$value . substr( $value, -1, 1 );
 
 		// Re-add !important tag
 		if ( $has_important && ! $auto_important ) {
@@ -9743,7 +9743,7 @@ function et_sanitize_input_unit( $value = '', $auto_important = false, $default_
 		return $unit_value;
 	}
 
-	$result = floatval( $value );
+	$result = (float)$value;
 
 	if ( 'no_default_unit' === $default_unit ) {
 		return $result;

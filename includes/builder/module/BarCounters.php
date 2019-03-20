@@ -76,9 +76,9 @@ class ET_Builder_Module_Bar_Counters extends ET_Builder_Module {
 			),
 			'margin_padding' => array(
 				'css'           => array(
-					'margin'    => "{$this->main_css_element}",
-					'padding'   => "{$this->main_css_element} .et_pb_counter_amount",
-					'important' => array( 'custom_margin' ),
+                    'margin'    => (string)$this->main_css_element,
+                    'padding'   => "{$this->main_css_element} .et_pb_counter_amount",
+                    'important' => array( 'custom_margin' ),
 				),
 			),
 			'text'                  => array(

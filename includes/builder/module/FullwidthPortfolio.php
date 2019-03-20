@@ -87,8 +87,8 @@ class ET_Builder_Module_Fullwidth_Portfolio extends ET_Builder_Module_Type_PostB
 				'default' => array(
 					'css' => array(
 						'main' => array(
-							'border_radii'  => "{$this->main_css_element}",
-							'border_styles' => "{$this->main_css_element}",
+                            'border_radii'  => (string)$this->main_css_element,
+                            'border_styles' => (string)$this->main_css_element,
 						)
 					),
 				),

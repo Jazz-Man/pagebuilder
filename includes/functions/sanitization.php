@@ -5,7 +5,7 @@
  * @return float
  */
 function et_sanitize_float_number( $number ) {
-	return floatval( $number );
+	return (float)$number;
 }
 
 /**
@@ -14,7 +14,7 @@ function et_sanitize_float_number( $number ) {
  * @return int
  */
 function et_sanitize_int_number( $number ) {
-	return intval( $number );
+	return (int)$number;
 }
 
 /**

@@ -53,7 +53,7 @@ class ET_Core_API_Email_MailerLite extends ET_Core_API_Email_Provider {
 
 	protected function _maybe_set_custom_headers() {
 		if ( empty( $this->custom_headers ) && isset( $this->data['api_key'] ) ) {
-			$this->custom_headers = array( 'X-MailerLite-ApiKey' => "{$this->data['api_key']}" );
+			$this->custom_headers = array( 'X-MailerLite-ApiKey' => (string)$this->data['api_key']);
 		}
 	}
 

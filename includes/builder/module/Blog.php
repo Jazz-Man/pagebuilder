@@ -597,12 +597,12 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 		$overlay_class = 'on' === $args['use_overlay'] ? ' et_pb_has_overlay' : '';
 
 		$query_args = array(
-			'posts_per_page' => intval( $args['posts_number'] ),
-			'post_status'    => 'publish',
+            'posts_per_page' => (int)$args['posts_number'],
+            'post_status'    => 'publish',
 		);
 
 		if ( defined( 'DOING_AJAX' ) && isset( $current_page['paged'] ) ) {
-			$paged = intval( $current_page['paged'] ); //phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
+			$paged = (int)$current_page['paged']; //phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 		} else {
 			$paged = $is_front_page ? get_query_var( 'page' ) : get_query_var( 'paged' ); //phpcs:ignore WordPress.Variables.GlobalVariables.OverrideProhibited
 		}
@@ -626,9 +626,9 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			 * @see: https://codex.wordpress.org/Making_Custom_Queries_using_Offset_and_Pagination
 			 */
 			if ( $paged > 1 ) {
-				$query_args['offset'] = ( ( $paged - 1 ) * intval( $args['posts_number'] ) ) + intval( $args['offset_number'] );
+				$query_args['offset'] = (( $paged - 1 ) * (int)$args['posts_number']) + (int)$args['offset_number'];
 			} else {
-				$query_args['offset'] = intval( $args['offset_number'] );
+				$query_args['offset'] = (int)$args['offset_number'];
 			}
 		}
 
@@ -1020,9 +1020,9 @@ class ET_Builder_Module_Blog extends ET_Builder_Module_Type_PostBased {
 			 * @see: https://codex.wordpress.org/Making_Custom_Queries_using_Offset_and_Pagination
 			 */
 			if ( $paged > 1 ) {
-				$args['offset'] = ( ( $et_paged - 1 ) * intval( $posts_number ) ) + intval( $offset_number );
+				$args['offset'] = (( $et_paged - 1 ) * (int)$posts_number) + (int)$offset_number;
 			} else {
-				$args['offset'] = intval( $offset_number );
+				$args['offset'] = (int)$offset_number;
 			}
 		}
 

@@ -235,7 +235,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			$post_id = sanitize_text_field( $_POST['et_post_id'] );
 		} else if ( isset( $current_page['id'] ) ) {
 			// Overwrite global $post value in this scope
-			$post_id = intval( $current_page['id'] );
+			$post_id = (int)$current_page['id'];
 		} else if ( is_object( $post ) && isset( $post->ID ) ) {
 			$post_id = $post->ID;
 		} else {
@@ -268,7 +268,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			$next_processed_title = str_replace( '%link', $next_permalink, $next_processed_title );
 
 			$next->title = $next_processed_title;
-			$next->id = isset($next_post->ID) ? intval( $next_post->ID ) : '';
+			$next->id = isset($next_post->ID) ? (int)$next_post->ID : '';
 			$next->permalink = $next_permalink;
 		}
 
@@ -293,7 +293,7 @@ class ET_Builder_Module_Posts_Navigation extends ET_Builder_Module {
 			$prev_processed_title = str_replace( '%link', $prev_permalink, $prev_processed_title );
 
 			$prev->title = $prev_processed_title;
-			$prev->id = isset($prev_post->ID) ? intval( $prev_post->ID ) : '';
+			$prev->id = isset($prev_post->ID) ? (int)$prev_post->ID : '';
 			$prev->permalink = $prev_permalink;
 		}
 

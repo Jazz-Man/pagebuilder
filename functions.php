@@ -6116,11 +6116,11 @@ function et_divi_add_customizer_css() {
 		}
 
 		$body_font_size = absint( et_get_option( 'body_font_size', '14' ) );
-		$body_font_height = floatval( et_get_option( 'body_font_height', '1.7' ) );
+		$body_font_height = (float)et_get_option('body_font_height', '1.7');
 		$body_header_size = absint( et_get_option( 'body_header_size', '30' ) );
 		$body_header_style = et_get_option( 'body_header_style', '', '', true );
-		$body_header_spacing = intval( et_get_option( 'body_header_spacing', '0' ) );
-		$body_header_height = floatval( et_get_option( 'body_header_height', '1' ) );
+		$body_header_spacing = (int)et_get_option('body_header_spacing', '0');
+		$body_header_height = (float)et_get_option('body_header_height', '1');
 		$body_font_color = et_get_option( 'font_color', '#666666' );
 		$body_header_color = et_get_option( 'header_color', '#666666' );
 
@@ -6128,9 +6128,9 @@ function et_divi_add_customizer_css() {
 		$link_color = et_get_option( 'link_color', $accent_color );
 
 		$content_width = absint( et_get_option( 'content_width', '1080' ) );
-		$large_content_width = intval ( $content_width * 1.25 );
+		$large_content_width = (int)($content_width * 1.25);
 		$use_sidebar_width = et_get_option( 'use_sidebar_width', false );
-		$sidebar_width = intval( et_get_option( 'sidebar_width', 21 ) );
+		$sidebar_width = (int)et_get_option('sidebar_width', 21);
 		$section_padding = absint( et_get_option( 'section_padding', '4' ) );
 		$row_padding = absint( et_get_option( 'row_padding', '2' ) );
 
@@ -6157,7 +6157,7 @@ function et_divi_add_customizer_css() {
 
 		$default_primary_nav_font_size = 14;
 		$primary_nav_font_size = absint( et_get_option( 'primary_nav_font_size', $default_primary_nav_font_size ) );
-		$primary_nav_font_spacing = intval( et_get_option( 'primary_nav_font_spacing', '0' ) );
+		$primary_nav_font_spacing = (int)et_get_option('primary_nav_font_spacing', '0');
 		$primary_nav_bg = et_get_option( 'primary_nav_bg', '#ffffff' );
 		$primary_nav_font_style = et_get_option( 'primary_nav_font_style', '', '', true );
 		$primary_nav_dropdown_bg = et_get_option( 'primary_nav_dropdown_bg', $primary_nav_bg );
@@ -6168,7 +6168,7 @@ function et_divi_add_customizer_css() {
 		$mobile_primary_nav_bg = et_get_option( 'mobile_primary_nav_bg', $primary_nav_bg );
 
 		$secondary_nav_font_size = absint( et_get_option( 'secondary_nav_font_size', '12' ) );
-		$secondary_nav_font_spacing = intval( et_get_option( 'secondary_nav_font_spacing', '0' ) );
+		$secondary_nav_font_spacing = (int)et_get_option('secondary_nav_font_spacing', '0');
 		$secondary_nav_font_style = et_get_option( 'secondary_nav_font_style', '', '', true );
 		$secondary_nav_text_color_new = et_get_option( 'secondary_nav_text_color_new', $legacy_secondary_nav_color );
 		$secondary_nav_bg = et_get_option( 'secondary_nav_bg', et_get_option( 'accent_color', '#2ea3f2' ) );
@@ -6189,9 +6189,9 @@ function et_divi_add_customizer_css() {
 		$footer_widget_header_color = et_get_option( 'footer_widget_header_color', $accent_color );
 		$footer_widget_bullet_color = et_get_option( 'footer_widget_bullet_color', $accent_color );
 
-		$widget_header_font_size = intval( et_get_option( 'widget_header_font_size', $body_header_size * .6 ) );
+		$widget_header_font_size = (int)et_get_option('widget_header_font_size', $body_header_size * .6);
 		$widget_body_font_size = absint( et_get_option( 'widget_body_font_size', $body_font_size ) );
-		$widget_body_line_height = floatval( et_get_option( 'widget_body_line_height', '1.7' ) );
+		$widget_body_line_height = (float)et_get_option('widget_body_line_height', '1.7');
 
 		$button_text_size = absint( et_get_option( 'all_buttons_font_size', '20' ) );
 		$button_text_color = et_get_option( 'all_buttons_text_color', '#ffffff' );
@@ -6201,14 +6201,14 @@ function et_divi_add_customizer_css() {
 		$button_border_radius = absint( et_get_option( 'all_buttons_border_radius', '3' ) );
 		$button_text_style = et_get_option( 'all_buttons_font_style', '', '', true );
 		$button_icon = et_get_option( 'all_buttons_selected_icon', '5' );
-		$button_spacing = intval( et_get_option( 'all_buttons_spacing', '0' ) );
+		$button_spacing = (int)et_get_option('all_buttons_spacing', '0');
 		$button_icon_color = et_get_option( 'all_buttons_icon_color', '#ffffff' );
 		$button_text_color_hover = et_get_option( 'all_buttons_text_color_hover', '#ffffff' );
 		$button_bg_color_hover = et_get_option( 'all_buttons_bg_color_hover', 'rgba(255,255,255,0.2)' );
 		$button_border_color_hover = et_get_option( 'all_buttons_border_color_hover', 'rgba(0,0,0,0)' );
 		$button_border_radius_hover = absint( et_get_option( 'all_buttons_border_radius_hover', '3' ) );
-		$button_spacing_hover = intval( et_get_option( 'all_buttons_spacing_hover', '0' ) );
-		$button_icon_size = 1.6 * intval( $button_text_size );
+		$button_spacing_hover = (int)et_get_option('all_buttons_spacing_hover', '0');
+		$button_icon_size = 1.6 * $button_text_size;
 
 		$slide_nav_show_top_bar = et_get_option( 'slide_nav_show_top_bar', true );
 		$slide_nav_bg = et_get_option( 'slide_nav_bg', $accent_color );
@@ -6217,13 +6217,13 @@ function et_divi_add_customizer_css() {
 		$slide_nav_top_color = et_get_option( 'slide_nav_top_color', 'rgba(255,255,255,0.6)' );
 		$slide_nav_search = et_get_option( 'slide_nav_search', 'rgba(255,255,255,0.6)' );
 		$slide_nav_search_bg = et_get_option( 'slide_nav_search_bg', 'rgba(0,0,0,0.2)' );
-		$slide_nav_width = intval( et_get_option( 'slide_nav_width', '320' ) );
+		$slide_nav_width = (int)et_get_option('slide_nav_width', '320');
 		$slide_nav_font_style = et_get_option( 'slide_nav_font_style', '', '', true );
-		$slide_nav_font_size = intval( et_get_option( 'slide_nav_font_size', '14' ) );
-		$slide_nav_top_font_size = intval( et_get_option( 'slide_nav_top_font_size', '14' ) );
+		$slide_nav_font_size = (int)et_get_option('slide_nav_font_size', '14');
+		$slide_nav_top_font_size = (int)et_get_option('slide_nav_top_font_size', '14');
 		$slide_nav_font_spacing = et_get_option( 'slide_nav_font_spacing', '0' );
-		$fullscreen_nav_font_size = intval( et_get_option( 'fullscreen_nav_font_size', '30' ) );
-		$fullscreen_nav_top_font_size = intval( et_get_option( 'fullscreen_nav_top_font_size', '18' ) );
+		$fullscreen_nav_font_size = (int)et_get_option('fullscreen_nav_font_size', '30');
+		$fullscreen_nav_top_font_size = (int)et_get_option('fullscreen_nav_top_font_size', '18');
 
 		// use different selector for the styles applied directly to body tag while in Visual Builder. Otherwise unwanted styles applied to the Builder interface.
 		$body_selector         = empty( $_GET['et_fb'] ) ? 'body' : 'body .et-fb-post-content';
@@ -6253,7 +6253,7 @@ function et_divi_add_customizer_css() {
 			}
 			<?php echo $css( '.et_pb_slide_content', false ); ?>,
 			<?php echo $css( '.et_pb_best_value', false ); ?> {
-				font-size: <?php echo esc_html( intval( $body_font_size * 1.14 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_font_size * 1.14)); ?>px;
 			}
 		<?php } ?>
 		<?php if ( '#666666' !== $body_font_color) { ?>
@@ -6384,7 +6384,7 @@ function et_divi_add_customizer_css() {
 			.et_fixed_nav.et_boxed_layout #page-container #main-header,
 			.et_boxed_layout #page-container .container,
 			<?php echo $css( '.et_boxed_layout', '#page-container .et_pb_row', false ); ?> {
-				max-width: <?php echo esc_html( intval( et_get_option( 'content_width', '1080' ) ) + 160 ); ?>px;
+				max-width: <?php echo esc_html((int)et_get_option('content_width', '1080') + 160 ); ?>px;
 			}
 		<?php } ?>
 		<?php if ( $link_color !== '#2ea3f2' ) { ?>
@@ -6554,7 +6554,7 @@ function et_divi_add_customizer_css() {
 			/* Footer widget bullet fix */
 			if ( 1.7 !==  $widget_body_line_height || 14 !== $widget_body_font_size ) {
 				// line_height (em) * font_size (px) = line height in px
-				$widget_body_line_height_px 		= floatval( $widget_body_line_height ) * intval( $widget_body_font_size );
+				$widget_body_line_height_px 		= $widget_body_line_height * $widget_body_font_size;
 
 				// ( line height in px / 2 ) - half of bullet diameter
 				$footer_widget_bullet_top 			= ( $widget_body_line_height_px / 2 ) - 3;
@@ -6959,7 +6959,7 @@ function et_divi_add_customizer_css() {
 			<?php if ( 2 !== $row_padding ) { ?>
 				<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( $row_padding ); ?>% 0; }
 			<?php } ?>
-			<?php if ( intval( $body_header_size * .6 ) !== $widget_header_font_size ) { ?>
+			<?php if ((int)($body_header_size * .6) !== $widget_header_font_size ) { ?>
 				.footer-widget h4 { font-size: <?php echo esc_html( $widget_header_font_size ); ?>px; }
 			<?php } ?>
 			<?php if ( 66 !== $menu_height ) { ?>
@@ -6994,7 +6994,7 @@ function et_divi_add_customizer_css() {
 				.et_header_style_centered.et_hide_primary_logo #main-header:not(.et-fixed-header) .logo_container, .et_header_style_centered.et_hide_fixed_logo #main-header.et-fixed-header .logo_container { height: <?php echo esc_html( $menu_height * .18 ); ?>px; }
 			<?php } ?>
 			<?php if ( 40 !== $fixed_menu_height ) { ?>
-				.et_header_style_left .et-fixed-header #et-top-navigation, .et_header_style_split .et-fixed-header #et-top-navigation { padding: <?php echo esc_html( intval( round( $fixed_menu_height / 2 ) ) ); ?>px 0 0 0; }
+				.et_header_style_left .et-fixed-header #et-top-navigation, .et_header_style_split .et-fixed-header #et-top-navigation { padding: <?php echo esc_html((int)round($fixed_menu_height / 2)); ?>px 0 0 0; }
 				.et_header_style_left .et-fixed-header #et-top-navigation nav > ul > li > a, .et_header_style_split .et-fixed-header #et-top-navigation nav > ul > li > a  { padding-bottom: <?php echo esc_html( round( $fixed_menu_height / 2 ) ); ?>px; }
 				.et_header_style_centered header#main-header.et-fixed-header .logo_container { height: <?php echo esc_html( $fixed_menu_height ); ?>px; }
 				.et_header_style_split .et-fixed-header .centered-inline-logo-wrap { width: <?php echo esc_html( $fixed_menu_height ); ?>px; margin: -<?php echo esc_html( $fixed_menu_height ); ?>px 0;  }
@@ -7003,8 +7003,8 @@ function et_divi_add_customizer_css() {
 				.et_header_style_slide .et-fixed-header #et-top-navigation, .et_header_style_fullscreen .et-fixed-header #et-top-navigation { padding: <?php echo esc_html( round( ( $fixed_menu_height - 18 ) / 2 ) ); ?>px 0 <?php echo esc_html( round( ( $fixed_menu_height - 18 ) / 2 ) ); ?>px 0 !important; }
 			<?php } ?>
 			<?php if ( 54 !== $logo_height && 'split' === $header_style ) { ?>
-				.et_header_style_split .centered-inline-logo-wrap { width: auto; height: <?php echo esc_html( ( ( intval( $menu_height ) / 100 ) * $logo_height ) + 14 ); ?>px; }
-				.et_header_style_split .et-fixed-header .centered-inline-logo-wrap { width: auto; height: <?php echo esc_html( ( ( intval( $fixed_menu_height ) / 100 ) * $logo_height ) + 14 ); ?>px; }
+				.et_header_style_split .centered-inline-logo-wrap { width: auto; height: <?php echo esc_html((($menu_height / 100 ) * $logo_height ) + 14 ); ?>px; }
+				.et_header_style_split .et-fixed-header .centered-inline-logo-wrap { width: auto; height: <?php echo esc_html((($fixed_menu_height / 100 ) * $logo_height ) + 14 ); ?>px; }
 				.et_header_style_split .centered-inline-logo-wrap #logo,
 				.et_header_style_split .et-fixed-header .centered-inline-logo-wrap #logo { height: auto; max-height: 100%; }
 
@@ -7052,9 +7052,9 @@ function et_divi_add_customizer_css() {
 		}
 
 		@media only screen and ( min-width: <?php echo esc_html( $large_content_width ); ?>px) {
-			<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 ) ); ?>px 0; }
-			<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html( intval( $large_content_width * $section_padding / 100 ) ); ?>px 0; }
-			.single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper { padding-top: <?php echo esc_html( intval( $large_content_width * $row_padding / 100 * 3 ) ); ?>px; }
+			<?php echo $css( '.et_pb_row', false ); ?> { padding: <?php echo esc_html((int)($large_content_width * $row_padding / 100)); ?>px 0; }
+			<?php echo $css( '.et_pb_section', false ); ?> { padding: <?php echo esc_html((int)($large_content_width * $section_padding / 100)); ?>px 0; }
+			.single.et_pb_pagebuilder_layout.et_full_width_page .et_post_meta_wrapper { padding-top: <?php echo esc_html((int)($large_content_width * $row_padding / 100 * 3)); ?>px; }
 			<?php echo $css( '.et_pb_fullwidth_section', false ); ?> { padding: 0; }
 		}
 
@@ -7067,10 +7067,10 @@ function et_divi_add_customizer_css() {
 			<?php echo $css( 'h2' ); ?>,
 			<?php echo $css( '.product .related h2' ); ?>,
 			<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .86 ) ) ; ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .86)) ; ?>px;
 			}
 			<?php echo $css( 'h3' ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .73 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .73)); ?>px;
 			}
 			<?php echo $css( 'h4' ); ?>,
 			<?php echo $css( '.et_pb_circle_counter h3', false ); ?>,
@@ -7095,16 +7095,16 @@ function et_divi_add_customizer_css() {
 			<?php echo $css( '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
 			<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 			<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .6 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .6)); ?>px;
 			}
 			<?php echo $css( 'h5' ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .53 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .53)); ?>px;
 			}
 			<?php echo $css( 'h6' ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .47 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .47)); ?>px;
 			}
 			<?php echo $css( '.et_pb_slide_description .et_pb_slide_title', false ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * 1.53 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * 1.53)); ?>px;
 			}
 			<?php echo $css( '.woocommerce', 'ul.products li.product h3' ); ?>,
 			<?php echo $css( '.woocommerce-page', 'ul.products li.product h3' ); ?>,
@@ -7112,7 +7112,7 @@ function et_divi_add_customizer_css() {
 			<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 			<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 			<?php echo $css( '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-				font-size: <?php echo esc_html( intval( $body_header_size * .53 ) ); ?>px;
+				font-size: <?php echo esc_html((int)($body_header_size * .53)); ?>px;
 			}
 		<?php } ?>
 
@@ -7144,7 +7144,7 @@ function et_divi_add_customizer_css() {
 				}
 				<?php echo $css( '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_content', false ); ?>,
 				<?php echo $css( '.et_pb_best_value', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_body_font_size * 1.14 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_body_font_size * 1.14)); ?>px;
 				}
 			<?php } ?>
 			<?php if ( 30 !== $tablet_header_font_size && $tablet_header_font_size !== $body_header_size ) { ?>
@@ -7154,10 +7154,10 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( 'h2' ); ?>,
 				<?php echo $css( '.product .related h2' ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .86 ) ) ; ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .86)) ; ?>px;
 				}
 				<?php echo $css( 'h3' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .73 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .73)); ?>px;
 				}
 				<?php echo $css( 'h4', false ); ?>,
 				<?php echo $css( '.et_pb_circle_counter h3', false ); ?>,
@@ -7182,10 +7182,10 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
 				<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .6 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .6)); ?>px;
 				}
 				<?php echo $css( '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_description .et_pb_slide_title', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * 1.53 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * 1.53)); ?>px;
 				}
 				<?php echo $css( '.woocommerce', 'ul.products li.product h3' ); ?>,
 				<?php echo $css( '.woocommerce-page', 'ul.products li.product h3' ); ?>,
@@ -7193,13 +7193,13 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .53 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .53)); ?>px;
 				}
 				<?php echo $css( 'h5' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .53 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .53)); ?>px;
 				}
 				<?php echo $css( 'h6' ); ?> {
-					font-size: <?php echo esc_html( intval( $tablet_header_font_size * .47 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($tablet_header_font_size * .47)); ?>px;
 				}
 			<?php } ?>
 			<?php if ( 50 !== $tablet_section_height ) { ?>
@@ -7235,7 +7235,7 @@ function et_divi_add_customizer_css() {
 				}
 				<?php echo $css( '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_content', false ); ?>,
 				<?php echo $css( '.et_pb_best_value', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_body_font_size * 1.14 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($phone_body_font_size * 1.14)); ?>px;
 				}
 			<?php } ?>
 			<?php if ( 30 !== $phone_header_font_size && $tablet_header_font_size !== $phone_header_font_size ) { ?>
@@ -7245,10 +7245,10 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( 'h2' ); ?>,
 				<?php echo $css( '.product .related h2' ); ?>,
 				<?php echo $css( '.et_pb_column_1_2 .et_quote_content blockquote p', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .86 ) ) ; ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .86)) ; ?>px;
 				}
 				<?php echo $css( 'h3' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .73 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .73)); ?>px;
 				}
 				<?php echo $css( 'h4' ); ?>,
 				<?php echo $css( '.et_pb_circle_counter h3', false ); ?>,
@@ -7273,10 +7273,10 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( '.et_pb_gallery_grid .et_pb_gallery_item h3', false ); ?>,
 				<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .6 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .6)); ?>px;
 				}
 				<?php echo $css( '.et_pb_slider.et_pb_module .et_pb_slides .et_pb_slide_description .et_pb_slide_title', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * 1.53 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * 1.53)); ?>px;
 				}
 				<?php echo $css( '.woocommerce', 'ul.products li.product h3' ); ?>,
 				<?php echo $css( '.woocommerce-page', 'ul.products li.product h3' ); ?>,
@@ -7284,13 +7284,13 @@ function et_divi_add_customizer_css() {
 				<?php echo $css( '.et_pb_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_filterable_portfolio_grid .et_pb_portfolio_item h2', false ); ?>,
 				<?php echo $css( '.et_pb_column_1_4 .et_pb_audio_module_content h2', false ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .53 ) ); ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .53)); ?>px;
 				}
 				<?php echo $css( 'h5' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .53 ) ) ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .53)) ?>px;
 				}
 				<?php echo $css( 'h6' ); ?> {
-					font-size: <?php echo esc_html( intval( $phone_header_font_size * .47 ) ) ?>px;
+					font-size: <?php echo esc_html((int)($phone_header_font_size * .47)) ?>px;
 				}
 			<?php } ?>
 			<?php if ( 50 !== $phone_section_height && $tablet_section_height !== $phone_section_height ) { ?>
@@ -8222,7 +8222,7 @@ function et_pb_print_css( $setting ) {
 					break;
 
 				case 'font-size-post-header':
-					$posts_font_size = intval( $value ) * ( 26 / 30 );
+					$posts_font_size = (int)$value * (26 / 30 );
 					printf( 'body.home-posts #left-area .et_pb_post h2, body.archive #left-area .et_pb_post h2, body.search #left-area .et_pb_post h2 { font-size:%1$spx }
 						body.single .et_post_meta_wrapper h1 { font-size:%2$spx; }',
 						esc_html( $posts_font_size ),
@@ -8305,7 +8305,7 @@ function et_pb_print_css( $setting ) {
 				case 'padding-tabs':
 					printf( '%1$s { padding: %2$spx %3$spx; }',
 						esc_html( $setting['selector'] ),
-						esc_html( ( intval( $value ) * 0.5 ) ),
+						esc_html( ((int)$value * 0.5 ) ),
 						esc_html( $value )
 					);
 					break;
@@ -8322,13 +8322,13 @@ function et_pb_print_css( $setting ) {
 					printf( '%1$s { padding: %2$s %3$s; }',
 						esc_html( $setting['selector'] ),
 						esc_html( $value ) . '%',
-						esc_html( ( intval( $value ) / 2 ) ) . '%'
+                        esc_html( ((int)$value / 2 ) ) . '%'
 					);
 					break;
 
 				case 'social-icon-size':
-					$icon_margin 	= intval( $value ) * 0.57;
-					$icon_dimension = intval( $value ) * 2;
+					$icon_margin 	= (int)$value * 0.57;
+					$icon_dimension = (int)$value * 2;
 					?>
 					.et_pb_social_media_follow li a.icon{
 						margin-right: <?php echo esc_html( $icon_margin ); ?>px;
@@ -8459,7 +8459,7 @@ function et_pb_print_module_styles_css( $section = '', $settings = array() ) {
 						break;
 
 					case 'font-size':
-						$value = intval( $value );
+						$value = (int)$value;
 
 						printf( $css( '.et_pb_countdown_timer .title', false ) . ' { font-size: %spx; }', esc_html( $value ) );
 						printf( $css( '.et_pb_column_3_8 .et_pb_countdown_timer .title', false ) . ' { font-size: %spx; }', esc_html( $value * ( 18 / 22 ) ) );
@@ -8500,10 +8500,10 @@ function et_pb_print_module_styles_css( $section = '', $settings = array() ) {
 						break;
 
 					case 'padding-tabs':
-						$padding_tab_top_bottom 	= intval( $value ) * 0.133333333;
+						$padding_tab_top_bottom 	= (int)$value * 0.133333333;
 						$padding_tab_active_top 	= $padding_tab_top_bottom + 1;
 						$padding_tab_active_bottom 	= $padding_tab_top_bottom - 1;
-						$padding_tab_content 		= intval( $value ) * 0.8;
+						$padding_tab_content 		= (int)$value * 0.8;
 
 						// negative result will cause layout issue
 						if ( $padding_tab_active_bottom < 0 ) {
@@ -8542,7 +8542,7 @@ function et_pb_print_module_styles_css( $section = '', $settings = array() ) {
 						break;
 
 					case 'padding-call-to-action':
-						$value = intval( $value );
+						$value = (int)$value;
 
 						printf(
 							"%s { padding: %spx %spx !important; }\n",
@@ -8572,8 +8572,8 @@ function et_pb_print_module_styles_css( $section = '', $settings = array() ) {
 						break;
 
 					case 'social-icon-size':
-						$icon_margin 	= intval( $value ) * 0.57;
-						$icon_dimension = intval( $value ) * 2;
+						$icon_margin 	= (int)$value * 0.57;
+						$icon_dimension = (int)$value * 2;
 						?>
 						<?php echo $css( '.et_pb_social_media_follow li a.icon', false ); ?> {
 							margin-right: <?php echo esc_html( $icon_margin ); ?>px;

@@ -151,7 +151,7 @@ function et_pb_add_widget_area(){
 
 	$et_pb_widgets = get_theme_mod( 'et_pb_widgets' );
 
-	$number = $et_pb_widgets ? intval( $et_pb_widgets['number'] ) + 1 : 1;
+	$number = $et_pb_widgets ? (int)$et_pb_widgets['number'] + 1 : 1;
 
 	$et_widget_area_name = sanitize_text_field( $_POST['et_widget_area_name'] );
 	$et_pb_widgets['areas']['et_pb_widget_area_' . $number] = $et_widget_area_name;
@@ -1455,7 +1455,7 @@ add_action( 'wp_ajax_et_pb_delete_layout', 'et_pb_delete_layout' );
  */
 function et_builder_enable_zlib_compression() {
 	// If compression is already enabled, do nothing
-	if ( 1 === intval( @ini_get( 'zlib.output_compression' ) ) ) {
+	if (1 === (int)@ini_get('zlib.output_compression')) {
 		return;
 	}
 
@@ -3208,7 +3208,7 @@ function et_builder_get_warnings() {
 	// Memory check
 	global $et_current_memory_limit;
 
-	if ( ! empty( $et_current_memory_limit ) && intval( $et_current_memory_limit ) < 128 ) {
+	if ( ! empty( $et_current_memory_limit ) && (int)$et_current_memory_limit < 128 ) {
 		$class = ' et_builder_increase_memory';
 
 		$warnings[] = sprintf(
@@ -3494,8 +3494,8 @@ function et_pb_add_stats_record( $stats_data_array ) {
 	$record_date = current_time( 'mysql' );
 
 	// sanitize and set vars
-	$test_id = intval( $stats_data_array['test_id'] );
-	$subject_id = intval( $stats_data_array['subject_id'] );
+	$test_id = (int)$stats_data_array['test_id'];
+	$subject_id = (int)$stats_data_array['subject_id'];
 	$record_type = sanitize_text_field( $stats_data_array['record_type'] );
 	$record_date = sanitize_text_field( $record_date );
 
@@ -3632,7 +3632,7 @@ function et_pb_ab_get_subject_id() {
 		die( -1 );
 	}
 
-	$test_id              = intval( $_POST['et_pb_ab_test_id'] );
+	$test_id              = (int)$_POST['et_pb_ab_test_id'];
 	$hashed_subject_id    = et_pb_ab_get_visitor_cookie( $test_id, 'view_page' );
 	$current_ab_module_id = et_pb_ab_unhashed_subject_id( $test_id, $hashed_subject_id );
 

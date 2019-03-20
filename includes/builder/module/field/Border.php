@@ -321,7 +321,7 @@ class ET_Builder_Module_Field_Border extends ET_Builder_Module_Field_Base {
 		$value_suffix = true === $is_hover ? et_pb_hover_options()->get_suffix() : '';
 
 		foreach ( $border_edges as $edge ) {
-			$edge = "{$edge}";
+			$edge = (string)$edge;
 
 			foreach ( $properties as $property ) {
 				$all_edges_key = "border_{$property}_all{$suffix}";

@@ -295,7 +295,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 		$color            = ! empty( $atts[ "{$placement}_divider_color" ] ) ? $atts[ "{$placement}_divider_color" ] : $default_color;
 		$height           = ! empty( $atts[ "{$placement}_divider_height" ] ) ? $atts[ "{$placement}_divider_height" ] : '100px';
 		$height_hover     = et_pb_hover_options()->get_value( "{$placement}_divider_height", $atts, false );
-		$repeat           = ! empty( $atts[ "{$placement}_divider_repeat" ] ) ? floatval( $atts[ "{$placement}_divider_repeat" ] ) : 1;
+		$repeat           = ! empty( $atts[ "{$placement}_divider_repeat" ] ) ? (float)$atts["{$placement}_divider_repeat"] : 1;
 		$flip             = ( '' !== $atts[ "{$placement}_divider_flip" ] ) ? explode( '|', $atts[ "{$placement}_divider_flip" ] ) : array();
 		$arrangement      = ! empty( $atts[ "{$placement}_divider_arrangement" ] ) ? $atts[ "{$placement}_divider_arrangement" ] : 'below_content';
 		$style            = $atts[ "{$placement}_divider_style" ] . "-{$placement}";
@@ -322,7 +322,7 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 
 			if ( $is_responsive_repeat_active && $responsive_repeat && '' !== $responsive_repeat ) {
 				// Divider repeat contains 'x' suffix on the value. We should convert it into float.
-				$repeat = floatval( $responsive_repeat );
+				$repeat = (float)$responsive_repeat;
 			}
 		}
 
@@ -394,9 +394,9 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 
 			// Adjusts for when percentages are being used.
 			if ( 0 < strpos( $height, '%' ) ) {
-				$declaration['background-size'] = sprintf( '%1$s%% 100%%', floatval( 100 / $repeat ) );
+				$declaration['background-size'] = sprintf( '%1$s%% 100%%', (float)(100 / $repeat));
 			} else {
-				$declaration['background-size'] = sprintf( '%1$s%% %2$s', floatval( 100 / $repeat ), $height );
+				$declaration['background-size'] = sprintf( '%1$s%% %2$s', (float)(100 / $repeat), $height );
 			}
 		}
 
@@ -472,9 +472,9 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 
 			// Adjusts for when percentages are being used.
 			if ( 0 < strpos( $height, '%' ) ) {
-				$declaration['background-size'] = sprintf( '%1$s%% 100%%', floatval( 100 / $repeat ) );
+				$declaration['background-size'] = sprintf( '%1$s%% 100%%', (float)(100 / $repeat));
 			} else {
-				$declaration['background-size'] = sprintf( '%1$s%% %2$s', floatval( 100 / $repeat ), $height );
+				$declaration['background-size'] = sprintf( '%1$s%% %2$s', (float)(100 / $repeat), $height );
 			}
 
 			foreach ( $declaration as $rule => $value ) {
@@ -482,8 +482,8 @@ class ET_Builder_Module_Field_Divider extends ET_Builder_Module_Field_Base {
 			}
 
 			ET_Builder_Element::set_style( 'et_pb_section', array(
-				'selector'    => "$selector",
-				'declaration' => $css,
+                'selector'    => (string)$selector,
+                'declaration' => $css,
 			) );
 		}
 	}

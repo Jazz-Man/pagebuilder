@@ -833,8 +833,9 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 					'declaration' => sprintf(
 						'max-width:%1$s !important;
 						%2$s',
-						'on' === $width_unit ? esc_attr( sprintf( '%1$spx', intval( $custom_width_px ) ) ) : esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent ) ) ),
-						'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
+						'on' === $width_unit ? esc_attr( sprintf( '%1$spx', (int)$custom_width_px) ) : esc_attr( sprintf( '%1$s%%',
+                            (int)$custom_width_percent) ),
+						'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', (int)$custom_width_percent) ) : ''
 					),
 				) );
 
@@ -848,7 +849,7 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 							'selector'    => '%%order_class%% > .et_pb_row:hover',
 							'declaration' => sprintf(
 								'max-width:%1$s !important;',
-								esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
+								esc_attr( sprintf( '%1$spx', (int)$custom_width_px_hover) )
 							),
 						) );
 
@@ -863,8 +864,8 @@ class ET_Builder_Section extends ET_Builder_Structure_Element {
 							'declaration' => sprintf(
 								'max-width:%1$s !important;
 							%2$s',
-								esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
-								esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
+								esc_attr( sprintf( '%1$s%%', (int)$custom_width_percent_hover) ),
+								esc_attr( sprintf( 'width: %1$s%%;', (int)$custom_width_percent_hover) )
 							),
 						) );
 
@@ -2328,8 +2329,9 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 				'declaration' => sprintf(
 					'max-width:%1$s !important;
 					%2$s',
-					'on' === $width_unit ? esc_attr( sprintf( '%1$spx', intval( $custom_width_px ) ) ) : esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent ) ) ),
-					'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent ) ) ) : ''
+					'on' === $width_unit ? esc_attr( sprintf( '%1$spx', (int)$custom_width_px) ) : esc_attr( sprintf( '%1$s%%',
+                        (int)$custom_width_percent) ),
+					'on' !== $width_unit ? esc_attr( sprintf( 'width: %1$s%%;', (int)$custom_width_percent) ) : ''
 				),
 			) );
 
@@ -2343,7 +2345,7 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 						'selector'    => '%%order_class%%:hover',
 						'declaration' => sprintf(
 							'max-width:%1$s !important;',
-							esc_attr( sprintf( '%1$spx', intval( $custom_width_px_hover ) ) )
+							esc_attr( sprintf( '%1$spx', (int)$custom_width_px_hover) )
 						),
 					) );
 
@@ -2358,8 +2360,8 @@ class ET_Builder_Row extends ET_Builder_Structure_Element {
 						'declaration' => sprintf(
 							'max-width:%1$s !important;
 							%2$s',
-							esc_attr( sprintf( '%1$s%%', intval( $custom_width_percent_hover ) ) ),
-							esc_attr( sprintf( 'width: %1$s%%;', intval( $custom_width_percent_hover ) ) )
+							esc_attr( sprintf( '%1$s%%', (int)$custom_width_percent_hover) ),
+							esc_attr( sprintf( 'width: %1$s%%;', (int)$custom_width_percent_hover) )
 						),
 					) );
 
@@ -3395,7 +3397,7 @@ class ET_Builder_Column extends ET_Builder_Structure_Element {
 		// Just in case for some reason column shortcode has no `type` attribute and causes unexpected $column_type values
 		if ( isset( $column_type[0] ) && isset( $column_type[1] ) ) {
 			// Get column progress.
-			$column_progress = intval( $column_type[0] ) / intval( $column_type[1] );
+			$column_progress = (int)$column_type[0] / (int)$column_type[1];
 
 			if ( 0 === $array_index ) {
 				$et_pb_column_completion = $column_progress;

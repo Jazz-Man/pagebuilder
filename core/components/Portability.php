@@ -271,7 +271,7 @@ class ET_Core_Portability {
 
 	protected function to_megabytes( $value ) {
 		$unit = strtoupper( substr( $value, -1 ) );
-		$amount = intval( substr( $value, 0, -1 ) );
+		$amount = (int)substr($value, 0, -1);
 
 		// Known units
 		switch ( $unit ) {
@@ -281,11 +281,11 @@ class ET_Core_Portability {
 
 		if ( is_numeric( $unit ) ) {
 			// Numeric unit is present, assume bytes
-			return intval( $value ) >> 20;
+			return (int)$value >> 20;
 		}
 
 		// Unknown unit ...
-		return intval( $value );
+		return (int)$value;
 
 	}// end to_megabytes()
 
@@ -517,8 +517,8 @@ class ET_Core_Portability {
 				// Make sure the post is published.
 				if ( 'publish' !== get_post_status( $layout_exists ) ) {
 					wp_update_post( array(
-						'ID'          => intval( $layout_exists ),
-						'post_status' => 'publish',
+                        'ID'          => (int)$layout_exists,
+                        'post_status' => 'publish',
 					) );
 				}
 
@@ -570,9 +570,9 @@ class ET_Core_Portability {
 
 					if ( ! $insert = term_exists( $term['slug'], $term['taxonomy'] ) ) {
 						$insert = wp_insert_term( $term['name'], $term['taxonomy'], array(
-							'slug'        => $term['slug'],
-							'description' => $term['description'],
-							'parent'      => intval( $parent ),
+                            'slug'        => $term['slug'],
+                            'description' => $term['description'],
+                            'parent'      => (int)$parent,
 						) );
 					}
 
@@ -686,7 +686,7 @@ class ET_Core_Portability {
 
 		if ( $paginate_images && count( $images ) > 5 ) {
 			$total_pages = ceil( count( $images ) / 5 );
-			$page = isset( $_POST['page'] ) ? intval( $_POST['page'] ) : 1;
+			$page = isset( $_POST['page'] ) ? (int)$_POST['page'] : 1;
 			$slice = 5 * ( $page - 1 );
 			$images = array_slice( $images, $slice, 5 );
 			$images = $this->$method( $images );
