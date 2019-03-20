@@ -1,0 +1,27 @@
+{
+    "name": "jazzman/pagebuilder",
+    "version": "1.0",
+    "type": "wordpress-theme",
+    "extra": {
+        "installer-paths": {
+            "vendor/wp/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+            "vendor/wp/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "vendor/wp/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+        },
+        "wordpress-install-dir": "vendor/wp"
+    },
+    "require": {
+        "composer/installers": "^1",
+        "jazzman/wp-performance": "^0.5.0"
+    },
+    "authors": [
+        {
+            "name": "Vasyl Sokolyk",
+            "email": "vsokolyk@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "roots/wordpress": "^4",
+        "roave/security-advisories": "dev-master"
+    }
+}
