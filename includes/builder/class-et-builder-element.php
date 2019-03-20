@@ -14,7 +14,10 @@ require_once 'module/field/Factory.php';
 /**
  * Base class for all builder elements.
  *
+ * @property \ET_Builder_Module_Field_TextShadow text_shadow
+ * @property array                               _additional_fields_options
  * @since 1.0
+ * @method init()
  */
 class ET_Builder_Element {
 	public $name;
@@ -734,7 +737,7 @@ class ET_Builder_Element {
 			// The theme customizer and custom css have already been inlined in the <head> using the
 			// unified resource's ID. It's invalid HTML to have duplicated IDs on the page so we'll
 			// fix that here since it only applies to this page load anyway.
-			$resource->slug = $resource->slug . '-2';
+			$resource->slug .= '-2';
 		}
 
 		return isset( $data[40] ) ? array( 40 => $data[40] ) : array();
@@ -868,6 +871,7 @@ class ET_Builder_Element {
 
 				array_walk( $this->fields_unprocessed[ $field ]['affects'], array( $this, 'normalize_affect_fields' ) );
 			}
+
 
 			if ( 'content_new' === $field ) {
 				$this->fields_unprocessed['content'] = $this->fields_unprocessed['content_new'];
@@ -5575,7 +5579,7 @@ class ET_Builder_Element {
 
 		foreach ( $custom_css_fields as $slug => $option ) {
 			$selector_value                                      = $option['selector'] ?? '';
-            $selector_contains_module_class                      = false !== strpos( $selector_value, '%%order_class%%' ) ? true : false;
+            $selector_contains_module_class                      = false !== strpos($selector_value, '%%order_class%%');
 			$selector_output                                     = '' !== $selector_value ? str_replace( '%%order_class%%', $current_module_unique_class, $option['selector'] ) : '';
 			$custom_css_fields_processed[ "custom_css_{$slug}" ] = array(
 				'label'    => sprintf(
@@ -6107,7 +6111,7 @@ class ET_Builder_Element {
 	 * @return mixed|string Html code of the field
 	 */
 	public function wrap_settings_option_field( $field, $name = '' ) {
-		$use_container_wrapper = isset( $field['use_container_wrapper'] ) && ! $field['use_container_wrapper'] ? false : true;
+		$use_container_wrapper = ! (isset($field['use_container_wrapper']) && ! $field['use_container_wrapper']);
 		$field_renderer = $this->get_field_renderer( $field );
 
 		if ( ! empty( $field_renderer ) && is_array( $field_renderer['renderer'] ) && ! empty( $field_renderer['renderer']['class'] ) ) {
@@ -7014,7 +7018,7 @@ class ET_Builder_Element {
 		$field_el            = '';
 		$is_custom_color     = isset( $field['custom_color'] ) && $field['custom_color'];
 		$reset_button_html   = '<span class="et-pb-reset-setting"></span>';
-		$need_mobile_options = isset( $field['mobile_options'] ) && $field['mobile_options'] ? true : false;
+		$need_mobile_options = (isset($field['mobile_options']) && $field['mobile_options']);
 		$only_options        = $field['only_options'] ?? false;
         $is_child            = isset( $this->type ) && 'child' === $this->type;
 		// Make sure 'type' is always set to prevent PHP notices
@@ -7714,7 +7718,7 @@ class ET_Builder_Element {
 			case 'date_picker':
 			case 'range':
 			default:
-				$validate_number = isset( $field['number_validation'] ) && $field['number_validation'] ? true : false;
+				$validate_number = (isset($field['number_validation']) && $field['number_validation']);
 
 				if ( 'date_picker' === $field['type'] ) {
 					$field['class'] .= ' et-pb-date-time-picker';
@@ -8250,7 +8254,7 @@ class ET_Builder_Element {
 
 						$i++;
 						$toggle_output = '';
-						$is_accordion_enabled = isset( $this->settings_modal_toggles[ $tab_slug ]['settings']['bb_toggles_enabeld'] ) && $this->settings_modal_toggles[ $tab_slug ]['settings']['bb_toggles_enabled'] ? true : false;
+						$is_accordion_enabled = (isset($this->settings_modal_toggles[$tab_slug]['settings']['bb_toggles_enabeld']) && $this->settings_modal_toggles[$tab_slug]['settings']['bb_toggles_enabled']);
 						$is_tabbed_subtoggles = isset( $toggle_data['tabbed_subtoggles'] );
 						$is_bb_icons_support = isset( $toggle_data['bb_icons_support'] );
 						$subtoggle_tabs_nav = '';
@@ -8998,26 +9002,23 @@ class ET_Builder_Element {
 					);
 				}
 
-				if ( isset( $option_settings['css']['letter_spacing'] ) ) {
-					if ( et_builder_is_hover_enabled( $letter_spacing_option_name, $this->props ) ) {
-						$letter_spacing_hover = $this->props[ $letter_spacing_option_name_hover ];
+				if (isset($option_settings['css']['letter_spacing']) && et_builder_is_hover_enabled($letter_spacing_option_name,
+                        $this->props)) {
+                            $letter_spacing_hover = $this->props[ $letter_spacing_option_name_hover ];
 
-						if ( $default_letter_spacing !== $letter_spacing_hover ) {
-							if ( isset( $option_settings['css']['color'] ) ) {
-								$sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['letter_spacing'] );
-								self::set_style( $function_name, array(
-									'selector'    => self::$_->array_get( $option_settings, 'css.letter_spacing_hover', $sel ),
-									'declaration' => sprintf(
-										'color: %1$s%2$s;',
-										esc_html( $letter_spacing_hover ),
-										esc_html( $important )
-									),
-									'priority'    => $this->_style_priority,
-								) );
-							}
-						}
-					}
-				}
+                            if (($default_letter_spacing !== $letter_spacing_hover) && isset($option_settings['css']['color'])) {
+                                $sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['letter_spacing'] );
+                                self::set_style( $function_name, array(
+                                    'selector'    => self::$_->array_get( $option_settings, 'css.letter_spacing_hover', $sel ),
+                                    'declaration' => sprintf(
+                                        'color: %1$s%2$s;',
+                                        esc_html( $letter_spacing_hover ),
+                                        esc_html( $important )
+                                    ),
+                                    'priority'    => $this->_style_priority,
+                                ) );
+                            }
+                        }
 			}
 
 			$line_height_option_name = "{$option_name}_{$slugs[4]}";
@@ -9065,22 +9066,19 @@ class ET_Builder_Element {
 					);
 				}
 
-				if ( isset( $option_settings['css']['line_height'] ) ) {
-					if ( et_builder_is_hover_enabled( $line_height_option_name, $this->props ) ) {
-						if ( isset( $option_settings['css']['color'] ) ) {
-							$sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['line_height'] );
-							self::set_style( $function_name, array(
-								'selector'    => self::$_->array_get( $option_settings, 'css.line_height_hover', $sel ),
-								'declaration' => sprintf(
-									'line-height: %1$s%2$s;',
-									esc_html( $line_height_hover ),
-									esc_html( $important )
-								),
-								'priority'    => $this->_style_priority,
-							) );
-						}
-					}
-				}
+				if (isset($option_settings['css']['line_height']) && et_builder_is_hover_enabled($line_height_option_name,
+                        $this->props) && isset($option_settings['css']['color'])) {
+                            $sel = et_pb_hover_options()->add_hover_to_order_class( $option_settings['css']['line_height'] );
+                            self::set_style( $function_name, array(
+                                'selector'    => self::$_->array_get( $option_settings, 'css.line_height_hover', $sel ),
+                                'declaration' => sprintf(
+                                    'line-height: %1$s%2$s;',
+                                    esc_html( $line_height_hover ),
+                                    esc_html( $important )
+                                ),
+                                'priority'    => $this->_style_priority,
+                            ) );
+                        }
 			}
 
 			$text_align_option_name = "{$option_name}_{$slugs[5]}";
@@ -9399,27 +9397,23 @@ class ET_Builder_Element {
 
 			$style .= sprintf(
 				'background-image: %1$s%2$s;',
-				esc_html( join( ', ', $background_images ) ),
+				esc_html( implode( ', ', $background_images ) ),
 				$important
 			);
 		}
 
-		if ( $use_background_color_options && 'fields_only' !== $use_background_color_options ) {
-			if ( ! isset( $has_background_color_gradient, $has_background_image )
-				&&
-				'off' !== self::$_->array_get( $this->props, 'use_background_color', false )
-			) {
-				$background_color = $this->props['background_color'];
+		if ($use_background_color_options && 'fields_only' !== $use_background_color_options && ! isset($has_background_color_gradient, $has_background_image) && 'off' !== self::$_->array_get($this->props,
+                'use_background_color', false)) {
+                    $background_color = $this->props['background_color'];
 
-				if ( '' !== $background_color ) {
-					$style .= sprintf(
-						'background-color: %1$s%2$s; ',
-						esc_html( $background_color ),
-						esc_html( $important )
-					);
-				}
-			}
-		}
+                    if ( '' !== $background_color ) {
+                        $style .= sprintf(
+                            'background-color: %1$s%2$s; ',
+                            esc_html( $background_color ),
+                            esc_html( $important )
+                        );
+                    }
+                }
 
 		if ( '' !== $style ) {
 			$css_element = ! empty( $settings['css']['main'] ) ? $settings['css']['main'] : $this->main_css_element;
@@ -9438,21 +9432,14 @@ class ET_Builder_Element {
 			return;
 		}
 
-		if ( $use_background_color_options && 'fields_only' !== $use_background_color_options ) {
-			if (
-				! isset( $has_background_color_gradient, $has_background_image )
-				&&
-				'off' !== self::$_->array_get( $this->props, 'use_background_color', false )
-			) {
-				if ( '' !== $background_color_hover ) {
-					$style .= sprintf(
-						'background-color: %1$s%2$s; ',
-						esc_html( $background_color_hover ),
-						esc_html( $important )
-					);
-				}
-			}
-		}
+		if ($use_background_color_options && 'fields_only' !== $use_background_color_options && ! isset($has_background_color_gradient, $has_background_image) && 'off' !== self::$_->array_get($this->props,
+                'use_background_color', false) && '' !== $background_color_hover) {
+                    $style .= sprintf(
+                        'background-color: %1$s%2$s; ',
+                        esc_html( $background_color_hover ),
+                        esc_html( $important )
+                    );
+                }
 
 		if ( '' !== $style ) {
 			$main  = self::$_->array_get( $settings, 'css.main', $this->main_css_element );
@@ -9509,7 +9496,8 @@ class ET_Builder_Element {
 		global $et_fb_processing_shortcode_object;
 
 		$borders        = self::$_->array_get( $this->advanced_fields, 'borders', array( 'default' => array() ) );
-		$border_field   = ET_Builder_Module_Fields_Factory::get( 'Border' );
+        /** @var ET_Builder_Module_Field_Border $border_field */
+        $border_field = ET_Builder_Module_Fields_Factory::get( 'Border' );
 
 		if ( is_array( $borders ) && ! empty( $borders ) ) {
 			foreach ( $borders as $border_name => $border ) {
@@ -9640,7 +9628,7 @@ class ET_Builder_Element {
 
 		$views = array( 'desktop' );
 		if ( $isHoverEnabled ) {
-			array_push( $views, 'hover' );
+            $views[] = 'hover';
 		}
 		if ( $isResponsiveEnabled ) {
 			array_push( $views, 'tablet', 'phone' );
@@ -9682,7 +9670,7 @@ class ET_Builder_Element {
 		$views               = array( 'desktop' );
 
 		if ( $isHoverEnabled ) {
-			array_push( $views, 'hover' );
+            $views[] = 'hover';
 		}
 
 		if ( $isResponsiveEnabled ) {
@@ -9946,7 +9934,7 @@ class ET_Builder_Element {
             ) : '';
 
         if ('' !== $custom_padding || ! empty( $custom_padding_mobile ) ) {
-			$important            = in_array( 'custom_padding', $important_options ) || $use_global_important ? true : false;
+			$important            = (in_array('custom_padding', $important_options) || $use_global_important);
 			$has_padding_selector = isset( $this->advanced_fields['margin_padding']['css'] ) && isset( $this->advanced_fields['margin_padding']['css']['padding'] );
 			$padding_styling      = '' !== $custom_padding ? et_builder_get_element_style_css( $custom_padding, 'padding', $important ) : '';
 
@@ -10052,7 +10040,7 @@ class ET_Builder_Element {
 		}
 
 		if ( '' !== $custom_margin || ! empty( $custom_margin_mobile ) ) {
-			$important           = in_array( 'custom_margin', $important_options ) || $use_global_important ? true : false;
+			$important           = (in_array('custom_margin', $important_options) || $use_global_important);
 			$has_margin_selector = isset( $this->advanced_fields['margin_padding']['css'] ) && isset( $this->advanced_fields['margin_padding']['css']['margin'] );
 			$margin_styling      = '' !== $custom_margin ? et_builder_get_element_style_css( $custom_margin, 'margin', $important ) : '';
 
@@ -10255,7 +10243,7 @@ class ET_Builder_Element {
 				$is_default_hover_placement = $is_default_button_on_hover && $is_default_button_icon_placement;
 
 				$button_text_size_processed = $is_default_button_text_size ? '20px' : et_builder_process_range_value( $button_text_size );
-				$button_text_size_hover_processed = strlen( $button_text_size_hover ) && $button_text_size !== $button_text_size_hover ? et_builder_process_range_value( $button_text_size_hover ) : '';
+				$button_text_size_hover_processed = $button_text_size_hover !== '' && $button_text_size !== $button_text_size_hover ? et_builder_process_range_value( $button_text_size_hover ) : '';
 				$button_border_radius_processed = '' !== $button_border_radius && 'px' !== $button_border_radius ? et_builder_process_range_value( $button_border_radius ) : '';
 				$button_border_radius_hover_processed = null !== $button_border_radius_hover && 'px' !== $button_border_radius_hover && $button_border_radius_hover !== $button_border_radius ? et_builder_process_range_value( $button_border_radius_hover ) : '';
 				$button_use_icon = '' === $button_use_icon ? 'on' : $button_use_icon;
@@ -10644,7 +10632,7 @@ class ET_Builder_Element {
 
 					$background_style .= sprintf(
 						'background-image: %1$s !important;',
-						esc_html( join( ', ', $background_images ) )
+						esc_html( implode( ', ', $background_images ) )
 					);
 				}
 
@@ -10678,8 +10666,8 @@ class ET_Builder_Element {
 
 		foreach ( $this->custom_css_fields as $slug => $option ) {
 			$css      = $this->props["custom_css_{$slug}"];
-			$hover_css = self::get_hover_value("custom_css_{$slug}");
-			$order_class = isset( $this->main_css_element ) && count( explode( ' ', $this->main_css_element ) ) === 1 ? $selector = $this->main_css_element : '%%order_class%%';
+			$hover_css = $this->get_hover_value("custom_css_{$slug}");
+			$order_class = isset( $this->main_css_element ) && substr_count($this->main_css_element, ' ') + 1 === 1 ? $selector = $this->main_css_element : '%%order_class%%';
 			$selector = ! empty( $option['selector'] ) ? $option['selector'] : '';
 
 			if ( false === strpos( $selector, '%%order_class%%' ) ) {
@@ -10929,9 +10917,8 @@ class ET_Builder_Element {
 	public static function get_modules_count( $post_type ) {
 		$parent_modules = self::get_parent_modules( $post_type );
 		$child_modules  = self::get_child_modules( $post_type );
-		$overall_count  = count( $parent_modules ) + count( $child_modules );
 
-		return $overall_count;
+        return count( $parent_modules ) + count( $child_modules );
 	}
 
 	public static function get_modules_js_array( $post_type ) {
@@ -10951,8 +10938,8 @@ class ET_Builder_Element {
 				 * Replace single and double quotes with %% and || respectively
 				 * to avoid js conflicts
 				 */
-				$module_name = str_replace( array( '"', '&quot;', '&#34;', '&#034;' ) , '%%', $module->name );
-				$module_name = str_replace( array( "'", '&#039;', '&#39;' ) , '||', $module_name );
+				$module_name = str_replace( ['"', '&quot;', '&#34;', '&#034;'], '%%', $module->name );
+				$module_name = str_replace( ["'", '&#039;', '&#39;'], '||', $module_name );
 
 				$modules[] = sprintf(
 					'{ "title" : "%1$s", "label" : "%2$s"%3$s}',
