@@ -752,30 +752,6 @@ if ( ! function_exists( 'show_categories_menu' ) ) {
 
 }
 
-function head_addons(){
-	global $shortname, $default_colorscheme;
-
-	// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
-	$color_scheme = apply_filters( 'et_get_additional_color_scheme', et_get_option( $shortname.'_color_scheme' ) );
-	if ( !empty( $color_scheme ) && $color_scheme !== $default_colorscheme ) { ?>
-		<link rel="stylesheet" href="<?php echo esc_url( get_template_directory_uri() . '/style-' . et_get_option( $shortname.'_color_scheme' ) . '.css' ); ?>" type="text/css" media="screen" />
-	<?php }
-
-	$child_cssurl = et_get_option( $shortname.'_child_cssurl' );
-	if ( et_get_option( $shortname.'_child_css' ) === 'on' && ! empty( $child_cssurl ) ) { //Enable child stylesheet  ?>
-		<link rel="stylesheet" href="<?php echo esc_url( $child_cssurl ); ?>" type="text/css" media="screen" />
-	<?php }
-
-	//prints the theme name, version in meta tag
-	$theme_info = wp_get_theme();
-	echo '<meta content="' . esc_attr( $theme_info->display( 'Name' ) . ' v.' . $theme_info->display( 'Version' ) ) . '" name="generator"/>';
-
-	if ( et_get_option( $shortname . '_custom_colors' ) === 'on' ) et_epanel_custom_colors_css();
-	// phpcs:enable
-}// end function head_addons()
-
-add_action( 'wp_head', 'head_addons', 7 );
-
 function integration_head(){
 	global $shortname;
 
