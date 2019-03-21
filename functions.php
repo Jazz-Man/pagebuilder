@@ -6520,50 +6520,6 @@ function et_pb_print_font_style( $styles = '', $important = '' ) {
 	return esc_html( $font_styles );
 }
 
-/*
- * Adds color scheme class to the body tag
- */
-function et_customizer_color_scheme_class( $body_class ) {
-	$color_scheme        = et_get_option( 'color_schemes', 'none' );
-	$color_scheme_prefix = 'et_color_scheme_';
-
-	if ( 'none' !== $color_scheme ) $body_class[] = $color_scheme_prefix . $color_scheme;
-
-	return $body_class;
-}
-add_filter( 'body_class', 'et_customizer_color_scheme_class' );
-
-/*
- * Adds button class to the body tag
- */
-function et_customizer_button_class( $body_class ) {
-	$button_icon_placement = et_get_option( 'all_buttons_icon_placement', 'right' );
-	$button_icon_on_hover = et_get_option( 'all_buttons_icon_hover', 'yes' );
-	$button_use_icon = et_get_option( 'all_buttons_icon', 'yes' );
-	$button_icon = et_get_option( 'all_buttons_selected_icon', '5' );
-
-	if ( 'left' === $button_icon_placement ) {
-		$body_class[] = 'et_button_left';
-	}
-
-	if ( 'no' === $button_icon_on_hover ) {
-		$body_class[] = 'et_button_icon_visible';
-	}
-
-	if ( 'no' === $button_use_icon ) {
-		$body_class[] = 'et_button_no_icon';
-	}
-
-	if ( '5' !== $button_icon ) {
-		$body_class[] = 'et_button_custom_icon';
-	}
-
-	$body_class[] = 'et_pb_button_helper_class';
-
-	return $body_class;
-}
-add_filter( 'body_class', 'et_customizer_button_class' );
-
 function et_load_google_fonts_scripts() {
 	$theme_version = et_get_theme_version();
 
@@ -6693,31 +6649,6 @@ function et_password_form() {
 	return $output;
 }
 add_filter( 'the_password_form', 'et_password_form' );
-
-function et_add_wp_version( $classes ) {
-	global $wp_version;
-
-	$is_admin_body_class = 'admin_body_class' === current_filter();
-
-	// add 'et-wp-pre-3_8' class if the current WordPress version is less than 3.8
-	if ( version_compare( $wp_version, '3.7.2', '<=' ) ) {
-		if ( 'body_class' === current_filter() ) {
-			$classes[] = 'et-wp-pre-3_8';
-		} else {
-			$classes .= ' et-wp-pre-3_8';
-		}
-	} else if ( $is_admin_body_class ) {
-		$classes .= ' et-wp-after-3_8';
-	}
-
-	if ( $is_admin_body_class ) {
-		$classes = ltrim( $classes );
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_add_wp_version' );
-add_filter( 'admin_body_class', 'et_add_wp_version' );
 
 /**
  * Determine whether current primary nav uses transparent nav or not based on primary nav background
@@ -6976,68 +6907,6 @@ function et_divi_activate_features(){
 add_action( 'init', 'et_divi_activate_features' );
 
 require_once( get_template_directory() . '/et-pagebuilder/et-pagebuilder.php' );
-
-/**
- * Custom body classes for sidebar location in different places
- * @return array
- */
-function et_divi_sidebar_class( $classes ) {
-	$default_sidebar_class = et_get_option( 'divi_sidebar' );
-	$post_id = get_queried_object_id();
-	$is_builder_active = 'on' === get_post_meta( $post_id, '_et_pb_use_builder', true );
-
-	if ( ! $default_sidebar_class ) {
-		$default_sidebar_class = is_rtl() ? 'et_left_sidebar' : 'et_right_sidebar';
-	}
-
-	// Set Woo shop and taxonomies layout.
-	if ( class_exists( 'woocommerce' ) && ( is_woocommerce() && ( is_shop() || is_tax() ) ) ) {
-		$page_layout = et_get_option( 'divi_shop_page_sidebar', $default_sidebar_class );
-	} elseif ( ! is_singular() || ! ( $page_layout = get_post_meta( $post_id, '_et_pb_page_layout', true ) ) ) { // check for the falsy value not for boolean `false`
-		// Set post meta layout which will work for all third party plugins.
-		$page_layout = $default_sidebar_class;
-	}
-
-	// Handle et_no_sidebar class. It should be no_sidebar for all custom post types, or any post type if builder active.
-	// otherwise apply 'et_full_width_page' class for backward compatibility
-	if ( 'et_no_sidebar' === $page_layout && is_singular() ) {
-		if ( et_builder_post_is_of_custom_post_type( $post_id ) || $is_builder_active ) {
-			$classes[] = 'et_no_sidebar';
-		} else {
-			$classes[] = 'et_full_width_page';
-		}
-	} else {
-		// Add the page layout class.
-		$classes[] = $page_layout;
-	}
-
-	// Maybe add the full width portfolio class.
-	if ( is_singular( 'project' ) && ( in_array( $page_layout, array( 'et_full_width_page', 'et_no_sidebar' ) ) ) ) {
-		$classes[] = 'et_full_width_portfolio_page';
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_sidebar_class' );
-
-/**
- * Custom body classes for handling customizer preview screen
- * @return array
- */
-function et_divi_customize_preview_class( $classes ) {
-	if ( is_customize_preview() ) {
-		// Customizer class name for customizer specific stuff
-		$classes[] = 'et_is_customize_preview';
-
-		// Search icon state
-		if ( ! et_get_option( 'show_search_icon', true ) ) {
-			$classes[] = 'et_hide_search_icon';
-		}
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_customize_preview_class' );
 
 function et_modify_shop_page_columns_num( $columns_num ) {
 	$default_sidebar_class = is_rtl() ? 'et_left_sidebar' : 'et_right_sidebar';
@@ -7415,16 +7284,6 @@ function et_divi_customizer_link() {
 }
 add_action( 'customize_controls_print_footer_scripts', 'et_divi_customizer_link' );
 
-/**
- * Added body class to make it possible to identify the Divi theme on frontend
- * @return array
- */
-function et_divi_theme_body_class( $classes ) {
-	$classes[] = 'et_divi_theme';
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_theme_body_class' );
 
 /**
  * Determine if it's a fresh Divi install by checking for the existence of 'divi_logo' key in 'et_divi' options array.

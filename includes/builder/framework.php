@@ -500,42 +500,6 @@ function et_builder_has_theme_style_enqueued() {
 	return false;
 }
 
-/**
- * Added specific body classes for builder related situation
- * This enables theme to adjust its case independently
- * @return array
- */
-function et_builder_body_classes( $classes ) {
-	if ( is_et_pb_preview() ) {
-		$classes[] = 'et-pb-preview';
-	}
-
-	// Minified JS identifier class name
-	if ( ! et_load_unminified_scripts() ) {
-		$classes[] = 'et_minified_js';
-	}
-
-	// Minified CSS identifier class name
-	if ( ! et_load_unminified_styles() ) {
-		$classes[] = 'et_minified_css';
-	}
-
-	$post_id   = et_core_page_resource_get_the_ID();
-	$post_type = get_post_type( $post_id );
-
-	// Add layout classes when on library page
-	if ( 'et_pb_layout' === $post_type ) {
-		$layout_type = et_fb_get_layout_type( $post_id );
-		$layout_scope = et_fb_get_layout_term_slug( $post_id, 'scope' );
-
-		$classes[] = "et_pb_library_page-${layout_type}";
-		$classes[] = "et_pb_library_page-${layout_scope}";
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_builder_body_classes' );
-
 if ( ! function_exists( 'et_builder_add_main_elements' ) ) :
 function et_builder_add_main_elements() {
 	require_once ET_BUILDER_DIR . 'main-structure-elements.php';

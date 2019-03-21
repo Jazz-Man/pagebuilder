@@ -101,28 +101,6 @@ function et_fb_wp_footer() {
 add_action( 'wp_footer', 'et_fb_wp_footer' );
 
 /**
- * Added frontend builder specific body class
- * @todo load conditionally, only when the frontend builder is used
- *
- * @param array  initial <body> classes
- * @return array modified <body> classes
- */
-function et_fb_add_body_class( $classes ) {
-	$classes[] = 'et-fb';
-
-	if ( is_rtl() && 'on' === et_get_option( 'divi_disable_translations', 'off' ) ) {
-		$classes[] = 'et-fb-no-rtl';
-	}
-
-	if ( et_builder_bfb_enabled() ) {
-		$classes[] = 'et-bfb';
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_fb_add_body_class' );
-
-/**
  * Added BFB specific body class
  * @todo load conditionally, only when the frontend builder is used
  *
