@@ -752,24 +752,6 @@ if ( ! function_exists( 'show_categories_menu' ) ) {
 
 }
 
-function integration_head(){
-	global $shortname;
-
-	/** @see ET_Support_Center::toggle_safe_mode */
-	if ( et_core_is_safe_mode_active() ) {
-		return;
-	}
-
-	$integration_head = et_get_option( $shortname . '_integration_head' );
-	if ( ! empty( $integration_head ) && et_get_option( $shortname . '_integrate_header_enable' ) === 'on' ) {
-
-		$integration_head = et_core_fix_unclosed_html_tags( $integration_head );
-		echo et_core_intentionally_unescaped( $integration_head, 'html' );
-	}
-}
-
-add_action( 'wp_head', 'integration_head', 12 );
-
 function integration_body(){
 	global $shortname;
 
