@@ -6757,49 +6757,6 @@ add_action( 'init', 'et_divi_activate_features' );
 require_once( get_template_directory() . '/et-pagebuilder/et-pagebuilder.php' );
 
 /**
- * Custom body classes for sidebar location in different places
- * @return array
- */
-function et_divi_sidebar_class( $classes ) {
-	$default_sidebar_class = et_get_option( 'divi_sidebar' );
-	$post_id = get_queried_object_id();
-	$is_builder_active = 'on' === get_post_meta( $post_id, '_et_pb_use_builder', true );
-
-	if ( ! $default_sidebar_class ) {
-		$default_sidebar_class = is_rtl() ? 'et_left_sidebar' : 'et_right_sidebar';
-	}
-
-	// Set Woo shop and taxonomies layout.
-	if ( class_exists( 'woocommerce' ) && ( is_woocommerce() && ( is_shop() || is_tax() ) ) ) {
-		$page_layout = et_get_option( 'divi_shop_page_sidebar', $default_sidebar_class );
-	} elseif ( ! is_singular() || ! ( $page_layout = get_post_meta( $post_id, '_et_pb_page_layout', true ) ) ) { // check for the falsy value not for boolean `false`
-		// Set post meta layout which will work for all third party plugins.
-		$page_layout = $default_sidebar_class;
-	}
-
-	// Handle et_no_sidebar class. It should be no_sidebar for all custom post types, or any post type if builder active.
-	// otherwise apply 'et_full_width_page' class for backward compatibility
-	if ( 'et_no_sidebar' === $page_layout && is_singular() ) {
-		if ( et_builder_post_is_of_custom_post_type( $post_id ) || $is_builder_active ) {
-			$classes[] = 'et_no_sidebar';
-		} else {
-			$classes[] = 'et_full_width_page';
-		}
-	} else {
-		// Add the page layout class.
-		$classes[] = $page_layout;
-	}
-
-	// Maybe add the full width portfolio class.
-	if ( is_singular( 'project' ) && ( in_array( $page_layout, array( 'et_full_width_page', 'et_no_sidebar' ) ) ) ) {
-		$classes[] = 'et_full_width_portfolio_page';
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_sidebar_class' );
-
-/**
  * Custom body classes for handling customizer preview screen
  * @return array
  */
