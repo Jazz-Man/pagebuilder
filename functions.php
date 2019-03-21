@@ -6521,19 +6521,6 @@ function et_pb_print_font_style( $styles = '', $important = '' ) {
 }
 
 /*
- * Adds color scheme class to the body tag
- */
-function et_customizer_color_scheme_class( $body_class ) {
-	$color_scheme        = et_get_option( 'color_schemes', 'none' );
-	$color_scheme_prefix = 'et_color_scheme_';
-
-	if ( 'none' !== $color_scheme ) $body_class[] = $color_scheme_prefix . $color_scheme;
-
-	return $body_class;
-}
-add_filter( 'body_class', 'et_customizer_color_scheme_class' );
-
-/*
  * Adds button class to the body tag
  */
 function et_customizer_button_class( $body_class ) {
