@@ -6650,31 +6650,6 @@ function et_password_form() {
 }
 add_filter( 'the_password_form', 'et_password_form' );
 
-function et_add_wp_version( $classes ) {
-	global $wp_version;
-
-	$is_admin_body_class = 'admin_body_class' === current_filter();
-
-	// add 'et-wp-pre-3_8' class if the current WordPress version is less than 3.8
-	if ( version_compare( $wp_version, '3.7.2', '<=' ) ) {
-		if ( 'body_class' === current_filter() ) {
-			$classes[] = 'et-wp-pre-3_8';
-		} else {
-			$classes .= ' et-wp-pre-3_8';
-		}
-	} else if ( $is_admin_body_class ) {
-		$classes .= ' et-wp-after-3_8';
-	}
-
-	if ( $is_admin_body_class ) {
-		$classes = ltrim( $classes );
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_add_wp_version' );
-add_filter( 'admin_body_class', 'et_add_wp_version' );
-
 /**
  * Determine whether current primary nav uses transparent nav or not based on primary nav background
  * @return bool
