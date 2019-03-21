@@ -104,18 +104,3 @@ function et_builder_wc_pre_get_posts( $query ) {
 	remove_filter( 'the_content', 'wpautop' );
 }
 add_action( 'pre_get_posts', 'et_builder_wc_pre_get_posts' );
-
-/**
- * Remove woocommerce body classes if current shop page uses builder.
- * woocommerce-page body class causes builder's shop column styling to be irrelevant.
- * @param  array body classes
- * @return array modified body classes
- */
-function et_builder_wc_body_class( $classes ) {
-	if ( et_builder_used_in_wc_shop() ) {
-		$classes = array_diff( $classes, array( 'woocommerce', 'woocommerce-page' ) );
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_builder_wc_body_class' );
