@@ -1319,22 +1319,6 @@ var isBuilder = 'object' === typeof window.ET_Builder;
 				window.et_pb_apply_sticky_image_effect($(this));
 			} );
 
-			if ( et_is_mobile_device ) {
-				$( '.et_pb_section_video_bg' ).each( function() {
-					var $this_el = $(this);
-
-					$this_el.closest( '.et_pb_preload' ).removeClass( 'et_pb_preload' );
-
-					$this_el.remove();
-				} );
-
-				$( 'body' ).addClass( 'et_mobile_device' );
-
-				if ( ! et_is_ipad ) {
-					$( 'body' ).addClass( 'et_mobile_device_not_ipad' );
-				}
-			}
-
 			if ( et_is_ie9 ) {
 				$( 'body' ).addClass( 'et_ie9' );
 			}
