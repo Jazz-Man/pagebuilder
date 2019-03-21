@@ -4222,7 +4222,7 @@ function et_fb_get_posts_list() {
 add_action( 'wp_ajax_et_fb_get_posts_list', 'et_fb_get_posts_list' );
 
 function et_pb_get_supported_font_formats() {
-	return apply_filters( 'et_pb_supported_font_formats', array( 'ttf', 'otf' ) );
+	return apply_filters( 'et_pb_supported_font_formats', array( 'ttf', 'otf','eot','woff2','woff' ) );
 }
 
 function et_pb_process_custom_font() {
