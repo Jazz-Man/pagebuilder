@@ -16,6 +16,7 @@ require_once 'module/field/Factory.php';
  *
  * @property \ET_Builder_Module_Field_TextShadow text_shadow
  * @property array                               _additional_fields_options
+ * @property bool fullwidth
  * @since 1.0
  * @method init()
  */
