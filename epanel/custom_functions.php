@@ -1190,21 +1190,6 @@ if ( ! function_exists( 'elegant_canonical' ) ) {
 
 }
 
-add_action( 'wp_head', 'add_favicon' );
-
-function add_favicon(){
-	global $shortname;
-
-	$faviconUrl = et_get_option( $shortname.'_favicon' );
-
-	// If the `has_site_icon` function doesn't exist (ie we're on < WP 4.3) or if the site icon has not been set,
-	// and when we have a icon URL from theme option
-	if ( ( ! function_exists( 'has_site_icon' ) || ! has_site_icon() ) && '' !== $faviconUrl ) {
-		echo '<link rel="shortcut icon" href="' . esc_url( $faviconUrl ) . '" />';
-	} elseif ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
-		et_update_option( $shortname . '_favicon', '' );
-	}
-}
 
 add_action( 'init', 'et_create_images_temp_folder' );
 
