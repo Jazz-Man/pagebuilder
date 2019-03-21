@@ -292,24 +292,6 @@ function et_divi_load_scripts_styles(){
 }
 add_action( 'wp_enqueue_scripts', 'et_divi_load_scripts_styles' );
 
-/**
- * Switch out the style.css for style-cpt.css when viewing the singular view of a custom post type.
- * Necessary for child theme support so they don't have to implement this logic.
- * Hooks at 99999998 so et_builder_dequeue_minifieds_styles() runs after this.
- */
-function et_divi_replace_stylesheet() {
-	// Apply to Custom Post Types when Builder used only.
-	if ( ! et_builder_post_is_of_custom_post_type() || ! et_pb_is_pagebuilder_used( get_the_ID() ) ) {
-		return;
-	}
-
-	$template_directory_uri = preg_quote( get_template_directory_uri(), '/' );
-	$theme_style            = '/^(' . $template_directory_uri . '\/style)(\.dev)?(\.css)$/';
-	$theme_style_cpt        = '$1-cpt$2$3';
-
-	et_core_replace_enqueued_style( $theme_style, $theme_style_cpt, true );
-}
-add_action( 'wp_enqueue_scripts', 'et_divi_replace_stylesheet', 99999998 );
 
 function et_divi_shortcodes_strings_handle( $handle ) {
 	return et_load_unminified_scripts() ? $handle : 'divi-custom-script';
