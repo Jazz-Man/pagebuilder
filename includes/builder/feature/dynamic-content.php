@@ -359,12 +359,12 @@ function et_builder_get_custom_dynamic_content_fields( $post_id ) {
 	$display_hidden_meta_keys = apply_filters( 'et_builder_dynamic_content_display_hidden_meta_keys', array(), $post_id );
 
 	foreach ( $raw_custom_fields as $key => $values ) {
-		if ( substr( $key, 0, 1 ) === '_' && ! in_array( $key, $display_hidden_meta_keys ) ) {
+		if (strpos($key, '_') === 0 && ! in_array( $key, $display_hidden_meta_keys ) ) {
 			// Ignore hidden meta keys.
 			continue;
 		}
 
-		if ( substr( $key, 0, 3 ) === 'et_' ) {
+		if (strpos($key, 'et_') === 0) {
 			// Ignore ET meta keys as they are not suitable for dynamic content use.
 			continue;
 		}
@@ -952,18 +952,14 @@ function et_builder_parse_dynamic_content( $content ) {
  * @return string
  */
 function et_builder_serialize_dynamic_content( $dynamic, $content, $settings ) {
-	// JSON_UNESCAPED_SLASHES is only supported from 5.4.
-	$options = defined( 'JSON_UNESCAPED_SLASHES' ) ? JSON_UNESCAPED_SLASHES : 0;
-	$result  = wp_json_encode( array(
+
+	$result  = json_encode( array(
 		'dynamic' => $dynamic,
 		'content' => $content,
 		// Force object type for keyed arrays as empty arrays will be encoded to
 		// javascript arrays instead of empty objects.
 		'settings' => (object) $settings,
-	), $options );
-
-	// Use fallback if needed
-	$result = 0 === $options ? str_replace( '\/', '/', $result ) : $result;
+	), JSON_UNESCAPED_SLASHES );
 
 	return '@ET-DC@' . base64_encode( $result ) . '@';
 }
