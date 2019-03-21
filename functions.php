@@ -6756,25 +6756,6 @@ add_action( 'init', 'et_divi_activate_features' );
 
 require_once( get_template_directory() . '/et-pagebuilder/et-pagebuilder.php' );
 
-/**
- * Custom body classes for handling customizer preview screen
- * @return array
- */
-function et_divi_customize_preview_class( $classes ) {
-	if ( is_customize_preview() ) {
-		// Customizer class name for customizer specific stuff
-		$classes[] = 'et_is_customize_preview';
-
-		// Search icon state
-		if ( ! et_get_option( 'show_search_icon', true ) ) {
-			$classes[] = 'et_hide_search_icon';
-		}
-	}
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_customize_preview_class' );
-
 function et_modify_shop_page_columns_num( $columns_num ) {
 	$default_sidebar_class = is_rtl() ? 'et_left_sidebar' : 'et_right_sidebar';
 
