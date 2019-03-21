@@ -180,17 +180,17 @@ class ET_Builder_Element {
 	/**
 	 * @var ET_Core_Data_Utils
 	 */
-	protected static $_ = null;
+	protected static $_;
 
 	/**
 	 * @var ET_Core_PageResource
 	 */
-	public static $advanced_styles_manager  = null;
+	public static $advanced_styles_manager;
 
 	/**
 	 * @var ET_Core_Data_Utils
 	 */
-	public static $data_utils = null;
+	public static $data_utils;
 
 	public static $field_dependencies = array();
 
@@ -290,7 +290,7 @@ class ET_Builder_Element {
 
 		$this->_style_priority = self::DEFAULT_PRIORITY;
 		if ( isset( $this->type ) && 'child' === $this->type ) {
-			$this->_style_priority = $this->_style_priority + 1;
+			++$this->_style_priority;
 		} else {
 			// add default toggles
 			$default_general_toggles = array(
@@ -442,7 +442,7 @@ class ET_Builder_Element {
 		if ( ! $is_deprecated ) {
 			$message .= " doesn't exist.";
 		} else {
-			$message    .= " is deprecated.";
+			$message    .= ' is deprecated.';
 			$new_method  = self::$_deprecations['methods'][ $name ];
 
 			if ( ! is_string( $new_method ) ) {
@@ -495,7 +495,7 @@ class ET_Builder_Element {
 			$message         .= " doesn't exist.";
 			$should_set_value = true;
 		} else {
-			$message .= " is deprecated.";
+			$message .= ' is deprecated.';
 			$new_prop = self::$_deprecations['properties'][ $name ];
 
 			if ( $new_prop && is_string( $new_prop ) && property_exists( $this, $new_prop ) ) {
@@ -1050,7 +1050,7 @@ class ET_Builder_Element {
 
 			// Unset renderer to avoid errors in VB because of errors in 3rd party plugins
 			// BB compat. Still need this data, so leave it for BB
-			if ( ( self::is_loading_vb_data() || et_fb_is_enabled() ) && isset( $this->fields_unprocessed[ $field_name ]['renderer'] ) ) {
+			if (($this->is_loading_vb_data() || et_fb_is_enabled() ) && isset($this->fields_unprocessed[$field_name ]['renderer'] ) ) {
 				unset( $this->fields_unprocessed[ $field_name ]['renderer'] );
 			}
 
@@ -1096,7 +1096,7 @@ class ET_Builder_Element {
 	 * @return bool
 	 */
 	protected function is_loading_bb_data() {
-		return isset( $_POST['action'] ) && in_array( $_POST['action'], array( 'et_pb_get_backbone_templates') ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		return isset( $_POST['action'] ) && $_POST['action'] == 'et_pb_get_backbone_templates'; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 	}
 
 	private function register_post_type( $post_type ) {
@@ -1385,11 +1385,10 @@ class ET_Builder_Element {
 		// Resolve conditional defaults for the FE
 		$resolved = $this->get_default_props();
 
-		if ( $render_slug && $render_slug !== $this->slug ) {
-			if ( $module = self::get_module( $render_slug, $this->get_post_type() ) ) {
-				$resolved = array_merge( $resolved, $module->get_default_props() );
-			}
-		}
+		if ($render_slug && $render_slug !== $this->slug && $module = self::get_module($render_slug,
+                $this->get_post_type())) {
+                    $resolved = array_merge( $resolved, $module->get_default_props() );
+                }
 
 		foreach ( $resolved as $field_name => $field_default ) {
 			if ( is_array( $field_default ) && 2 === count( $field_default ) && ! empty( $field_default[0] ) && is_array( $field_default[1] ) ) {
@@ -1446,7 +1445,7 @@ class ET_Builder_Element {
 		if ( ! $et_fb_processing_shortcode_object ) {
 			$use_background_image = self::$_->array_get( $this->advanced_fields, 'background.use_background_image', false );
 			$use_background_video = self::$_->array_get( $this->advanced_fields, 'background.use_background_video', false );
-			$use_module_id        = self::$_->array_get( $this->props, 'module_id', '' );
+			$use_module_id        = self::$_->array_get( $this->props, 'module_id');
 
 			// Module might disable image background
 			if ( $use_background_image ) {
@@ -1984,7 +1983,7 @@ class ET_Builder_Element {
 			return $output;
 		}
 
-		remove_filter( "{$module_slug}_shortcode_output", array( $this, 'add_et_animated_class' ), 10 );
+		remove_filter( "{$module_slug}_shortcode_output", array( $this, 'add_et_animated_class' ));
 
 		return preg_replace( "/class=\"(.*?{$module_slug}_\d+.*?)\"/", 'class="$1 et_animated"', $output, 1 );
 	}
@@ -2016,7 +2015,7 @@ class ET_Builder_Element {
 				continue;
 			}
 
-			$attr_value = self::$_->array_get( $this->props, $field_key, '' );
+			$attr_value = self::$_->array_get( $this->props, $field_key);
 
 			if ( $attr_value && $attr_value === $global_setting_value ) {
 				$this->props[ $field_key ] = '';
@@ -2053,7 +2052,7 @@ class ET_Builder_Element {
 		$this->props['content'] = $this->content;
 		extract( $this->props );
 		ob_start();
-		require( locate_template( $this->template_name . '.php' ) );
+		require locate_template($this->template_name . '.php' );
 		return ob_get_clean();
 	}
 
@@ -2172,11 +2171,10 @@ class ET_Builder_Element {
 		$global_module_id = $atts['global_module'] ?? false;
 		$is_global_template = false;
 
-		if ( $render_slug && $render_slug !== $this->slug ) {
-			if ( $rendering_module = self::get_module( $render_slug, $this->get_post_type() ) ) {
-				$fields = array_merge( $fields, $this->process_fields( $rendering_module->fields_unprocessed ) );
-			}
-		}
+		if ($render_slug && $render_slug !== $this->slug && $rendering_module = self::get_module($render_slug,
+                $this->get_post_type())) {
+                    $fields = array_merge( $fields, $this->process_fields( $rendering_module->fields_unprocessed ) );
+                }
 
 		$output_render_slug = $render_slug;
 
@@ -2322,11 +2320,9 @@ class ET_Builder_Element {
 					foreach ( $field['computed_depends_on'] as $depends_on_field ) {
 						$dependency_value = $this->props[ $depends_on_field ];
 
-						if ( '' === $dependency_value ) {
-							if ( isset( $this->fields_unprocessed[ $depends_on_field]['default'] ) ) {
-								$dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
-							}
-						}
+						if (('' === $dependency_value) && isset($this->fields_unprocessed[$depends_on_field]['default'])) {
+                            $dependency_value = $this->fields_unprocessed[ $depends_on_field ]['default'];
+                        }
 
 						$depends_on[ $depends_on_field ] = $dependency_value;
 					}
@@ -2981,9 +2977,9 @@ class ET_Builder_Element {
 					'sub_toggle'      => $sub_toggle,
 				));
 				$additional_options = array_merge( $additional_options, $option );
-			};
+			}
 
-			// The below option is obsolete. This code is for backward compatibility
+            // The below option is obsolete. This code is for backward compatibility
 			if ( isset( $option_settings['use_all_caps'] ) && $option_settings['use_all_caps'] ) {
 				$additional_options["{$option_name}_all_caps"] = array(
 					'type'              => 'hidden',
@@ -3028,7 +3024,7 @@ class ET_Builder_Element {
 			$this->_add_settings_modal_toggles( $tab_slug, $background_toggle );
 		}
 
-		$background_field_name = "background";
+		$background_field_name = 'background';
 
 		// Possible values for use_* attributes: true, false, or 'fields_only'
 		$defaults = array(
@@ -3148,7 +3144,7 @@ class ET_Builder_Element {
 
 		$additional_options = array();
 		if ( $text_settings['use_text_orientation'] ) {
-			$default_on_front = self::$_->array_get( $text_settings, 'options.text_orientation.default_on_front', '' );
+			$default_on_front = self::$_->array_get( $text_settings, 'options.text_orientation.default_on_front');
 			$additional_options = array(
 				'text_orientation' => array(
 					'label'            => esc_html__( 'Text Orientation', 'et_builder' ),
@@ -3544,31 +3540,31 @@ class ET_Builder_Element {
 				$additional_options['custom_margin'] = array_merge( $additional_options['custom_margin'], $this->advanced_fields['margin_padding']['custom_margin'] );
 			}
 
-			$additional_options["custom_margin_last_edited"] = array(
+            $additional_options['custom_margin_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
 			);
 
-			$additional_options["padding_1_last_edited"] = array(
+            $additional_options['padding_1_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
 			);
 
-			$additional_options["padding_2_last_edited"] = array(
+            $additional_options['padding_2_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
 			);
 
-			$additional_options["padding_3_last_edited"] = array(
+            $additional_options['padding_3_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
 			);
 
-			$additional_options["padding_4_last_edited"] = array(
+            $additional_options['padding_4_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
@@ -3601,7 +3597,7 @@ class ET_Builder_Element {
 				$additional_options['custom_padding'] = array_merge( $additional_options['custom_padding'], $this->advanced_fields['margin_padding']['custom_padding'] );
 			}
 
-			$additional_options["custom_padding_last_edited"] = array(
+            $additional_options['custom_padding_last_edited'] = array(
 				'type'        => 'skip',
 				'tab_slug'    => $tab_slug,
 				'toggle_slug' => $toggle_slug,
@@ -3977,7 +3973,7 @@ class ET_Builder_Element {
 				if ( ! isset( $this->advanced_fields['box_shadow'] ) ) {
 					$button_box_shadow_options_default = array();
 
-					self::$_->array_set( $this->advanced_fields, "box_shadow.default", $button_box_shadow_options_default );
+					self::$_->array_set( $this->advanced_fields, 'box_shadow.default', $button_box_shadow_options_default );
 				}
 
 				// Box shadow fields are generated after button fields being added. Thus, adding $this->advanced_fields
@@ -5667,7 +5663,7 @@ class ET_Builder_Element {
 		}
 
 		$field            = $this->fields_unprocessed[ $name ];
-		$default          = self::$_->array_get( $field, 'default', '' );
+		$default          = self::$_->array_get( $field, 'default');
 		$default_on_front = self::$_->array_get( $field, 'default_on_front', 'not_found' );
 
 		if ( 'not_found' !== $default_on_front ) {
@@ -5936,11 +5932,7 @@ class ET_Builder_Element {
 			$et_builder_post_type = sanitize_text_field( $_POST['et_post_type'] );
 		}
 
-		if ( is_a( $post, 'WP_POST' ) && ( is_admin() || ! isset( $et_builder_post_type ) ) ) {
-			return $post->post_type;
-		} else {
-			return $et_builder_post_type ?? 'post';
-        }
+        return is_a($post, 'WP_POST') && (is_admin() || ! isset($et_builder_post_type)) ? $post->post_type : $et_builder_post_type ?? 'post';
     }
 
 	public static function optimize_bb_chunk( $content ) {
@@ -6116,7 +6108,7 @@ class ET_Builder_Element {
 
 		if ( ! empty( $field_renderer ) && is_array( $field_renderer['renderer'] ) && ! empty( $field_renderer['renderer']['class'] ) ) {
 			//cut off 'ET_Builder_Module_Field_Template_' part from renderer definition
-			$class_name_without_prefix = strtolower ( str_replace ("ET_Builder_Module_Field_Template_", "", $field_renderer['renderer']['class'] ) );
+			$class_name_without_prefix = strtolower ( str_replace ('ET_Builder_Module_Field_Template_', '', $field_renderer['renderer']['class'] ) );
 
 			//split class name string by underscore symbol
 			$file_name_parts = explode( '_', $class_name_without_prefix );
@@ -6131,8 +6123,8 @@ class ET_Builder_Element {
 				$renderer = new $field_renderer['renderer']['class'];
 
 				//before calling the 'render' method make sure the instantiated class is child of 'ET_Builder_Module_Field_Template_Base'
-				if ( is_subclass_of( $field_renderer['renderer']['class'], "ET_Builder_Module_Field_Template_Base" ) ) {
-					$field_el = call_user_func( array( $renderer, "render" ), $field, $this );
+				if ( is_subclass_of( $field_renderer['renderer']['class'], 'ET_Builder_Module_Field_Template_Base') ) {
+					$field_el = call_user_func( array($renderer, 'render'), $field, $this );
 				}
 			}
 		} else if ( ! empty( $field_renderer ) ) {
@@ -6792,27 +6784,27 @@ class ET_Builder_Element {
 			);
 
 			$options["__video_{$base_name}"] = array(
-				'type'                => 'computed',
-				'computed_callback'   => array( 'ET_Builder_Element', "get_video_background" ),
-				'computed_depends_on' => array(
+                'type'                => 'computed',
+                'computed_callback'   => array('ET_Builder_Element', 'get_video_background'),
+                'computed_depends_on' => array(
 					"{$base_name}_video_mp4",
 					"{$base_name}_video_webm",
 					"{$base_name}_video_width",
 					"{$base_name}_video_height",
 				),
-				'computed_minimum'    => array(
+                'computed_minimum'    => array(
 					"{$base_name}_video_mp4",
 					"{$base_name}_video_webm",
 				),
-				'computed_variables'  => array(
+                'computed_variables'  => array(
 					'base_name' => $base_name,
 				),
 			);
 		}
 
 		foreach ( $options as &$option ) {
-			$option['context'] = null == $context ? $base_name : $context;;
-		}
+			$option['context'] = null == $context ? $base_name : $context;
+        }
 
 		return $options;
 	}
@@ -7066,7 +7058,7 @@ class ET_Builder_Element {
 
 		$field_var_name = $this->get_field_variable_name( $field );
 
-		$default_on_front = self::$_->array_get( $field, 'default_on_front', '' );
+		$default_on_front = self::$_->array_get( $field, 'default_on_front');
 		$default_arr = self::$_->array_get( $field, 'default', $default_on_front );
 
 		if ( is_array( $default_arr ) && isset( $default_arr[1] ) && is_array( $default_arr[1] ) ) {
@@ -7216,7 +7208,7 @@ class ET_Builder_Element {
 					$field_custom_value .= '.replace( /%91/g, "&#91;" ).replace( /%93/g, "&#93;" )';
 				}
 
-				if ( in_array( $field_name, array( 'et_pb_custom_message' ) ) ) {
+				if ($field_name == 'et_pb_custom_message') {
 					// escape html to make sure it's not rendered inside the Textarea field in Settings Modal.
 					$field_custom_value = sprintf( '_.escape( %1$s )', $field_custom_value );
 				}
@@ -7437,7 +7429,7 @@ class ET_Builder_Element {
 
 				foreach ( $presets as $preset ) {
 					$fields = isset( $preset['fields'] )
-						? htmlspecialchars( wp_json_encode( $preset['fields'] ), ENT_QUOTES, 'UTF-8' )
+						? htmlspecialchars( wp_json_encode( $preset['fields'] ), ENT_QUOTES)
 						: '[]';
 					$presets_buttons .= sprintf(
 						'<div class="et-preset" data-value="%1$s" data-fields="%2$s">',
@@ -7601,7 +7593,7 @@ class ET_Builder_Element {
 			case 'custom_margin':
 			case 'custom_padding':
 
-				$custom_margin_class = "";
+				$custom_margin_class = '';
 
 				// Fill the array of values for tablet and phone
 				if ( $need_mobile_options ) {
@@ -7637,7 +7629,7 @@ class ET_Builder_Element {
 
 				// Add auto_important class to field which automatically append !important tag
 				if ( isset( $this->advanced_fields['margin_padding']['css']['important'] ) ) {
-					$custom_margin_class .= " auto_important";
+					$custom_margin_class .= ' auto_important';
 				}
 
 				$has_responsive_affects = isset( $field['responsive_affects'] );
@@ -7874,7 +7866,7 @@ class ET_Builder_Element {
 				}
 
 				if ( $need_mobile_options ) {
-					$field_el = $field_el . $additional_fields;
+					$field_el .= $additional_fields;
 				}
 
 				break;
@@ -7915,14 +7907,11 @@ class ET_Builder_Element {
 				$this->process_html_attributes( $element, $attributes );
 			}
 
-			switch ( $element['type'] ) {
-				case 'button':
-					$class     = isset( $element['class'] ) ? esc_attr( $element['class'] ) : '';
-					$text      = isset( $element['text'] ) ? et_core_esc_previously( $element['text'] ) : '';
-					$field_el .= sprintf( '<button class="button %1$s"%2$s>%3$s</button>', $class, $attributes, $text );
-
-					break;
-			}
+            if ($element['type'] === 'button') {
+                $class    = isset($element['class']) ? esc_attr($element['class']) : '';
+                $text     = isset($element['text']) ? et_core_esc_previously($element['text']) : '';
+                $field_el .= sprintf('<button class="button %1$s"%2$s>%3$s</button>', $class, $attributes, $text);
+            }
 		}
 
 		return $field_el;
@@ -8187,11 +8176,10 @@ class ET_Builder_Element {
 			$sub_toggle_slug = 'all_options' !== $toggle_slug && isset( $field['sub_toggle'] ) && '' !== $field['sub_toggle'] ? $field['sub_toggle'] : 'main';
 			$tabs_output[ $tab_slug ][ $toggle_slug ][ $sub_toggle_slug ][] = $this->wrap_settings_option( $option_output, $field, $field_name );
 
-			if ( isset( $field['toggle_slug'] ) && ! isset( $this->settings_modal_toggles[ $tab_slug ]['toggles'][ $toggle_slug ] ) ) {
-				if ( $toggle = self::$_->array_get( $all_toggles, "{$this->slug}.{$tab_slug}.toggles.{$field['toggle_slug']}" ) ) {
-					self::$_->array_set( $this->settings_modal_toggles, "{$tab_slug}.toggles.{$toggle_slug}", $toggle );
-				}
-			}
+			if (isset($field['toggle_slug']) && ! isset($this->settings_modal_toggles[$tab_slug]['toggles'][$toggle_slug]) && $toggle = self::$_->array_get($all_toggles,
+                    "{$this->slug}.{$tab_slug}.toggles.{$field['toggle_slug']}")) {
+                        self::$_->array_set( $this->settings_modal_toggles, "{$tab_slug}.toggles.{$toggle_slug}", $toggle );
+                    }
 		}
 
 		$default_tabs_keys = array_keys( $this->main_tabs );
@@ -8862,7 +8850,7 @@ class ET_Builder_Element {
 
             if ('' !== $field_option_value || ! $global_setting_value ) {
 				$important = in_array( 'font', $important_options ) || $use_global_important ? ' !important' : '';
-				$font_styles = et_builder_set_element_font( $field_option_value, ( '' !== $important ), $global_setting_value );
+				$font_styles = et_builder_set_element_font( $field_option_value, '' !== $important, $global_setting_value );
 
 				if ( isset( $option_settings['css']['font'] ) ) {
 					self::set_style( $function_name, array(
@@ -9197,7 +9185,7 @@ class ET_Builder_Element {
 					$important = in_array( $css_option_name, $important_options ) || $use_global_important ? ' !important' : '';
 
 					// Allow specific selector tablet and mobile, simply add _tablet or _phone suffix
-					if ( isset( $option_settings['css'][ $mobile_option ] ) && "" !== $option_settings['css'][ $mobile_option ] ) {
+					if (isset( $option_settings['css'][ $mobile_option ] ) && '' !== $option_settings['css'][$mobile_option ] ) {
 						$selector = $option_settings['css'][ $mobile_option ];
 					} elseif ( isset( $option_settings['css'][ $main_option_name ] ) || isset( $option_settings['css']['main'] ) ) {
 						$selector = $option_settings['css'][$main_option_name] ?? $option_settings['css']['main'];
@@ -9768,11 +9756,11 @@ class ET_Builder_Element {
 		if ( $this->advanced_fields['max_width']['use_max_width'] ) {
 			$max_width_default     = $this->fields_unprocessed['max_width']['default'];
 			$desktop_default       = $max_width_default;
-			$max_width             = self::$_->array_get( $this->props, 'max_width', '' );
-			$max_width_tablet      = self::$_->array_get( $this->props, 'max_width_tablet', '' );
-			$max_width_phone       = self::$_->array_get( $this->props, 'max_width_phone', '' );
+			$max_width             = self::$_->array_get( $this->props, 'max_width');
+			$max_width_tablet      = self::$_->array_get( $this->props, 'max_width_tablet');
+			$max_width_phone       = self::$_->array_get( $this->props, 'max_width_phone');
 			$max_width_hover       = $hover->get_value( 'max_width', $this->props, '' );
-			$max_width_last_edited = self::$_->array_get( $this->props, 'max_width_last_edited', '' );
+			$max_width_last_edited = self::$_->array_get( $this->props, 'max_width_last_edited');
 			$max_width_responsive_active = et_pb_get_responsive_status( $max_width_last_edited );
 
 			if ( $max_width_responsive_active ) {
@@ -9841,7 +9829,7 @@ class ET_Builder_Element {
                 $is_max_width_customized = true;
 
 				if ( '' === $max_width ) {
-					$hover_max_width = $desktop_default ? $desktop_default : '100%';
+					$hover_max_width = $desktop_default ?: '100%';
 					$hover_base = array(
 						'selector'    => $selector,
 						'declaration' => esc_html( "max-width: $hover_max_width;" ),
@@ -10575,13 +10563,13 @@ class ET_Builder_Element {
 
 				// Background Image
 				$background_image            = $this->props["{$background_prefix}image"];
-				$background_size_default     = $this->fields_unprocessed["{$background_prefix}size"]["default"] ?? "";
+				$background_size_default     = $this->fields_unprocessed["{$background_prefix}size"]['default'] ?? '';
                 $background_size             = $this->props["{$background_prefix}size"];
-				$background_position_default = $this->fields_unprocessed["{$background_prefix}position"]["default"] ?? "";
+				$background_position_default = $this->fields_unprocessed["{$background_prefix}position"]['default'] ?? '';
                 $background_position         = $this->props["{$background_prefix}position"];
-				$background_repeat_default   = $this->fields_unprocessed["{$background_prefix}repeat"]["default"] ?? "";
+				$background_repeat_default   = $this->fields_unprocessed["{$background_prefix}repeat"]['default'] ?? '';
                 $background_repeat           = $this->props["{$background_prefix}repeat"];
-				$background_blend_default    = $this->fields_unprocessed["{$background_prefix}blend"]["default"] ?? "";
+				$background_blend_default    = $this->fields_unprocessed["{$background_prefix}blend"]['default'] ?? '';
                 $background_blend            = $this->props["{$background_prefix}blend"];
 				$parallax                    = $this->props["{$background_prefix}parallax"];
 
@@ -10731,7 +10719,7 @@ class ET_Builder_Element {
 				$show_if_skip = false;
 
 				foreach ( $show_if as $show_if_attr_name => $show_if_attr_value ) {
-					$attr_value = self::$_->array_get( $this->props, $show_if_attr_name, '' );
+					$attr_value = self::$_->array_get( $this->props, $show_if_attr_name);
 
 					// Skip printing this box shadow value once one of the attribute value doesn't
 					// match with given value
@@ -10755,7 +10743,7 @@ class ET_Builder_Element {
 				$show_if_not_skip = false;
 
 				foreach ( $show_if_not as $show_if_not_attr_name => $show_if_not_attr_value ) {
-					$attr_value = self::$_->array_get( $this->props, $show_if_not_attr_name, '' );
+					$attr_value = self::$_->array_get( $this->props, $show_if_not_attr_name);
 
 					// Skip printing this box value once this attribute value matches the given value
 					if ( $attr_value === $show_if_not_attr_value ) {
@@ -11280,7 +11268,7 @@ class ET_Builder_Element {
 			// had their post type support disabled still load all necessary modules.
 			$parent_modules = ! empty( self::$parent_modules[ $post_type ] )
 				? self::$parent_modules[ $post_type ]
-				: self::get_custom_post_type_fallback_modules( 'parent' );
+				: self::get_custom_post_type_fallback_modules();
 		} else {
 			$parent_modules = self::$parent_modules;
 		}
@@ -11971,14 +11959,14 @@ class ET_Builder_Element {
 		 */
 		foreach ( $modules as $module_slug => $module ) {
 			// Include custom module credits for displaying them within VB
-			if ( $module->_is_official_module ) {
-				continue;
-			} else {
-				if ( isset( $module->module_credits ) && is_array( $module->module_credits ) ) {
-					$result[ $module_slug ] = $module->module_credits;
-				}
-			}
-		}
+            if ($module->_is_official_module) {
+                continue;
+            }
+
+            if (isset( $module->module_credits ) && is_array( $module->module_credits )) {
+                $result[ $module_slug ] = $module->module_credits;
+            }
+        }
 
 		return $result;
 	}
@@ -12042,7 +12030,7 @@ class ET_Builder_Element {
 		}
 
 		$styles_by_media_queries = $styles_array;
-		$styles_count            = (int) count( $styles_by_media_queries );
+		$styles_count            = count( $styles_by_media_queries );
 		$media_queries_order     = array_merge( array( 'general' ), array_values( self::$media_queries ) );
 
 		// make sure styles in the array ordered by media query correctly from bigger to smaller screensize
@@ -12096,8 +12084,8 @@ class ET_Builder_Element {
 		$formatted_args = array();
 
 		foreach ( $args as $key => $value) {
-			$key_length = strlen( $key );
-			$formatted_args[ substr( $key, 0, ( $key_length - 2 ) ) ] = $value;
+			$key_length                                          = strlen( $key );
+			$formatted_args[ substr( $key, 0, $key_length - 2) ] = $value;
 		}
 
 		return self::get_video_background( $formatted_args, $conditional_tags, $current_page );
@@ -12137,7 +12125,7 @@ class ET_Builder_Element {
 		// set the flag to make sure new styles will be saved to the correct place
 		self::$prepare_internal_styles = $need_internal_styles;
 		// generate unique number to make sure module classes will be unique if shortcode is generated via ajax
-		self::$internal_modules_counter = rand( 10000, 99999 );
+		self::$internal_modules_counter = random_int( 10000, 99999 );
 	}
 
 	/**
@@ -12309,11 +12297,9 @@ class ET_Builder_Element {
 			if ( ! isset( self::$inner_modules_order[ $function_name ] ) ) {
 				return false;
 			}
-		} else {
-			if ( ! isset( self::$modules_order[ $function_name ] ) ) {
-				return false;
-			}
-		}
+		} elseif ( ! isset(self::$modules_order[$function_name ] ) ) {
+            return false;
+        }
 
 		if ( isset( $et_pb_predefined_module_index ) && $et_pb_predefined_module_index ) {
 			$shortcode_order_num = $et_pb_predefined_module_index;
@@ -12321,9 +12307,7 @@ class ET_Builder_Element {
 			$shortcode_order_num = $get_inner_module_class ? self::$inner_modules_order[ $function_name ] : self::$modules_order[ $function_name ];
 		}
 
-		$order_class_name = sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
-
-		return $order_class_name;
+        return sprintf( '%1$s_%2$s', $function_name, $shortcode_order_num );
 	}
 
 	public static function set_order_class( $function_name ) {
@@ -12497,18 +12481,18 @@ class ET_Builder_Element {
 			$additional_classes = '';
 
 			// Blend Mode
-			$mix_blend_mode = self::$data_utils->array_get( $this->props, "{$prefix}mix_blend_mode", '' );
+			$mix_blend_mode = self::$data_utils->array_get( $this->props, "{$prefix}mix_blend_mode");
 
 			// Filters
 			$filter = array(
-				'hue_rotate' => self::$data_utils->array_get( $this->props, "{$prefix}filter_hue_rotate{$suffix}", ''),
-				'saturate'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_saturate{$suffix}", ''),
-				'brightness' => self::$data_utils->array_get( $this->props, "{$prefix}filter_brightness{$suffix}", ''),
-				'contrast'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_contrast{$suffix}", ''),
-				'invert'     => self::$data_utils->array_get( $this->props, "{$prefix}filter_invert{$suffix}", ''),
-				'sepia'      => self::$data_utils->array_get( $this->props, "{$prefix}filter_sepia{$suffix}", ''),
-				'opacity'    => self::$data_utils->array_get( $this->props, "{$prefix}filter_opacity{$suffix}", ''),
-				'blur'       => self::$data_utils->array_get( $this->props, "{$prefix}filter_blur{$suffix}", ''),
+                'hue_rotate' => self::$data_utils->array_get( $this->props, "{$prefix}filter_hue_rotate{$suffix}"),
+                'saturate'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_saturate{$suffix}"),
+                'brightness' => self::$data_utils->array_get( $this->props, "{$prefix}filter_brightness{$suffix}"),
+                'contrast'   => self::$data_utils->array_get( $this->props, "{$prefix}filter_contrast{$suffix}"),
+                'invert'     => self::$data_utils->array_get( $this->props, "{$prefix}filter_invert{$suffix}"),
+                'sepia'      => self::$data_utils->array_get( $this->props, "{$prefix}filter_sepia{$suffix}"),
+                'opacity'    => self::$data_utils->array_get( $this->props, "{$prefix}filter_opacity{$suffix}"),
+                'blur'       => self::$data_utils->array_get( $this->props, "{$prefix}filter_blur{$suffix}"),
 			);
 
 			// Remove any filters with null or default values
@@ -12816,7 +12800,7 @@ class ET_Builder_Element {
 		 * @param array $classname    Array of classnames.
 		 * @param int   $render_count Number of times render function has been executed
 		 */
-		$classname = (array) array_unique( apply_filters( "et_builder_{$module_name}_classes", $this->classname, $this->render_count() ) );
+		$classname = array_unique( apply_filters( "et_builder_{$module_name}_classes", $this->classname, $this->render_count() ) );
 
 		return implode( ' ', array_map( 'esc_attr', $classname ) );
 	}
@@ -13110,7 +13094,7 @@ class ET_Builder_Element {
 		$json = et_builder_clean_dynamic_content( $value );
 
 		// Replace encoded quotes.
-		$json = str_replace( array( '&#8220;', '&#8221;', '&#8243;', "%22" ), '"', $json );
+		$json = str_replace( array('&#8220;', '&#8221;', '&#8243;', '%22'), '"', $json );
 
 		// Strip <p></p> artifacts from wpautop in before/after settings. Example:
 		// {"dynamic":true,"content":"post_title","settings":{"before":"</p>
@@ -13224,7 +13208,7 @@ class ET_Builder_Structure_Element extends ET_Builder_Element {
 				}
 
 				// Overriding background color's attribute, turning it into appropriate background attributes
-				if ( isset( $field['type'] ) && isset( $field['name' ] ) && in_array( $field['name'], array( 'background_color' ) ) ) {
+				if ( isset( $field['type'] ) && isset( $field['name' ] ) && $field['name'] == 'background_color') {
 
 					$field['type'] = 'background';
 

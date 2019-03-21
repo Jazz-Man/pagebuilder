@@ -7959,7 +7959,12 @@ add_action( 'template_include', 'et_pb_register_preview_page' );
  * convert them back to make sure js code works ok
  */
 if ( ! function_exists( 'et_builder_replace_code_content_entities' ) ) :
-function et_builder_replace_code_content_entities( $content ) {
+    /**
+     * @param string $content
+     *
+     * @return string
+     */
+    function et_builder_replace_code_content_entities( $content ) {
 	$content = str_replace( '&#091;', '[', $content );
 	$content = str_replace( '&#093;', ']', $content );
 	$content = str_replace( '&#215;', 'x', $content );
@@ -7973,7 +7978,13 @@ endif;
  * convert them back to \n
  */
 if ( ! function_exists( 'et_builder_convert_line_breaks' ) ) :
-function et_builder_convert_line_breaks( $content, $line_breaks_format = "\n"  ) {
+    /**
+     * @param        $content
+     * @param string $line_breaks_format
+     *
+     * @return string
+     */
+    function et_builder_convert_line_breaks( $content, $line_breaks_format = "\n"  ) {
 
 	// before we swap out the placeholders,
 	// remove all the <p> tags and \n that wpautop added!
