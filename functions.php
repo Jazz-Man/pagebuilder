@@ -7250,16 +7250,6 @@ function et_divi_customizer_link() {
 }
 add_action( 'customize_controls_print_footer_scripts', 'et_divi_customizer_link' );
 
-/**
- * Added body class to make it possible to identify the Divi theme on frontend
- * @return array
- */
-function et_divi_theme_body_class( $classes ) {
-	$classes[] = 'et_divi_theme';
-
-	return $classes;
-}
-add_filter( 'body_class', 'et_divi_theme_body_class' );
 
 /**
  * Determine if it's a fresh Divi install by checking for the existence of 'divi_logo' key in 'et_divi' options array.
