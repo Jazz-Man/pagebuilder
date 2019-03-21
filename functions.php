@@ -6520,37 +6520,6 @@ function et_pb_print_font_style( $styles = '', $important = '' ) {
 	return esc_html( $font_styles );
 }
 
-/*
- * Adds button class to the body tag
- */
-function et_customizer_button_class( $body_class ) {
-	$button_icon_placement = et_get_option( 'all_buttons_icon_placement', 'right' );
-	$button_icon_on_hover = et_get_option( 'all_buttons_icon_hover', 'yes' );
-	$button_use_icon = et_get_option( 'all_buttons_icon', 'yes' );
-	$button_icon = et_get_option( 'all_buttons_selected_icon', '5' );
-
-	if ( 'left' === $button_icon_placement ) {
-		$body_class[] = 'et_button_left';
-	}
-
-	if ( 'no' === $button_icon_on_hover ) {
-		$body_class[] = 'et_button_icon_visible';
-	}
-
-	if ( 'no' === $button_use_icon ) {
-		$body_class[] = 'et_button_no_icon';
-	}
-
-	if ( '5' !== $button_icon ) {
-		$body_class[] = 'et_button_custom_icon';
-	}
-
-	$body_class[] = 'et_pb_button_helper_class';
-
-	return $body_class;
-}
-add_filter( 'body_class', 'et_customizer_button_class' );
-
 function et_load_google_fonts_scripts() {
 	$theme_version = et_get_theme_version();
 
