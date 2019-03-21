@@ -61,53 +61,6 @@ if ( ! function_exists( 'et_options_stored_in_one_row' ) ) {
 
 }
 
-/* sync custom CSS from ePanel with WP custom CSS option introduced in WP 4.7 */
-if ( ! function_exists( 'et_sync_custom_css_options' ) ) {
-	function et_sync_custom_css_options() {
-		global $shortname;
-
-		$legacy_custom_css = wp_unslash( et_get_option( "{$shortname}_custom_css" ) );
-
-		// nothing to sync if no custom css saved in ePanel
-		if ( '' === $legacy_custom_css || ! $legacy_custom_css || empty( $legacy_custom_css ) ) {
-			set_theme_mod( 'et_pb_css_synced', 'yes' );
-			return;
-		}
-
-		// don't proceed with the sync logic if the custom CSS option does not exist
-		if ( ! function_exists( 'wp_get_custom_css' ) ) {
-			return;
-		}
-
-		$css_synced = get_theme_mod( 'et_pb_css_synced', 'no' );
-
-		// get custom css string from WP customizer
-		$wp_custom_css = wp_get_custom_css();
-
-		// force sync if the current custom CSS is empty
-		if ( 'yes' === $css_synced && '' !== $wp_custom_css ) {
-			return;
-		}
-
-		// ePanel is completely synced with Customizer
-		if ( $wp_custom_css === $legacy_custom_css || false !== strpos( $wp_custom_css, $legacy_custom_css ) ) {
-			set_theme_mod( 'et_pb_css_synced', 'yes' );
-			return;
-		}
-
-		// merge custom css from WP customizer with ePanel custom css
-		$updated_custom_css = $legacy_custom_css . ' ' . $wp_custom_css;
-
-		$updated_status = wp_update_custom_css_post( $updated_custom_css );
-
-		// set theme mod in case of success
-		if ( is_object( $updated_status ) && ! empty( $updated_status ) ) {
-			set_theme_mod( 'et_pb_css_synced', 'yes' );
-		}
-	}
-}
-add_action( 'init', 'et_sync_custom_css_options' );
-
 /**
  * sync custom CSS from WP custom CSS option introduced in WP 4.7 with theme options for backward compatibility
  * it should be removed after a few WP major updates when we fully migrate to WP custom CSS system
