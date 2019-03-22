@@ -23,7 +23,7 @@
         }
     ],
     "require-dev": {
-        "roots/wordpress": "^4",
+        "roots/wordpress": "^5",
         "roave/security-advisories": "dev-master"
     }
 }
