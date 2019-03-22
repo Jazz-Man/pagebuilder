@@ -1,6 +1,5 @@
 {
     "name": "jazzman/pagebuilder",
-    "version": "1.0",
     "type": "wordpress-theme",
     "extra": {
         "installer-paths": {
