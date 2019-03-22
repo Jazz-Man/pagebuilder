@@ -18,8 +18,6 @@
 	$template_directory_uri = get_template_directory_uri();
 ?>
 
-	<link rel="pingback" href="<?php bloginfo('pingback_url'); ?>" />
-
 	<script type="text/javascript">
 		document.documentElement.className = 'js';
 	</script>
@@ -53,7 +51,7 @@
 	$et_slide_header = 'slide' === et_get_option( 'header_style', 'left' ) || 'fullscreen' === et_get_option( 'header_style', 'left' ) ? true : false;
 ?>
 
-	<?php if ( $et_top_info_defined && ! $et_slide_header || is_customize_preview() ) : ?>
+	<?php if ( ($et_top_info_defined && ! $et_slide_header) || is_customize_preview() ) : ?>
 		<?php ob_start(); ?>
 		<div id="top-header"<?php echo $et_top_info_defined ? '' : 'style="display: none;"'; ?>>
 			<div class="container clearfix">
@@ -257,15 +255,18 @@
 						<nav id="top-menu-nav">
 						<?php
 							$menuClass = 'nav';
-							if ( 'on' === et_get_option( 'divi_disable_toptier' ) ) $menuClass .= ' et_disable_top_tier';
-							$primaryNav = '';
+							if ( 'on' === et_get_option( 'divi_disable_toptier' ) ) {
+                                $menuClass .= ' et_disable_top_tier';
+                            }
 
 							$primaryNav = wp_nav_menu( array( 'theme_location' => 'primary-menu', 'container' => '', 'fallback_cb' => '', 'menu_class' => $menuClass, 'menu_id' => 'top-menu', 'echo' => false ) );
 							if ( empty( $primaryNav ) ) :
 						?>
 							<ul id="top-menu" class="<?php echo esc_attr( $menuClass ); ?>">
 								<?php if ( 'on' === et_get_option( 'divi_home_link' ) ) { ?>
-									<li <?php if ( is_home() ) echo( 'class="current_page_item"' ); ?>><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'Divi' ); ?></a></li>
+									<li <?php if ( is_home() ) echo( 'class="current_page_item"' ); ?>>
+                                        <a href="<?php echo esc_url( home_url( '/' ) ); ?>">
+                                            <?php esc_html_e( 'Home', 'Divi' ); ?></a></li>
 								<?php }; ?>
 
 								<?php show_page_menu( $menuClass, false, false ); ?>
